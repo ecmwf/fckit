@@ -112,13 +112,14 @@ end module fctest
 #define TESTSUITE( TESTSUITE_NAME ) \
 module TESTSUITE_NAME;\
 use fctest;\
+implicit none;\
 contains;
-
 
 #define TESTSUITE_WITH_FIXTURE( TESTSUITE_NAME, TESTSUITE_FIXTURE ) \
 module TESTSUITE_NAME;\
 use fctest;\
 use TESTSUITE_FIXTURE;\
+implicit none;\
 contains;
 
 #define END_TESTSUITE end module
@@ -137,10 +138,3 @@ contains;
 #define CHECK( EXPR ) if(.not.(EXPR)) call ERR(__LINE__)
 #define CHECK_EQUAL(V1,V2) call FCE(V1,V2,__LINE__)
 #define CHECK_CLOSE(V1,V2,TOL) call FCC(V1,V2,TOL,__LINE__)
-
-#if 0
-  write(0,'(5A,I3)') "CHECK(",#EXPR,") failed in ",__FILE__,":",__LINE__;\   
-  write(0,*) "[",V1,"!=",V2,"]";\
-  !write(0,'(9A,I3)') "CHECK_CLOSE(",#V1,",",#V2,",",#ABS_TOL,") failed in ",__FILE__,":",__LINE__;\
-  !write(0,'(7A,I3)') "CHECK_EQUAL(",#V1,",",#V2,") failed in ",__FILE__,":",__LINE__;\
-#endif 
