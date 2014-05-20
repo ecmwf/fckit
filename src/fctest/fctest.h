@@ -64,7 +64,7 @@ contains
   subroutine fctest_check_close_real32(V1,V2,TOL,line)
     real(kind=c_float), intent(in) :: V1, V2, TOL
     integer, intent(in) :: line
-    if(.not.(abs(V1-V2)<=TOL)) then;\
+    if(.not.(abs(V1-V2)<=TOL)) then;
       write(0,'(3A,I3)') "CHECK_CLOSE failed in ",source_file,":",line
       call write_line(line)                                  
       write(0,*) "--> [",V1,"!=",V2,"]"
@@ -74,7 +74,7 @@ contains
   subroutine fctest_check_close_real64(V1,V2,TOL,line)
     real(kind=c_double), intent(in) :: V1, V2, TOL
     integer, intent(in) :: line
-    if(.not.(abs(V1-V2)<=TOL)) then;\
+    if(.not.(abs(V1-V2)<=TOL)) then;
       write(0,'(3A,I3)') "CHECK_CLOSE failed in ",source_file,":",line
       call write_line(line)
       write(0,*) "--> [",V1,"!=",V2,"]"
