@@ -15,18 +15,32 @@ module fctest
     module procedure fctest_check_close_real64
   end interface FCC
 contains
+
+  character(132) function sweep_leading_blanks(in_str)
+    character(*), intent(in) :: in_str
+    character :: ch
+    integer :: j
+
+    do j=1, len_trim(in_str)
+      ! get j-th char
+      ch = in_str(j:j)
+      if (ch .ne. " ") then
+        sweep_leading_blanks = trim(in_str(j:len_trim(in_str)))
+        return
+      endif
+    end do
+  end function sweep_leading_blanks
+
   subroutine ERR(line)
-      integer, intent(in) :: line
-      write(0,'(3A,I3)') "CHECK failed in ",source_file,":",line
-      call write_line(line)
-      exit_status=1
+    integer, intent(in) :: line
+    write(0,'(2A,I0,2A)') source_file,":",line,": warning: ",sweep_leading_blanks(get_source_line(line))
+    exit_status=1
   end subroutine
   subroutine fctest_check_equal_int(V1,V2,line)
     integer, intent(in) :: V1, V2
     integer, intent(in) :: line
     if(V1/=V2) then
-      write(0,'(3A,I3)') "CHECK_EQUAL failed in ",source_file,":",line
-      call write_line(line)            
+      write(0,'(2A,I0,2A)') source_file,":",line,": warning: ",sweep_leading_blanks(get_source_line(line))
       write(0,*) "--> [",V1,"!=",V2,"]"
       exit_status=1
     endif
@@ -35,8 +49,7 @@ contains
     real(kind=c_float), intent(in) :: V1, V2
     integer, intent(in) :: line
     if(V1/=V2) then
-      write(0,'(3A,I3)') "CHECK_EQUAL failed in ",source_file,":",line
-      call write_line(line)
+      write(0,'(2A,I0,2A)') source_file,":",line,": warning: ",sweep_leading_blanks(get_source_line(line))
       write(0,*) "--> [",V1,"!=",V2,"]"
       exit_status=1
     endif
@@ -45,8 +58,7 @@ contains
     real(kind=c_double), intent(in) :: V1, V2
     integer, intent(in) :: line
     if(V1/=V2) then
-      write(0,'(3A,I3)') "CHECK_EQUAL failed in ",source_file,":",line
-      call write_line(line)                    
+      write(0,'(2A,I0,2A)') source_file,":",line,": warning: ",sweep_leading_blanks(get_source_line(line))
       write(0,*) "--> [",V1,"!=",V2,"]"
       exit_status=1
     endif
@@ -55,8 +67,7 @@ contains
     character(len=*), intent(in) :: V1, V2
     integer, intent(in) :: line
     if(V1/=V2) then
-      write(0,'(3A,I3)') "CHECK_EQUAL failed in ",source_file,":",line
-      call write_line(line)
+      write(0,'(2A,I0,2A)') source_file,":",line,": warning: ",sweep_leading_blanks(get_source_line(line))
       write(0,*) "--> [",V1,"!=",V2,"]"
       exit_status=1
     endif
@@ -65,8 +76,7 @@ contains
     real(kind=c_float), intent(in) :: V1, V2, TOL
     integer, intent(in) :: line
     if(.not.(abs(V1-V2)<=TOL)) then;
-      write(0,'(3A,I3)') "CHECK_CLOSE failed in ",source_file,":",line
-      call write_line(line)                                  
+      write(0,'(2A,I0,2A)') source_file,":",line,": warning: ",sweep_leading_blanks(get_source_line(line))
       write(0,*) "--> [",V1,"!=",V2,"]"
       exit_status=1
     endif
@@ -75,14 +85,13 @@ contains
     real(kind=c_double), intent(in) :: V1, V2, TOL
     integer, intent(in) :: line
     if(.not.(abs(V1-V2)<=TOL)) then;
-      write(0,'(3A,I3)') "CHECK_CLOSE failed in ",source_file,":",line
-      call write_line(line)
+      write(0,'(2A,I0,2A)') source_file,":",line,": warning: ",sweep_leading_blanks(get_source_line(line))
       write(0,*) "--> [",V1,"!=",V2,"]"
       exit_status=1
     endif
   end subroutine  
 
-subroutine write_line(line_number)
+function get_source_line(line_number) result(source_line)
   integer, intent(in)  :: line_number
   ! Variables
   integer stat, jline
@@ -91,7 +100,7 @@ subroutine write_line(line_number)
   ! open input file
   open (10, file=source_file, status='old', iostat=stat)
   if (stat .ne. 0)then
-    write (*,*) 'inp_file can not be opened'
+    source_line = 'source_file '//source_file//' can not be opened'
     close(10)
     return
   end if
@@ -100,12 +109,12 @@ subroutine write_line(line_number)
   do jline=1,line_number
     read (10, '(A)', end=99) source_line ! read line from input file
   enddo
-  write(0,*) '--> ',trim(source_line)   ! write line to output file
+  close(10)
 
   ! close files
   99 continue
   close (10)
-end subroutine
+end function get_source_line
                                       
 end module fctest
 
