@@ -35,13 +35,13 @@ ecbuild_declare_project()
 ecbuild_find_python( REQUIRED )
 
 ### Fortran ...
-ecbuild_enable_fortran( REQUIRED MODULE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/module )
+ecbuild_enable_fortran( REQUIRED MODULE_DIRECTORY ${CMAKE_BINARY_DIR}/module )
 
 ############################################################################################
 # export package info
 
 set( FCTEST_INCLUDE_DIRS   ${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_BINARY_DIR}/src ${CMAKE_Fortran_MODULE_DIRECTORY} )
-
+set( FCTEST_LIBRARIES  fctest )
 set( FCTEST_GENERATOR ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/src/tools/fctest_generate_runner.py )
 SET( FCTEST_IMPORT_FILE ${CMAKE_CURRENT_SOURCE_DIR}/fctest-import.cmake.in )
 configure_file( "${FCTEST_IMPORT_FILE}" "${PROJECT_BINARY_DIR}/fctest-import.cmake" @ONLY )
@@ -53,6 +53,10 @@ include( "${PROJECT_BINARY_DIR}/fctest-import.cmake" )
 # include( atlas_compiler_flags )
 
 include_directories( ${FCTEST_INCLUDE_DIRS} ${FCTEST_EXTRA_INCLUDE_DIRS} )
+
+if( CMAKE_Fortran_COMPILER_ID MATCHES "Cray" )
+  set( CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -emf -rmoid -lhugetlbfs")
+endif()
 
 set( HAVE_FCTEST 1)
 add_subdirectory( src )
