@@ -4,10 +4,12 @@ function( fctest_generate_runner output filename )
 	set(base_abs ${CMAKE_CURRENT_SOURCE_DIR}/${base})
 	set(outfile ${CMAKE_CURRENT_BINARY_DIR}/${base}_main.f90)
 	set(${output} ${outfile} PARENT_SCOPE)
+
 	add_custom_command(
 		OUTPUT ${outfile}
 		COMMAND @FCTEST_GENERATOR@ -i ${CMAKE_CURRENT_SOURCE_DIR}/${filename} -o ${outfile}
 		DEPENDS ${filename} )
+
 	set_source_files_properties(${outfile} PROPERTIES GENERATED TRUE)
 
 endfunction()
@@ -19,11 +21,14 @@ macro( add_fctest )
   set( options           )
   set( single_value_args )
   set( multi_value_args SOURCES )
+
   cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
+
   include_directories( ${FCTEST_INCLUDE_DIRS} )
-  LIST(GET _PAR_SOURCES 0 TESTSUITE ) 
+
+  list(GET _PAR_SOURCES 0 TESTSUITE )
   fctest_generate_runner( TESTRUNNER ${TESTSUITE} )
-  set (_PAR_SOURCES ${_PAR_SOURCES} ${TESTRUNNER} )
+  set(_PAR_SOURCES ${_PAR_SOURCES} ${TESTRUNNER} )
   ecbuild_add_test( ${ARGN} SOURCES ${_PAR_SOURCES} )
 
 endmacro()

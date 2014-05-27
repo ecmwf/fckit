@@ -40,7 +40,8 @@ ecbuild_enable_fortran( REQUIRED MODULE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/mo
 ############################################################################################
 # export package info
 
-set( FCTEST_INCLUDE_DIRS   ${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_BINARY_DIR}/src )
+set( FCTEST_INCLUDE_DIRS   ${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_BINARY_DIR}/src ${CMAKE_Fortran_MODULE_DIRECTORY} )
+
 set( FCTEST_GENERATOR ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/src/tools/fctest_generate_runner.py )
 SET( FCTEST_IMPORT_FILE ${CMAKE_CURRENT_SOURCE_DIR}/fctest-import.cmake.in )
 configure_file( "${FCTEST_IMPORT_FILE}" "${PROJECT_BINARY_DIR}/fctest-import.cmake" @ONLY )
