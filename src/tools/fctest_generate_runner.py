@@ -44,7 +44,7 @@ if( init ): runner += 'call testsuite_init \n'
 for test in test_names:
     runner += 'call '+test+'\n'
 if( finalize ): runner += 'call testsuite_finalize \n'
-runner += 'call exit(exit_status)\n'
+runner += 'if( exit_status /= 0 ) STOP 1 \n'
 runner += 'end program\n'
 
 with open(source_out,'w') as file:
