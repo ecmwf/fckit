@@ -21,12 +21,12 @@ END_TESTSUITE_FINALIZE
 
 TEST( test1 )
   write(0,*) "test1"
-  CHECK_EQUAL( size(array), 4 )
+  CHECK_EQUAL( size(array), 4 ) ! description here
 END_TEST
 
 TEST( test2 )
   write(0,*) "test2"
-  CHECK_EQUAL( size(array), 2 )
+  CHECK_EQUAL( size(array), 2 ) ! description here
 END_TEST
 
 

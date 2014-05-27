@@ -38,7 +38,6 @@ with open(source_in,'r') as file:
 runner =  'program run_'+testsuite+'\n'
 runner += 'use '+testsuite+'\n'
 runner += 'implicit none\n'
-# runner += 'allocate( file('+str(len(source_in))+') )\n'
 runner += 'source_file="'+source_in+'"\n'
 if( init ): runner += 'call testsuite_init \n'
 for test in test_names:

@@ -14,9 +14,9 @@ public
     module procedure fctest_check_close_real32
     module procedure fctest_check_close_real64
   end interface FCC
-!  interface ERR
-!    module procedure fctest_error
-!  end interface ERR
+  interface ERR
+    module procedure fctest_error
+  end interface ERR
 
 contains
 
@@ -35,7 +35,7 @@ function sweep_leading_blanks(in_str)
   end do
 end function sweep_leading_blanks
 
-subroutine ERR(line)
+subroutine fctest_error(line)
   integer, intent(in) :: line
   write(0,'(2A,I0,2A)') trim(source_file),":",line,": warning: ",trim(sweep_leading_blanks(get_source_line(line)))
   exit_status=1
@@ -105,7 +105,7 @@ function get_source_line(line_number) result(source_line)
   integer, intent(in)  :: line_number
   ! Variables
   integer stat, jline
-  character(len=132) :: source_line
+  character(len=512) :: source_line
 
   ! open input file
   open (10, file=source_file, status='old', iostat=stat)
