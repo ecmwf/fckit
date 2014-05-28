@@ -35,7 +35,8 @@ with open(source_in,'r') as file:
         if( re.search(r'TESTSUITE_FINALI[SZ]E',stripped) ):
             finalize = True
 
-runner =  'program run_'+testsuite+'\n'
+runner =  '#include "'+source_in+'"\n'
+runner += 'program run_'+testsuite+'\n'
 runner += 'use '+testsuite+'\n'
 runner += 'implicit none\n'
 runner += 'source_file="'+source_in+'"\n'

@@ -16,4 +16,9 @@ TEST( test2 )
   CHECK_CLOSE( 0., 1.e-4, 1.e-5 ) ! description here
 END_TEST
 
+TESTSUITE_FINALIZE
+  ! Mark test as passed, as it was supposed to fail otherwise
+  exit_status = 0
+END_TESTSUITE_FINALIZE
+
 END_TESTSUITE

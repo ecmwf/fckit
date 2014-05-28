@@ -2,7 +2,7 @@ function( fctest_generate_runner output filename )
 
 	get_filename_component(base ${filename} NAME_WE)
 	set(base_abs ${CMAKE_CURRENT_SOURCE_DIR}/${base})
-	set(outfile ${CMAKE_CURRENT_BINARY_DIR}/${base}_main.f90)
+        set(outfile ${CMAKE_CURRENT_BINARY_DIR}/${base}_main.F90)
 	set(${output} ${outfile} PARENT_SCOPE)
 
 	add_custom_command(
@@ -20,15 +20,22 @@ macro( add_fctest )
 
   set( options           )
   set( single_value_args )
-  set( multi_value_args SOURCES )
+  set( multi_value_args SOURCES LIBS )
 
   cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
 
+  debug_var( _PAR_LIBS )
+
   include_directories( ${FCTEST_INCLUDE_DIRS} )
 
-  list(GET _PAR_SOURCES 0 TESTSUITE )
+  list( GET _PAR_SOURCES 0 TESTSUITE )
+  list( REMOVE_ITEM _PAR_SOURCES ${TESTSUITE})
+
+  list( APPEND _PAR_LIBS ${FCTEST_LIBRARIES} )
   fctest_generate_runner( TESTRUNNER ${TESTSUITE} )
-  set(_PAR_SOURCES ${_PAR_SOURCES} ${TESTRUNNER} )
-  ecbuild_add_test( ${ARGN} SOURCES ${_PAR_SOURCES} )
+
+  debug_var( _PAR_LIBS )
+
+  ecbuild_add_test( ${_PAR_UNPARSED_ARGUMENTS} SOURCES ${TESTRUNNER} ${_PAR_SOURCES} LIBS ${_PAR_LIBS} )
 
 endmacro()

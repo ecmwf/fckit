@@ -1,3 +1,6 @@
+#ifndef FCTEST_H
+#define FCTEST_H
+
 #define TESTSUITE( TESTSUITE_NAME ) \
 module TESTSUITE_NAME;\
 use fctest;\
@@ -29,3 +32,5 @@ subroutine d;end subroutine;
 #define CHECK( EXPR ) if(.not.(EXPR)) call ERR(__LINE__)
 #define CHECK_EQUAL(V1,V2) call FCE(V1,V2,__LINE__)
 #define CHECK_CLOSE(V1,V2,TOL) call FCC(V1,V2,TOL,__LINE__)
+
+#endif
