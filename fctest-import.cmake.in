@@ -19,12 +19,10 @@ endfunction()
 macro( add_fctest )
 
   set( options           )
-  set( single_value_args )
+  set( single_value_args TARGET )
   set( multi_value_args SOURCES LIBS )
 
   cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
-
-  debug_var( _PAR_LIBS )
 
   include_directories( ${FCTEST_INCLUDE_DIRS} )
 
@@ -34,8 +32,7 @@ macro( add_fctest )
   list( APPEND _PAR_LIBS ${FCTEST_LIBRARIES} )
   fctest_generate_runner( TESTRUNNER ${TESTSUITE} )
 
-  debug_var( _PAR_LIBS )
-
-  ecbuild_add_test( ${_PAR_UNPARSED_ARGUMENTS} SOURCES ${TESTRUNNER} ${_PAR_SOURCES} LIBS ${_PAR_LIBS} )
+  add_custom_target( ${_PAR_TARGET}_module SOURCES ${TESTSUITE} )
+  ecbuild_add_test( TARGET ${_PAR_TARGET} ${_PAR_UNPARSED_ARGUMENTS} SOURCES ${TESTRUNNER} ${_PAR_SOURCES} LIBS ${_PAR_LIBS} )
 
 endmacro()
