@@ -47,11 +47,20 @@ subroutine d;end subroutine;
 
 ! CHECK macro: check if an expression is true, otherwise fail the test
 #define CHECK( EXPR ) if(.not.(EXPR)) call ERR(__LINE__)
+#define FCTEST_CHECK CHECK
 
 ! CHECK_EQUAL macro: check if 2 values are exactly equal
 #define CHECK_EQUAL(V1,V2) call FCE(V1,V2,__LINE__)
+#define FCTEST_CHECK_EQUAL CHECK_EQUAL
 
 ! CHECK_EQUAL macro: check if 2 REAL values are equal with a given tolerance
 #define CHECK_CLOSE(V1,V2,TOL) call FCC(V1,V2,TOL,__LINE__)
+#define FCTEST_CHECK_CLOSE CHECK_CLOSE
+
+! FCTEST_ERROR macro: show error
+#define FCTEST_ERROR() call ERR(__LINE__)
+
+! FCTEST_ERROR macro: show error
+#define FCTEST_ERROR() call ERR(__LINE__)
 
 #endif
