@@ -29,7 +29,7 @@ contains
 
 function sweep_leading_blanks(in_str)
   character(len=*), intent(in)  :: in_str
-  character(len=:), allocatable :: sweep_leading_blanks
+  character(len=512) :: sweep_leading_blanks
   character :: ch
   integer :: j
   do j=1, len_trim(in_str)
