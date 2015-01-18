@@ -1,5 +1,5 @@
 module fctest
-  use, intrinsic :: iso_c_binding, only: c_float, c_double
+  use, intrinsic :: iso_c_binding, only: c_float, c_double, c_int, c_long
   implicit none
   integer, parameter :: sp=c_float
   integer, parameter :: dp=c_double
@@ -7,11 +7,13 @@ public
   character(len=132) :: source_file
   integer :: exit_status
   interface FCE
-    module procedure fctest_check_equal_int
+    module procedure fctest_check_equal_int32
+    module procedure fctest_check_equal_int64
     module procedure fctest_check_equal_real32
     module procedure fctest_check_equal_real64
     module procedure fctest_check_equal_string
-    module procedure fctest_check_equal_int_r1
+    module procedure fctest_check_equal_int32_r1
+    module procedure fctest_check_equal_int64_r1
     module procedure fctest_check_equal_real32_r1
     module procedure fctest_check_equal_real64_r1
   end interface FCE
@@ -48,8 +50,18 @@ subroutine fctest_error(line)
   exit_status=1
 end subroutine
 
-subroutine fctest_check_equal_int(V1,V2,line)
-  integer, intent(in) :: V1, V2
+subroutine fctest_check_equal_int32(V1,V2,line)
+  integer(c_int), intent(in) :: V1, V2
+  integer, intent(in) :: line
+  if(V1/=V2) then
+    write(0,'(2A,I0,2A)') trim(source_file),":",line,": warning: ",trim(sweep_leading_blanks(get_source_line(line)))
+    write(0,*) "--> [",V1,"!=",V2,"]"
+    exit_status=1
+  endif
+end subroutine
+
+subroutine fctest_check_equal_int64(V1,V2,line)
+  integer(c_long), intent(in) :: V1, V2
   integer, intent(in) :: line
   if(V1/=V2) then
     write(0,'(2A,I0,2A)') trim(source_file),":",line,": warning: ",trim(sweep_leading_blanks(get_source_line(line)))
@@ -88,8 +100,28 @@ subroutine fctest_check_equal_string(V1,V2,line)
   endif
 end subroutine
 
-subroutine fctest_check_equal_int_r1(V1,V2,line)
-  integer, intent(in) :: V1(:), V2(:)
+subroutine fctest_check_equal_int32_r1(V1,V2,line)
+  integer(c_int), intent(in) :: V1(:), V2(:)
+  integer, intent(in) :: line
+  logical :: compare = .True.
+  integer :: j
+  if( size(V1) /= size(V2) ) compare = .False.
+  if( compare .eqv. .True. ) then
+    do j=1,size(V1)
+      if( V1(j)/=V2(j) ) compare = .False.
+    enddo
+  endif
+  if( compare .eqv. .False. ) then
+    write(0,'(2A,I0,2A)') trim(source_file),":",line,": warning: ",trim(sweep_leading_blanks(get_source_line(line)))
+    if( size(V1) <= 30 ) then
+      write(0,*) "--> [ (\",V1,"\) != \(",V2,"\) ]"
+    endif
+    exit_status=1
+  endif
+end subroutine
+
+subroutine fctest_check_equal_int64_r1(V1,V2,line)
+  integer(c_long), intent(in) :: V1(:), V2(:)
   integer, intent(in) :: line
   logical :: compare = .True.
   integer :: j
