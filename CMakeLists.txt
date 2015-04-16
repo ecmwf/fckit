@@ -54,6 +54,10 @@ include( "${PROJECT_BINARY_DIR}/fctest-import.cmake" )
 
 include_directories( ${FCTEST_INCLUDE_DIRS} ${FCTEST_EXTRA_INCLUDE_DIRS} )
 
+if( CMAKE_Fortran_COMPILER_ID MATCHES "GNU" )
+  set( CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -ffree-form -ffree-line-length-none")
+endif()
+
 if( CMAKE_Fortran_COMPILER_ID MATCHES "Cray" )
   set( CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -emf -rmoid -lhugetlbfs")
 endif()
