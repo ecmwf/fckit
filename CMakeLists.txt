@@ -37,20 +37,12 @@ ecbuild_find_python( REQUIRED )
 ### Fortran ...
 ecbuild_enable_fortran( REQUIRED MODULE_DIRECTORY ${CMAKE_BINARY_DIR}/module )
 
-############################################################################################
-# export package info
-
-set( FCTEST_INCLUDE_DIRS   ${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_BINARY_DIR}/src ${CMAKE_Fortran_MODULE_DIRECTORY} )
-set( FCTEST_LIBRARIES  fctest )
-set( FCTEST_GENERATOR ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/src/tools/fctest_generate_runner.py )
-SET( FCTEST_IMPORT_FILE ${CMAKE_CURRENT_SOURCE_DIR}/fctest-import.cmake.in )
-configure_file( "${FCTEST_IMPORT_FILE}" "${PROJECT_BINARY_DIR}/fctest-import.cmake" @ONLY )
-include( "${PROJECT_BINARY_DIR}/fctest-import.cmake" )
 
 ############################################################################################
 # sources
 
-# include( atlas_compiler_flags )
+set( FCTEST_INCLUDE_DIRS   ${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_BINARY_DIR}/src ${CMAKE_Fortran_MODULE_DIRECTORY} )
+set( FCTEST_LIBRARIES  fctest )
 
 include_directories( ${FCTEST_INCLUDE_DIRS} ${FCTEST_EXTRA_INCLUDE_DIRS} )
 
@@ -62,13 +54,27 @@ if( CMAKE_Fortran_COMPILER_ID MATCHES "Cray" )
   set( CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -emf -rmoid -lhugetlbfs")
 endif()
 
+set( FCTEST_IMPORT_FILE ${CMAKE_CURRENT_SOURCE_DIR}/fctest-import.cmake.in )
+
+set( FCTEST_GENERATOR ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/src/tools/fctest_generate_runner.py )
+configure_file( "${FCTEST_IMPORT_FILE}" "${PROJECT_BINARY_DIR}/fctest-include.cmake" @ONLY )
+include( "${PROJECT_BINARY_DIR}/fctest-import.cmake" )
+
 set( HAVE_FCTEST 1)
 add_subdirectory( src )
 
 ############################################################################################
 # finalize
 
-SET( FCTEST_IMPORT_FILE ${CMAKE_CURRENT_SOURCE_DIR}/fctest-imports.cmake.in )
+#SET( FCTEST_IMPORT_FILE ${CMAKE_CURRENT_SOURCE_DIR}/fctest-imports.cmake.in )
 ecbuild_install_project( NAME fctest )
+
+
+set( FCTEST_GENERATOR ${PYTHON_EXECUTABLE} ${CMAKE_INSTALL_PREFIX}/share/fctest/tools/fctest_generate_runner.py )
+configure_file( "${FCTEST_IMPORT_FILE}" "${PROJECT_BINARY_DIR}/fctest-import-install.cmake" @ONLY )
+
+install( FILES "${PROJECT_BINARY_DIR}/fctest-import-install.cmake"
+         DESTINATION "${INSTALL_CMAKE_DIR}"
+         RENAME "fctest-import.cmake" )
 
 ecbuild_print_summary()
