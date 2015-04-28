@@ -77,4 +77,8 @@ install( FILES "${PROJECT_BINARY_DIR}/fctest-import-install.cmake"
          DESTINATION "${INSTALL_CMAKE_DIR}"
          RENAME "fctest-import.cmake" )
 
+install( FILES ${CMAKE_Fortran_MODULE_DIRECTORY}/${CMAKE_CFG_INTDIR}/fctest.mod
+         DESTINATION ${INSTALL_INCLUDE_DIR} )
+
+
 ecbuild_print_summary()
