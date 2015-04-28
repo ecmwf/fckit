@@ -66,10 +66,6 @@ add_subdirectory( src )
 ############################################################################################
 # finalize
 
-#SET( FCTEST_IMPORT_FILE ${CMAKE_CURRENT_SOURCE_DIR}/fctest-imports.cmake.in )
-ecbuild_install_project( NAME fctest )
-
-
 set( FCTEST_GENERATOR ${PYTHON_EXECUTABLE} ${CMAKE_INSTALL_PREFIX}/share/fctest/tools/fctest_generate_runner.py )
 configure_file( "${FCTEST_IMPORT_FILE}" "${PROJECT_BINARY_DIR}/fctest-import-install.cmake" @ONLY )
 
@@ -79,6 +75,9 @@ install( FILES "${PROJECT_BINARY_DIR}/fctest-import-install.cmake"
 
 install( FILES ${CMAKE_Fortran_MODULE_DIRECTORY}/${CMAKE_CFG_INTDIR}/fctest.mod
          DESTINATION ${INSTALL_INCLUDE_DIR} )
+
+ecbuild_install_project( NAME fctest )
+
 
 
 ecbuild_print_summary()
