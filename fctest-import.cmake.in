@@ -1,3 +1,8 @@
+
+# Compute paths
+get_filename_component(FCTEST_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+set(FCTEST_LIBEXEC_DIR "@CONF_LIBEXEC_DIR@")
+
 function( fctest_generate_runner output filename )
 
 	get_filename_component(base ${filename} NAME_WE)
