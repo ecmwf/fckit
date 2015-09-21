@@ -1,7 +1,8 @@
-
-# Compute paths
-get_filename_component(FCTEST_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
-set(FCTEST_LIBEXEC_DIR "@CONF_LIBEXEC_DIR@")
+if( @PNAME@_IS_BUILD_DIR_EXPORT )
+  set( FCTEST_GENERATOR @PYTHON_EXECUTABLE@ @CMAKE_CURRENT_SOURCE_DIR@/src/tools/fctest_generate_runner.py )
+else()
+  set( FCTEST_GENERATOR @PYTHON_EXECUTABLE@ @CMAKE_INSTALL_PREFIX@/@INSTALL_LIBEXEC_DIR@/fctest_generate_runner.py )
+endif()
 
 function( fctest_generate_runner output filename )
 
@@ -12,7 +13,7 @@ function( fctest_generate_runner output filename )
 
 	add_custom_command(
 		OUTPUT ${outfile}
-		COMMAND @FCTEST_GENERATOR@ -i ${CMAKE_CURRENT_SOURCE_DIR}/${filename} -o ${outfile}
+		COMMAND ${FCTEST_GENERATOR} -i ${CMAKE_CURRENT_SOURCE_DIR}/${filename} -o ${outfile}
 		DEPENDS ${filename} )
 
 	set_source_files_properties(${outfile} PROPERTIES GENERATED TRUE)

@@ -42,27 +42,15 @@ ecbuild_enable_fortran( REQUIRED MODULE_DIRECTORY ${CMAKE_BINARY_DIR}/module )
 
 set( FCTEST_INCLUDE_DIRS   ${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_BINARY_DIR}/src ${CMAKE_Fortran_MODULE_DIRECTORY} )
 set( FCTEST_LIBRARIES  fctest )
-set( FCTEST_GENERATOR ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/src/tools/fctest_generate_runner.py )
-set( FCTEST_IMPORT_FILE ${CMAKE_CURRENT_SOURCE_DIR}/fctest-import.cmake.in )
 
 #
 # --- IMPORT ---
 #
 set( INSTALL_LIBEXEC_DIR libexec )
-file(RELATIVE_PATH REL_LIBEXEC_DIR "${CMAKE_INSTALL_PREFIX}/${INSTALL_CMAKE_DIR}" 
-                                   "${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBEXEC_DIR}")
-
-# ... for the build tree
-set(CONF_LIBEXEC_DIR "${PROJECT_SOURCE_DIR}/tools")
-configure_file(fctest-import.cmake.in "${PROJECT_BINARY_DIR}/fctest-import.cmake" @ONLY)
-
-# ... for the install tree
-debug_var( FCTEST_CMAKE_DIR )
-set(CONF_LIBEXEC_DIR "\${FCTEST_CMAKE_DIR}/${REL_LIBEXEC_DIR}")
-set(FCTEST_GENERATOR "${PYTHON_EXECUTABLE} \${FCTEST_LIBEXEC_DIR}/fctest_generate_runner.py")
-configure_file(fctest-import.cmake.in "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/fctest-import.cmake" @ONLY)
- 
-include(${PROJECT_BINARY_DIR}/fctest-import.cmake)
+# At this point fctest-import.cmake has not been configured in the build tree yet
+# Include the template and fix the path to fctest_generate_runner.py
+include(${CMAKE_SOURCE_DIR}/fctest-import.cmake.in)
+set( FCTEST_GENERATOR ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/src/tools/fctest_generate_runner.py )
 
 ############################################################################################
 # sources
@@ -87,6 +75,3 @@ ecbuild_print_summary()
 #####################################################################################
 
 ecbuild_install_project( NAME fctest )
-
-
-
