@@ -49,7 +49,7 @@ set( FCTEST_LIBRARIES  fctest )
 set( INSTALL_LIBEXEC_DIR libexec )
 # At this point fctest-import.cmake has not been configured in the build tree yet
 # Include the template and fix the path to fctest_generate_runner.py
-include(${CMAKE_SOURCE_DIR}/fctest-import.cmake.in)
+include(${CMAKE_CURRENT_SOURCE_DIR}/fctest-import.cmake.in)
 set( FCTEST_GENERATOR ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/src/tools/fctest_generate_runner.py )
 
 ############################################################################################
