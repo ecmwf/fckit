@@ -54,7 +54,16 @@ set( FCTEST_LIBRARIES  fctest )
 set( INSTALL_LIBEXEC_DIR libexec )
 # At this point fctest-import.cmake has not been configured in the build tree yet
 # Include the template and fix the path to fctest_generate_runner.py
+# Set Policy CMP0053 to allow to include fctest-import.cmake.in directly
+# Run "cmake --help-policy CMP0053" for policy details
+if(POLICY CMP0053)
+  cmake_policy(PUSH)
+  cmake_policy(SET CMP0053 OLD)
+endif()
 include(${CMAKE_CURRENT_SOURCE_DIR}/fctest-import.cmake.in)
+if(POLICY CMP0053)
+  cmake_policy(POP)
+endif()
 set( FCTEST_GENERATOR ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/src/tools/fctest_generate_runner.py )
 
 ############################################################################################
