@@ -62,6 +62,10 @@ if(POLICY CMP0053)
 endif()
 set( FCTEST_GENERATOR ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/src/tools/fctest_generate_runner.py )
 
+if( NOT PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
+  set( FCTEST_GENERATOR ${FCTEST_GENERATOR} PARENT_SCOPE )
+endif()
+
 ############################################################################################
 # sources
 
