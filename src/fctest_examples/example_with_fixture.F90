@@ -1,4 +1,4 @@
-#include "fctest/fctest.h"
+#include "fckit/fctest.h"
 
 module TestFixture
   implicit none

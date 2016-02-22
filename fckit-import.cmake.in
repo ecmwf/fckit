@@ -1,20 +1,31 @@
 if( @PNAME@_IS_BUILD_DIR_EXPORT )
-  set( FCTEST_GENERATOR @PYTHON_EXECUTABLE@ @CMAKE_CURRENT_SOURCE_DIR@/src/tools/fctest_generate_runner.py )
+  set( FCTEST_GENERATOR @PYTHON_EXECUTABLE@ @CMAKE_CURRENT_SOURCE_DIR@/tools/fctest_generate_runner.py )
 else()
   set( FCTEST_GENERATOR @PYTHON_EXECUTABLE@ @CMAKE_INSTALL_PREFIX@/@INSTALL_LIBEXEC_DIR@/fctest_generate_runner.py )
 endif()
 
-function( fctest_generate_runner output filename )
+function( fctest_generate_runner )
 
-	get_filename_component(base ${filename} NAME_WE)
+  set( options           )
+  set( single_value_args OUTPUT FILENAME )
+  set( multi_value_args DEPENDS )
+
+  cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
+
+	get_filename_component(base ${_PAR_FILENAME} NAME_WE)
 	set(base_abs ${CMAKE_CURRENT_SOURCE_DIR}/${base})
         set(outfile ${CMAKE_CURRENT_BINARY_DIR}/${base}_main.F90)
-	set(${output} ${outfile} PARENT_SCOPE)
+	set(${_PAR_OUTPUT} ${outfile} PARENT_SCOPE)
+
+  list( APPEND _depends
+    ${_PAR_FILENAME}
+    ${_PAR_DEPENDS}
+  )
 
 	add_custom_command(
 		OUTPUT ${outfile}
-		COMMAND ${FCTEST_GENERATOR} -i ${CMAKE_CURRENT_SOURCE_DIR}/${filename} -o ${outfile}
-		DEPENDS ${filename} )
+		COMMAND ${FCTEST_GENERATOR} -i ${CMAKE_CURRENT_SOURCE_DIR}/${_PAR_FILENAME} -o ${outfile}
+		DEPENDS ${_depends} )
 
 	set_source_files_properties(${outfile} PROPERTIES GENERATED TRUE)
 
@@ -35,10 +46,12 @@ macro( add_fctest )
   list( GET _PAR_SOURCES 0 TESTSUITE )
   list( REMOVE_ITEM _PAR_SOURCES ${TESTSUITE})
 
-  list( APPEND _PAR_LIBS fctest )
-  fctest_generate_runner( TESTRUNNER ${TESTSUITE} )
+  list( APPEND _PAR_LIBS fckit )
 
-  add_custom_target( ${_PAR_TARGET}_module SOURCES ${TESTSUITE} )
+  fctest_generate_runner( OUTPUT TESTRUNNER 
+                          FILENAME ${TESTSUITE} 
+                          DEPENDS ${_PAR_LIBS} )
+
   ecbuild_add_test( TARGET ${_PAR_TARGET} ${_PAR_UNPARSED_ARGUMENTS} SOURCES ${TESTRUNNER} ${_PAR_SOURCES} LIBS ${_PAR_LIBS} )
 
 endmacro()

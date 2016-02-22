@@ -1,4 +1,4 @@
-# (C) Copyright 1996-2014 ECMWF.
+# (C) Copyright 1996-2015 ECMWF.
 #
 # This software is licensed under the terms of the Apache Licence Version 2.0
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -41,7 +41,10 @@ ecbuild_enable_fortran( REQUIRED MODULE_DIRECTORY ${CMAKE_BINARY_DIR}/module )
 ############################################################################################
 # export package info
 
-set( FCKIT_INCLUDE_DIRS   ${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_BINARY_DIR}/src ${CMAKE_Fortran_MODULE_DIRECTORY} )
+list( APPEND FCKIT_INCLUDE_DIRS
+    ${CMAKE_CURRENT_SOURCE_DIR}/src
+    ${CMAKE_CURRENT_BINARY_DIR}/src
+    ${CMAKE_Fortran_MODULE_DIRECTORY})
 set( FCKIT_LIBRARIES  fctest )
 
 #
@@ -60,7 +63,7 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/fckit-import.cmake.in)
 if(POLICY CMP0053)
   cmake_policy(POP)
 endif()
-set( FCTEST_GENERATOR ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/src/tools/fctest_generate_runner.py )
+set( FCTEST_GENERATOR ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/tools/fctest_generate_runner.py )
 
 if( NOT PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
   set( FCTEST_GENERATOR ${FCTEST_GENERATOR} PARENT_SCOPE )
@@ -70,14 +73,6 @@ endif()
 # sources
 
 include_directories( ${FCKIT_INCLUDE_DIRS} )
-
-if( CMAKE_Fortran_COMPILER_ID MATCHES "GNU" )
-  set( CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -ffree-form -ffree-line-length-none")
-endif()
-
-if( CMAKE_Fortran_COMPILER_ID MATCHES "Cray" )
-  set( CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -emf -rmoid")
-endif()
 
 set( HAVE_FCTEST 1)
 add_subdirectory( src )

@@ -1,4 +1,4 @@
-#include "fctest/fctest.h"
+#include "fckit/fctest.h"
 
 TESTSUITE( example_simple )
 
@@ -20,6 +20,12 @@ TEST( test2 )
   CHECK_EQUAL( (/1._sp,2._sp/), (/1._sp,2._sp/) )
   CHECK_CLOSE( (/1._dp,2.0001_dp/), (/1._dp,2._dp/), 0.001_dp )
 
+END_TEST
+
+TEST( test3 )
+  use example_module, only: example_function
+  write(0,*) "test3"
+  CHECK_EQUAL( example_function(), 1 )
 END_TEST
 
 TESTSUITE_FINALIZE
