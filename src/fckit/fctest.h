@@ -7,9 +7,7 @@
 #define TESTSUITE( TESTSUITE_NAME ) \
 module TESTSUITE_NAME;\
 use fctest;\
-implicit none;\
 contains;
-subroutine d;end subroutine;
 
 ! TESTSUITE_WITH_FIXTURE macro: defines a new testsuite
 !    with a given module as fixture. This fixture can
@@ -19,9 +17,7 @@ subroutine d;end subroutine;
 module TESTSUITE_NAME;\
 use fctest;\
 use TESTSUITE_FIXTURE;\
-implicit none;\
-contains;\
-subroutine d;end subroutine;
+contains
 
 ! END_TESTSUITE macro: closes a TESTSUITE_
 #define END_TESTSUITE end module
