@@ -4,7 +4,7 @@ module fctest
   integer, parameter :: sp=c_float
   integer, parameter :: dp=c_double
 public
-  character(len=132) :: source_file
+  character(len=1024) :: source_file
   integer :: exit_status
   interface FCE
     module procedure fctest_check_equal_int32
@@ -255,7 +255,7 @@ function get_source_line(line_number) result(source_line)
   ! open input file
   open (10, file=source_file, status='old', iostat=stat)
   if (stat .ne. 0)then
-    source_line = 'source_file '//source_file//' can not be opened'
+    source_line = 'source_file '//trim(source_file)//' can not be opened'
     close(10)
     return
   end if

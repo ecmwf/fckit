@@ -56,7 +56,4 @@ contains
 ! FCTEST_ERROR macro: show error
 #define FCTEST_ERROR() call ERR(__LINE__)
 
-! FCTEST_ERROR macro: show error
-#define FCTEST_ERROR() call ERR(__LINE__)
-
 #endif

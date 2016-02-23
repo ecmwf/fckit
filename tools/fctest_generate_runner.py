@@ -35,11 +35,16 @@ with open(source_in,'r') as file:
         if( re.search(r'^\s*TESTSUITE_FINALI[SZ]E',stripped) ):
             finalize = True
 
+source_file_pieces = source_in.split('/')
+
 runner =  '#include "'+source_in+'"\n'
 runner += 'program run_'+testsuite+'\n'
 runner += 'use '+testsuite+'\n'
 runner += 'implicit none\n'
-runner += 'source_file=&\n"'+source_in+'"\n'
+runner += 'source_file=""\n'
+for piece in source_file_pieces[:-1]:
+    runner += 'source_file=trim(source_file)//"'+piece+'/"\n'
+runner += 'source_file=trim(source_file)//"'+source_file_pieces[-1]+'"\n'
 if( init ): runner += 'call testsuite_init \n'
 for test in test_names:
     runner += 'call '+test+'\n'
