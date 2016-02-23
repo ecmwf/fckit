@@ -23,9 +23,9 @@ TEST( test2 )
 END_TEST
 
 TEST( test3 )
-  use example_module, only: example_function
-  write(0,*) "test3"
-  CHECK_EQUAL( example_function(), 1 )
+ use example_module, only: example_function
+ write(0,*) "test3"
+ CHECK_EQUAL( example_function(), 1 )
 END_TEST
 
 TESTSUITE_FINALIZE
