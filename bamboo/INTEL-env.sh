@@ -8,3 +8,6 @@ module unload emos
 module unload fftw
 module unload libemos
 module switch gnu intel/15.0.2
+
+# Load CMake 3.0.2 (ECBUILD-246)
+module load cmake/3.0.2
