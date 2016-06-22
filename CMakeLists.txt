@@ -45,7 +45,7 @@ list( APPEND FCKIT_INCLUDE_DIRS
     ${CMAKE_CURRENT_SOURCE_DIR}/src
     ${CMAKE_CURRENT_BINARY_DIR}/src
     ${CMAKE_Fortran_MODULE_DIRECTORY})
-set( FCKIT_LIBRARIES  fctest )
+set( FCKIT_LIBRARIES  fckit )
 
 #
 # --- IMPORT ---
