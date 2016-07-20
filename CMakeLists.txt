@@ -33,7 +33,7 @@ ecbuild_declare_project()
 ################################################################################################
 # options & dependencies
 
-ecbuild_find_python( REQUIRED )
+ecbuild_find_python( REQUIRED NO_LIBS )
 
 ### Fortran ...
 ecbuild_enable_fortran( REQUIRED MODULE_DIRECTORY ${CMAKE_BINARY_DIR}/module )
