@@ -16,7 +16,7 @@ set( ENABLE_OS_FUNCTIONS_TEST   OFF   CACHE BOOL " " )
 set( ENABLE_LARGE_FILE_SUPPORT  OFF   CACHE BOOL " " )
 set( ENABLE_OS_ENDINESS_TEST    OFF   CACHE BOOL " " )
 
-project( fckit Fortran )
+project( fckit CXX Fortran )
 
 set( CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/../ecbuild/cmake")
 set( ECBUILD_DEFAULT_BUILD_TYPE Release )
