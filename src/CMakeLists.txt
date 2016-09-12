@@ -10,6 +10,7 @@ ecbuild_add_library( TARGET     fckit
                                 fckit/fckit_array.F90
                                 fckit/fckit_C_interop.cc
                                 fckit/fckit_C_interop.F90
+                                fckit/fckit_object.F90
                     )
                      
 install( FILES fckit/fctest.h DESTINATION ${INSTALL_INCLUDE_DIR}/fckit )
