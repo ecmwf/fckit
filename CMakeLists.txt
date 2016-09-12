@@ -38,6 +38,15 @@ ecbuild_find_python( REQUIRED NO_LIBS )
 ### Fortran ...
 ecbuild_enable_fortran( REQUIRED MODULE_DIRECTORY ${CMAKE_BINARY_DIR}/module )
 
+### eckit ...
+ecbuild_add_option( FEATURE ECKIT
+                    DESCRIPTION "Wrap ecKit functionality"
+                    REQUIRED_PACKAGES "PROJECT eckit VERSION 0.12.3"
+                   )
+if( HAVE_ECKIT )
+    set( ECKIT_LIBRARIES eckit )
+endif()
+
 ############################################################################################
 # export package info
 

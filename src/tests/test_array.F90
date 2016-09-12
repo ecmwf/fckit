@@ -3,7 +3,7 @@
 TESTSUITE( array )
 
 TEST( test_array_view1d )
-  use fckit_array, only: array_view1d
+  use fckit_array_module, only: array_view1d
   use, intrinsic :: iso_c_binding 
   integer(c_int) :: array_int32_r2(20,10)
   integer(c_int), pointer :: view(:)
@@ -14,7 +14,7 @@ TEST( test_array_view1d )
 END_TEST
 
 TEST( test_array_stride )
-  use fckit_array, only: array_stride, array_strides
+  use fckit_array_module, only: array_stride, array_strides
   use, intrinsic :: iso_c_binding 
   integer(c_int) :: array_int32_r2(20,10)
 
