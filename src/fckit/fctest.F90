@@ -114,7 +114,7 @@ subroutine fctest_check_equal_int32_r1(V1,V2,line)
   if( compare .eqv. .False. ) then
     write(0,'(2A,I0,2A)') trim(source_file),":",line,": warning: ",trim(sweep_leading_blanks(get_source_line(line)))
     if( size(V1) <= 30 ) then
-      write(0,*) "--> [ (\",V1,"\) != \(",V2,"\) ]"
+      write(0,*) "-->  [ ",V1," ] != [ ",V2," ] "
     endif
     exit_status=1
   endif
@@ -134,7 +134,7 @@ subroutine fctest_check_equal_int64_r1(V1,V2,line)
   if( compare .eqv. .False. ) then
     write(0,'(2A,I0,2A)') trim(source_file),":",line,": warning: ",trim(sweep_leading_blanks(get_source_line(line)))
     if( size(V1) <= 30 ) then
-      write(0,*) "--> [ (\",V1,"\) != \(",V2,"\) ]"
+      write(0,*) "--> [ ",V1," ] != [ ",V2," ]"
     endif
     exit_status=1
   endif
@@ -155,7 +155,7 @@ subroutine fctest_check_equal_real32_r1(V1,V2,line)
   if( compare .eqv. .False. ) then
     write(0,'(2A,I0,2A)') trim(source_file),":",line,": warning: ",trim(sweep_leading_blanks(get_source_line(line)))
     if( size(V1) <= 30 ) then
-      write(0,*) "--> [ (\",V1,"\) != \(",V2,"\) ]"
+      write(0,*) "--> [ ",V1," ] != [ ",V2," ]"
     endif
     exit_status=1
   endif
@@ -176,7 +176,7 @@ subroutine fctest_check_equal_real64_r1(V1,V2,line)
   if( compare .eqv. .False. ) then
     write(0,'(2A,I0,2A)') trim(source_file),":",line,": warning: ",trim(sweep_leading_blanks(get_source_line(line)))
     if( size(V1) <= 30 ) then
-      write(0,*) "--> [ (\",V1,"\) != \(",V2,"\) ]"
+      write(0,*) "--> [ ",V1," ] != [ ",V2," ]"
     endif
     exit_status=1
   endif
@@ -218,7 +218,7 @@ subroutine fctest_check_close_real32_r1(V1,V2,TOL,line)
   if( compare .eqv. .False. ) then
     write(0,'(2A,I0,2A)') trim(source_file),":",line,": warning: ",trim(sweep_leading_blanks(get_source_line(line)))
     if( size(V1) <= 30 ) then
-      write(0,*) "--> [ (\",V1,"\) != \(",V2,"\) ]"
+      write(0,*) "--> [ ",V1," ] != [ ",V2," ]"
     endif
     exit_status=1
   endif
@@ -240,7 +240,7 @@ subroutine fctest_check_close_real64_r1(V1,V2,TOL,line)
   if( compare .eqv. .False. ) then
     write(0,'(2A,I0,2A)') trim(source_file),":",line,": warning: ",trim(sweep_leading_blanks(get_source_line(line)))
     if( size(V1) <= 30 ) then
-      write(0,*) "--> [ (\",V1,"\) != \(",V2,"\) ]"
+      write(0,*) "--> [ ",V1," ] != [ ",V2," ]"
     endif
     exit_status=1
   endif
