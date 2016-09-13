@@ -11,10 +11,8 @@
 
 cmake_minimum_required( VERSION 2.8.11 FATAL_ERROR )
 
-set( ENABLE_OS_TYPES_TEST       OFF   CACHE BOOL " " )
-set( ENABLE_OS_FUNCTIONS_TEST   OFF   CACHE BOOL " " )
+set( ENABLE_OS_TESTS       OFF   CACHE BOOL " " )
 set( ENABLE_LARGE_FILE_SUPPORT  OFF   CACHE BOOL " " )
-set( ENABLE_OS_ENDINESS_TEST    OFF   CACHE BOOL " " )
 
 project( fckit CXX Fortran )
 
@@ -37,6 +35,8 @@ ecbuild_find_python( REQUIRED NO_LIBS )
 
 ### Fortran ...
 ecbuild_enable_fortran( REQUIRED MODULE_DIRECTORY ${CMAKE_BINARY_DIR}/module )
+
+ecbuild_check_fortran( FEATURES finalization )
 
 ### eckit ...
 ecbuild_add_option( FEATURE ECKIT
@@ -91,5 +91,7 @@ add_subdirectory( src )
 
 ecbuild_print_summary()
 #####################################################################################
+
+install(DIRECTORY ${CMAKE_Fortran_MODULE_DIRECTORY}/${CMAKE_CFG_INTDIR} DESTINATION ${INSTALL_INCLUDE_DIR} )
 
 ecbuild_install_project( NAME fckit )

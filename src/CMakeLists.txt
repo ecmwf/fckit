@@ -11,6 +11,10 @@ list( APPEND eckit_required_src
 )
 endif()
 
+if( EC_HAVE_Fortran_FINALIZATION )
+    list( APPEND FCKIT_DEFINITIONS EC_HAVE_Fortran_FINALIZATION )
+endif()
+
 ecbuild_add_library( TARGET     fckit
                      SOURCES 
                                 fckit/fctest.F90
@@ -23,10 +27,12 @@ ecbuild_add_library( TARGET     fckit
                                 ${ECKIT_INCLUDE_DIRS}
                      LIBS
                                 ${ECKIT_LIBRARIES}
+                     DEFINITIONS
+                                ${FCKIT_DEFINITIONS}
                     )
                      
 install( FILES fckit/fctest.h DESTINATION ${INSTALL_INCLUDE_DIR}/fckit )
-install( FILES ${CMAKE_Fortran_MODULE_DIRECTORY}/fctest.mod DESTINATION ${INSTALL_INCLUDE_DIR} )
+# install( FILES ${CMAKE_Fortran_MODULE_DIRECTORY}/fctest.mod DESTINATION ${INSTALL_INCLUDE_DIR} )
 
 add_subdirectory(fctest_examples)
 add_subdirectory(tests)

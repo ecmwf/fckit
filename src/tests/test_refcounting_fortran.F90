@@ -10,7 +10,7 @@
 
 ! -----------------------------------------------------------------------------
 
-module fcta_refcounting_fxt
+module fcta_refcounting_f_fxt
 use fckit_refcounted_module
 use fckit_c_interop_module
 use fctest
@@ -22,7 +22,7 @@ type :: payload_t
 contains
 endtype
 
-type, extends(fckit_refcounted) :: RefObj
+type, extends(fckit_refcounted_fortran) :: RefObj
   type(payload_t), pointer :: payload
 contains
   procedure :: delete => RefObj__delete
@@ -72,7 +72,7 @@ end subroutine
 
 subroutine RefObj__copy(this,obj_in)
   class(RefObj), intent(inout) :: this
-  class(fckit_refcounted), target, intent(in) :: obj_in
+  class(fckit_refcounted_fortran), target, intent(in) :: obj_in
   class(refObj), pointer :: obj_in_cast
 
   select type (obj_in)
@@ -90,11 +90,11 @@ subroutine consume_obj(obj)
   call obj%detach()
 end subroutine
 
-end module fcta_refcounting_fxt
+end module fcta_refcounting_f_fxt
 
 ! -----------------------------------------------------------------------------
 
-TESTSUITE_WITH_FIXTURE(fctest_fckit_refcounting,fcta_refcounting_fxt)
+TESTSUITE_WITH_FIXTURE(fctest_fckit_refcounting_f,fcta_refcounting_f_fxt)
 
 ! -----------------------------------------------------------------------------
 

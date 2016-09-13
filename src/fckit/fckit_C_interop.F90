@@ -1,4 +1,4 @@
-module fckit_C_interop
+module fckit_C_interop_module
 implicit none
 private
 

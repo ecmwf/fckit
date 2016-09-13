@@ -18,8 +18,8 @@ type, abstract :: fckit_object
 contains
 
   procedure, public :: is_null
-  procedure, public :: ptr   => fckit_object__ptr
-  procedure, public :: reset_ptr
+  procedure, public :: c_ptr   => fckit_object__c_ptr
+  procedure, public :: reset_c_ptr
 
   procedure, private :: equal
   procedure, private :: not_equal
@@ -40,16 +40,16 @@ private :: c_null_ptr
 CONTAINS
 ! =============================================================================
 
-function fckit_object__ptr(this)
+function fckit_object__c_ptr(this)
   use, intrinsic :: iso_c_binding, only: c_ptr
-  type(c_ptr) :: fckit_object__ptr
+  type(c_ptr) :: fckit_object__c_ptr
   class(fckit_object), intent(in) :: this
-  fckit_object__ptr = this%cpp_object_ptr
+  fckit_object__c_ptr = this%cpp_object_ptr
 end function
 
-subroutine reset_ptr(this,cptr)
+subroutine reset_c_ptr(this,cptr)
   use, intrinsic :: iso_c_binding, only: c_ptr
-  use fckit_c_interop
+  use fckit_c_interop_module
   class(fckit_object) :: this
   type(c_ptr), optional :: cptr
   if( present(cptr) ) then
@@ -78,17 +78,17 @@ function is_null(this)
 end function
 
 logical function equal(obj1,obj2)
-  use fckit_C_interop, only : c_ptr_compare_equal
+  use fckit_c_interop_module, only : c_ptr_compare_equal
   class(fckit_object), intent(in) :: obj1
   class(fckit_object), intent(in) :: obj2
-  equal = c_ptr_compare_equal(obj1%ptr(),obj2%ptr())
+  equal = c_ptr_compare_equal(obj1%c_ptr(),obj2%c_ptr())
 end function
 
 logical function not_equal(obj1,obj2)
-  use fckit_C_interop, only : c_ptr_compare_equal
+  use fckit_c_interop_module, only : c_ptr_compare_equal
   class(fckit_object), intent(in) :: obj1
   class(fckit_object), intent(in) :: obj2
-  if( c_ptr_compare_equal(obj1%ptr(),obj2%ptr()) ) then
+  if( c_ptr_compare_equal(obj1%c_ptr(),obj2%c_ptr()) ) then
     not_equal = .False.
   else
     not_equal = .True.
