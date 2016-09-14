@@ -94,7 +94,7 @@ end module fcta_refcounting_fxt
 
 ! -----------------------------------------------------------------------------
 
-TESTSUITE_WITH_FIXTURE(fctest_fckit_refcounting,fcta_refcounting_fxt)
+TESTSUITE_WITH_FIXTURE(fckit_test_refcounting,fcta_refcounting_fxt)
 
 ! -----------------------------------------------------------------------------
 

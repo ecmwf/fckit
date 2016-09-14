@@ -11,7 +11,8 @@
 ! -----------------------------------------------------------------------------
 
 module fcta_refcounting_f_fxt
-use fckit_refcounted_module
+use fckit_refcounted_module, only : fckit__new_Owned, fckit__delete_Owned
+use fckit_refcounted_fortran_module
 use fckit_c_interop_module
 use fctest
 use iso_c_binding
@@ -94,7 +95,7 @@ end module fcta_refcounting_f_fxt
 
 ! -----------------------------------------------------------------------------
 
-TESTSUITE_WITH_FIXTURE(fctest_fckit_refcounting_f,fcta_refcounting_f_fxt)
+TESTSUITE_WITH_FIXTURE(fckit_test_refcounting_f,fcta_refcounting_f_fxt)
 
 ! -----------------------------------------------------------------------------
 

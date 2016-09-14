@@ -22,6 +22,7 @@ ecbuild_add_library( TARGET     fckit
                                 fckit/fckit_C_interop.cc
                                 fckit/fckit_C_interop.F90
                                 fckit/fckit_object.F90
+                                fckit/fckit_refcounted_fortran.F90
                                 ${eckit_required_src}
                      PRIVATE_INCLUDES
                                 ${ECKIT_INCLUDE_DIRS}
