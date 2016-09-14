@@ -1,3 +1,4 @@
+#include <stdint.h>
 #include <stdlib.h>
 
 extern "C"
@@ -11,5 +12,11 @@ extern "C"
   int fckit__compare_cptr_equal( void* p1, void* p2 )
   {
     return (p1 == p2);
+  }
+
+  long fckit__cptr_to_loc( void* ptr )
+  {
+    intptr_t i = (intptr_t)ptr;
+    return i;
   }
 }

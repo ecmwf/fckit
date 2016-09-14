@@ -1,4 +1,4 @@
-module fckit_C_interop
+module fckit_C_interop_module
 implicit none
 private
 
@@ -7,6 +7,7 @@ private
 
 public :: c_ptr_free
 public :: c_ptr_compare_equal
+public :: c_ptr_to_loc
 public :: get_c_commandline_arguments
 public :: c_str_to_string
 public :: c_ptr_to_string
@@ -31,6 +32,11 @@ interface
     type(c_ptr), value :: p2
   end function
 
+  function fckit__cptr_to_loc(cptr) bind(c,name="fckit__cptr_to_loc") result(loc)
+    use, intrinsic :: iso_c_binding, only: c_ptr, c_long
+    integer(c_long) :: loc
+    type(c_ptr), value :: cptr
+  end function
 end interface
 
 ! =============================================================================
@@ -46,6 +52,13 @@ function c_ptr_compare_equal(p1,p2) result(equal)
   else
     equal = .False.
   endif
+end function
+
+function c_ptr_to_loc(cptr) result(loc)
+  use, intrinsic :: iso_c_binding, only: c_ptr, c_long
+  integer(c_long) :: loc
+  type(c_ptr), intent(in) :: cptr
+  loc = fckit__cptr_to_loc(cptr)
 end function
 
 ! =============================================================================

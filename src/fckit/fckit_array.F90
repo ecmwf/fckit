@@ -1,4 +1,4 @@
-module fckit_array
+module fckit_array_module
 use, intrinsic :: iso_c_binding, only: c_int, c_long, c_float, c_double
 implicit none
 private
