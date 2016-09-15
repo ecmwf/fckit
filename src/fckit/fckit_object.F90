@@ -29,6 +29,8 @@ contains
   procedure, public :: final
   procedure(final), deferred, public :: delete
 
+  ! Following line is to avoid PGI compiler bug
+  procedure, private :: fckit_object__c_ptr
 end type
 
 !========================================================================

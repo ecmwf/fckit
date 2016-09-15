@@ -38,13 +38,6 @@ ecbuild_enable_fortran( REQUIRED MODULE_DIRECTORY ${CMAKE_BINARY_DIR}/module )
 
 ecbuild_check_fortran( FEATURES finalization )
 
-if( CMAKE_Fortran_COMPILER_ID MATCHES "PGI" )
-  if( CMAKE_Fortran_COMPILER_VERSION VERSION_LESS 16.8 )
-    ecbuild_warn("PGI compiler version tested up to 16.7 does link with finalization")
-    set( EC_HAVE_Fortran_FINALIZATION 0 )
-  endif()
-endif()
-
 ### eckit ...
 ecbuild_add_option( FEATURE ECKIT
                     DESCRIPTION "Wrap ecKit functionality"
