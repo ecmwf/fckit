@@ -36,16 +36,19 @@ ecbuild_find_python( REQUIRED NO_LIBS )
 ### Fortran ...
 ecbuild_enable_fortran( REQUIRED MODULE_DIRECTORY ${CMAKE_BINARY_DIR}/module )
 
-ecbuild_check_fortran( FEATURES finalization )
-if( EC_HAVE_Fortran_FINALIZATION )
-  include( final-support )
-  check_final_support()
-
-  message( "Fortran_FINAL_FUNCTION_RESULT = ${Fortran_FINAL_FUNCTION_RESULT}")
-  message( "Fortran_FINAL_UNINITIALIZED_LHS = ${Fortran_FINAL_UNINITIALIZED_LHS}")
-  message( "Fortran_FINAL_UNINITIALIZED_INTENT_OUT = ${Fortran_FINAL_UNINITIALIZED_INTENT_OUT}")
-  message( "Fortran_FINAL_UNINITIALIZED_INTENT_INOUT = ${Fortran_FINAL_UNINITIALIZED_INTENT_INOUT}")
-
+# Experimental
+ecbuild_add_option( FEATURE FORTRAN_FINALIZATION
+                    DEFAULT OFF ) 
+if( ENABLE_FORTRAN_FINALIZATION )
+  ecbuild_check_fortran( FEATURES finalization )
+  if( EC_HAVE_Fortran_FINALIZATION )
+    include( final-support )
+    check_final_support()
+    message( "Fortran_FINAL_FUNCTION_RESULT = ${Fortran_FINAL_FUNCTION_RESULT}")
+    message( "Fortran_FINAL_UNINITIALIZED_LHS = ${Fortran_FINAL_UNINITIALIZED_LHS}")
+    message( "Fortran_FINAL_UNINITIALIZED_INTENT_OUT = ${Fortran_FINAL_UNINITIALIZED_INTENT_OUT}")
+    message( "Fortran_FINAL_UNINITIALIZED_INTENT_INOUT = ${Fortran_FINAL_UNINITIALIZED_INTENT_INOUT}")
+  endif()
 endif()
 
 ### eckit ...
