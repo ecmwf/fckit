@@ -99,7 +99,6 @@ subroutine reset_c(obj_out,obj_in)
   class(fckit_refcounted), intent(in) :: obj_in
   if( obj_out /= obj_in ) then
     if( .not. obj_out%is_null() ) call obj_out%final()
-    call obj_out%final()
     call obj_out%reset_c_ptr( obj_in%c_ptr() )
     call obj_out%copy(obj_in)
     call obj_out%attach()
@@ -124,7 +123,11 @@ end function
 
 subroutine return_c(this)
   class(fckit_refcounted), intent(inout) :: this
+#ifdef Fortran_FINAL_FUNCTION_RESULT
+  if( this%owners() == 0 ) call this%attach()
+#else
   if( this%owners() > 0 ) call this%detach()
+#endif
 end subroutine
 
 subroutine final_auto(this)

@@ -25,10 +25,15 @@ endtype
 
 type, extends(fckit_refcounted_fortran) :: RefObj
   type(payload_t), pointer :: payload
+  integer :: uid = -1
 contains
   procedure :: delete => RefObj__delete
   procedure :: copy => RefObj__copy
   procedure :: id
+
+#ifdef EC_HAVE_Fortran_FINALIZATION
+  final :: RefObj__final
+#endif
 endtype
 
 interface RefObj
@@ -36,6 +41,13 @@ interface RefObj
 end interface
 
 contains
+
+subroutine RefObj__final(this)
+  type(RefObj) :: this
+  write(0,*) '>>>>>>>>>>>>>>> RefObj__final uid',this%uid
+  call this%final()
+  write(0,*) '<<<<<<<<<<<<<<< RefObj__final uid',this%uid
+end subroutine
 
 function id(this)
   integer :: id
@@ -46,8 +58,25 @@ end function
 function create_obj(id) result(obj)
   type(RefObj) :: obj
   integer :: id
+  obj%uid = -2
   obj = RefObj(id)
+  write(0,*) "-------------1 owners",obj%owners()
   call obj%return()
+  write(0,*) "-------------2 owners",obj%owners()
+  write(0,*) "-------------exiting scope create_obj"
+  obj%uid = 2
+end function
+
+
+function create_obj_2(id) result(obj)
+  type(RefObj) :: obj
+  integer :: id
+  obj%uid = -3
+  obj = create_obj(id)
+  write(0,*) "-------------3 owners",obj%owners()
+  call obj%return()
+  write(0,*) "-------------4 owners",obj%owners()
+  write(0,*) "-------------exiting scope create_obj_w"
 end function
 
 function RefObj__constructor(id) result(this)
@@ -58,6 +87,7 @@ function RefObj__constructor(id) result(this)
   write(0,*) "                    ptr = ",c_ptr_to_loc(this%c_ptr())
   allocate( this%payload )
   this%payload%id = id
+  this%uid = id
   call this%return()
 end function
 
@@ -80,7 +110,7 @@ subroutine RefObj__copy(this,obj_in)
     type is (RefObj)
       obj_in_cast => obj_in
   end select
-  write(0,*) "copy obj",obj_in_cast%id()
+  write(0,'(A,I0,A,I0,A,I0)') "copy obj ",obj_in_cast%id(),' with uid ',obj_in_cast%uid,' into ',this%uid
   this%payload => obj_in_cast%payload
 end subroutine
 
@@ -113,7 +143,7 @@ TEST( test_ref )
   use fckit_c_interop_module
   type(RefObj) :: obj, bjo
 
-#ifdef FORTRAN_SUPPORTS_FINAL
+#ifdef EC_HAVE_Fortran_FINALIZATION
   write(0,*) "Fortran supports automatic finalization!"
 #endif
 
@@ -125,7 +155,11 @@ TEST( test_ref )
   FCTEST_CHECK_EQUAL( obj%owners(), 1 )
 
   !call obj%final() will be done in next statement upon assignment(=)
+  write(0,*) "=============create/assign..."
+  obj%uid = -3
   obj = create_obj(3)
+  write(0,*) "owners",obj%owners()
+  write(0,*) "=============create/assign... done"
   FCTEST_CHECK_EQUAL( obj%id(), 3 )
   FCTEST_CHECK_EQUAL( obj%owners(), 1 )
   bjo = obj
@@ -133,13 +167,13 @@ TEST( test_ref )
   obj = bjo
   FCTEST_CHECK_EQUAL( obj%owners(), 2 )
 
-!#ifndef FORTRAN_SUPPORTS_FINAL
+#ifndef EC_HAVE_Fortran_FINALIZATION
   call obj%final()
-!#endif
+#endif
   call consume_obj(bjo)
-!#ifndef FORTRAN_SUPPORTS_FINAL
+#ifndef EC_HAVE_Fortran_FINALIZATION
   call bjo%final()
-!#endif
+#endif
 
 END_TEST
 
