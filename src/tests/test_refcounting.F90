@@ -28,6 +28,11 @@ contains
   procedure :: delete => RefObj__delete
   procedure :: copy => RefObj__copy
   procedure :: id
+
+#ifdef  EC_HAVE_Fortran_FINALIZATION
+  final :: RefObj__final
+#endif
+
 endtype
 
 interface RefObj
@@ -59,6 +64,11 @@ function RefObj__constructor(id) result(this)
   this%payload%id = id
   call this%return()
 end function
+
+subroutine RefObj__final(this)
+  type(RefObj) :: this
+  call this%final()
+end subroutine
 
 #if 1
 subroutine RefObj__delete(this)
@@ -112,7 +122,7 @@ TEST( test_ref )
   use fckit_c_interop_module
   type(RefObj) :: obj, bjo
 
-#ifdef FORTRAN_SUPPORTS_FINAL
+#ifdef EC_HAVE_Fortran_FINALIZATION
   write(0,*) "Fortran supports automatic finalization!"
 #endif
 
@@ -132,13 +142,13 @@ TEST( test_ref )
   obj = bjo
   FCTEST_CHECK_EQUAL( obj%owners(), 2 )
 
-!#ifndef FORTRAN_SUPPORTS_FINAL
+#ifndef EC_HAVE_Fortran_FINALIZATION
   call obj%final()
-!#endif
+#endif
   call consume_obj(bjo)
-!#ifndef FORTRAN_SUPPORTS_FINAL
+#ifndef EC_HAVE_Fortran_FINALIZATION
   call bjo%final()
-!#endif
+#endif
 
 END_TEST
 
