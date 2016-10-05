@@ -1,14 +1,20 @@
 add_custom_target( fctest_includes SOURCES
        fckit/fctest.h
        ../tools/fctest_generate_runner.py )
-       
+
 install( FILES ../tools/fctest_generate_runner.py DESTINATION libexec )
 
 if( HAVE_ECKIT )
 list( APPEND eckit_required_src 
     fckit/fckit_refcounted.cc
     fckit/fckit_refcounted.F90
+    fckit/fckit_mpi.cc
+    fckit/fckit_mpi.F90
 )
+endif()
+
+if( FCKIT_HAVE_MPI AND EC_OS_NAME MATCHES "macosx" )
+  list( APPEND FCKIT_DEFINITIONS BUG_ECKIT_166 )
 endif()
 
 if( EC_HAVE_Fortran_FINALIZATION )
@@ -63,7 +69,7 @@ ecbuild_add_library( TARGET     fckit
                      DEFINITIONS
                                 ${FCKIT_DEFINITIONS}
                     )
-                     
+
 install( FILES fckit/fctest.h DESTINATION ${INSTALL_INCLUDE_DIR}/fckit )
 # install( FILES ${CMAKE_Fortran_MODULE_DIRECTORY}/fctest.mod DESTINATION ${INSTALL_INCLUDE_DIR} )
 
