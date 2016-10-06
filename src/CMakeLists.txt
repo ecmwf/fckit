@@ -15,6 +15,8 @@ endif()
 
 if( FCKIT_HAVE_MPI AND EC_OS_NAME MATCHES "macosx" )
   list( APPEND FCKIT_DEFINITIONS BUG_ECKIT_166 )
+  list( APPEND ECKIT_LIBRARIES ${MPI_CXX_LIBRARIES} )
+  ecbuild_include_mpi()
 endif()
 
 if( EC_HAVE_Fortran_FINALIZATION )
