@@ -57,7 +57,14 @@ ecbuild_add_option( FEATURE ECKIT
                     REQUIRED_PACKAGES "PROJECT eckit VERSION 0.12.3"
                    )
 if( HAVE_ECKIT )
-    set( ECKIT_LIBRARIES eckit )
+    set( ECKIT_LIBRARIES eckit eckit_mpi )
+endif()
+
+# Temporary until ECKIT-166 is fixed for MacOSX
+if( EC_OS_NAME MATCHES "macosx" )
+ecbuild_add_option( FEATURE MPI
+                    DESCRIPTION "fckit: Support for MPI distributed parallelism"
+                    REQUIRED_PACKAGES "MPI COMPONENTS CXX" )
 endif()
 
 ############################################################################################
