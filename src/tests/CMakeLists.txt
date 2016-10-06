@@ -23,6 +23,7 @@ add_fctest( TARGET  fckit_test_refcounting_fortran
 add_fctest( TARGET  fckit_test_mpi
             LINKER_LANGUAGE Fortran
             SOURCES test_mpi.F90
+            MPI 4
             DEFINITIONS ${FCKIT_DEFINITIONS}
             CONDITION HAVE_ECKIT
             LIBS    fckit)

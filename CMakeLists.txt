@@ -60,10 +60,12 @@ if( HAVE_ECKIT )
     set( ECKIT_LIBRARIES eckit eckit_mpi )
 endif()
 
-# Temporary until ECKIT-166 is fixed
+# Temporary until ECKIT-166 is fixed for MacOSX
+if( EC_OS_NAME MATCHES "macosx" )
 ecbuild_add_option( FEATURE MPI
                     DESCRIPTION "fckit: Support for MPI distributed parallelism"
                     REQUIRED_PACKAGES "MPI COMPONENTS CXX" )
+endif()
 
 ############################################################################################
 # export package info

@@ -30,6 +30,7 @@ contains
 
   procedure, public :: size
   procedure, public :: rank
+  procedure, public :: barrier
 
 #ifdef EC_HAVE_Fortran_FINALIZATION
  final :: final_auto
@@ -84,6 +85,11 @@ interface
     integer(c_int) :: eckit__mpi__rank
     type(c_ptr), value :: this
   end function
+
+  subroutine eckit__mpi__barrier(this) bind(c)
+    use, intrinsic :: iso_c_binding, only : c_int, c_ptr
+    type(c_ptr), value :: this
+  end subroutine
 
   ! void eckit__mpi__setCommDefault_int(int comm)
   subroutine eckit__mpi__setCommDefault_int(comm) bind(c,name="eckit__mpi__setCommDefault_int")
@@ -169,6 +175,12 @@ function size(this)
   class(fckit_mpi_comm), intent(in) :: this
   size = eckit__mpi__size(this%c_ptr())
 end function
+
+subroutine barrier(this)
+  integer :: size
+  class(fckit_mpi_comm), intent(in) :: this
+  call eckit__mpi__barrier(this%c_ptr())
+end subroutine
 
 !========================================================================
 

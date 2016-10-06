@@ -68,5 +68,9 @@ extern "C" {
     return comm->rank();
   }
 
+  void eckit__mpi__barrier(const Comm* comm) {
+    return comm->barrier();
+  }
+
 }
 
