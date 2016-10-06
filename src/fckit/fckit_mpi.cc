@@ -72,5 +72,9 @@ extern "C" {
     return comm->barrier();
   }
 
+  void eckit__mpi__abort(const Comm* comm, int error_code) {
+    return comm->abort(error_code);
+  }
+
 }
 

@@ -31,6 +31,7 @@ contains
   procedure, public :: size
   procedure, public :: rank
   procedure, public :: barrier
+  procedure, public :: abort
 
 #ifdef EC_HAVE_Fortran_FINALIZATION
  final :: final_auto
@@ -87,8 +88,14 @@ interface
   end function
 
   subroutine eckit__mpi__barrier(this) bind(c)
+    use, intrinsic :: iso_c_binding, only : c_ptr
+    type(c_ptr), value :: this
+  end subroutine
+
+  subroutine eckit__mpi__abort(this,error_code) bind(c)
     use, intrinsic :: iso_c_binding, only : c_int, c_ptr
     type(c_ptr), value :: this
+    integer(c_int), value :: error_code
   end subroutine
 
   ! void eckit__mpi__setCommDefault_int(int comm)
@@ -177,9 +184,18 @@ function size(this)
 end function
 
 subroutine barrier(this)
-  integer :: size
   class(fckit_mpi_comm), intent(in) :: this
   call eckit__mpi__barrier(this%c_ptr())
+end subroutine
+
+subroutine abort(this,error_code)
+  class(fckit_mpi_comm), intent(in) :: this
+  integer, intent(in), optional :: error_code
+  if( present(error_code) ) then
+    call eckit__mpi__abort(this%c_ptr(),error_code)
+  else
+    call eckit__mpi__abort(this%c_ptr(),-1)
+  endif
 end subroutine
 
 !========================================================================
