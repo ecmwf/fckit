@@ -10,6 +10,10 @@ list( APPEND eckit_required_src
     fckit/fckit_refcounted.F90
     fckit/fckit_mpi.cc
     fckit/fckit_mpi.F90
+    fckit/fckit_runtime.cc
+    fckit/fckit_runtime.F90
+    fckit/fckit_resource.cc
+    fckit/fckit_resource.F90
 )
 endif()
 

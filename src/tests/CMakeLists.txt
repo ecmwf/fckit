@@ -6,6 +6,14 @@ add_fctest( TARGET  fckit_test_array
             DEFINITIONS ${FCKIT_DEFINITIONS}
             LIBS    fckit)
 
+add_fctest( TARGET  fckit_test_resource
+            LINKER_LANGUAGE Fortran
+            SOURCES test_resource.F90
+            ARGS    -integer 10 -long 5000000000 -float 0.123456 -double 0.1234567890123456789 -string "hello world"
+            DEFINITIONS ${FCKIT_DEFINITIONS}
+            CONDITION HAVE_ECKIT
+            LIBS    fckit)
+
 add_fctest( TARGET  fckit_test_refcounting 
             LINKER_LANGUAGE Fortran
             SOURCES test_refcounting.F90
