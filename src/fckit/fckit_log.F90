@@ -48,13 +48,15 @@ interface
     integer(c_int), value :: newl
     integer(c_int), value :: flush
   end subroutine
-  subroutine fckit__log_add_fortran_unit(unit) bind(c)
+  subroutine fckit__log_add_fortran_unit(unit,output_task) bind(c)
     use, intrinsic :: iso_c_binding, only : c_int
     integer(c_int), value :: unit
+    integer(c_int), value :: output_task
   end subroutine
-  subroutine fckit__log_set_fortran_unit(unit) bind(c)
+  subroutine fckit__log_set_fortran_unit(unit,output_task) bind(c)
     use, intrinsic :: iso_c_binding, only : c_int
     integer(c_int), value :: unit
+    integer(c_int), value :: output_task
   end subroutine
 end interface
 
@@ -112,16 +114,33 @@ subroutine panic(msg)
   write(0,'(A)') msg
 end subroutine
 
-subroutine add_fortran_unit(unit)
+subroutine add_fortran_unit(unit,output_task)
   use, intrinsic :: iso_c_binding
-  integer(c_int) :: unit
-  call fckit__log_add_fortran_unit(unit)
+  use fckit_runtime_module
+  integer(c_int), intent(in) :: unit
+  integer(c_int), intent(in), optional :: output_task
+  integer(c_int) :: opt_output_task
+  opt_output_task = -1
+  if( main%ready() ) then
+      opt_output_task = main%output_task()
+  endif
+  if( present(output_task) ) opt_output_task=output_task
+  call fckit__log_add_fortran_unit(unit,opt_output_task)
 end subroutine
 
-subroutine set_fortran_unit(unit)
+
+subroutine set_fortran_unit(unit,output_task)
   use, intrinsic :: iso_c_binding
-  integer(c_int) :: unit
-  call fckit__log_set_fortran_unit(unit)
+  use fckit_runtime_module
+  integer(c_int), intent(in) :: unit
+  integer(c_int), intent(in), optional :: output_task
+  integer(c_int) :: opt_output_task
+  opt_output_task = -1
+  if( main%ready() ) then
+      opt_output_task = main%output_task()
+  endif
+  if( present(output_task) ) opt_output_task=output_task
+  call fckit__log_set_fortran_unit(unit,opt_output_task)
 end subroutine
 
 end module fckit_log_module

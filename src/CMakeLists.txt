@@ -5,15 +5,17 @@ add_custom_target( fctest_includes SOURCES
 install( FILES ../tools/fctest_generate_runner.py DESTINATION libexec )
 
 if( HAVE_ECKIT )
-list( APPEND eckit_required_src 
+list( APPEND eckit_required_src
     fckit/fckit_refcounted.cc
     fckit/fckit_refcounted.F90
     fckit/fckit_mpi.cc
     fckit/fckit_mpi.F90
+    fckit/fckit_runtime.h
     fckit/fckit_runtime.cc
     fckit/fckit_runtime.F90
     fckit/fckit_resource.cc
     fckit/fckit_resource.F90
+    fckit/fckit_log.h
     fckit/fckit_log.cc
     fckit/fckit_log.F90
 )
@@ -62,7 +64,7 @@ endif()
 ecbuild_add_library( TARGET     fckit
                      TYPE       ${fckit_type}
                      LINKER_LANGUAGE CXX
-                     SOURCES 
+                     SOURCES
                                 fckit/fctest.F90
                                 fckit/fckit_array.F90
                                 fckit/fckit_C_interop.cc

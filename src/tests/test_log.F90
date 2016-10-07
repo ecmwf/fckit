@@ -13,7 +13,9 @@ TESTSUITE(fckit_test_log)
 
 TESTSUITE_INIT
   use fckit_runtime_module
-  call main%init()
+
+  call main%init(output_task=0,output_unit=6,error_unit=0,output_simple=.false.)
+
 END_TESTSUITE_INIT
 
 ! -----------------------------------------------------------------------------
@@ -25,16 +27,17 @@ TEST( test_log )
   call fckit_log%info("info")
   call fckit_log%warning("warning")
   call fckit_log%error("error")
-  call fckit_log%panic("panic")
 
 END_TEST
 
 TEST( test_fortran_unit )
   use fckit_log_module
 
-  call fckit_log%set_fortran_unit(0)
-!   call fckit_log%add_fortran_unit(6)
-  call fckit_log%info("print fortran")
+  call fckit_log%set_fortran_unit(6,2)
+  call fckit_log%info("FORTRAN info",newl=.true.)
+  call fckit_log%warning("FORTRAN warning",newl=.false.)
+  call fckit_log%info("more FORTRAN info",flush=.true.)
+  call fckit_log%warning(" more FORTRAN warning",flush=.true.)
 
 END_TEST
 
