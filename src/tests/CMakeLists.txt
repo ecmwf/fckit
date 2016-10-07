@@ -14,6 +14,13 @@ add_fctest( TARGET  fckit_test_resource
             CONDITION HAVE_ECKIT
             LIBS    fckit)
 
+add_fctest( TARGET  fckit_test_log
+            LINKER_LANGUAGE Fortran
+            SOURCES test_log.F90
+            DEFINITIONS ${FCKIT_DEFINITIONS}
+            CONDITION HAVE_ECKIT
+            LIBS    fckit)
+
 add_fctest( TARGET  fckit_test_refcounting 
             LINKER_LANGUAGE Fortran
             SOURCES test_refcounting.F90

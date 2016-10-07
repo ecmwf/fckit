@@ -14,6 +14,8 @@ list( APPEND eckit_required_src
     fckit/fckit_runtime.F90
     fckit/fckit_resource.cc
     fckit/fckit_resource.F90
+    fckit/fckit_log.cc
+    fckit/fckit_log.F90
 )
 endif()
 
