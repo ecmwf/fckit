@@ -2,6 +2,7 @@
 #define fckit_log_h
 
 #include "eckit/log/TimeStampTarget.h"
+#include "eckit/log/PrefixTarget.h"
 #include "eckit/log/CallbackTarget.h"
 
 namespace fckit {
@@ -13,14 +14,21 @@ private:
   int unit_;
 };
 
-
-class FortranUnitTarget: public eckit::CallbackTarget {
+class SimpleFortranUnitTarget: public eckit::CallbackTarget {
 public:
-  FortranUnitTarget(int unit);
+  SimpleFortranUnitTarget(int unit);
 private:
   int unit_;
 };
 
+class PrefixFortranUnitTarget: public eckit::PrefixTarget {
+public:
+  PrefixFortranUnitTarget(int unit,const char* prefix = "");
+private:
+  int unit_;
+};
+
+eckit::LogTarget* createFortranUnitTarget(const char* name, int unit, const char* prefix="");
 
 } // namespace fckit
 #endif

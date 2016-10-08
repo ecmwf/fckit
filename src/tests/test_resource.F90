@@ -11,6 +11,10 @@
 
 TESTSUITE(fckit_test_resource)
 
+TESTSUITE_INIT
+  use fckit_runtime_module
+  call main%init()
+END_TESTSUITE_INIT
 ! -----------------------------------------------------------------------------
 
 TEST( test_resource )

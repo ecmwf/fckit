@@ -13,31 +13,39 @@ TESTSUITE(fckit_test_log)
 
 TESTSUITE_INIT
   use fckit_runtime_module
-
-  call main%init(output_task=0,output_unit=6,error_unit=0,output_simple=.false.)
-
+  implicit none
+  call main%init()
 END_TESTSUITE_INIT
+
+TESTSUITE_FINALIZE
+  use fckit_mpi_module
+  implicit none
+  call fckit_mpi_finalize()
+END_TESTSUITE_FINALIZE
 
 ! -----------------------------------------------------------------------------
 
 TEST( test_log )
   use fckit_log_module
 
-  call fckit_log%debug("debug")
-  call fckit_log%info("info")
-  call fckit_log%warning("warning")
-  call fckit_log%error("error")
-
+  call log%debug("debug")
+  call log%info("info")
+  call log%warning("warning")
+  call log%error("error")
 END_TEST
+
+! -----------------------------------------------------------------------------
 
 TEST( test_fortran_unit )
   use fckit_log_module
+  use fckit_runtime_module
 
-  call fckit_log%set_fortran_unit(6,2)
-  call fckit_log%info("FORTRAN info",newl=.true.)
-  call fckit_log%warning("FORTRAN warning",newl=.false.)
-  call fckit_log%info("more FORTRAN info",flush=.true.)
-  call fckit_log%warning(" more FORTRAN warning",flush=.true.)
+  call log%set_fortran_unit(unit=6,target=timestamplogtarget(),task=0)
+
+  call log%info("FORTRAN info",newl=.true.,flush=.true.)
+  call log%warning("FORTRAN warning",newl=.false.)
+  call log%info("more FORTRAN info",flush=.true.)
+  call log%warning(" more FORTRAN warning",flush=.true.)
 
 END_TEST
 

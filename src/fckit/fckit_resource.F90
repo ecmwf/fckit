@@ -80,7 +80,6 @@ subroutine resource_get_int32(resource_str,default_value,value)
   integer(c_int), intent(in) :: default_value
   integer(c_int), intent(out) :: value
   integer(c_int) :: error_code
-  if( .not. main%ready() ) call main%init()
   error_code = fckit__resource_int(c_str(resource_str),default_value,value)
 end subroutine
 
@@ -92,7 +91,6 @@ subroutine resource_get_int64(resource_str,default_value,value)
   integer(c_long), intent(in) :: default_value
   integer(c_long), intent(out) :: value
   integer(c_int) :: error_code
-  if( .not. main%ready() ) call main%init()
   error_code = fckit__resource_long(c_str(resource_str),default_value,value)
 end subroutine
 
@@ -104,7 +102,6 @@ subroutine resource_get_real32(resource_str,default_value,value)
   real(c_float), intent(in) :: default_value
   real(c_float), intent(out) :: value
   integer(c_int) :: error_code
-  if( .not. main%ready() ) call main%init()
   error_code = fckit__resource_float(c_str(resource_str),default_value,value)
 end subroutine
 
@@ -116,7 +113,6 @@ subroutine resource_get_real64(resource_str,default_value,value)
   real(c_double), intent(in) :: default_value
   real(c_double), intent(out) :: value
   integer(c_int) :: error_code
-  if( .not. main%ready() ) call main%init()
   error_code = fckit__resource_double(c_str(resource_str),default_value,value)
 end subroutine
 
@@ -130,7 +126,6 @@ subroutine resource_get_string(resource_str,default_value,value)
   type(c_ptr) :: value_c_ptr
   integer(c_int) :: value_size
   integer(c_int) :: error_code
-  if( .not. main%ready() ) call main%init()
   error_code = fckit__resource_string(c_str(resource_str),c_str(default_value),value_c_ptr,value_size)
   allocate(character(len=value_size) :: value )
   value = c_ptr_to_string(value_c_ptr)

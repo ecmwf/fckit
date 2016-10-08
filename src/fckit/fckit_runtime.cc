@@ -7,103 +7,39 @@ namespace fckit{
 
 static Main* instance_ = 0;
 static int MPI_COMM_WORLD_RANK = -1;
-static int COUT = -1;
-//static int CERR = -1;
 static int ALL_TASKS = -1;
 
 Main::Main(
     int argc, char **argv,
-    int task,
-    int output_task,
-    int output_unit,
-    int error_unit,
-    int log_simple,
     const char* homeenv)
     : eckit::Main(argc,argv,homeenv)
 {
-  if( task == MPI_COMM_WORLD_RANK ) {
     taskID(eckit::mpi::comm("world").rank());
-  } else {
-    taskID(task);
-  }
-  outputTask_ = output_task;
-  outputUnit_ = output_unit;
-  errorUnit_  = error_unit;
-  logSimple_  = log_simple;
+    outputTask_ = 0;
+    outputUnit_ = 6;
 }
 
 void Main::initialise(
     int argc, char** argv,
-    int task,
-    int output_task,
-    int output_unit,
-    int error_unit,
-    int log_simple,
     const char* homeenv) {
     if (instance_ == 0) {
         instance_ = new Main(
               argc,argv,
-              task,
-              output_task,
-              output_unit,
-              error_unit,
-              log_simple,
               homeenv);
     }
 }
 
-// TODO: make nicer
 eckit::LogTarget* Main::createInfoLogTarget() const {
-    if( logSimple() ) {
-        if( outputUnit_ != COUT )
-            return new fckit::FortranUnitTarget(outputUnit_);
-        else
-            return createDefaultLogTarget();
-    } else {
-        if( outputUnit_ != COUT )
-            return new fckit::TimeStampFortranUnitTarget(outputUnit_,"(I fort)");
-        else
-            return new eckit::TimeStampTarget("(I)");
-    }
+  return createFortranUnitTarget(logTarget().c_str(),outputUnit_,"(I)");
 }
 eckit::LogTarget* Main::createWarningLogTarget() const {
-  if( logSimple() ) {
-      if( outputUnit_ != COUT )
-          return new fckit::FortranUnitTarget(outputUnit_);
-      else
-          return createDefaultLogTarget();
-  } else {
-      if( outputUnit_ != COUT )
-          return new fckit::TimeStampFortranUnitTarget(outputUnit_,"(W fort)");
-      else
-          return new eckit::TimeStampTarget("(W)");
-  }
+  return createFortranUnitTarget(logTarget().c_str(),outputUnit_,"(W)");
 }
 eckit::LogTarget* Main::createErrorLogTarget() const {
-  if( logSimple() ) {
-      if( outputUnit_ != COUT )
-          return new fckit::FortranUnitTarget(outputUnit_);
-      else
-          return createDefaultLogTarget();
-  } else {
-      if( outputUnit_ != COUT )
-          return new fckit::TimeStampFortranUnitTarget(outputUnit_,"(E fort)");
-      else
-          return new eckit::TimeStampTarget("(E)");
-  }
+    return createFortranUnitTarget(logTarget().c_str(),outputUnit_,"(E)");
 }
 eckit::LogTarget* Main::createDebugLogTarget() const {
-  if( logSimple() ) {
-      if( outputUnit_ != COUT )
-          return new fckit::FortranUnitTarget(outputUnit_);
-      else
-          return createDefaultLogTarget();
-  } else {
-      if( outputUnit_ != COUT )
-          return new fckit::TimeStampFortranUnitTarget(outputUnit_,"(D fort)");
-      else
-          return new eckit::TimeStampTarget("(D)");
-  }
+  return createFortranUnitTarget(logTarget().c_str(),outputUnit_,"(D)");
 }
 
 } // namespace fckit
@@ -116,21 +52,12 @@ extern "C"
 {
 
 int fckit__runtime_main_init(
-      int argc, char* argv[],
-      int task,
-      int output_task,
-      int output_unit,
-      int error_unit,
-      int log_simple )
+      int argc, char* argv[]
+  )
   {
     if( not fckit::Main::ready() ) {
       fckit::Main::initialise(
-          argc,argv,
-          task,
-          output_task,
-          output_unit,
-          error_unit,
-          log_simple
+          argc,argv
       );
     }
 
@@ -152,6 +79,12 @@ int fckit__runtime_main_init(
   int fckit__runtime_main_output_task(int& output_task)
   {
     output_task = fckit::Main::instance().outputTask();
+    return SUCCESS;
+  }
+
+  int fckit__runtime_main_taskID(int& taskID)
+  {
+    taskID = fckit::Main::instance().taskID();
     return SUCCESS;
   }
 

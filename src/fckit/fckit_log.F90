@@ -2,7 +2,15 @@ module fckit_log_module
   implicit none
 private
 
-public :: fckit_log
+public :: log
+public :: simplelogtarget
+public :: prefixlogtarget
+public :: timestamplogtarget
+
+type :: fckit_logtarget
+  character(len=20) :: name
+contains
+end type
 
 !------------------------------------------------------------------------------
 ! Logger singleton
@@ -15,8 +23,9 @@ contains
   procedure, nopass, public :: panic
   procedure, nopass, public :: add_fortran_unit
   procedure, nopass, public :: set_fortran_unit
+  procedure, nopass, public :: reset
 end type
-type(fckit_log_type) :: fckit_log
+type(fckit_log_type) :: log
 !------------------------------------------------------------------------------
 
 interface
@@ -48,21 +57,40 @@ interface
     integer(c_int), value :: newl
     integer(c_int), value :: flush
   end subroutine
-  subroutine fckit__log_add_fortran_unit(unit,output_task) bind(c)
-    use, intrinsic :: iso_c_binding, only : c_int
+  subroutine fckit__log_add_fortran_unit(unit,target) bind(c)
+    use, intrinsic :: iso_c_binding, only : c_int, c_char
     integer(c_int), value :: unit
-    integer(c_int), value :: output_task
+    character(kind=c_char,len=1), dimension(*) :: target
   end subroutine
-  subroutine fckit__log_set_fortran_unit(unit,output_task) bind(c)
-    use, intrinsic :: iso_c_binding, only : c_int
+  subroutine fckit__log_set_fortran_unit(unit,target) bind(c)
+    use, intrinsic :: iso_c_binding, only : c_int, c_char
     integer(c_int), value :: unit
-    integer(c_int), value :: output_task
+    character(kind=c_char,len=1), dimension(*) :: target
   end subroutine
+  subroutine fckit__log_reset() bind(c)
+  end subroutine
+  
 end interface
 
 !========================================================
 contains
 !========================================================
+
+
+function simplelogtarget() result(this)
+  type(fckit_logtarget) :: this
+  this%name = "simple"
+end function
+
+function prefixlogtarget() result(this)
+  type(fckit_logtarget) :: this
+  this%name = "prefix"
+end function
+
+function timestamplogtarget() result(this)
+  type(fckit_logtarget) :: this
+  this%name = "timestamp"
+end function
 
 subroutine debug(msg,newl,flush)
   use, intrinsic :: iso_c_binding
@@ -114,33 +142,56 @@ subroutine panic(msg)
   write(0,'(A)') msg
 end subroutine
 
-subroutine add_fortran_unit(unit,output_task)
+subroutine add_fortran_unit(unit,task,target)
   use, intrinsic :: iso_c_binding
+  use fckit_c_interop_module
   use fckit_runtime_module
   integer(c_int), intent(in) :: unit
-  integer(c_int), intent(in), optional :: output_task
-  integer(c_int) :: opt_output_task
-  opt_output_task = -1
-  if( main%ready() ) then
-      opt_output_task = main%output_task()
+  integer(c_int), intent(in), optional :: task
+  type(fckit_logtarget), intent(in), optional :: target
+  character(len=20) :: opt_target
+  opt_target = "prefix"
+  if( present( target ) ) then
+    opt_target = target%name
   endif
-  if( present(output_task) ) opt_output_task=output_task
-  call fckit__log_add_fortran_unit(unit,opt_output_task)
+  if( present(task) ) then
+    if(task==-1 .or. main%taskID()==task) then
+      call fckit__log_add_fortran_unit(unit,c_str(opt_target))
+    endif
+  else
+    call fckit__log_add_fortran_unit(unit,c_str(opt_target))
+  endif
 end subroutine
 
 
-subroutine set_fortran_unit(unit,output_task)
+subroutine set_fortran_unit(unit,task,target)
   use, intrinsic :: iso_c_binding
+  use fckit_c_interop_module
   use fckit_runtime_module
   integer(c_int), intent(in) :: unit
-  integer(c_int), intent(in), optional :: output_task
-  integer(c_int) :: opt_output_task
-  opt_output_task = -1
-  if( main%ready() ) then
-      opt_output_task = main%output_task()
+  integer(c_int), intent(in), optional :: task
+  type(fckit_logtarget), intent(in), optional :: target
+  character(len=20) :: opt_target
+  opt_target = "prefix"
+  if( present( target ) ) then
+    opt_target = target%name
   endif
-  if( present(output_task) ) opt_output_task=output_task
-  call fckit__log_set_fortran_unit(unit,opt_output_task)
+  if( present(task) ) then
+    if(task==-1 .or. main%taskID()==task) then
+      call fckit__log_set_fortran_unit(unit,c_str(opt_target))
+    else
+      call fckit__log_reset()
+    endif
+  else
+    call fckit__log_set_fortran_unit(unit,c_str(opt_target))
+  endif
+end subroutine
+
+
+subroutine reset()
+  use, intrinsic :: iso_c_binding
+  use fckit_runtime_module
+  call fckit__log_reset()
 end subroutine
 
 end module fckit_log_module

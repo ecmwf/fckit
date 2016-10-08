@@ -1,4 +1,5 @@
 #include "eckit/log/Log.h"
+#include "eckit/log/OStreamTarget.h"
 #include "fckit/fckit_log.h"
 #include "fckit/fckit_runtime.h"
 
@@ -21,10 +22,23 @@ TimeStampFortranUnitTarget::TimeStampFortranUnitTarget(int unit, const char* tag
     eckit::TimeStampTarget( tag, new eckit::CallbackTarget(&write_to_fortran_unit,&unit_) ),
     unit_(unit) {}
 
+PrefixFortranUnitTarget::PrefixFortranUnitTarget(int unit, const char* prefix) :
+    eckit::PrefixTarget( prefix, new eckit::CallbackTarget(&write_to_fortran_unit,&unit_) ),
+    unit_(unit) {}
 
-FortranUnitTarget::FortranUnitTarget(int unit) :
+SimpleFortranUnitTarget::SimpleFortranUnitTarget(int unit) :
     eckit::CallbackTarget(&write_to_fortran_unit,&unit_),
     unit_(unit) {}
+    
+eckit::LogTarget* createFortranUnitTarget(const char* name, int unit, const char* prefix)
+{
+  if( std::string(name) == "simple"    ) return new SimpleFortranUnitTarget(unit);
+  if( std::string(name) == "prefix"    ) return new PrefixFortranUnitTarget(unit,prefix);
+  if( std::string(name) == "timestamp" ) return new TimeStampFortranUnitTarget(unit,prefix);
+  NOTIMP;
+  return 0;
+}
+    
 
 } // namespace fckit
 
@@ -59,37 +73,27 @@ void fckit__log_error(char *msg, int newl, int flush)
   fckit__log( &Log::error(), msg, newl, flush );
 }
 
-static int ALL_TASKS=-1;
 
-void fckit__log_add_fortran_unit(int unit, int output_task)
+void fckit__log_add_fortran_unit(int unit, const char* target)
 {
-  NOTIMP;
+    Log::info().    addTarget( fckit::createFortranUnitTarget(target,unit,"(I)") );
+    Log::warning(). addTarget( fckit::createFortranUnitTarget(target,unit,"(W)") );
+    Log::error().   addTarget( fckit::createFortranUnitTarget(target,unit,"(E)") );
+    Log::debug().   addTarget( fckit::createFortranUnitTarget(target,unit,"(D)") );
 }
 
-void fckit__log_set_fortran_unit(int unit, int output_task)
+void fckit__log_set_fortran_unit(int unit, const char* target)
 {
-// TODO: make nicer
-  if( fckit::Main::ready()) {
-          if( output_task == ALL_TASKS ||
-            output_task == fckit::Main::instance().taskID() ) {
-              if( fckit::Main::instance().logSimple() ) {
-                  Log::info().setTarget( new fckit::FortranUnitTarget(unit) );
-                  Log::warning().setTarget( new fckit::FortranUnitTarget(unit) );
-                  Log::error().setTarget( new fckit::FortranUnitTarget(unit) );
-                  Log::debug().setTarget( new fckit::FortranUnitTarget(unit) );
-              } else {
-                  Log::info().setTarget( new fckit::TimeStampFortranUnitTarget(unit,"(I fort)") );
-                  Log::warning().setTarget( new fckit::TimeStampFortranUnitTarget(unit,"(W fort)") );
-                  Log::error().setTarget( new fckit::TimeStampFortranUnitTarget(unit,"(E fort)") );
-                  Log::debug().setTarget( new fckit::TimeStampFortranUnitTarget(unit,"(D fort)") );
-              }
-          }
-  } else {
-      Log::info().setTarget( new fckit::FortranUnitTarget(unit) );
-      Log::warning().setTarget( new fckit::FortranUnitTarget(unit) );
-      Log::error().setTarget( new fckit::FortranUnitTarget(unit) );
-      Log::debug().setTarget( new fckit::FortranUnitTarget(unit) );
-  }
+    Log::info().    setTarget( fckit::createFortranUnitTarget(target,unit,"(I)") );
+    Log::warning(). setTarget( fckit::createFortranUnitTarget(target,unit,"(W)") );
+    Log::error().   setTarget( fckit::createFortranUnitTarget(target,unit,"(E)") );
+    Log::debug().   setTarget( fckit::createFortranUnitTarget(target,unit,"(D)") );
 }
+
+void fckit__log_reset()
+{
+    Log::reset();
+}
+
 
 } // extern "C"

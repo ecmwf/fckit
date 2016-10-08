@@ -10,20 +10,10 @@ public:
 
   Main(
       int argc, char **argv,
-      int task,
-      int output_task,
-      int output_unit,
-      int error_unit,
-      int log_simple,
       const char* homeenv = 0);
 
   static void initialise(
       int argc, char** argv,
-      int task,
-      int output_task,
-      int output_unit,
-      int error_unit,
-      int log_simple,
       const char* homeenv = 0);
 
   static Main& instance() {
@@ -39,15 +29,13 @@ public:
     return outputTask_;
   }
 
-  virtual bool logSimple() const {
-    return logSimple_;
+  std::string logTarget() const {
+    return "prefix";
   }
 
 private:
   int outputTask_;
   int outputUnit_;
-  int errorUnit_;
-  int logSimple_;
 };
 
 } // namespace fckit
