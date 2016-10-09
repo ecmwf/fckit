@@ -73,7 +73,7 @@ CONTAINS
 ! =============================================================================
 
 subroutine resource_get_int32(resource_str,default_value,value)
-  use fckit_runtime_module
+  use fckit_main_module
   use fckit_c_interop_module
   use, intrinsic :: iso_c_binding
   character(len=*), intent(in) :: resource_str
@@ -84,7 +84,7 @@ subroutine resource_get_int32(resource_str,default_value,value)
 end subroutine
 
 subroutine resource_get_int64(resource_str,default_value,value)
-  use fckit_runtime_module
+  use fckit_main_module
   use fckit_c_interop_module
   use, intrinsic :: iso_c_binding
   character(len=*), intent(in) :: resource_str
@@ -95,7 +95,7 @@ subroutine resource_get_int64(resource_str,default_value,value)
 end subroutine
 
 subroutine resource_get_real32(resource_str,default_value,value)
-  use fckit_runtime_module
+  use fckit_main_module
   use fckit_c_interop_module
   use, intrinsic :: iso_c_binding
   character(len=*), intent(in) :: resource_str
@@ -106,7 +106,7 @@ subroutine resource_get_real32(resource_str,default_value,value)
 end subroutine
 
 subroutine resource_get_real64(resource_str,default_value,value)
-  use fckit_runtime_module
+  use fckit_main_module
   use fckit_c_interop_module
   use, intrinsic :: iso_c_binding
   character(len=*), intent(in) :: resource_str
@@ -117,7 +117,7 @@ subroutine resource_get_real64(resource_str,default_value,value)
 end subroutine
 
 subroutine resource_get_string(resource_str,default_value,value)
-  use fckit_runtime_module
+  use fckit_main_module
   use, intrinsic :: iso_c_binding
   use fckit_c_interop_module
   character(len=*), intent(in) :: resource_str

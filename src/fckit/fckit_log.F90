@@ -145,7 +145,7 @@ end subroutine
 subroutine add_fortran_unit(unit,task,target)
   use, intrinsic :: iso_c_binding
   use fckit_c_interop_module
-  use fckit_runtime_module
+  use fckit_main_module
   integer(c_int), intent(in) :: unit
   integer(c_int), intent(in), optional :: task
   type(fckit_logtarget), intent(in), optional :: target
@@ -167,7 +167,7 @@ end subroutine
 subroutine set_fortran_unit(unit,task,target)
   use, intrinsic :: iso_c_binding
   use fckit_c_interop_module
-  use fckit_runtime_module
+  use fckit_main_module
   integer(c_int), intent(in) :: unit
   integer(c_int), intent(in), optional :: task
   type(fckit_logtarget), intent(in), optional :: target
@@ -190,7 +190,7 @@ end subroutine
 
 subroutine reset()
   use, intrinsic :: iso_c_binding
-  use fckit_runtime_module
+  use fckit_main_module
   call fckit__log_reset()
 end subroutine
 

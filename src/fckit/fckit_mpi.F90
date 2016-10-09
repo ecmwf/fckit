@@ -11,9 +11,6 @@ private :: fckit_object
 public :: fckit_mpi_comm
 public :: fckit_mpi_setCommDefault
 
-! Temporary until ECKIT-166 is fixed
-public :: fckit_mpi_finalize
-
 !========================================================================
 
 interface fckit_mpi_setCommDefault
@@ -50,10 +47,6 @@ end interface
 !========================================================================
 
 interface
-
-  ! void eckit__mpi__finalize()
-  subroutine eckit__mpi__finalize() bind(c)
-  end subroutine
 
   ! const eckit::mpi::Comm* eckit__mpi__comm_default()
   function eckit__mpi__comm_default() bind(c)
@@ -115,13 +108,6 @@ end interface
 !========================================================================
 contains
 !========================================================================
-
-! Temporary until ECKIT-166 is fixed
-subroutine fckit_mpi_finalize()
-#ifdef BUG_ECKIT_166
-  call eckit__mpi__finalize()
-#endif
-end subroutine
 
 subroutine fckit_mpi_setCommDefault_int(comm)
   use, intrinsic :: iso_c_binding, only : c_int

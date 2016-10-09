@@ -1,34 +1,9 @@
 #include <sstream>
 #include "eckit/mpi/Comm.h"
 
-
-// Temporary until ECKIT-166 is fixed
-#ifdef BUG_ECKIT_166
-#include <mpi.h>
-#endif
-
 using eckit::mpi::Comm;
 
-namespace fckit {
-static bool areMPIVarsSet() {
-    return (::getenv("OMPI_COMM_WORLD_SIZE") || ::getenv("ALPS_APP_PE"));
-}
-}
-
 extern "C" {
-
-// Temporary until ECKIT-166 is fixed
-  void eckit__mpi__finalize() {
-#ifdef BUG_ECKIT_166
-    if( fckit::areMPIVarsSet() ) {
-      int finalized = 1;
-      MPI_Finalized(&finalized);
-      if( not finalized ) {
-        MPI_Finalize();
-      }
-    }
-#endif
-  }
 
   const Comm* eckit__mpi__comm_default() {
     return &eckit::mpi::comm();

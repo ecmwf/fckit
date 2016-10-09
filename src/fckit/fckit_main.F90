@@ -1,5 +1,5 @@
 
-module fckit_runtime_module
+module fckit_main_module
 implicit none
 private
 
@@ -9,7 +9,7 @@ type :: fckit_main
 contains
   procedure, nopass, public :: ready
   procedure, nopass, public :: init
-  procedure, nopass, public :: output_task
+  procedure, nopass, public :: final
   procedure, nopass, public :: taskID
 end type
 
@@ -17,29 +17,28 @@ type(fckit_main), save :: main
 
 !------------------------------------------------------------------------------
 interface
-  !int fckit__runtime_main_init (int argc, char* argv[])
-  function fckit__runtime_main_init(argc,argv) &
-    & result(error_code) bind(c,name="fckit__runtime_main_init")
+  !int fckit__main_init (int argc, char* argv[])
+  function fckit__main_init(argc,argv) &
+    & result(error_code) bind(c,name="fckit__main_init")
     use iso_c_binding, only: c_int, c_ptr, c_char
     integer(c_int) :: error_code
     integer(c_int), value :: argc
     type(c_ptr), dimension(*) :: argv
   end function
 
-  !int fckit__runtime_main_ready (int& ready)
-  function fckit__runtime_main_ready(ready) result(error_code) bind(c,name="fckit__runtime_main_ready")
+  ! void fckit__main_finalise()
+  subroutine fckit__main_finalise() bind(c)
+  end subroutine
+  
+  
+  !int fckit__main_ready (int& ready)
+  function fckit__main_ready(ready) result(error_code) bind(c,name="fckit__main_ready")
     use iso_c_binding, only: c_int
     integer(c_int) :: error_code
     integer(c_int) :: ready
   end function
-  !int fckit__runtime_main_output_task (int& output_task)
-  function fckit__runtime_main_output_task(output_task) result(error_code) bind(c,name="fckit__runtime_main_output_task")
-    use iso_c_binding, only: c_int
-    integer(c_int) :: error_code
-    integer(c_int) :: output_task
-  end function
-  !int fckit__runtime_main_taskID (int& taskID)
-  function fckit__runtime_main_taskID(taskID) result(error_code) bind(c,name="fckit__runtime_main_taskID")
+  !int fckit__main_taskID (int& taskID)
+  function fckit__main_taskID(taskID) result(error_code) bind(c,name="fckit__main_taskID")
     use iso_c_binding, only: c_int
     integer(c_int) :: error_code
     integer(c_int) :: taskID
@@ -60,7 +59,11 @@ subroutine init()
   type(c_ptr), save :: argv(15)
   integer(c_int):: error_code
   call get_c_commandline_arguments(argc,argv)
-  error_code = fckit__runtime_main_init(argc,argv)
+  error_code = fckit__main_init(argc,argv)
+end subroutine
+
+subroutine final()
+  call fckit__main_finalise()
 end subroutine
 
 function ready()
@@ -69,7 +72,7 @@ function ready()
   logical :: ready
   integer(c_int) :: ready_int
   integer:: error_code
-  error_code = fckit__runtime_main_ready(ready_int)
+  error_code = fckit__main_ready(ready_int)
   if( ready_int == 0 ) then
     ready = .false.
   else
@@ -78,24 +81,15 @@ function ready()
 end function
 
 
-function output_task()
-  use, intrinsic :: iso_c_binding, only : c_int
-  use fckit_c_interop_module
-  logical :: ready
-  integer(c_int) :: output_task
-  integer:: error_code
-  error_code = fckit__runtime_main_output_task(output_task)
-end function
-
 function taskID()
   use, intrinsic :: iso_c_binding, only : c_int
   use fckit_c_interop_module
   logical :: ready
   integer(c_int) :: taskID
   integer:: error_code
-  error_code = fckit__runtime_main_taskID(taskID)
+  error_code = fckit__main_taskID(taskID)
 end function
 
 
-end module fckit_runtime_module
+end module fckit_main_module
 

@@ -3,11 +3,8 @@
 TESTSUITE( test_mpi )
 
 TESTSUITE_FINALIZE
-#ifdef BUG_ECKIT_166
-  use fckit_mpi_module
-  ! This one is required for MacOSX (See issue ECKIT-166)
-  call fckit_mpi_finalize()
-#endif
+  use fckit_main_module
+  call main%final()
 END_TESTSUITE_FINALIZE
 
 TEST( test_comm )
