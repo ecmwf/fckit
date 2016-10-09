@@ -1,4 +1,4 @@
-#include "fckit/Main.h"
+#include "fckit/runtime/Main.h"
 
 static int SUCCESS =  0;
 //static int ERROR   = -1;
@@ -35,6 +35,13 @@ extern "C"
     taskID = fckit::Main::instance().taskID();
     return SUCCESS;
   }
+  
+  int fckit__main_setTaskID(int taskID)
+  {
+    fckit::Main::instance().taskID(taskID);
+    return SUCCESS;
+  }
+  
 
 } // extern "C"
 

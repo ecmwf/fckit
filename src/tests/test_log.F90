@@ -39,8 +39,9 @@ END_TEST
 TEST( test_fortran_unit )
   use fckit_log_module
   use fckit_main_module
-
-  call log%set_fortran_unit(unit=6,target=timestamplogtarget(),task=0)
+  
+  
+  call log%set_fortran_unit(unit=6,style=log%TIMESTAMP)
 
   call log%info("FORTRAN info",newl=.true.,flush=.true.)
   call log%warning("FORTRAN warning",newl=.false.)

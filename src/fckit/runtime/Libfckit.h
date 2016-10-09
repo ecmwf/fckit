@@ -8,34 +8,35 @@
  * does it submit to any jurisdiction.
  */
 
-#include "fckit/Library.h"
+#ifndef fckit_runtime_Library_h
+#define fckit_runtime_Library_h
+
+#include "eckit/system/Library.h"
 
 namespace fckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static Library library;
+class Libfckit : public eckit::system::Library {
+public:
 
-Library::Library() : eckit::system::Library("fckit") {}
+    Libfckit();
 
-const Library& Library::instance()
-{
-    return library;
-}
+    static const Libfckit& instance();
 
-const void* Library::addr() const { return this; }
+protected:
 
-std::string Library::version() const {
-    return "NOTIMP";
-    //return fckit_version_str();
-}
+    const void* addr() const;
 
-std::string Library::gitsha1(unsigned int count) const {
-    return"NOTIMP";
-    // return fckit_git_sha1_abbrev(count);
-}
+    virtual std::string version() const;
+
+    virtual std::string gitsha1(unsigned int count) const;
+
+};
 
 //----------------------------------------------------------------------------------------------------------------------
 
 } // namespace fckit
+
+#endif
 

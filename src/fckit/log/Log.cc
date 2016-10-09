@@ -1,5 +1,7 @@
-#include "eckit/log/Log.h"
-#include "fckit/Log.h"
+#include "fckit/log/Log.h"
+#include "eckit/log/TimeStampTarget.h"
+#include "eckit/log/PrefixTarget.h"
+#include "eckit/log/CallbackTarget.h"
 
 using fckit::Log;
 using eckit::Channel;

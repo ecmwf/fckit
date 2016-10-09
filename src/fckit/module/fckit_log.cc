@@ -1,5 +1,5 @@
 #include "eckit/log/Channel.h"
-#include "fckit/Log.h"
+#include "fckit/log/Log.h"
 
 using fckit::Log;
 using eckit::Channel;
@@ -36,22 +36,14 @@ void fckit__log_error(char *msg, int newl, int flush)
 }
 
 
-void fckit__log_add_fortran_unit(int unit, const char* target)
+void fckit__log_add_fortran_unit(int unit, int style)
 {
-  std::map<std::string,Log::Style> style;
-  style["simple"]=Log::SIMPLE;
-  style["prefix"]=Log::PREFIX;
-  style["timestamp"]=Log::TIMESTAMP;
-  Log::addFortranUnit(unit,style[target]);
+  Log::addFortranUnit(unit,Log::Style(style));
 }
 
-void fckit__log_set_fortran_unit(int unit, const char* target)
+void fckit__log_set_fortran_unit(int unit, int style)
 {
-  std::map<std::string,Log::Style> style;
-  style["simple"]=Log::SIMPLE;
-  style["prefix"]=Log::PREFIX;
-  style["timestamp"]=Log::TIMESTAMP;
-  Log::setFortranUnit(unit,style[target]);
+  Log::setFortranUnit(unit,Log::Style(style));
 }
 
 void fckit__log_reset()

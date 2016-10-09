@@ -1,9 +1,6 @@
-#ifndef fckit_log_h
-#define fckit_log_h
+#ifndef fckit_log_Log_h
+#define fckit_log_Log_h
 
-#include "eckit/log/TimeStampTarget.h"
-#include "eckit/log/PrefixTarget.h"
-#include "eckit/log/CallbackTarget.h"
 #include "eckit/log/Log.h"
 
 namespace fckit {

@@ -3,9 +3,9 @@ module fckit_log_module
 private
 
 public :: log
-public :: simplelogtarget
-public :: prefixlogtarget
-public :: timestamplogtarget
+! public :: simplelogtarget
+! public :: prefixlogtarget
+! public :: timestamplogtarget
 
 type :: fckit_logtarget
   character(len=20) :: name
@@ -15,6 +15,9 @@ end type
 !------------------------------------------------------------------------------
 ! Logger singleton
 type :: fckit_log_type
+  integer :: SIMPLE = 0
+  integer :: PREFIX = 1
+  integer :: TIMESTAMP = 2
 contains
   procedure, nopass, public :: debug
   procedure, nopass, public :: info
@@ -57,15 +60,15 @@ interface
     integer(c_int), value :: newl
     integer(c_int), value :: flush
   end subroutine
-  subroutine fckit__log_add_fortran_unit(unit,target) bind(c)
-    use, intrinsic :: iso_c_binding, only : c_int, c_char
+  subroutine fckit__log_add_fortran_unit(unit,style) bind(c)
+    use, intrinsic :: iso_c_binding, only : c_int
     integer(c_int), value :: unit
-    character(kind=c_char,len=1), dimension(*) :: target
+    integer(c_int), value :: style
   end subroutine
-  subroutine fckit__log_set_fortran_unit(unit,target) bind(c)
-    use, intrinsic :: iso_c_binding, only : c_int, c_char
+  subroutine fckit__log_set_fortran_unit(unit,style) bind(c)
+    use, intrinsic :: iso_c_binding, only : c_int
     integer(c_int), value :: unit
-    character(kind=c_char,len=1), dimension(*) :: target
+    integer(c_int), value :: style
   end subroutine
   subroutine fckit__log_reset() bind(c)
   end subroutine
@@ -142,49 +145,29 @@ subroutine panic(msg)
   write(0,'(A)') msg
 end subroutine
 
-subroutine add_fortran_unit(unit,task,target)
+subroutine add_fortran_unit(unit,style)
   use, intrinsic :: iso_c_binding
   use fckit_c_interop_module
   use fckit_main_module
   integer(c_int), intent(in) :: unit
-  integer(c_int), intent(in), optional :: task
-  type(fckit_logtarget), intent(in), optional :: target
-  character(len=20) :: opt_target
-  opt_target = "prefix"
-  if( present( target ) ) then
-    opt_target = target%name
-  endif
-  if( present(task) ) then
-    if(task==-1 .or. main%taskID()==task) then
-      call fckit__log_add_fortran_unit(unit,c_str(opt_target))
-    endif
-  else
-    call fckit__log_add_fortran_unit(unit,c_str(opt_target))
-  endif
+  integer(c_int), intent(in), optional :: style
+  integer(c_int) :: opt_style
+  opt_style = log%PREFIX
+  if( present( style ) ) opt_style = style
+  call fckit__log_set_fortran_unit(unit,style)
 end subroutine
 
 
-subroutine set_fortran_unit(unit,task,target)
+subroutine set_fortran_unit(unit,style)
   use, intrinsic :: iso_c_binding
   use fckit_c_interop_module
   use fckit_main_module
   integer(c_int), intent(in) :: unit
-  integer(c_int), intent(in), optional :: task
-  type(fckit_logtarget), intent(in), optional :: target
-  character(len=20) :: opt_target
-  opt_target = "prefix"
-  if( present( target ) ) then
-    opt_target = target%name
-  endif
-  if( present(task) ) then
-    if(task==-1 .or. main%taskID()==task) then
-      call fckit__log_set_fortran_unit(unit,c_str(opt_target))
-    else
-      call fckit__log_reset()
-    endif
-  else
-    call fckit__log_set_fortran_unit(unit,c_str(opt_target))
-  endif
+  integer(c_int), intent(in), optional :: style
+  integer(c_int) :: opt_style
+  opt_style = log%PREFIX
+  if( present( style ) ) opt_style = style
+  call fckit__log_set_fortran_unit(unit,style)
 end subroutine
 
 
@@ -195,16 +178,3 @@ subroutine reset()
 end subroutine
 
 end module fckit_log_module
-
-!------------------------------------------------------------------------------
-
-! Callback function, used from C++ side
-subroutine fckit_write_to_fortran_unit(unit,msg_cptr) bind(C)
-  use, intrinsic :: iso_c_binding, only: c_int, c_ptr
-  use fckit_c_interop_module, only : c_ptr_to_string
-  integer(c_int), value, intent(in) :: unit
-  type(c_ptr), value, intent(in) :: msg_cptr
-  character(len=:), allocatable :: msg
-  msg = c_ptr_to_string(msg_cptr)
-  write(unit,'(A)') msg
-end subroutine

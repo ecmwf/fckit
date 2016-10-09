@@ -4,6 +4,7 @@ implicit none
 private
 
 public :: main
+public :: fckit_main
 
 type :: fckit_main
 contains
@@ -11,6 +12,7 @@ contains
   procedure, nopass, public :: init
   procedure, nopass, public :: final
   procedure, nopass, public :: taskID
+  procedure, nopass, public :: set_taskID
 end type
 
 type(fckit_main), save :: main
@@ -43,7 +45,12 @@ interface
     integer(c_int) :: error_code
     integer(c_int) :: taskID
   end function
-
+  
+  function fckit__main_setTaskID(taskID) result(error_code) bind(c,name="fckit__main_setTaskID")
+    use iso_c_binding, only: c_int
+    integer(c_int) :: error_code
+    integer(c_int), value :: taskID
+  end function
 
 end interface
 !------------------------------------------------------------------------------
@@ -80,7 +87,6 @@ function ready()
   endif
 end function
 
-
 function taskID()
   use, intrinsic :: iso_c_binding, only : c_int
   use fckit_c_interop_module
@@ -90,6 +96,13 @@ function taskID()
   error_code = fckit__main_taskID(taskID)
 end function
 
+subroutine set_taskID(taskID)
+  use, intrinsic :: iso_c_binding, only : c_int
+  use fckit_c_interop_module
+  integer(c_int), intent(in) :: taskID
+  integer:: error_code
+  error_code = fckit__main_setTaskID(taskID)
+end subroutine
 
 end module fckit_main_module
 

@@ -1,5 +1,5 @@
-#ifndef fckit_Main_h
-#define fckit_Main_h
+#ifndef fckit_runtime_Main_h
+#define fckit_runtime_Main_h
 
 #include "eckit/runtime/Main.h"
 
