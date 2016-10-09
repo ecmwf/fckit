@@ -13,6 +13,7 @@ contains
   procedure, nopass, public :: final
   procedure, nopass, public :: taskID
   procedure, nopass, public :: set_taskID
+  procedure, nopass, public :: debug
 end type
 
 type(fckit_main), save :: main
@@ -50,6 +51,11 @@ interface
     use iso_c_binding, only: c_int
     integer(c_int) :: error_code
     integer(c_int), value :: taskID
+  end function
+  
+  function fckit__main_debug() result(debug) bind(c)
+    use iso_c_binding, only : c_int
+    integer(c_int) :: debug
   end function
 
 end interface
@@ -103,6 +109,15 @@ subroutine set_taskID(taskID)
   integer:: error_code
   error_code = fckit__main_setTaskID(taskID)
 end subroutine
+
+function debug()
+  use, intrinsic :: iso_c_binding, only : c_int
+  logical :: debug
+  integer(c_int) :: debug_int
+  debug_int = fckit__main_debug()
+  debug = .false.
+  if( debug_int==1 ) debug = .true.
+end function
 
 end module fckit_main_module
 

@@ -9,7 +9,7 @@ int main(int argc, char* argv[])
   fckit::Main::initialize(argc,argv);
   fckit::Main::instance().taskID(eckit::mpi::comm().rank());
   if( fckit::Main::instance().taskID() == 0 )
-    fckit::Log::setFortranUnit(6,fckit::Log::TIMESTAMP);
+    fckit::Log::setFortranUnit(fckit::Log::output_unit(),fckit::Log::TIMESTAMP);
   else
     fckit::Log::reset();
   run();

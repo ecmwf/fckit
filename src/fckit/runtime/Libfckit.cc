@@ -26,13 +26,11 @@ const Libfckit& Libfckit::instance()
 const void* Libfckit::addr() const { return this; }
 
 std::string Libfckit::version() const {
-    return "NOTIMP";
-    //return fckit_version_str();
+    return "not available";
 }
 
 std::string Libfckit::gitsha1(unsigned int count) const {
-    return"NOTIMP";
-    // return fckit_git_sha1_abbrev(count);
+    return "not available";
 }
 
 //----------------------------------------------------------------------------------------------------------------------

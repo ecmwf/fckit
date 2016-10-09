@@ -6,7 +6,11 @@
 using fckit::Log;
 using eckit::Channel;
 
-extern "C" { void fckit_write_to_fortran_unit(int unit, const char* msg); }
+extern "C" {
+  void fckit_write_to_fortran_unit(int unit, const char* msg);
+  int fckit_fortranunit_stdout();
+  int fckit_fortranunit_stderr();
+}
 
 namespace {
 
@@ -64,13 +68,24 @@ void Log::addFortranUnit(int unit, Style style, const char*) {
   info().    addTarget(createFortranUnitTarget(unit,style,"(I)"));
   warning(). addTarget(createFortranUnitTarget(unit,style,"(W)"));
   error().   addTarget(createFortranUnitTarget(unit,style,"(E)"));
-  debug().   addTarget(createFortranUnitTarget(unit,style,"(D)"));
+  if (debug()) {
+    debug().   addTarget(createFortranUnitTarget(unit,style,"(D)"));
+  }
 }
 void Log::setFortranUnit(int unit, Style style, const char*) {
   info().    setTarget(createFortranUnitTarget(unit,style,"(I)"));
   warning(). setTarget(createFortranUnitTarget(unit,style,"(W)"));
   error().   setTarget(createFortranUnitTarget(unit,style,"(E)"));
-  debug().   setTarget(createFortranUnitTarget(unit,style,"(D)"));
+  if (debug()) {
+    debug().   setTarget(createFortranUnitTarget(unit,style,"(D)"));
+  }
+}
+
+int Log::output_unit() {
+  return fckit_fortranunit_stdout();
+}
+int Log::error_unit() {
+  return fckit_fortranunit_stderr();
 }
 
 } // namespace fckit
