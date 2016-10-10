@@ -1,8 +1,18 @@
 module fckit_log_module
-  implicit none
+use fckit_object_module, only: fckit_object
+implicit none
 private
 
 public :: log
+public :: logchannel
+
+private :: fckit_object
+
+type, extends(fckit_object) :: logchannel
+contains
+  procedure, public :: delete
+end type
+
 
 !------------------------------------------------------------------------------
 ! Logger singleton
@@ -19,6 +29,10 @@ contains
   procedure, nopass, public :: add_fortran_unit
   procedure, nopass, public :: set_fortran_unit
   procedure, nopass, public :: reset
+  procedure, nopass, public :: info_channel
+  procedure, nopass, public :: warning_channel
+  procedure, nopass, public :: error_channel
+  procedure, nopass, public :: debug_channel
 end type
 type(fckit_log_type) :: log
 !------------------------------------------------------------------------------
@@ -64,6 +78,22 @@ interface
   end subroutine
   subroutine fckit__log_reset() bind(c)
   end subroutine
+  function fckit__log_info_channel() bind(c)
+    use, intrinsic :: iso_c_binding, only : c_ptr
+    type(c_ptr) :: fckit__log_info_channel
+  end function
+  function fckit__log_warning_channel() bind(c)
+    use, intrinsic :: iso_c_binding, only : c_ptr
+    type(c_ptr) :: fckit__log_warning_channel
+  end function
+  function fckit__log_error_channel() bind(c)
+    use, intrinsic :: iso_c_binding, only : c_ptr
+    type(c_ptr) :: fckit__log_error_channel
+  end function
+  function fckit__log_debug_channel() bind(c)
+    use, intrinsic :: iso_c_binding, only : c_ptr
+    type(c_ptr) :: fckit__log_debug_channel
+  end function
 
 end interface
 
@@ -82,6 +112,7 @@ subroutine debug(msg,newl,flush)
   call fckit__log_debug(c_str(msg),opt_newl,opt_flush)
 end subroutine
 
+
 subroutine info(msg,newl,flush)
   use, intrinsic :: iso_c_binding
   use fckit_c_interop_module, only : c_str
@@ -92,6 +123,7 @@ subroutine info(msg,newl,flush)
   opt_flush = 1 ; if( present(flush)) then; if( .not. flush ) opt_flush = 0; endif
   call fckit__log_info(c_str(msg),opt_newl,opt_flush)
 end subroutine
+
 
 subroutine warning(msg,newl,flush)
   use, intrinsic :: iso_c_binding
@@ -104,6 +136,7 @@ subroutine warning(msg,newl,flush)
   call fckit__log_warning(c_str(msg),opt_newl,opt_flush)
 end subroutine
 
+
 subroutine error(msg,newl,flush)
   use, intrinsic :: iso_c_binding
   use fckit_c_interop_module, only : c_str
@@ -115,11 +148,13 @@ subroutine error(msg,newl,flush)
   call fckit__log_error(c_str(msg),opt_newl,opt_flush)
 end subroutine
 
+
 subroutine panic(msg)
   use, intrinsic :: iso_c_binding
   character(kind=c_char,len=*), intent(in) :: msg
   write(0,'(A)') msg
 end subroutine
+
 
 subroutine add_fortran_unit(unit,style)
   use, intrinsic :: iso_c_binding
@@ -151,6 +186,36 @@ subroutine reset()
   use, intrinsic :: iso_c_binding
   use fckit_main_module
   call fckit__log_reset()
+end subroutine
+
+
+function info_channel() result(channel)
+  type(logchannel) :: channel
+  call channel%reset_c_ptr( fckit__log_info_channel() )
+end function
+
+
+function warning_channel() result(channel)
+  type(logchannel) :: channel
+  call channel%reset_c_ptr( fckit__log_warning_channel() )
+end function
+
+
+function error_channel() result(channel)
+  type(logchannel) :: channel
+  call channel%reset_c_ptr( fckit__log_error_channel() )
+end function
+
+
+function debug_channel() result(channel)
+  type(logchannel) :: channel
+  call channel%reset_c_ptr( fckit__log_debug_channel() )
+end function
+
+
+subroutine delete(this)
+  class(logchannel), intent(inout) :: this
+  ! do nothing
 end subroutine
 
 end module fckit_log_module

@@ -35,7 +35,6 @@ void fckit__log_error(char *msg, int newl, int flush)
   fckit__log( &Log::error(), msg, newl, flush );
 }
 
-
 void fckit__log_add_fortran_unit(int unit, int style)
 {
   Log::addFortranUnit(unit,Log::Style(style));
@@ -51,5 +50,24 @@ void fckit__log_reset()
     Log::reset();
 }
 
+Channel* fckit__log_info_channel()
+{
+    return &Log::info();
+}
+
+Channel* fckit__log_warning_channel()
+{
+    return &Log::warning();
+}
+
+Channel* fckit__log_error_channel()
+{
+    return &Log::error();
+}
+
+Channel* fckit__log_debug_channel()
+{
+    return &Log::debug();
+}
 
 } // extern "C"
