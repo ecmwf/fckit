@@ -60,12 +60,23 @@ if( HAVE_ECKIT )
     set( ECKIT_LIBRARIES eckit eckit_mpi )
 endif()
 
+if( ECKIT_HAVE_MPI )
 # Temporary until ECKIT-166 is fixed for MacOSX
 if( EC_OS_NAME MATCHES "macosx" )
 ecbuild_add_option( FEATURE MPI
                     DESCRIPTION "fckit: Support for MPI distributed parallelism"
                     REQUIRED_PACKAGES "MPI COMPONENTS CXX" )
 endif()
+endif()
+
+if( ECKIT_HAVE_MPI )
+  set( MPI_FOUND 1 CACHE BOOL " " )
+  set( MPIEXEC "mpiexec" CACHE STRING " " )
+  set( MPIEXEC_NUMPROC_FLAG "-np" CACHE STRING " " )
+else()
+  ecbuild_warn("ecKit has been compiled without MPI. This causes fckit to not be able to run parallel executables.")
+endif()
+
 
 ############################################################################################
 # export package info

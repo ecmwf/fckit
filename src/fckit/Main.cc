@@ -1,4 +1,4 @@
-#include "fckit/runtime/Main.h"
+#include "fckit/Main.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
 #include "eckit/thread/Once.h"

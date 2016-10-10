@@ -1,5 +1,5 @@
-#include "fckit/runtime/Main.h"
-#include "fckit/log/Log.h"
+#include "fckit/Main.h"
+#include "fckit/Log.h"
 #include "eckit/mpi/Comm.h"
 extern "C" {
   void run();

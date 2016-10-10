@@ -16,13 +16,13 @@ list( APPEND eckit_required_src
     module/fckit_resource.F90
     module/fckit_log.cc
     module/fckit_log.F90
-    runtime/Libfckit.h
-    runtime/Libfckit.cc
-    runtime/Main.h
-    runtime/Main.cc
-    log/Log.h
-    log/Log.cc
-    log/Log.F90
+    Libfckit.h
+    Libfckit.cc
+    Main.h
+    Main.cc
+    Log.h
+    Log.cc
+    Log.F90
 )
 endif()
 
@@ -83,7 +83,14 @@ ecbuild_add_library( TARGET     fckit
                                 ${ECKIT_LIBRARIES}
                      DEFINITIONS
                                 ${FCKIT_DEFINITIONS}
+
+                     INSTALL_HEADERS_LIST
+                                fctest.h
+                                Log.h
+                                Main.h
+
+                     HEADER_DESTINATION  ${INSTALL_INCLUDE_DIR}/fckit
                     )
 
-install( FILES fctest.h DESTINATION ${INSTALL_INCLUDE_DIR}/fckit )
+# install( FILES fctest.h DESTINATION ${INSTALL_INCLUDE_DIR}/fckit )
 # install( FILES ${CMAKE_Fortran_MODULE_DIRECTORY}/fctest.mod DESTINATION ${INSTALL_INCLUDE_DIR} )

@@ -1,4 +1,4 @@
-#include "fckit/log/Log.h"
+#include "fckit/Log.h"
 #include "eckit/log/TimeStampTarget.h"
 #include "eckit/log/PrefixTarget.h"
 #include "eckit/log/CallbackTarget.h"

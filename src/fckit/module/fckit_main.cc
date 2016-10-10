@@ -1,6 +1,6 @@
 #include <string.h>
-#include "fckit/runtime/Main.h"
-#include "fckit/log/Log.h"
+#include "fckit/Main.h"
+#include "fckit/Log.h"
 
 static int SUCCESS =  0;
 //static int ERROR   = -1;

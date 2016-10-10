@@ -1,5 +1,5 @@
 #include "eckit/log/Channel.h"
-#include "fckit/log/Log.h"
+#include "fckit/Log.h"
 
 using fckit::Log;
 using eckit::Channel;
