@@ -1,10 +1,11 @@
 #ifndef fckit_resource_h
 #define fckit_resource_h
 
+#include <string.h>
 #include "eckit/config/Resource.h"
 
 static int SUCCESS =  0;
-static int ERROR   = -1;
+//static int ERROR   = -1;
 
 extern "C"
 {
@@ -37,7 +38,7 @@ extern "C"
     std::string v = eckit::Resource<std::string>( std::string(resource), std::string(default_value) );
     size = v.size();
     value = new char[size+1];
-    strcpy(value,v.c_str());
+    ::strcpy(value,v.c_str());
     return SUCCESS;
   }
 }

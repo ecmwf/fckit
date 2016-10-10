@@ -1,3 +1,4 @@
+#include <string.h>
 #include "fckit/runtime/Main.h"
 #include "fckit/log/Log.h"
 
@@ -53,7 +54,7 @@ extern "C"
     std::string v = fckit::Main::instance().name();
     size = v.size();
     name = new char[size+1];
-    strcpy(name,v.c_str());
+    ::strcpy(name,v.c_str());
     return SUCCESS;
   }
 
