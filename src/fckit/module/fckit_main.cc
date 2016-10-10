@@ -19,7 +19,7 @@ extern "C"
 
     return SUCCESS;
   }
-  
+
   void fckit__main_finalise()
   {
     fckit::Main::finalise();
@@ -36,7 +36,7 @@ extern "C"
     taskID = fckit::Main::instance().taskID();
     return SUCCESS;
   }
-  
+
   int fckit__main_setTaskID(int taskID)
   {
     fckit::Main::instance().taskID(taskID);
@@ -46,7 +46,17 @@ extern "C"
   int fckit__main_debug()
   {
     return fckit::Log::debug()!=0;
-  }  
+  }
+
+  int fckit__main_name(char* &name, int &size)
+  {
+    std::string v = fckit::Main::instance().name();
+    size = v.size();
+    name = new char[size+1];
+    strcpy(name,v.c_str());
+    return SUCCESS;
+  }
+
 
 } // extern "C"
 

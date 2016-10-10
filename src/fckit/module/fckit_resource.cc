@@ -32,14 +32,15 @@ extern "C"
     return SUCCESS;
   }
 
-  int fckit__resource_string (const char* resource, const char* default_value,  char* &value, size_t &value_size )
+  int fckit__resource_string (const char* resource, const char* default_value, char* &value, size_t &size )
   {
     std::string v = eckit::Resource<std::string>( std::string(resource), std::string(default_value) );
-    value_size = v.size();
-    value = new char[value_size+1];
+    size = v.size();
+    value = new char[size+1];
     strcpy(value,v.c_str());
     return SUCCESS;
   }
 }
 
 #endif
+

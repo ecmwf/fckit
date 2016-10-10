@@ -79,22 +79,6 @@ end interface
 contains
 !========================================================
 
-
-function simplelogtarget() result(this)
-  type(fckit_logtarget) :: this
-  this%name = "simple"
-end function
-
-function prefixlogtarget() result(this)
-  type(fckit_logtarget) :: this
-  this%name = "prefix"
-end function
-
-function timestamplogtarget() result(this)
-  type(fckit_logtarget) :: this
-  this%name = "timestamp"
-end function
-
 subroutine debug(msg,newl,flush)
   use, intrinsic :: iso_c_binding
   use fckit_c_interop_module, only : c_str
