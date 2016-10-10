@@ -3,14 +3,6 @@ module fckit_log_module
 private
 
 public :: log
-! public :: simplelogtarget
-! public :: prefixlogtarget
-! public :: timestamplogtarget
-
-type :: fckit_logtarget
-  character(len=20) :: name
-contains
-end type
 
 !------------------------------------------------------------------------------
 ! Logger singleton
@@ -72,7 +64,7 @@ interface
   end subroutine
   subroutine fckit__log_reset() bind(c)
   end subroutine
-  
+
 end interface
 
 !========================================================
@@ -151,7 +143,7 @@ subroutine set_fortran_unit(unit,style)
   integer(c_int) :: opt_style
   opt_style = log%PREFIX
   if( present( style ) ) opt_style = style
-  call fckit__log_set_fortran_unit(unit,style)
+  call fckit__log_set_fortran_unit(unit,opt_style)
 end subroutine
 
 
