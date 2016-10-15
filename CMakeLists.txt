@@ -11,12 +11,10 @@
 
 cmake_minimum_required( VERSION 2.8.11 FATAL_ERROR )
 
-set( ENABLE_OS_TYPES_TEST       OFF   CACHE BOOL " " )
-set( ENABLE_OS_FUNCTIONS_TEST   OFF   CACHE BOOL " " )
+set( ENABLE_OS_TESTS       OFF   CACHE BOOL " " )
 set( ENABLE_LARGE_FILE_SUPPORT  OFF   CACHE BOOL " " )
-set( ENABLE_OS_ENDINESS_TEST    OFF   CACHE BOOL " " )
 
-project( fckit Fortran )
+project( fckit CXX Fortran )
 
 set( CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/../ecbuild/cmake")
 set( ECBUILD_DEFAULT_BUILD_TYPE Release )
@@ -33,10 +31,52 @@ ecbuild_declare_project()
 ################################################################################################
 # options & dependencies
 
-ecbuild_find_python( REQUIRED )
+ecbuild_find_python( REQUIRED NO_LIBS )
 
 ### Fortran ...
 ecbuild_enable_fortran( REQUIRED MODULE_DIRECTORY ${CMAKE_BINARY_DIR}/module )
+
+# Experimental
+ecbuild_add_option( FEATURE FORTRAN_FINALIZATION
+                    DEFAULT OFF ) 
+if( ENABLE_FORTRAN_FINALIZATION )
+  ecbuild_check_fortran( FEATURES finalization )
+  if( EC_HAVE_Fortran_FINALIZATION )
+    include( final-support )
+    check_final_support()
+    message( "Fortran_FINAL_FUNCTION_RESULT = ${Fortran_FINAL_FUNCTION_RESULT}")
+    message( "Fortran_FINAL_UNINITIALIZED_LHS = ${Fortran_FINAL_UNINITIALIZED_LHS}")
+    message( "Fortran_FINAL_UNINITIALIZED_INTENT_OUT = ${Fortran_FINAL_UNINITIALIZED_INTENT_OUT}")
+    message( "Fortran_FINAL_UNINITIALIZED_INTENT_INOUT = ${Fortran_FINAL_UNINITIALIZED_INTENT_INOUT}")
+  endif()
+endif()
+
+### eckit ...
+ecbuild_add_option( FEATURE ECKIT
+                    DESCRIPTION "Wrap ecKit functionality"
+                    REQUIRED_PACKAGES "PROJECT eckit VERSION 0.14.0"
+                   )
+if( HAVE_ECKIT )
+    set( ECKIT_LIBRARIES eckit eckit_mpi )
+endif()
+
+if( ECKIT_HAVE_MPI )
+# Temporary until ECKIT-166 is fixed for MacOSX
+if( EC_OS_NAME MATCHES "macosx" )
+ecbuild_add_option( FEATURE MPI
+                    DESCRIPTION "fckit: Support for MPI distributed parallelism"
+                    REQUIRED_PACKAGES "MPI COMPONENTS CXX" )
+endif()
+endif()
+
+if( ECKIT_HAVE_MPI )
+  set( MPI_FOUND 1 CACHE BOOL " " )
+  set( MPIEXEC "mpiexec" CACHE STRING " " )
+  set( MPIEXEC_NUMPROC_FLAG "-np" CACHE STRING " " )
+else()
+  ecbuild_warn("ecKit has been compiled without MPI. This causes fckit to not be able to run parallel executables.")
+endif()
+
 
 ############################################################################################
 # export package info
@@ -82,5 +122,7 @@ add_subdirectory( src )
 
 ecbuild_print_summary()
 #####################################################################################
+
+install(DIRECTORY ${CMAKE_Fortran_MODULE_DIRECTORY}/${CMAKE_CFG_INTDIR} DESTINATION ${INSTALL_INCLUDE_DIR} )
 
 ecbuild_install_project( NAME fckit )

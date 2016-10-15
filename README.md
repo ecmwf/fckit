@@ -1,10 +1,10 @@
-#FCKit
+# FCKit
 
 Fortran toolkit for interoperating Fortran with C/C++.
 
 In addition useful algorithms from ECKit are wrapped with Fortran.
 
-## Components
+## fctest
 
 Unit Testing Framwork for Fortran, made easy.
 
@@ -25,7 +25,14 @@ ecbuild_add_option( FEATURE FCTEST  DEFAULT ${ENABLE_TESTS}
 
 See src/examples folder how to add and create the unit-tests.
 
-###License
+## fckit
+
+Various Fortran modules helpful to create mixed-language applications
+
+- MPI
+- Logging
+
+### License
 
 Please read LICENSE.
 
