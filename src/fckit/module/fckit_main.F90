@@ -15,6 +15,7 @@ contains
   procedure, nopass, public :: set_taskID
   procedure, nopass, public :: debug
   procedure, nopass, public :: name => main_name
+  procedure, nopass, public :: displayname => displayname
 end type
 
 type(fckit_main), save :: main
@@ -67,6 +68,13 @@ interface
     integer(c_int) :: name_size
   end function
 
+  !int fckit__main_displayname (char* &name, int &name_size)
+  function fckit__main_displayname(name,name_size) result(error_code) bind(c)
+    use iso_c_binding, only: c_int, c_ptr, c_char
+    integer(c_int) :: error_code
+    type(c_ptr) :: name
+    integer(c_int) :: name_size
+  end function
 end interface
 !------------------------------------------------------------------------------
 
@@ -136,6 +144,19 @@ subroutine main_name(name)
   integer(c_int) :: name_size
   integer(c_int) :: error_code
   error_code = fckit__main_name(name_c_ptr,name_size)
+  allocate(character(len=name_size) :: name )
+  name = c_ptr_to_string(name_c_ptr)
+  call c_ptr_free(name_c_ptr)
+end subroutine
+
+subroutine displayname(name)
+  use, intrinsic :: iso_c_binding
+  use fckit_c_interop_module
+  character(len=:), allocatable, intent(inout) :: name
+  type(c_ptr) :: name_c_ptr
+  integer(c_int) :: name_size
+  integer(c_int) :: error_code
+  error_code = fckit__main_displayname(name_c_ptr,name_size)
   allocate(character(len=name_size) :: name )
   name = c_ptr_to_string(name_c_ptr)
   call c_ptr_free(name_c_ptr)

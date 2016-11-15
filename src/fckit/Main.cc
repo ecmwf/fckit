@@ -17,7 +17,23 @@ Main::Main(
     const char* homeenv)
     : eckit::Main(argc,argv,homeenv)
 {
+  for( int j=0; j<argc; ++j )
+  {
+    std::string arg(argv[j]);
+    if( arg.find("--displayname=") == 0 )
+    {
+       size_t pos = arg.find("--displayname=") + 14;
+       displayName_ = arg.substr(pos);
+    }
+    if( arg == "--displayname" )
+    {
+      if( j+1 < argc ) displayName_ = argv[j+1];
+    }
+  }
 }
+
+const std::string& Main::displayName() const { return displayName_; }
+
 
 void Main::initialise(
     int argc, char** argv,

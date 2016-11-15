@@ -25,6 +25,19 @@ END_TESTSUITE_FINALIZE
 
 ! -----------------------------------------------------------------------------
 
+TEST( test_main )
+  use fckit_main_module
+  use fckit_log_module
+  character(len=:), allocatable :: displayname, name
+  character(len=128) :: logmsg
+  call main%name(name)
+  call main%displayname(displayname)
+  write(logmsg,*) "name = "//name//" , displayname = "//displayname
+  call log%info(logmsg)
+END_TEST
+
+! -----------------------------------------------------------------------------
+
 TEST( test_log )
   use fckit_log_module
 

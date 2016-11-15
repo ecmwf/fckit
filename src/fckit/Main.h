@@ -22,6 +22,8 @@ public:
     finalise();
   }
 
+  virtual const std::string& displayName() const;
+
 };
 
 } // namespace fckit
