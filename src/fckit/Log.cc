@@ -2,6 +2,8 @@
 #include "eckit/log/TimeStampTarget.h"
 #include "eckit/log/PrefixTarget.h"
 #include "eckit/log/CallbackTarget.h"
+#include "eckit/log/FileTarget.h"
+#include "eckit/log/OStreamTarget.h"
 
 using fckit::Log;
 using eckit::Channel;
@@ -22,62 +24,81 @@ static void write_to_fortran_unit( void* ctxt, const char* msg ) {
 
 namespace fckit {
 
-class TimeStampFortranUnitTarget: public eckit::TimeStampTarget {
+class FortranUnitTarget: public eckit::CallbackTarget {
 public:
-  TimeStampFortranUnitTarget(int unit, const char* tag = "");
+  FortranUnitTarget(int unit);
 private:
   int unit_;
 };
 
-class SimpleFortranUnitTarget: public eckit::CallbackTarget {
-public:
-  SimpleFortranUnitTarget(int unit);
-private:
-  int unit_;
-};
-
-class PrefixFortranUnitTarget: public eckit::PrefixTarget {
-public:
-  PrefixFortranUnitTarget(int unit,const char* prefix = "");
-private:
-  int unit_;
-};
-
-TimeStampFortranUnitTarget::TimeStampFortranUnitTarget(int unit, const char* tag) :
-    eckit::TimeStampTarget( tag, new eckit::CallbackTarget(&write_to_fortran_unit,&unit_) ),
-    unit_(unit) {}
-
-PrefixFortranUnitTarget::PrefixFortranUnitTarget(int unit, const char* prefix) :
-    eckit::PrefixTarget( prefix, new eckit::CallbackTarget(&write_to_fortran_unit,&unit_) ),
-    unit_(unit) {}
-
-SimpleFortranUnitTarget::SimpleFortranUnitTarget(int unit) :
+FortranUnitTarget::FortranUnitTarget(int unit) :
     eckit::CallbackTarget(&write_to_fortran_unit,&unit_),
     unit_(unit) {}
 
-eckit::LogTarget* createFortranUnitTarget(int unit, Log::Style style, const char* prefix)
+eckit::LogTarget* createStyleTarget( eckit::LogTarget* target, Log::Style style, const char* prefix )
 {
-  if( style == Log::SIMPLE    ) return new SimpleFortranUnitTarget(unit);
-  if( style == Log::PREFIX    ) return new PrefixFortranUnitTarget(unit,prefix);
-  if( style == Log::TIMESTAMP ) return new TimeStampFortranUnitTarget(unit,prefix);
+  if( style == Log::SIMPLE    ) return target;
+  if( style == Log::PREFIX    ) return new eckit::PrefixTarget( prefix, target ); 
+  if( style == Log::TIMESTAMP ) return new eckit::TimeStampTarget( prefix, target );
   NOTIMP;
   return 0;
 }
 
 void Log::addFortranUnit(int unit, Style style, const char*) {
-  info().    addTarget(createFortranUnitTarget(unit,style,"(I)"));
-  warning(). addTarget(createFortranUnitTarget(unit,style,"(W)"));
-  error().   addTarget(createFortranUnitTarget(unit,style,"(E)"));
+  eckit::LogTarget* funit = new FortranUnitTarget(unit);
+  info().    addTarget( createStyleTarget(funit,style,"(I)") );
+  warning(). addTarget( createStyleTarget(funit,style,"(W)") );
+  error().   addTarget( createStyleTarget(funit,style,"(E)") );
   if (debug()) {
-    debug().   addTarget(createFortranUnitTarget(unit,style,"(D)"));
+    debug().   addTarget( createStyleTarget(funit,style,"(D)") );
   }
 }
 void Log::setFortranUnit(int unit, Style style, const char*) {
-  info().    setTarget(createFortranUnitTarget(unit,style,"(I)"));
-  warning(). setTarget(createFortranUnitTarget(unit,style,"(W)"));
-  error().   setTarget(createFortranUnitTarget(unit,style,"(E)"));
+  eckit::LogTarget* funit = new FortranUnitTarget(unit);
+  info().    setTarget( createStyleTarget(funit,style,"(I)") );
+  warning(). setTarget( createStyleTarget(funit,style,"(W)") );
+  error().   setTarget( createStyleTarget(funit,style,"(E)") );
   if (debug()) {
-    debug().   setTarget(createFortranUnitTarget(unit,style,"(D)"));
+    debug(). setTarget( createStyleTarget(funit,style,"(D)") );
+  }
+}
+
+void Log::addFile(const char* path, Style style, const char*) {
+  eckit::LogTarget* file = new eckit::FileTarget(path);
+  info().    addTarget( createStyleTarget(file,style,"(I)") );
+  warning(). addTarget( createStyleTarget(file,style,"(W)") );
+  error().   addTarget( createStyleTarget(file,style,"(E)") );
+  if (debug()) {
+    debug(). addTarget( createStyleTarget(file,style,"(D)") );
+  }
+}
+void Log::setFile(const char* path, Style style, const char*) {
+  eckit::LogTarget* file = new eckit::FileTarget(path);
+  info().    setTarget( createStyleTarget(file,style,"(I)") );
+  warning(). setTarget( createStyleTarget(file,style,"(W)") );
+  error().   setTarget( createStyleTarget(file,style,"(E)") );
+  if (debug()) {
+    debug(). setTarget( createStyleTarget(file,style,"(D)") );
+  }
+}
+
+void Log::addStdOut(Style style, const char*) {
+  eckit::LogTarget* stdout = new eckit::OStreamTarget(std::cout);
+  info().    addTarget( createStyleTarget(stdout,style,"(I)") );
+  warning(). addTarget( createStyleTarget(stdout,style,"(W)") );
+  error().   addTarget( createStyleTarget(stdout,style,"(E)") );
+  if (debug()) {
+    debug(). addTarget( createStyleTarget(stdout,style,"(D)") );
+  }
+}
+
+void Log::setStdOut(Style style, const char*) {
+  eckit::LogTarget* stdout = new eckit::OStreamTarget(std::cout);
+  info().    setTarget( createStyleTarget(stdout,style,"(I)") );
+  warning(). setTarget( createStyleTarget(stdout,style,"(W)") );
+  error().   setTarget( createStyleTarget(stdout,style,"(E)") );
+  if (debug()) {
+    debug(). setTarget( createStyleTarget(stdout,style,"(D)") );
   }
 }
 
