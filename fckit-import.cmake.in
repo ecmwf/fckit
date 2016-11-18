@@ -12,22 +12,22 @@ function( fctest_generate_runner )
 
   cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
 
-	get_filename_component(base ${_PAR_FILENAME} NAME_WE)
-	set(base_abs ${CMAKE_CURRENT_SOURCE_DIR}/${base})
-        set(outfile ${CMAKE_CURRENT_BINARY_DIR}/${base}_main.F90)
-	set(${_PAR_OUTPUT} ${outfile} PARENT_SCOPE)
+  get_filename_component(base ${_PAR_FILENAME} NAME_WE)
+  set(base_abs ${CMAKE_CURRENT_SOURCE_DIR}/${base})
+  set(outfile ${CMAKE_CURRENT_BINARY_DIR}/${base}_main.F90)
+  set(${_PAR_OUTPUT} ${outfile} PARENT_SCOPE)
 
   list( APPEND _depends
     ${_PAR_FILENAME}
     ${_PAR_DEPENDS}
   )
 
-	add_custom_command(
-		OUTPUT ${outfile}
-		COMMAND ${FCTEST_GENERATOR} -i ${CMAKE_CURRENT_SOURCE_DIR}/${_PAR_FILENAME} -o ${outfile}
-		DEPENDS ${_depends} )
+  add_custom_command(
+    OUTPUT ${outfile}
+    COMMAND ${FCTEST_GENERATOR} -i ${CMAKE_CURRENT_SOURCE_DIR}/${_PAR_FILENAME} -o ${outfile}
+    DEPENDS ${_depends} )
 
-	set_source_files_properties(${outfile} PROPERTIES GENERATED TRUE)
+  set_source_files_properties(${outfile} PROPERTIES GENERATED TRUE)
 
 endfunction()
 
@@ -37,7 +37,7 @@ macro( add_fctest )
 
   set( options           )
   set( single_value_args TARGET )
-  set( multi_value_args SOURCES LIBS )
+  set( multi_value_args SOURCES LIBS LABELS )
 
   cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
 
@@ -52,6 +52,10 @@ macro( add_fctest )
                           FILENAME ${TESTSUITE} 
                           DEPENDS ${_PAR_LIBS} )
 
-  ecbuild_add_test( TARGET ${_PAR_TARGET} ${_PAR_UNPARSED_ARGUMENTS} SOURCES ${TESTRUNNER} ${_PAR_SOURCES} LIBS ${_PAR_LIBS} )
+  set( _PAR_LABELS fortran ${_PAR_LABELS} )
+  ecbuild_add_test( TARGET ${_PAR_TARGET} ${_PAR_UNPARSED_ARGUMENTS}
+                    SOURCES ${TESTRUNNER} ${_PAR_SOURCES}
+                    LIBS ${_PAR_LIBS}
+                    LABELS ${_PAR_LABELS} )
 
 endmacro()
