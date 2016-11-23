@@ -2,6 +2,7 @@
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
 #include "eckit/thread/Once.h"
+#include "eckit/log/Log.h"
 
 // Temporary until ECKIT-166 is fixed, only included for MacOSX
 #ifdef BUG_ECKIT_166
@@ -60,6 +61,9 @@ void Main::finalise()
       }
     }
 #endif
+
+// Temporary until ECKIT-175 is fixed
+    eckit::Log::reset();
 }
 
 } // namespace fckit

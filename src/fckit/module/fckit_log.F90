@@ -130,8 +130,8 @@ subroutine debug(msg,newl,flush)
   character(kind=c_char,len=*), intent(in) :: msg
   logical, intent(in), optional :: newl, flush
   integer :: opt_newl, opt_flush
-  opt_newl  = 1 ; if( present(newl) ) then; if( .not. newl )  opt_newl  = 0; endif
-  opt_flush = 1 ; if( present(flush)) then; if( .not. flush ) opt_flush = 0; endif
+  opt_newl  = 1 ; if( present(newl) ) then; if( .not. newl ) opt_newl  = 0; endif
+  opt_flush = 0 ; if( present(flush)) then; if(      flush ) opt_flush = 1; endif
   call fckit__log_debug(c_str_right_trim(msg),opt_newl,opt_flush)
 end subroutine
 
@@ -142,8 +142,8 @@ subroutine info(msg,newl,flush)
   character(kind=c_char,len=*), intent(in) :: msg
   logical, intent(in), optional :: newl, flush
   integer :: opt_newl, opt_flush
-  opt_newl  = 1 ; if( present(newl) ) then; if( .not. newl )  opt_newl  = 0; endif
-  opt_flush = 1 ; if( present(flush)) then; if( .not. flush ) opt_flush = 0; endif
+  opt_newl  = 1 ; if( present(newl) ) then; if( .not. newl ) opt_newl  = 0; endif
+  opt_flush = 0 ; if( present(flush)) then; if(      flush ) opt_flush = 1; endif
   call fckit__log_info(c_str_right_trim(msg),opt_newl,opt_flush)
 end subroutine
 
@@ -154,8 +154,8 @@ subroutine warning(msg,newl,flush)
   character(kind=c_char,len=*), intent(in) :: msg
   logical, intent(in), optional :: newl, flush
   integer :: opt_newl, opt_flush
-  opt_newl  = 1 ; if( present(newl) ) then; if( .not. newl )  opt_newl  = 0; endif
-  opt_flush = 1 ; if( present(flush)) then; if( .not. flush ) opt_flush = 0; endif
+  opt_newl  = 1 ; if( present(newl) ) then; if( .not. newl ) opt_newl  = 0; endif
+  opt_flush = 0 ; if( present(flush)) then; if(      flush ) opt_flush = 1; endif
   call fckit__log_warning(c_str_right_trim(msg),opt_newl,opt_flush)
 end subroutine
 
@@ -166,8 +166,8 @@ subroutine error(msg,newl,flush)
   character(kind=c_char,len=*), intent(in) :: msg
   logical, intent(in), optional :: newl, flush
   integer :: opt_newl, opt_flush
-  opt_newl  = 1 ; if( present(newl) ) then; if( .not. newl )  opt_newl  = 0; endif
-  opt_flush = 1 ; if( present(flush)) then; if( .not. flush ) opt_flush = 0; endif
+  opt_newl  = 1 ; if( present(newl) ) then; if( .not. newl ) opt_newl  = 0; endif
+  opt_flush = 0 ; if( present(flush)) then; if(      flush ) opt_flush = 1; endif
   call fckit__log_error(c_str_right_trim(msg),opt_newl,opt_flush)
 end subroutine
 
