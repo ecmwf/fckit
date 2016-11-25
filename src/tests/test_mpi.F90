@@ -37,11 +37,12 @@ TEST( test_add_comm )
   integer, parameter :: MPI_COMM_SELF=1
   type(fckit_mpi_comm) :: comm
 
-  write(0,*) "test_add_comm", MPI_COMM_SELF
-  comm = fckit_mpi_comm(MPI_COMM_SELF)
-
-  FCTEST_CHECK_EQUAL( comm%size(), 1 )
-  FCTEST_CHECK_EQUAL( comm%rank(), 0 )
+  ! Intel's MPI does not define MPI_COMM_SELF equal to 1
+  !write(0,*) "test_add_comm", MPI_COMM_SELF
+  !comm = fckit_mpi_comm(MPI_COMM_SELF)
+  !
+  !FCTEST_CHECK_EQUAL( comm%size(), 1 )
+  !FCTEST_CHECK_EQUAL( comm%rank(), 0 )
 
 END_TEST
 
