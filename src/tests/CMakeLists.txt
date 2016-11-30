@@ -47,6 +47,7 @@ endif()
 
 
 ecbuild_add_test( TARGET fckit_test_cpp
+  LINKER_LANGUAGE CXX
   SOURCES test_cpp.cc test_cpp_fortcode.F90
   INCLUDES ${ECKIT_INCLUDE_DIRS}
   CONDITION HAVE_ECKIT

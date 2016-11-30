@@ -58,17 +58,8 @@ else()
     set( fckit_type STATIC )
 endif()
 
-if( fckit_type MATCHES "SHARED" AND CMAKE_Fortran_COMPILER_ID MATCHES "PGI" )
-  if( CMAKE_Fortran_COMPILER_VERSION VERSION_LESS 16.8 )
-    ecbuild_warn("PGI compiler version tested up to 16.7 does link fckit shared libraries."
-                 "Change fckit linking to STATIC")
-    set( fckit_type STATIC )
-  endif()
-endif()
-
 ecbuild_add_library( TARGET     fckit
-                     TYPE       ${fckit_type}
-                     LINKER_LANGUAGE CXX
+                     LINKER_LANGUAGE Fortran
                      SOURCES
                                 fctest.F90
                                 module/fckit_array.F90
