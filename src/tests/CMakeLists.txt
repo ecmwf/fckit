@@ -40,7 +40,7 @@ add_fctest( TARGET  fckit_test_mpi
             SOURCES test_mpi.F90
             MPI 4
             DEFINITIONS ${FCKIT_DEFINITIONS}
-            CONDITION HAVE_ECKIT
+            CONDITION ECKIT_HAVE_MPI
             LIBS    fckit)
 
 endif()
