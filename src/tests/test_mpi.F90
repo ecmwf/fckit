@@ -2,6 +2,11 @@
 
 TESTSUITE( test_mpi )
 
+TESTSUITE_INIT
+  use fckit_main_module
+  call main%init()
+END_TESTSUITE_INIT
+
 TESTSUITE_FINALIZE
   use fckit_main_module
   call main%final()

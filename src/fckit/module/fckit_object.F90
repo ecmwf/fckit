@@ -13,7 +13,7 @@ public fckit_object
 type, abstract :: fckit_object
 
   type(c_ptr), private :: cpp_object_ptr = c_null_ptr
-  logical, private :: initialized = .false.
+  !logical, private :: initialized = .false.
 
 contains
 
@@ -59,24 +59,17 @@ subroutine reset_c_ptr(this,cptr)
   else
     this%cpp_object_ptr = c_null_ptr
   endif
-
-  if( c_ptr_compare_equal(this%cpp_object_ptr, c_null_ptr) ) then
-    this%initialized = .false.
-  else
-    this%initialized = .true.
-  endif
 end subroutine
 
 function is_null(this)
   use, intrinsic :: iso_c_binding, only: c_associated
   logical :: is_null
   class(fckit_object) :: this
-!  if( c_associated( this%cpp_object_ptr ) ) then
-!    is_null = .False.
-!  else
-!    is_null = .True.
-!  endif
-  is_null = .not. this%initialized
+  if( c_associated( this%cpp_object_ptr ) ) then
+    is_null = .False.
+  else
+    is_null = .True.
+  endif
 end function
 
 logical function equal(obj1,obj2)

@@ -24,12 +24,15 @@ list( APPEND eckit_required_src
     Log.cc
     Log.F90
 )
-endif()
 
 if( FCKIT_HAVE_MPI AND EC_OS_NAME MATCHES "macosx" )
   list( APPEND FCKIT_DEFINITIONS BUG_ECKIT_166 )
   list( APPEND ECKIT_LIBRARIES ${MPI_CXX_LIBRARIES} )
   ecbuild_include_mpi()
+endif()
+
+list( APPEND ECKIT_LIBRARIES ${ECBUILD_CXX_IMPLICIT_LINK_LIBRARIES} )
+
 endif()
 
 if( EC_HAVE_Fortran_FINALIZATION )
@@ -58,17 +61,8 @@ else()
     set( fckit_type STATIC )
 endif()
 
-if( fckit_type MATCHES "SHARED" AND CMAKE_Fortran_COMPILER_ID MATCHES "PGI" )
-  if( CMAKE_Fortran_COMPILER_VERSION VERSION_LESS 16.8 )
-    ecbuild_warn("PGI compiler version tested up to 16.7 does link fckit shared libraries."
-                 "Change fckit linking to STATIC")
-    set( fckit_type STATIC )
-  endif()
-endif()
-
 ecbuild_add_library( TARGET     fckit
-                     TYPE       ${fckit_type}
-                     LINKER_LANGUAGE CXX
+                     LINKER_LANGUAGE Fortran
                      SOURCES
                                 fctest.F90
                                 module/fckit_array.F90
