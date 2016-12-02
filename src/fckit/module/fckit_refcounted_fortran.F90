@@ -27,8 +27,6 @@ contains
 
 #ifdef EC_HAVE_Fortran_FINALIZATION
   final :: final_auto_f
-#else
-#warning Automatic finalization not supported by this compiler
 #endif
 
 endtype
