@@ -21,16 +21,13 @@ type :: fckit_log_type
   integer :: PREFIX = 1
   integer :: TIMESTAMP = 2
 contains
+
+  ! subroutines
   procedure, nopass, public :: debug
   procedure, nopass, public :: info
   procedure, nopass, public :: warning
   procedure, nopass, public :: error
   procedure, nopass, public :: panic
-  procedure, nopass, public :: info_channel
-  procedure, nopass, public :: warning_channel
-  procedure, nopass, public :: error_channel
-  procedure, nopass, public :: debug_channel
-
   procedure, nopass, public :: reset
   procedure, nopass, public :: add_stdout
   procedure, nopass, public :: set_stdout
@@ -38,6 +35,13 @@ contains
   procedure, nopass, public :: set_fortran_unit
   procedure, nopass, public :: add_file
   procedure, nopass, public :: set_file
+
+  ! functions
+  procedure, nopass, public :: info_channel
+  procedure, nopass, public :: warning_channel
+  procedure, nopass, public :: error_channel
+  procedure, nopass, public :: debug_channel
+
 end type
 type(fckit_log_type) :: log
 !------------------------------------------------------------------------------
