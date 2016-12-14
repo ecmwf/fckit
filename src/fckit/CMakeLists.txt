@@ -4,8 +4,11 @@ add_custom_target( fctest_includes SOURCES
 
 install( FILES ../../tools/fctest_generate_runner.py DESTINATION libexec )
 
+configure_file(fckit_defines.h.in  fckit_defines.h)
+
 if( HAVE_ECKIT )
 list( APPEND eckit_required_src
+    module/fckit.F90
     module/fckit_refcounted.cc
     module/fckit_refcounted.F90
     module/fckit_mpi.cc
@@ -73,6 +76,7 @@ ecbuild_add_library( TARGET     fckit
                                 ${eckit_required_src}
                      PRIVATE_INCLUDES
                                 ${ECKIT_INCLUDE_DIRS}
+                                ${CMAKE_CURRENT_BINARY_DIR}
                      LIBS
                                 ${ECKIT_LIBRARIES}
                      DEFINITIONS

@@ -1,0 +1,7 @@
+#ifndef fckit_defines
+#define fckit_defines
+
+#define FCKIT_GIT_SHA1      "@FCKIT_GIT_SHA1@"
+#define FCKIT_VERSION       "@FCKIT_VERSION@"
+
+#endif
