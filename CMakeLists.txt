@@ -36,7 +36,7 @@ ecbuild_find_python( REQUIRED NO_LIBS )
 ### Fortran ...
 ecbuild_enable_fortran( REQUIRED MODULE_DIRECTORY ${CMAKE_BINARY_DIR}/module )
 
-# Experimental
+# Experimental... (read: not working!)
 ecbuild_add_option( FEATURE FORTRAN_FINALIZATION
                     DEFAULT OFF ) 
 if( ENABLE_FORTRAN_FINALIZATION )
