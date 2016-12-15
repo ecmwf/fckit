@@ -3,10 +3,9 @@ module fckit_main_module
 implicit none
 private
 
-public :: main
 public :: fckit_main
 
-type :: fckit_main
+type :: fckit_main_type
 contains
   procedure, nopass, public :: ready
   procedure, nopass, public :: init
@@ -18,7 +17,7 @@ contains
   procedure, nopass, public :: displayname => displayname
 end type
 
-type(fckit_main), save :: main
+type(fckit_main_type), save :: fckit_main
 
 !------------------------------------------------------------------------------
 interface

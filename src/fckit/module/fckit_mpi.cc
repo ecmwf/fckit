@@ -5,15 +5,15 @@ using eckit::mpi::Comm;
 
 extern "C" {
 
-  const Comm* eckit__mpi__comm_default() {
+  const Comm* fckit__mpi__comm_default() {
     return &eckit::mpi::comm();
   }
 
-  const Comm* eckit__mpi__comm(const char* name) {
+  const Comm* fckit__mpi__comm(const char* name) {
     return &eckit::mpi::comm(name);
   }
 
-  const Comm* eckit__mpi__comm_wrap(int comm) {
+  const Comm* fckit__mpi__comm_wrap(int comm) {
     std::ostringstream s; s << "fort."<<comm;
     std::string name = s.str();
     if( not eckit::mpi::hasComm(name.c_str()) ) {
@@ -22,7 +22,7 @@ extern "C" {
     return &eckit::mpi::comm(name.c_str());
   }
 
-  void eckit__mpi__setCommDefault_int(int comm) {
+  void fckit__mpi__setCommDefault_int(int comm) {
     std::ostringstream s; s << "fort."<<comm;
     std::string name = s.str();
     if( not eckit::mpi::hasComm(name.c_str()) ) {
@@ -31,24 +31,109 @@ extern "C" {
     eckit::mpi::setCommDefault(name.c_str());
   }
 
-  void eckit__mpi__setCommDefault_name(const char* name) {
+  void fckit__mpi__setCommDefault_name(const char* name) {
     eckit::mpi::setCommDefault(name);
   }
 
-  int eckit__mpi__size(const Comm* comm) {
-    return comm->size();
+  int fckit__mpi__size(const Comm* comm) {
+    if( comm )
+      return comm->size();
+    else
+      return eckit::mpi::comm().size();
   }
 
-  int eckit__mpi__rank(const Comm* comm) {
-    return comm->rank();
+  int fckit__mpi__rank(const Comm* comm) {
+    if( comm )
+      return comm->rank();
+    else
+      return eckit::mpi::comm().rank();
   }
 
-  void eckit__mpi__barrier(const Comm* comm) {
-    return comm->barrier();
+  void fckit__mpi__barrier(const Comm* comm) {
+    if( comm )
+      return comm->barrier();
+    else
+      return eckit::mpi::comm().barrier();
   }
 
-  void eckit__mpi__abort(const Comm* comm, int error_code) {
-    return comm->abort(error_code);
+  void fckit__mpi__abort(const Comm* comm, int error_code) {
+    if( comm )
+      return comm->abort(error_code);
+    else
+      return eckit::mpi::comm().abort(error_code);
+  }
+
+
+  int fckit__mpi__sum()     { return int(eckit::mpi::sum());    }
+  int fckit__mpi__prod()    { return int(eckit::mpi::prod());   }
+  int fckit__mpi__max()     { return int(eckit::mpi::max());    }
+  int fckit__mpi__min()     { return int(eckit::mpi::min());    }
+  int fckit__mpi__maxloc()  { return int(eckit::mpi::maxloc()); }
+  int fckit__mpi__minloc()  { return int(eckit::mpi::minloc()); }
+
+  void fckit__mpi__allreduce_int32(const Comm* comm, const int* in, int* out, size_t count, int operation)
+  {
+    if( comm ) 
+      comm->allReduce(in,out,count,eckit::mpi::Operation::Code(operation));
+    else
+      eckit::mpi::comm().allReduce(in,out,count,eckit::mpi::Operation::Code(operation));
+  }
+
+  void fckit__mpi__allreduce_int64(const Comm* comm, const long* in, long* out, size_t count, int operation)
+  {
+    if( comm ) 
+      comm->allReduce(in,out,count,eckit::mpi::Operation::Code(operation));
+    else
+      eckit::mpi::comm().allReduce(in,out,count,eckit::mpi::Operation::Code(operation));
+  }
+
+  void fckit__mpi__allreduce_real32(const Comm* comm, const float* in, float* out, size_t count, int operation)
+  {
+    if( comm ) 
+      comm->allReduce(in,out,count,eckit::mpi::Operation::Code(operation));
+    else
+      eckit::mpi::comm().allReduce(in,out,count,eckit::mpi::Operation::Code(operation));
+  }
+  
+  void fckit__mpi__allreduce_real64(const Comm* comm, const double* in, double* out, size_t count, int operation)
+  {
+    if( comm ) 
+      comm->allReduce(in,out,count,eckit::mpi::Operation::Code(operation));
+    else
+      eckit::mpi::comm().allReduce(in,out,count,eckit::mpi::Operation::Code(operation));
+  }
+
+
+  void fckit__mpi__broadcast_int32(const Comm* comm, int* buffer, size_t count, size_t root)
+  {
+    if( comm ) 
+      comm->broadcast(buffer,count,root);
+    else
+      eckit::mpi::comm().broadcast(buffer,count,root);
+  }
+
+  void fckit__mpi__broadcast_int64(const Comm* comm, long* buffer, size_t count, size_t root)
+  {
+    if( comm ) 
+      comm->broadcast(buffer,count,root);
+    else
+      eckit::mpi::comm().broadcast(buffer,count,root);
+  }
+
+  void fckit__mpi__broadcast_real32(const Comm* comm, float* buffer, size_t count, size_t root)
+  {
+    if( comm ) 
+      comm->broadcast(buffer,count,root);
+    else
+      eckit::mpi::comm().broadcast(buffer,count,root);
+  }
+
+  void fckit__mpi__broadcast_real64(const Comm* comm, double* buffer, size_t count, size_t root)
+  {
+    if( comm ) 
+      comm->broadcast(buffer,count,root);
+    else
+      eckit::mpi::comm().broadcast(buffer,count,root);
   }
 
 }

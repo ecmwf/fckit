@@ -3,7 +3,7 @@ use fckit_object_module, only: fckit_object
 implicit none
 private
 
-public :: log
+public :: fckit_log
 public :: logchannel
 
 private :: fckit_object
@@ -43,7 +43,7 @@ contains
   procedure, nopass, public :: debug_channel
 
 end type
-type(fckit_log_type) :: log
+type(fckit_log_type) :: fckit_log
 !------------------------------------------------------------------------------
 
 interface
@@ -189,7 +189,7 @@ subroutine add_fortran_unit(unit,style)
   integer(c_int), intent(in) :: unit
   integer(c_int), intent(in), optional :: style
   integer(c_int) :: opt_style
-  opt_style = log%PREFIX
+  opt_style = fckit_log%PREFIX
   if( present( style ) ) opt_style = style
   call fckit__log_set_fortran_unit(unit,style)
 end subroutine
@@ -201,7 +201,7 @@ subroutine set_fortran_unit(unit,style)
   integer(c_int), intent(in) :: unit
   integer(c_int), intent(in), optional :: style
   integer(c_int) :: opt_style
-  opt_style = log%PREFIX
+  opt_style = fckit_log%PREFIX
   if( present( style ) ) opt_style = style
   call fckit__log_set_fortran_unit(unit,opt_style)
 end subroutine
@@ -212,7 +212,7 @@ subroutine add_file(path,style)
   character(len=*), intent(in) :: path
   integer(c_int), intent(in), optional :: style
   integer(c_int) :: opt_style
-  opt_style = log%PREFIX
+  opt_style = fckit_log%PREFIX
   if( present( style ) ) opt_style = style
   call fckit__log_add_file(c_str(path),opt_style)
 end subroutine
@@ -224,7 +224,7 @@ subroutine set_file(path,style)
   character(len=*), intent(in) :: path
   integer(c_int), intent(in), optional :: style
   integer(c_int) :: opt_style
-  opt_style = log%PREFIX
+  opt_style = fckit_log%PREFIX
   if( present( style ) ) opt_style = style
   call fckit__log_set_file(c_str(path),opt_style)
 end subroutine
@@ -233,7 +233,7 @@ subroutine add_stdout(style)
   use, intrinsic :: iso_c_binding
   integer(c_int), intent(in), optional :: style
   integer(c_int) :: opt_style
-  opt_style = log%PREFIX
+  opt_style = fckit_log%PREFIX
   if( present( style ) ) opt_style = style
   call fckit__log_add_stdout(opt_style)
 end subroutine
@@ -243,7 +243,7 @@ subroutine set_stdout(style)
   use, intrinsic :: iso_c_binding
   integer(c_int), intent(in), optional :: style
   integer(c_int) :: opt_style
-  opt_style = log%PREFIX
+  opt_style = fckit_log%PREFIX
   if( present( style ) ) opt_style = style
   call fckit__log_set_stdout(opt_style)
 end subroutine
