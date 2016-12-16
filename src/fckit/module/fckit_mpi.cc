@@ -102,7 +102,38 @@ extern "C" {
     else
       eckit::mpi::comm().allReduce(in,out,count,eckit::mpi::Operation::Code(operation));
   }
+  
+  void fckit__mpi__allreduce_inplace_int32(const Comm* comm, int* inout, size_t count, int operation)
+  {
+    if( comm ) 
+      comm->allReduceInPlace(inout,count,eckit::mpi::Operation::Code(operation));
+    else
+      eckit::mpi::comm().allReduceInPlace(inout,count,eckit::mpi::Operation::Code(operation));
+  }
 
+  void fckit__mpi__allreduce_inplace_int64(const Comm* comm, long* inout, size_t count, int operation)
+  {
+    if( comm ) 
+      comm->allReduceInPlace(inout,count,eckit::mpi::Operation::Code(operation));
+    else
+      eckit::mpi::comm().allReduceInPlace(inout,count,eckit::mpi::Operation::Code(operation));
+  }
+
+  void fckit__mpi__allreduce_inplace_real32(const Comm* comm, float* inout, size_t count, int operation)
+  {
+    if( comm ) 
+      comm->allReduceInPlace(inout,count,eckit::mpi::Operation::Code(operation));
+    else
+      eckit::mpi::comm().allReduceInPlace(inout,count,eckit::mpi::Operation::Code(operation));
+  }
+  
+  void fckit__mpi__allreduce_inplace_real64(const Comm* comm, double* inout, size_t count, int operation)
+  {
+    if( comm ) 
+      comm->allReduceInPlace(inout,count,eckit::mpi::Operation::Code(operation));
+    else
+      eckit::mpi::comm().allReduceInPlace(inout,count,eckit::mpi::Operation::Code(operation));
+  }
 
   void fckit__mpi__broadcast_int32(const Comm* comm, int* buffer, size_t count, size_t root)
   {

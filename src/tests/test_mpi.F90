@@ -146,6 +146,88 @@ TEST( test_allreduce )
 
 END_TEST
 
+TEST( test_allreduce_inplace )
+  use fckit_mpi_module
+  use, intrinsic :: iso_c_binding
+  implicit none
+  type(fckit_mpi_comm) :: comm
+  real(c_double)  :: real64, real64_r1(2)
+  real(c_float)   :: real32, real32_r2(3,2)
+  integer(c_int)  :: int32,  int32_r3(4,3,2), j
+  integer(c_long) :: int64,  int64_r4(4,3,2,2), check_prod, check_sum
+  
+  write(0,*) "test_allreduce_inplace"
+  comm = fckit_mpi_comm("world")
+
+  real64 = 2
+  call comm%allreduce(real64,fckit_mpi_sum())
+  FCTEST_CHECK_EQUAL( int(real64), 2*comm%size() )
+  real64 = comm%rank()+1
+  call comm%allreduce(real64,fckit_mpi_max())
+  FCTEST_CHECK_EQUAL( int(real64), comm%size())
+  real64 = comm%rank()+1
+  call comm%allreduce(real64,fckit_mpi_min())
+  FCTEST_CHECK_EQUAL( int(real64), 1 )
+
+  check_prod = 1
+  check_sum = 0
+  do j=1,comm%size()
+    check_prod = check_prod * j
+    check_sum  = check_sum + j
+  enddo
+  real64 = comm%rank()+1
+  call comm%allreduce(real64,fckit_mpi_prod())
+  FCTEST_CHECK_EQUAL( int(real64), int(check_prod) )
+  
+  real32 = 3
+  call comm%allreduce(real32,fckit_mpi_sum())
+  FCTEST_CHECK_EQUAL( int(real32), 3*comm%size() )
+
+  int32 = 4
+  call comm%allreduce(int32,fckit_mpi_sum())
+  FCTEST_CHECK_EQUAL( int(int32), 4*comm%size() )
+
+  int64 = 5
+  call comm%allreduce(int64,fckit_mpi_sum())
+  FCTEST_CHECK_EQUAL( int(int64), 5*comm%size() )
+
+ 
+  int64_r4(1,1,1,1) = 2
+  int64_r4(2,3,1,2) = comm%rank()+1
+  int64_r4(3,1,2,1) = comm%size()
+
+  call comm%allreduce(int64_r4,fckit_mpi_prod())
+  FCTEST_CHECK_EQUAL(int64_r4(2,3,1,2),check_prod)
+
+  int64_r4(1,1,1,1) = 2
+  int64_r4(2,3,1,2) = comm%rank()+1
+  int64_r4(3,1,2,1) = comm%size()
+
+  call comm%allreduce(int64_r4,fckit_mpi_sum())
+  FCTEST_CHECK_EQUAL(int64_r4(2,3,1,2),check_sum)
+  FCTEST_CHECK_EQUAL(int64_r4(3,1,2,1),int(comm%size()*comm%size(),c_long))
+  FCTEST_CHECK_EQUAL(int64_r4(1,1,1,1),int(comm%size()*2,c_long))
+
+  int64_r4(1,1,1,1) = 2
+  int64_r4(2,3,1,2) = comm%rank()+1
+  int64_r4(3,1,2,1) = comm%size()
+
+  call comm%allreduce(int64_r4,fckit_mpi_max())
+  FCTEST_CHECK_EQUAL(int64_r4(2,3,1,2),int(comm%size(),c_long))
+  FCTEST_CHECK_EQUAL(int64_r4(3,1,2,1),int(comm%size(),c_long))
+  FCTEST_CHECK_EQUAL(int64_r4(1,1,1,1),int(2,c_long))
+  
+  int64_r4(1,1,1,1) = 2
+  int64_r4(2,3,1,2) = comm%rank()+1
+  int64_r4(3,1,2,1) = comm%size()
+  
+  call comm%allreduce(int64_r4,fckit_mpi_min())
+  FCTEST_CHECK_EQUAL(int64_r4(2,3,1,2),int(1,c_long))
+  FCTEST_CHECK_EQUAL(int64_r4(3,1,2,1),int(comm%size(),c_long))
+  FCTEST_CHECK_EQUAL(int64_r4(1,1,1,1),int(2,c_long))
+
+END_TEST
+
 TEST( test_broadcast )
   use fckit_mpi_module
   use, intrinsic :: iso_c_binding
