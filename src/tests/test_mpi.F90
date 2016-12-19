@@ -39,15 +39,16 @@ TEST( test_add_comm )
   use fckit_module
   use, intrinsic :: iso_c_binding
   implicit none
-  integer, parameter :: MPI_COMM_SELF=1
-  type(fckit_mpi_comm) :: comm
+  integer :: fcomm_self
+  type(fckit_mpi_comm) :: comm1, comm2
 
-  ! Intel's MPI does not define MPI_COMM_SELF equal to 1
-  !write(0,*) "test_add_comm", MPI_COMM_SELF
-  !comm = fckit_mpi_comm(MPI_COMM_SELF)
-  !
-  !FCTEST_CHECK_EQUAL( comm%size(), 1 )
-  !FCTEST_CHECK_EQUAL( comm%rank(), 0 )
+  comm1 = fckit_mpi_comm("self")
+  fcomm_self = comm1%tag()
+  
+  comm2 = fckit_mpi_comm(fcomm_self)
+
+  FCTEST_CHECK_EQUAL( comm2%size(), 1 )
+  FCTEST_CHECK_EQUAL( comm2%rank(), 0 )
 
 END_TEST
 
@@ -252,6 +253,41 @@ TEST( test_broadcast )
   call comm%broadcast(int32,root=comm%size()-1)
   FCTEST_CHECK_EQUAL(int32, 3)
   
+
+END_TEST
+
+TEST( test_send_receive )
+  use fckit_mpi_module
+  use, intrinsic :: iso_c_binding
+  implicit none
+  type(fckit_mpi_comm) :: comm
+  type(fckit_mpi_status) :: status
+  integer :: tag=99
+  real(c_double)  :: real64
+  
+  write(0,*) "test_send_receive"
+  comm = fckit_mpi_comm("world")
+
+  real64 = 0._c_double
+
+  if(comm%rank()==0) then
+
+    real64 = 0.1_c_double
+    call comm%send(real64,comm%size()-1,tag)
+
+  else if( comm%rank()==comm%size()-1) then
+
+    call comm%receive(real64,0,tag,status)
+    FCTEST_CHECK_CLOSE(real64, 0.1_c_double,1.e-9_c_double)
+    FCTEST_CHECK_EQUAL(status%source(), 0)
+    FCTEST_CHECK_EQUAL(status%tag(), tag)
+    FCTEST_CHECK_EQUAL(status%error(), 0)
+    
+  else
+
+    FCTEST_CHECK_CLOSE(real64, 0._c_double,1.e-9_c_double)
+    
+  endif
 
 END_TEST
 

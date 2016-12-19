@@ -35,6 +35,13 @@ extern "C" {
     eckit::mpi::setCommDefault(name);
   }
 
+  int fckit__mpi__comm_tag(const Comm* comm) {
+    if( comm )
+      return comm->tag();
+    else
+      return eckit::mpi::comm().tag();
+  }
+
   int fckit__mpi__size(const Comm* comm) {
     if( comm )
       return comm->size();
@@ -166,6 +173,27 @@ extern "C" {
     else
       eckit::mpi::comm().broadcast(buffer,count,root);
   }
+  
+  void fckit__mpi__send_real64(const Comm* comm, double* buffer, size_t count, int dest, int tag)
+  {
+    if( comm )
+      comm->send(buffer,count,dest,tag);
+    else
+      eckit::mpi::comm().send(buffer,count,dest,tag);
+  }
+
+  void fckit__mpi__receive_real64(const Comm* comm, double* buffer, size_t count, int source, int tag, int* status)
+  {
+    eckit::mpi::Status _status;
+    if( comm )
+      _status = comm->receive(buffer,count,source,tag);
+    else
+      _status = eckit::mpi::comm().receive(buffer,count,source,tag);
+    status[0] = _status.source();
+    status[1] = _status.tag();
+    status[2] = _status.error();
+  }
+
 
 }
 

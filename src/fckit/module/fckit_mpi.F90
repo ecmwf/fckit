@@ -9,6 +9,7 @@ private :: fckit_object
 ! Public interface
 
 public :: fckit_mpi_comm
+public :: fckit_mpi_status
 public :: fckit_mpi_setCommDefault
 public :: fckit_mpi_sum
 public :: fckit_mpi_prod
@@ -32,6 +33,7 @@ contains
   procedure, public :: final => final_c
   procedure, public :: delete
 
+  procedure, public :: tag
   procedure, public :: size
   procedure, public :: rank
   procedure, public :: barrier
@@ -81,6 +83,9 @@ contains
   procedure, private :: broadcast_int64_r0
   procedure, private :: broadcast_real32_r0
   procedure, private :: broadcast_real64_r0
+  procedure, private :: send_real64_r0
+  procedure, private :: receive_real64_r0
+
   
   generic, public :: allreduce => &
     & allreduce_int32_r0  ,&
@@ -129,6 +134,12 @@ contains
     & broadcast_int64_r0   ,&
     & broadcast_real32_r0  ,&
     & broadcast_real64_r0
+    
+  generic, public :: send => &
+    & send_real64_r0
+
+  generic, public :: receive => &
+    & receive_real64_r0
 
 #ifdef EC_HAVE_Fortran_FINALIZATION
  final :: final_auto
@@ -141,9 +152,24 @@ interface fckit_mpi_comm
   module procedure comm_wrap
 end interface
 
+
+type fckit_mpi_status
+  integer, private :: status(3)
+contains
+  procedure, public :: source => status_source
+  procedure, public :: tag => status_tag
+  procedure, public :: error => status_error
+end type
+
 !========================================================================
 
 interface
+
+  function fckit__mpi__comm_tag(comm) bind(c)
+    use, intrinsic :: iso_c_binding, only: c_ptr, c_int
+    integer(c_int) :: fckit__mpi__comm_tag
+    type(c_ptr), value :: comm
+  end function
 
   ! const fckit::mpi::Comm* fckit__mpi__comm_default()
   function fckit__mpi__comm_default() bind(c)
@@ -265,7 +291,6 @@ interface
     integer(c_size_t), value :: count
     integer(c_int), value :: operation
   end subroutine
-  
 
   subroutine fckit__mpi__allreduce_inplace_int32(comm,inout,count,operation) bind(c)
     use, intrinsic :: iso_c_binding, only : c_ptr, c_int, c_size_t
@@ -329,6 +354,25 @@ interface
     real(c_double), dimension(*) :: buffer
     integer(c_size_t), value :: count
     integer(c_size_t), value :: root
+  end subroutine
+  
+  subroutine fckit__mpi__send_real64(comm,buffer,count,dest,tag) bind(c)
+    use, intrinsic :: iso_c_binding, only : c_ptr, c_double, c_size_t, c_int  
+    type(c_ptr), value :: comm
+    real(c_double), dimension(*) :: buffer
+    integer(c_size_t), value :: count
+    integer(c_int), value :: dest
+    integer(c_int), value :: tag
+  end subroutine
+  
+  subroutine fckit__mpi__receive_real64(comm,buffer,count,dest,tag,status) bind(c)
+    use, intrinsic :: iso_c_binding, only : c_ptr, c_double, c_size_t, c_int  
+    type(c_ptr), value :: comm
+    real(c_double), dimension(*) :: buffer
+    integer(c_size_t), value :: count
+    integer(c_int), value :: dest
+    integer(c_int), value :: tag
+    integer(c_int), dimension(*) :: status
   end subroutine
   
 end interface
@@ -435,6 +479,14 @@ end subroutine
 
 !---------------------------------------------------------------------------------------
 
+function tag(this)
+  integer :: tag
+  class(fckit_mpi_comm), intent(in) :: this
+  tag = fckit__mpi__comm_tag(this%c_ptr())
+end function
+
+!---------------------------------------------------------------------------------------
+  
 function rank(this)
   integer :: rank
   class(fckit_mpi_comm), intent(in) :: this
@@ -998,6 +1050,54 @@ subroutine broadcast_real64_r0(this,buffer,root)
   call fckit__mpi__broadcast_real64(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),int(root,c_size_t))
 end subroutine
 
+!---------------------------------------------------------------------------------------
+
+function status_source(this) result(source)
+  integer :: source
+  class(fckit_mpi_status), intent(in) :: this
+  source = this%status(1)
+end function
+
+function status_tag(this) result(tag)
+  integer :: tag
+  class(fckit_mpi_status), intent(in) :: this
+  tag = this%status(2)
+end function
+
+function status_error(this) result(error)
+  integer :: error
+  class(fckit_mpi_status), intent(in) :: this
+  error = this%status(3)
+end function
+
+!---------------------------------------------------------------------------------------
+
+subroutine send_real64_r0(this,buffer,dest,tag)
+  use, intrinsic :: iso_c_binding, only : c_int, c_double, c_size_t
+  use fckit_array_module, only: array_view1d
+  class(fckit_mpi_comm), intent(in) :: this
+  real(c_double), intent(inout) :: buffer
+  integer(c_int), intent(in) :: dest
+  integer(c_int), intent(in) :: tag
+  real(c_double), pointer :: view_buffer(:)
+  view_buffer  => array_view1d(buffer)
+  call fckit__mpi__send_real64(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),dest,tag)
+end subroutine
+
+!---------------------------------------------------------------------------------------
+
+subroutine receive_real64_r0(this,buffer,source,tag,status)
+  use, intrinsic :: iso_c_binding, only : c_int, c_double, c_size_t
+  use fckit_array_module, only: array_view1d
+  class(fckit_mpi_comm), intent(in) :: this
+  real(c_double), intent(inout) :: buffer
+  integer(c_int), intent(in) :: source
+  integer(c_int), intent(in) :: tag
+  type(fckit_mpi_status), intent(out) :: status
+  real(c_double), pointer :: view_buffer(:)
+  view_buffer  => array_view1d(buffer)
+  call fckit__mpi__receive_real64(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),source,tag,status%status)
+end subroutine
 
 !========================================================================
 
