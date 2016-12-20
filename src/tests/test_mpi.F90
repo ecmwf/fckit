@@ -43,7 +43,7 @@ TEST( test_add_comm )
   type(fckit_mpi_comm) :: comm1, comm2
 
   comm1 = fckit_mpi_comm("self")
-  fcomm_self = comm1%tag()
+  fcomm_self = comm1%communicator()
   
   comm2 = fckit_mpi_comm(fcomm_self)
 
@@ -256,39 +256,94 @@ TEST( test_broadcast )
 
 END_TEST
 
-TEST( test_send_receive )
+
+TEST( test_nonblocking_send_receive )
+  use fckit_mpi_module
+  use, intrinsic :: iso_c_binding
+  implicit none
+  type(fckit_mpi_comm) :: comm
+  integer :: sendreq, recvreq
+  type(fckit_mpi_status) :: status
+  integer :: tag=1
+  real(c_double)  :: send_real64, recv_real64
+  
+  write(0,*) "test_nonblocking_send_receive"
+  comm = fckit_mpi_comm("world")
+
+  send_real64 = 0._c_double
+
+
+  if( comm%rank()==comm%size()-1) then
+
+    recvreq = comm%ireceive(recv_real64,0,tag)
+
+    write(0,*) "receive-request:",recvreq
+
+  endif
+
+  if(comm%rank()==0) then
+
+    send_real64 = 0.1_c_double
+    sendreq = comm%isend(send_real64,comm%size()-1,tag)
+    
+    write(0,*) "send-request:",sendreq
+
+  endif
+
+
+  if( comm%rank()==comm%size()-1) then
+    call comm%wait(recvreq,status)
+    FCTEST_CHECK_CLOSE(recv_real64, 0.1_c_double,1.e-9_c_double)
+  endif
+  
+  if(comm%rank()==0) then
+    call comm%wait(sendreq,status)
+  endif
+  
+!   FCTEST_CHECK_EQUAL(status%source(), 0)
+!   FCTEST_CHECK_EQUAL(status%tag(), tag)
+!   FCTEST_CHECK_EQUAL(status%error(), 0)
+
+END_TEST
+
+TEST( test_blocking_send_receive )
   use fckit_mpi_module
   use, intrinsic :: iso_c_binding
   implicit none
   type(fckit_mpi_comm) :: comm
   type(fckit_mpi_status) :: status
   integer :: tag=99
-  real(c_double)  :: real64
+  real(c_double)  :: send_real64, recv_real64
   
-  write(0,*) "test_send_receive"
+  write(0,*) "test_blocking_send_receive"
   comm = fckit_mpi_comm("world")
 
-  real64 = 0._c_double
+  send_real64 = 0._c_double
 
   if(comm%rank()==0) then
 
-    real64 = 0.1_c_double
-    call comm%send(real64,comm%size()-1,tag)
+    send_real64 = 0.1_c_double
+    call comm%send(send_real64,comm%size()-1,tag)
 
-  else if( comm%rank()==comm%size()-1) then
+    send_real64 = 0.2_c_double
+    call comm%send(send_real64,comm%size()-1,tag+1)
 
-    call comm%receive(real64,0,tag,status)
-    FCTEST_CHECK_CLOSE(real64, 0.1_c_double,1.e-9_c_double)
+  endif
+  if( comm%rank()==comm%size()-1) then
+
+    call comm%receive(recv_real64,0,tag,status)
+    FCTEST_CHECK_CLOSE(recv_real64, 0.1_c_double,1.e-9_c_double)
     FCTEST_CHECK_EQUAL(status%source(), 0)
     FCTEST_CHECK_EQUAL(status%tag(), tag)
     FCTEST_CHECK_EQUAL(status%error(), 0)
-    
-  else
 
-    FCTEST_CHECK_CLOSE(real64, 0._c_double,1.e-9_c_double)
+    call comm%receive(recv_real64,0,tag=comm%anytag(),status=status)
+    FCTEST_CHECK_EQUAL(status%tag(), tag+1)
+    FCTEST_CHECK_CLOSE(recv_real64, 0.2_c_double,1.e-9_c_double)
     
   endif
 
 END_TEST
+
 
 END_TESTSUITE

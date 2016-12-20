@@ -35,11 +35,11 @@ extern "C" {
     eckit::mpi::setCommDefault(name);
   }
 
-  int fckit__mpi__comm_tag(const Comm* comm) {
+  int fckit__mpi__comm_communicator(const Comm* comm) {
     if( comm )
-      return comm->tag();
+      return comm->communicator();
     else
-      return eckit::mpi::comm().tag();
+      return eckit::mpi::comm().communicator();
   }
 
   int fckit__mpi__size(const Comm* comm) {
@@ -174,6 +174,46 @@ extern "C" {
       eckit::mpi::comm().broadcast(buffer,count,root);
   }
   
+  int fckit__mpi__anytag(const Comm* comm)
+  {
+    if( comm )
+      return comm->anyTag();
+    else
+      return eckit::mpi::comm().anyTag();
+  }
+
+  int fckit__mpi__anysource(const Comm* comm)
+  {
+    if( comm )
+      return comm->anySource();
+    else
+      return eckit::mpi::comm().anySource();
+  }
+
+  void fckit__mpi__send_int32(const Comm* comm, int* buffer, size_t count, int dest, int tag)
+  {
+    if( comm )
+      comm->send(buffer,count,dest,tag);
+    else
+      eckit::mpi::comm().send(buffer,count,dest,tag);
+  }
+
+  void fckit__mpi__send_int64(const Comm* comm, long* buffer, size_t count, int dest, int tag)
+  {
+    if( comm )
+      comm->send(buffer,count,dest,tag);
+    else
+      eckit::mpi::comm().send(buffer,count,dest,tag);
+  }
+
+  void fckit__mpi__send_real32(const Comm* comm, float* buffer, size_t count, int dest, int tag)
+  {
+    if( comm )
+      comm->send(buffer,count,dest,tag);
+    else
+      eckit::mpi::comm().send(buffer,count,dest,tag);
+  }
+
   void fckit__mpi__send_real64(const Comm* comm, double* buffer, size_t count, int dest, int tag)
   {
     if( comm )
@@ -182,6 +222,42 @@ extern "C" {
       eckit::mpi::comm().send(buffer,count,dest,tag);
   }
 
+  void fckit__mpi__receive_int32(const Comm* comm, int* buffer, size_t count, int source, int tag, int* status)
+  {
+    eckit::mpi::Status _status;
+    if( comm )
+      _status = comm->receive(buffer,count,source,tag);
+    else
+      _status = eckit::mpi::comm().receive(buffer,count,source,tag);
+    status[0] = _status.source();
+    status[1] = _status.tag();
+    status[2] = _status.error();
+  }
+  
+  void fckit__mpi__receive_int64(const Comm* comm, long* buffer, size_t count, int source, int tag, int* status)
+  {
+    eckit::mpi::Status _status;
+    if( comm )
+      _status = comm->receive(buffer,count,source,tag);
+    else
+      _status = eckit::mpi::comm().receive(buffer,count,source,tag);
+    status[0] = _status.source();
+    status[1] = _status.tag();
+    status[2] = _status.error();
+  }
+  
+  void fckit__mpi__receive_real32(const Comm* comm, float* buffer, size_t count, int source, int tag, int* status)
+  {
+    eckit::mpi::Status _status;
+    if( comm )
+      _status = comm->receive(buffer,count,source,tag);
+    else
+      _status = eckit::mpi::comm().receive(buffer,count,source,tag);
+    status[0] = _status.source();
+    status[1] = _status.tag();
+    status[2] = _status.error();
+  }
+  
   void fckit__mpi__receive_real64(const Comm* comm, double* buffer, size_t count, int source, int tag, int* status)
   {
     eckit::mpi::Status _status;
@@ -194,6 +270,33 @@ extern "C" {
     status[2] = _status.error();
   }
 
+  int fckit__mpi__isend_real64(const Comm* comm, double* buffer, size_t count, int dest, int tag) {
+    if( comm )
+      return comm->iSend(buffer,count,dest,tag).request();
+    else
+      return eckit::mpi::comm().iSend(buffer,count,dest,tag).request();  
+  }
+  
+  int fckit__mpi__ireceive_real64(const Comm* comm, double* buffer, size_t count, int source, int tag) {
+    if( comm )
+      return comm->iReceive(buffer,count,source,tag).request();
+    else
+      return eckit::mpi::comm().iReceive(buffer,count,source,tag).request();  
+  }
+  
+  void fckit__mpi__wait(const Comm* comm, int request, int* status) {
+    eckit::mpi::Status _status;
+    eckit::mpi::Request req(request);
+    if( comm )
+      _status = comm->wait( req );
+    else
+      _status = eckit::mpi::comm().wait( req );
+    status[0] = _status.source();
+    status[1] = _status.tag();
+    status[2] = _status.error();
+  }
+  
+  
 
 }
 
