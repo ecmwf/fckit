@@ -80,7 +80,7 @@ extern "C" {
 
   void fckit__mpi__allreduce_int32(const Comm* comm, const int* in, int* out, size_t count, int operation)
   {
-    if( comm ) 
+    if( comm )
       comm->allReduce(in,out,count,eckit::mpi::Operation::Code(operation));
     else
       eckit::mpi::comm().allReduce(in,out,count,eckit::mpi::Operation::Code(operation));
@@ -88,7 +88,7 @@ extern "C" {
 
   void fckit__mpi__allreduce_int64(const Comm* comm, const long* in, long* out, size_t count, int operation)
   {
-    if( comm ) 
+    if( comm )
       comm->allReduce(in,out,count,eckit::mpi::Operation::Code(operation));
     else
       eckit::mpi::comm().allReduce(in,out,count,eckit::mpi::Operation::Code(operation));
@@ -96,23 +96,23 @@ extern "C" {
 
   void fckit__mpi__allreduce_real32(const Comm* comm, const float* in, float* out, size_t count, int operation)
   {
-    if( comm ) 
+    if( comm )
       comm->allReduce(in,out,count,eckit::mpi::Operation::Code(operation));
     else
       eckit::mpi::comm().allReduce(in,out,count,eckit::mpi::Operation::Code(operation));
   }
-  
+
   void fckit__mpi__allreduce_real64(const Comm* comm, const double* in, double* out, size_t count, int operation)
   {
-    if( comm ) 
+    if( comm )
       comm->allReduce(in,out,count,eckit::mpi::Operation::Code(operation));
     else
       eckit::mpi::comm().allReduce(in,out,count,eckit::mpi::Operation::Code(operation));
   }
-  
+
   void fckit__mpi__allreduce_inplace_int32(const Comm* comm, int* inout, size_t count, int operation)
   {
-    if( comm ) 
+    if( comm )
       comm->allReduceInPlace(inout,count,eckit::mpi::Operation::Code(operation));
     else
       eckit::mpi::comm().allReduceInPlace(inout,count,eckit::mpi::Operation::Code(operation));
@@ -120,7 +120,7 @@ extern "C" {
 
   void fckit__mpi__allreduce_inplace_int64(const Comm* comm, long* inout, size_t count, int operation)
   {
-    if( comm ) 
+    if( comm )
       comm->allReduceInPlace(inout,count,eckit::mpi::Operation::Code(operation));
     else
       eckit::mpi::comm().allReduceInPlace(inout,count,eckit::mpi::Operation::Code(operation));
@@ -128,15 +128,15 @@ extern "C" {
 
   void fckit__mpi__allreduce_inplace_real32(const Comm* comm, float* inout, size_t count, int operation)
   {
-    if( comm ) 
+    if( comm )
       comm->allReduceInPlace(inout,count,eckit::mpi::Operation::Code(operation));
     else
       eckit::mpi::comm().allReduceInPlace(inout,count,eckit::mpi::Operation::Code(operation));
   }
-  
+
   void fckit__mpi__allreduce_inplace_real64(const Comm* comm, double* inout, size_t count, int operation)
   {
-    if( comm ) 
+    if( comm )
       comm->allReduceInPlace(inout,count,eckit::mpi::Operation::Code(operation));
     else
       eckit::mpi::comm().allReduceInPlace(inout,count,eckit::mpi::Operation::Code(operation));
@@ -144,7 +144,7 @@ extern "C" {
 
   void fckit__mpi__broadcast_int32(const Comm* comm, int* buffer, size_t count, size_t root)
   {
-    if( comm ) 
+    if( comm )
       comm->broadcast(buffer,count,root);
     else
       eckit::mpi::comm().broadcast(buffer,count,root);
@@ -152,7 +152,7 @@ extern "C" {
 
   void fckit__mpi__broadcast_int64(const Comm* comm, long* buffer, size_t count, size_t root)
   {
-    if( comm ) 
+    if( comm )
       comm->broadcast(buffer,count,root);
     else
       eckit::mpi::comm().broadcast(buffer,count,root);
@@ -160,7 +160,7 @@ extern "C" {
 
   void fckit__mpi__broadcast_real32(const Comm* comm, float* buffer, size_t count, size_t root)
   {
-    if( comm ) 
+    if( comm )
       comm->broadcast(buffer,count,root);
     else
       eckit::mpi::comm().broadcast(buffer,count,root);
@@ -168,12 +168,12 @@ extern "C" {
 
   void fckit__mpi__broadcast_real64(const Comm* comm, double* buffer, size_t count, size_t root)
   {
-    if( comm ) 
+    if( comm )
       comm->broadcast(buffer,count,root);
     else
       eckit::mpi::comm().broadcast(buffer,count,root);
   }
-  
+
   int fckit__mpi__anytag(const Comm* comm)
   {
     if( comm )
@@ -233,7 +233,7 @@ extern "C" {
     status[1] = _status.tag();
     status[2] = _status.error();
   }
-  
+
   void fckit__mpi__receive_int64(const Comm* comm, long* buffer, size_t count, int source, int tag, int* status)
   {
     eckit::mpi::Status _status;
@@ -245,7 +245,7 @@ extern "C" {
     status[1] = _status.tag();
     status[2] = _status.error();
   }
-  
+
   void fckit__mpi__receive_real32(const Comm* comm, float* buffer, size_t count, int source, int tag, int* status)
   {
     eckit::mpi::Status _status;
@@ -257,7 +257,7 @@ extern "C" {
     status[1] = _status.tag();
     status[2] = _status.error();
   }
-  
+
   void fckit__mpi__receive_real64(const Comm* comm, double* buffer, size_t count, int source, int tag, int* status)
   {
     eckit::mpi::Status _status;
@@ -270,20 +270,62 @@ extern "C" {
     status[2] = _status.error();
   }
 
+  int fckit__mpi__isend_int32(const Comm* comm, int* buffer, size_t count, int dest, int tag) {
+    if( comm )
+      return comm->iSend(buffer,count,dest,tag).request();
+    else
+      return eckit::mpi::comm().iSend(buffer,count,dest,tag).request();
+  }
+
+  int fckit__mpi__isend_int64(const Comm* comm, long* buffer, size_t count, int dest, int tag) {
+    if( comm )
+      return comm->iSend(buffer,count,dest,tag).request();
+    else
+      return eckit::mpi::comm().iSend(buffer,count,dest,tag).request();
+  }
+
+  int fckit__mpi__isend_real32(const Comm* comm, float* buffer, size_t count, int dest, int tag) {
+    if( comm )
+      return comm->iSend(buffer,count,dest,tag).request();
+    else
+      return eckit::mpi::comm().iSend(buffer,count,dest,tag).request();
+  }
+
   int fckit__mpi__isend_real64(const Comm* comm, double* buffer, size_t count, int dest, int tag) {
     if( comm )
       return comm->iSend(buffer,count,dest,tag).request();
     else
-      return eckit::mpi::comm().iSend(buffer,count,dest,tag).request();  
+      return eckit::mpi::comm().iSend(buffer,count,dest,tag).request();
   }
-  
+
+  int fckit__mpi__ireceive_int32(const Comm* comm, int* buffer, size_t count, int source, int tag) {
+    if( comm )
+      return comm->iReceive(buffer,count,source,tag).request();
+    else
+      return eckit::mpi::comm().iReceive(buffer,count,source,tag).request();
+  }
+
+  int fckit__mpi__ireceive_int64(const Comm* comm, long* buffer, size_t count, int source, int tag) {
+    if( comm )
+      return comm->iReceive(buffer,count,source,tag).request();
+    else
+      return eckit::mpi::comm().iReceive(buffer,count,source,tag).request();
+  }
+
+  int fckit__mpi__ireceive_real32(const Comm* comm, float* buffer, size_t count, int source, int tag) {
+    if( comm )
+      return comm->iReceive(buffer,count,source,tag).request();
+    else
+      return eckit::mpi::comm().iReceive(buffer,count,source,tag).request();
+  }
+
   int fckit__mpi__ireceive_real64(const Comm* comm, double* buffer, size_t count, int source, int tag) {
     if( comm )
       return comm->iReceive(buffer,count,source,tag).request();
     else
-      return eckit::mpi::comm().iReceive(buffer,count,source,tag).request();  
+      return eckit::mpi::comm().iReceive(buffer,count,source,tag).request();
   }
-  
+
   void fckit__mpi__wait(const Comm* comm, int request, int* status) {
     eckit::mpi::Status _status;
     eckit::mpi::Request req(request);
@@ -295,8 +337,8 @@ extern "C" {
     status[1] = _status.tag();
     status[2] = _status.error();
   }
-  
-  
+
+
 
 }
 

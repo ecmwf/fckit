@@ -252,6 +252,18 @@ TEST( test_broadcast )
   if(comm%rank()==comm%size()-1) int32 = 3
   call comm%broadcast(int32,root=comm%size()-1)
   FCTEST_CHECK_EQUAL(int32, 3)
+
+  if(comm%rank()==0) int64_r4(2,2,1,2) = 1_c_long
+  call comm%broadcast(int64_r4,root=0)
+  FCTEST_CHECK_EQUAL(int64_r4(2,2,1,2), 1_c_long)
+
+  if(comm%rank()==0) int32_r3(1,3,2) = 2
+  call comm%broadcast(int32_r3,root=0)
+  FCTEST_CHECK_EQUAL(int32_r3(1,3,2), 2_c_int)
+
+  if(comm%rank()==comm%size()-1) int32_r3(2,1,1) = 3
+  call comm%broadcast(int32_r3,root=comm%size()-1)
+  FCTEST_CHECK_EQUAL(int32_r3(2,1,1), 3)
   
 
 END_TEST
