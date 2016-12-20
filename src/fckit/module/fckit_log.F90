@@ -4,6 +4,7 @@ implicit none
 private
 
 public :: fckit_log
+public :: log
 public :: logchannel
 
 private :: fckit_object
@@ -44,6 +45,7 @@ contains
 
 end type
 type(fckit_log_type) :: fckit_log
+type(fckit_log_type) :: log
 !------------------------------------------------------------------------------
 
 interface

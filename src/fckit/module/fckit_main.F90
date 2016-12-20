@@ -4,6 +4,7 @@ implicit none
 private
 
 public :: fckit_main
+public :: main
 
 type :: fckit_main_type
 contains
@@ -18,6 +19,7 @@ contains
 end type
 
 type(fckit_main_type), save :: fckit_main
+type(fckit_main_type), save :: main
 
 !------------------------------------------------------------------------------
 interface
