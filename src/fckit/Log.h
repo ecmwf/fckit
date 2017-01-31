@@ -14,6 +14,12 @@ public:
   static void addFortranUnit(int unit, Style=PREFIX, const char* prefix="");
   static void setFortranUnit(int unit, Style=PREFIX, const char* prefix="");
 
+  static void addFile(const char* path, Style=PREFIX, const char* prefix="");
+  static void setFile(const char* path, Style=PREFIX, const char* prefix="");
+
+  static void addStdOut(Style=PREFIX, const char* prefix="");
+  static void setStdOut(Style=PREFIX, const char* prefix="");
+
   // Fortran unit numbers
   static int output_unit();
   static int error_unit();

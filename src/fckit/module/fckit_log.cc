@@ -1,6 +1,6 @@
+#include <cstring>
 #include "eckit/log/Channel.h"
 #include "fckit/Log.h"
-
 using fckit::Log;
 using eckit::Channel;
 
@@ -8,7 +8,10 @@ extern "C" {
 
 void fckit__log(Channel* channel, char *msg, int newl, int flush)
 {
-  *channel << msg;
+  if( ::strlen(msg) )
+    *channel << msg;
+  else
+    *channel << " ";
   if( newl )
     *channel << eckit::newl;
   if( flush )
@@ -43,6 +46,26 @@ void fckit__log_add_fortran_unit(int unit, int style)
 void fckit__log_set_fortran_unit(int unit, int style)
 {
   Log::setFortranUnit(unit,Log::Style(style));
+}
+
+void fckit__log_add_file(const char* path, int style)
+{
+  Log::addFile(path,Log::Style(style));
+}
+
+void fckit__log_set_file(const char* path, int style)
+{
+  Log::setFile(path,Log::Style(style));  
+}
+
+void fckit__log_add_stdout(int style)
+{
+  Log::addStdOut(Log::Style(style));
+}
+
+void fckit__log_set_stdout(int style)
+{
+  Log::setStdOut(Log::Style(style));
 }
 
 void fckit__log_reset()

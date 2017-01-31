@@ -21,7 +21,7 @@ set( ECBUILD_DEFAULT_BUILD_TYPE Release )
 
 include( ecbuild_system NO_POLICY_SCOPE )
 
-ecbuild_requires_macro_version( 1.9 )
+ecbuild_requires_macro_version( 2.5 )
 
 ###############################################################################
 # project
@@ -36,7 +36,7 @@ ecbuild_find_python( REQUIRED NO_LIBS )
 ### Fortran ...
 ecbuild_enable_fortran( REQUIRED MODULE_DIRECTORY ${CMAKE_BINARY_DIR}/module )
 
-# Experimental
+# Experimental... (read: not working!)
 ecbuild_add_option( FEATURE FORTRAN_FINALIZATION
                     DEFAULT OFF ) 
 if( ENABLE_FORTRAN_FINALIZATION )
@@ -54,7 +54,7 @@ endif()
 ### eckit ...
 ecbuild_add_option( FEATURE ECKIT
                     DESCRIPTION "Wrap ecKit functionality"
-                    REQUIRED_PACKAGES "PROJECT eckit VERSION 0.14.0"
+                    REQUIRED_PACKAGES "PROJECT eckit VERSION 0.15.0"
                    )
 if( HAVE_ECKIT )
     set( ECKIT_LIBRARIES eckit eckit_mpi )
@@ -69,11 +69,7 @@ ecbuild_add_option( FEATURE MPI
 endif()
 endif()
 
-if( ECKIT_HAVE_MPI )
-  set( MPI_FOUND 1 CACHE BOOL " " )
-  set( MPIEXEC "mpiexec" CACHE STRING " " )
-  set( MPIEXEC_NUMPROC_FLAG "-np" CACHE STRING " " )
-else()
+if( NOT ECKIT_HAVE_MPI )
   ecbuild_warn("ecKit has been compiled without MPI. This causes fckit to not be able to run parallel executables.")
 endif()
 

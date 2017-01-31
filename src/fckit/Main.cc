@@ -2,6 +2,7 @@
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
 #include "eckit/thread/Once.h"
+#include "eckit/log/Log.h"
 
 // Temporary until ECKIT-166 is fixed, only included for MacOSX
 #ifdef BUG_ECKIT_166
@@ -17,7 +18,23 @@ Main::Main(
     const char* homeenv)
     : eckit::Main(argc,argv,homeenv)
 {
+  for( int j=0; j<argc; ++j )
+  {
+    std::string arg(argv[j]);
+    if( arg.find("--displayname=") == 0 )
+    {
+       size_t pos = arg.find("--displayname=") + 14;
+       displayName_ = arg.substr(pos);
+    }
+    if( arg == "--displayname" )
+    {
+      if( j+1 < argc ) displayName_ = argv[j+1];
+    }
+  }
 }
+
+const std::string& Main::displayName() const { return displayName_; }
+
 
 void Main::initialise(
     int argc, char** argv,
@@ -44,6 +61,9 @@ void Main::finalise()
       }
     }
 #endif
+
+// Temporary until ECKIT-175 is fixed
+    eckit::Log::reset();
 }
 
 } // namespace fckit

@@ -58,6 +58,15 @@ extern "C"
     return SUCCESS;
   }
 
+  int fckit__main_displayname(char* &name, int &size)
+  {
+    std::string v = dynamic_cast<const fckit::Main&>(fckit::Main::instance()).displayName();
+    size = v.size();
+    name = new char[size+1];
+    ::strcpy(name,v.c_str());
+    return SUCCESS;
+  }
+
 
 } // extern "C"
 

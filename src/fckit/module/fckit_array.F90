@@ -20,18 +20,22 @@ real(c_float),  target :: zero_length_array_real32(0)
 real(c_double), target :: zero_length_array_real64(0)
 
 INTERFACE array_view1d
+  module procedure array_view1d_int32_r0
   module procedure array_view1d_int32_r1
   module procedure array_view1d_int32_r2
   module procedure array_view1d_int32_r3
   module procedure array_view1d_int32_r4
+  module procedure array_view1d_int64_r0
   module procedure array_view1d_int64_r1
   module procedure array_view1d_int64_r2
   module procedure array_view1d_int64_r3
   module procedure array_view1d_int64_r4
+  module procedure array_view1d_real32_r0
   module procedure array_view1d_real32_r1
   module procedure array_view1d_real32_r2
   module procedure array_view1d_real32_r3
   module procedure array_view1d_real32_r4
+  module procedure array_view1d_real64_r0
   module procedure array_view1d_real64_r1
   module procedure array_view1d_real64_r2
   module procedure array_view1d_real64_r3
@@ -116,6 +120,18 @@ end function
 
 ! =============================================================================
 ! view interface
+! =============================================================================
+
+function array_view1d_int32_r0(scalar) result( view )
+  use, intrinsic :: iso_c_binding
+  integer(c_int), intent(in), target :: scalar
+  type(c_ptr) :: array_c_ptr
+  integer(c_int), pointer :: view(:)
+  array_c_ptr = c_loc_int32(scalar)
+  call c_f_pointer ( array_c_ptr , view , (/1/) )
+end function
+
+! =============================================================================
 
 function array_view1d_int32_r1(array) result( view )
   use, intrinsic :: iso_c_binding
@@ -173,6 +189,17 @@ function array_view1d_int32_r4(array) result( view )
   else
     view => zero_length_array_int32
   endif
+end function
+
+! =============================================================================
+
+function array_view1d_int64_r0(scalar) result( view )
+  use, intrinsic :: iso_c_binding
+  integer(c_long), intent(in), target :: scalar
+  type(c_ptr) :: array_c_ptr
+  integer(c_long), pointer :: view(:)
+  array_c_ptr = c_loc_int64(scalar)
+  call c_f_pointer ( array_c_ptr , view , (/1/) )
 end function
 
 ! =============================================================================
@@ -237,6 +264,17 @@ end function
 
 ! =============================================================================
 
+function array_view1d_real32_r0(scalar) result( view )
+  use, intrinsic :: iso_c_binding
+  real(c_float), intent(in), target :: scalar
+  type(c_ptr) :: array_c_ptr
+  real(c_float), pointer :: view(:)
+  array_c_ptr = c_loc_real32(scalar)
+  call c_f_pointer ( array_c_ptr , view , (/1/) )
+end function
+
+! =============================================================================
+
 function array_view1d_real32_r1(array) result( view )
   use, intrinsic :: iso_c_binding
   real(c_float), intent(in), target :: array(:)
@@ -293,6 +331,17 @@ function array_view1d_real32_r4(array) result( view )
   else
     view => zero_length_array_real32
   endif
+end function
+
+! =============================================================================
+
+function array_view1d_real64_r0(scalar) result( view )
+  use, intrinsic :: iso_c_binding
+  real(c_double), intent(in), target :: scalar
+  type(c_ptr) :: array_c_ptr
+  real(c_double), pointer :: view(:)
+  array_c_ptr = c_loc_real64(scalar)
+  call c_f_pointer ( array_c_ptr , view , (/1/) )
 end function
 
 ! =============================================================================

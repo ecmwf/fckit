@@ -13,6 +13,7 @@ public :: c_str_to_string
 public :: c_ptr_to_string
 public :: c_str
 public :: c_str_no_trim
+public :: c_str_right_trim
 
 ! =============================================================================
 ! External functions
@@ -146,4 +147,12 @@ end function
 
 ! =============================================================================
 
+function c_str_right_trim(f_str)
+  use, intrinsic :: iso_c_binding, only: c_char, c_null_char
+  character(len=*), intent(in) :: f_str
+  character(kind=c_char,len=len(f_str)+1) :: c_str_right_trim
+  c_str_right_trim = f_str(1:len_trim(f_str)) // c_null_char
+end function
+
+! =============================================================================
 end module

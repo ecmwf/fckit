@@ -12,13 +12,13 @@
 TESTSUITE(fckit_test_resource)
 
 TESTSUITE_INIT
-  use fckit_main_module
-  call main%init()
+  use fckit_module
+  call fckit_main%init()
 END_TESTSUITE_INIT
 ! -----------------------------------------------------------------------------
 
 TEST( test_resource )
-  use fckit_resource_module
+  use fckit_module
 
   integer(c_int) :: intval
   integer(c_long) :: longval
