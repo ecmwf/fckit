@@ -8,7 +8,11 @@
  * does it submit to any jurisdiction.
  */
 
+#include <string>
+#include <algorithm>
+
 #include "fckit/Libfckit.h"
+#include "fckit/fckit_defines.h"
 
 namespace fckit {
 
@@ -26,11 +30,16 @@ const Libfckit& Libfckit::instance()
 const void* Libfckit::addr() const { return this; }
 
 std::string Libfckit::version() const {
-    return "not available";
+    return FCKIT_VERSION;
 }
 
 std::string Libfckit::gitsha1(unsigned int count) const {
-    return "not available";
+    static std::string sha1(FCKIT_GIT_SHA1);
+    if(sha1.empty()) {
+        return "not available";
+    }
+    sha1 = sha1.substr(0, std::min(count,40u));
+    return sha1.c_str();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
