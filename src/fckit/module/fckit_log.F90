@@ -193,7 +193,7 @@ subroutine add_fortran_unit(unit,style)
   integer(c_int) :: opt_style
   opt_style = fckit_log%PREFIX
   if( present( style ) ) opt_style = style
-  call fckit__log_set_fortran_unit(unit,style)
+  call fckit__log_add_fortran_unit(unit,opt_style)
 end subroutine
 
 
