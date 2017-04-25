@@ -30,6 +30,7 @@ contains
   procedure, nopass, public :: error
   procedure, nopass, public :: panic
   procedure, nopass, public :: reset
+  procedure, nopass, public :: flush
   procedure, nopass, public :: add_stdout
   procedure, nopass, public :: set_stdout
   procedure, nopass, public :: add_fortran_unit
@@ -106,6 +107,8 @@ interface
     integer(c_int), value :: style
   end subroutine
   subroutine fckit__log_reset() bind(c)
+  end subroutine
+  subroutine fckit__log_flush() bind(c)
   end subroutine
   function fckit__log_info_channel() bind(c)
     use, intrinsic :: iso_c_binding, only : c_ptr
@@ -252,11 +255,12 @@ end subroutine
 
 
 subroutine reset()
-  use, intrinsic :: iso_c_binding
-  use fckit_main_module
   call fckit__log_reset()
 end subroutine
 
+subroutine flush()
+  call fckit__log_flush()
+end subroutine
 
 function info_channel() result(channel)
   type(logchannel) :: channel

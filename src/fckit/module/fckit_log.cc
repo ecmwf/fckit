@@ -55,7 +55,7 @@ void fckit__log_add_file(const char* path, int style)
 
 void fckit__log_set_file(const char* path, int style)
 {
-  Log::setFile(path,Log::Style(style));  
+  Log::setFile(path,Log::Style(style));
 }
 
 void fckit__log_add_stdout(int style)
@@ -71,6 +71,11 @@ void fckit__log_set_stdout(int style)
 void fckit__log_reset()
 {
     Log::reset();
+}
+
+void fckit__log_flush()
+{
+    Log::flush();
 }
 
 Channel* fckit__log_info_channel()
