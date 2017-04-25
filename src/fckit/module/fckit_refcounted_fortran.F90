@@ -68,6 +68,7 @@ subroutine final_f(this)
     endif
     if( this%owners() == 0 ) then
       call this%delete()
+      if( associated(this%refcount) ) deallocate(this%refcount)
     endif
     call this%reset_c_ptr()
   endif
