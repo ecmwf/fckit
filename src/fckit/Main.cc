@@ -3,6 +3,7 @@
 #include "eckit/thread/Mutex.h"
 #include "eckit/thread/Once.h"
 #include "eckit/log/Log.h"
+#include "eckit/mpi/Comm.h"
 
 // Temporary until ECKIT-166 is fixed, only included for MacOSX
 #ifdef BUG_ECKIT_166
@@ -31,6 +32,9 @@ Main::Main(
       if( j+1 < argc ) displayName_ = argv[j+1];
     }
   }
+  
+  taskID(eckit::mpi::comm("world").rank());
+  
 }
 
 const std::string& Main::displayName() const { return displayName_; }
