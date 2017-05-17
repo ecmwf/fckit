@@ -9,6 +9,9 @@ configure_file(fckit_defines.h.in  fckit_defines.h)
 if( HAVE_ECKIT )
 list( APPEND eckit_required_src
     module/fckit.F90
+    module/fckit_pathname.F90
+    module/fckit_configuration.F90
+    module/fckit_configuration.cc
     module/fckit_refcounted.cc
     module/fckit_refcounted.F90
     module/fckit_mpi.cc

@@ -43,9 +43,17 @@ add_fctest( TARGET  fckit_test_mpi
             CONDITION HAVE_ECKIT AND ECKIT_HAVE_MPI
             LIBS    fckit)
 
+
 add_fctest( TARGET  fckit_test_abort
             LINKER_LANGUAGE Fortran
             SOURCES test_abort.F90
+            CONDITION HAVE_ECKIT
+            LIBS fckit )
+
+add_fctest( TARGET  fckit_test_configuration
+            LINKER_LANGUAGE Fortran
+            DEFINITIONS ${FCKIT_DEFINITIONS}
+            SOURCES test_configuration.F90
             DEFINITIONS ${FCKIT_DEFINITIONS}
             CONDITION HAVE_ECKIT
             LIBS    fckit)
