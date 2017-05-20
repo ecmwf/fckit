@@ -18,12 +18,13 @@ namespace fckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static Libfckit library;
+REGISTER_LIBRARY(Libfckit);
 
 Libfckit::Libfckit() : eckit::system::Library("fckit") {}
 
 const Libfckit& Libfckit::instance()
 {
+    static Libfckit library;
     return library;
 }
 
