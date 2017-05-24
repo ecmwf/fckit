@@ -58,6 +58,16 @@ add_fctest( TARGET  fckit_test_configuration
             CONDITION HAVE_ECKIT
             LIBS    fckit)
 
+ecbuild_add_test( TARGET  fckit_test_configuration_cpp 
+            LINKER_LANGUAGE Fortran
+            SOURCES 
+            test_configuration.cc
+            test_configuration_fortcode.F90
+            DEFINITIONS ${FCKIT_DEFINITIONS}
+            INCLUDES ${ECKIT_INCLUDE_DIRS}
+            CONDITION HAVE_ECKIT
+            LIBS    fckit)
+
 endif()
 
 

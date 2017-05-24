@@ -72,6 +72,7 @@ END TYPE fckit_Configuration
 
 interface fckit_Configuration
   module procedure ctor
+  module procedure ctor_from_cptr
 end interface
 
 interface fckit_JSONConfiguration
@@ -92,6 +93,14 @@ function ctor() result(config)
   type(fckit_Configuration) :: config
   call config%reset_c_ptr( c_fckit_configuration_new() )
 end function
+
+function ctor_from_cptr(cptr) result(config)
+  use, intrinsic :: iso_c_binding, only : c_ptr
+  type(c_ptr), value :: cptr
+  type(fckit_Configuration) :: config
+  call config%reset_c_ptr( cptr )
+end function
+
 
 function ctor_from_jsonstr(json) result(config)
   use fckit_c_interop_module, only : c_str
