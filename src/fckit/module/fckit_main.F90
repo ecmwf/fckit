@@ -9,13 +9,15 @@ public :: main
 type :: fckit_main_type
 contains
   procedure, nopass, public :: ready
-  procedure, nopass, public :: init
-  procedure, nopass, public :: final
+  procedure, nopass, public :: initialise
+  procedure, nopass, public :: finalise
   procedure, nopass, public :: taskID
   procedure, nopass, public :: set_taskID
   procedure, nopass, public :: debug
   procedure, nopass, public :: name => main_name
   procedure, nopass, public :: displayname => displayname
+  procedure, nopass, public :: init => initialise
+  procedure, nopass, public :: final => finalise
 end type
 
 type(fckit_main_type), save :: fckit_main
@@ -83,7 +85,7 @@ end interface
 CONTAINS
 ! =============================================================================
 
-subroutine init()
+subroutine initialise()
   use, intrinsic :: iso_c_binding, only : c_ptr, c_int
   use fckit_c_interop_module
   integer, save :: argc
@@ -93,7 +95,7 @@ subroutine init()
   error_code = fckit__main_init(argc,argv)
 end subroutine
 
-subroutine final()
+subroutine finalise()
   call fckit__main_finalise()
 end subroutine
 
