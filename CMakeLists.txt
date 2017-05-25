@@ -51,7 +51,6 @@ if( ENABLE_FORTRAN_FINALIZATION )
   endif()
 endif()
 
-### eckit ...
 ecbuild_add_option( FEATURE ECKIT
                     DESCRIPTION "Wrap ecKit functionality"
                     REQUIRED_PACKAGES "PROJECT eckit VERSION 0.15.0"

@@ -13,17 +13,28 @@
 
 #include "fckit/Libfckit.h"
 #include "fckit/fckit_defines.h"
+#include "eckit/eckit_version.h"
 
 namespace fckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static Libfckit library;
+// Support for eckit 0.16.5 improved library registration using REGISTER_LIBRARY macro
+// See issue ECKIT-244
+#if ECKIT_MAJOR_VERSION >= 0 && ECKIT_MINOR_VERSION >= 16 && ECKIT_PATCH_VERSION >= 5
+#define DECLARE_STATIC(Library,lib) static Library lib
+#else
+#define REGISTER_LIBRARY(Library) static Library library
+#define DECLARE_STATIC(Library,lib)
+#endif
+
+REGISTER_LIBRARY(Libfckit);
 
 Libfckit::Libfckit() : eckit::system::Library("fckit") {}
 
 const Libfckit& Libfckit::instance()
 {
+    DECLARE_STATIC(Libfckit,library);
     return library;
 }
 
