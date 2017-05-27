@@ -28,6 +28,13 @@ use fckit_signal_module, only: &
   fckit_signal, &
   fckit_signal_handler
 
+use fckit_pathname_module, only: &
+  fckit_pathname
+
+use fckit_configuration_module, only: &
+  fckit_configuration, &
+  fckit_JSONConfiguration
+
 implicit none
 private
 
@@ -39,12 +46,19 @@ public :: fckit_exception            !! - [[fckit_exception_module:fckit_excepti
 public :: fckit_exception_handler    !! - [[fckit_exception_module:fckit_exception_handler(interface)]]
 public :: fckit_signal               !! - [[fckit_signal_module:fckit_signal(variable)]]
 public :: fckit_signal_handler       !! - [[fckit_signal_module:fckit_signal_handler(interface)]]
+public :: fckit_pathname             !! - [[fckit_pathname_module:fckit_pathname(type)]]
+public :: fckit_configuration        !! - [[fckit_configuration_module:fckit_configuration(type)]]
+public :: fckit_JSONConfiguration    !! - [[fckit_configuration_module:fckit_JSONConfiguration(interface)]]
 public :: fckit_version              !! - [[fckit_module:fckit_version(function)]]
 public :: fckit_git_sha1             !! - [[fckit_module:fckit_git_sha1(function)]]
 
 ! =============================================================================
 CONTAINS
 ! =============================================================================
+
+#ifndef FORD
+#include "fckit_defines.h"
+#endif
 
 ! -----------------------------------------------------------------------------
 
@@ -58,10 +72,11 @@ end function
 ! -----------------------------------------------------------------------------
 
 function fckit_git_sha1(length) result( sha1 )
-  !! Function that returns the git-sha1 of the fckit repository
+  !! Function that returns the git-sha1 of fckit, if compiled from git repository
 
-  character(len=40)        :: sha1
+  character(len=40) :: sha1
   integer, optional :: length
+    !! Truncate git sha1 to specified length. Default truncates to 7 chars.
   integer           :: opt_length
   opt_length = 7
   if( present(length) ) opt_length = length

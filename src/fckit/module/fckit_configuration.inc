@@ -1,4 +1,15 @@
+#ifndef FORD
 interface
+
+!-------------------------------------------------------------------------------
+! void c_fckit_throw_configuration_not_found (const char* name)
+!-------------------------------------------------------------------------------
+subroutine c_fckit_throw_configuration_not_found( name ) bind(C,name="c_fckit_t&
+  &hrow_configuration_not_found")
+    use iso_c_binding, only: c_char
+    character(c_char), dimension(*) :: name
+end subroutine
+!-------------------------------------------------------------------------------
 
 !-------------------------------------------------------------------------------
 ! Configuration* c_fckit_configuration_new ()
@@ -376,3 +387,4 @@ end subroutine
 !-------------------------------------------------------------------------------
 
 end interface
+#endif

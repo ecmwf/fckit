@@ -215,6 +215,17 @@ TEST(test_configuration_json_file)
 
 END_TEST
 
+TEST(test_throw)
+  use fckit_configuration_module
+  type(fckit_Configuration) :: config
+  integer :: missing_value
+
+  config = fckit_Configuration()
+  
+  !call config%get_or_die("missing",missing_value)
+    !! UNCOMMENT TO TEST IF THROW WILL WORK
+
+END_TEST
 ! -----------------------------------------------------------------------------
 
 END_TESTSUITE
