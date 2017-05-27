@@ -111,6 +111,7 @@ include_directories( ${FCKIT_INCLUDE_DIRS} )
 
 set( HAVE_FCTEST 1)
 add_subdirectory( src )
+add_subdirectory( doc )
 
 ############################################################################################
 # finalize

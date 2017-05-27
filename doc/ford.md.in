@@ -1,0 +1,16 @@
+project: FCKit
+src_dir: @CMAKE_CURRENT_SOURCE_DIR@/../src/fckit
+output_dir: @CMAKE_CURRENT_BINARY_DIR@/ford
+predocmark: >
+docmark_alt: #
+predocmark_alt: <
+display: public
+         protected
+source: true
+graph: false
+search: false
+macro: FORD
+extra_filetypes: sh #
+exclude: Log.F90
+
+{!@CMAKE_CURRENT_SOURCE_DIR@/../README.md!}
