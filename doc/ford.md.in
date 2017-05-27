@@ -1,4 +1,7 @@
 project: FCKit
+summary: Fortran support library, compatible with ECKit C++ support library
+author: ECMWF
+author_website: www.ecmwf.int
 src_dir: @CMAKE_CURRENT_SOURCE_DIR@/../src/fckit
 output_dir: @CMAKE_CURRENT_BINARY_DIR@/ford
 predocmark: >
@@ -7,7 +10,7 @@ predocmark_alt: <
 display: public
          protected
 source: true
-graph: false
+graph: true
 search: false
 macro: FORD
 extra_filetypes: sh #
