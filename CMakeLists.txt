@@ -37,8 +37,8 @@ ecbuild_find_python( REQUIRED NO_LIBS )
 ecbuild_enable_fortran( REQUIRED MODULE_DIRECTORY ${CMAKE_BINARY_DIR}/module )
 
 # Experimental... (read: not working!)
-ecbuild_add_option( FEATURE FORTRAN_FINALIZATION
-                    DEFAULT OFF ) 
+#ecbuild_add_option( FEATURE FORTRAN_FINALIZATION
+#                    DEFAULT OFF )
 if( ENABLE_FORTRAN_FINALIZATION )
   ecbuild_check_fortran( FEATURES finalization )
   if( EC_HAVE_Fortran_FINALIZATION )
@@ -57,21 +57,12 @@ ecbuild_add_option( FEATURE ECKIT
                    )
 if( HAVE_ECKIT )
     set( ECKIT_LIBRARIES eckit eckit_mpi )
-endif()
-
-if( ECKIT_HAVE_MPI )
-# Temporary until ECKIT-166 is fixed for MacOSX
-if( EC_OS_NAME MATCHES "macosx" )
-ecbuild_add_option( FEATURE MPI
-                    DESCRIPTION "fckit: Support for MPI distributed parallelism"
-                    REQUIRED_PACKAGES "MPI COMPONENTS CXX" )
-endif()
+    ecbuild_add_cxx11_flags()
 endif()
 
 if( NOT ECKIT_HAVE_MPI )
   ecbuild_warn("ecKit has been compiled without MPI. This causes fckit to not be able to run parallel executables.")
 endif()
-
 
 ############################################################################################
 # export package info

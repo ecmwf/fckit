@@ -3,12 +3,11 @@
 #else
 #define FORD_PRIVATE private
 interface
-  !! display: none
 
   !int fckit__main_init (int argc, char* argv[])
   function fckit__main_init(argc,argv) &
     & result(error_code) bind(c,name="fckit__main_init")
-    use iso_c_binding, only: c_int, c_ptr, c_char
+    use iso_c_binding, only: c_int, c_ptr
     integer(c_int) :: error_code
     integer(c_int), value :: argc
     type(c_ptr), dimension(*) :: argv
@@ -46,7 +45,7 @@ interface
 
   !int fckit__main_name (char* &name, int &name_size)
   function fckit__main_name(name,name_size) result(error_code) bind(c)
-    use iso_c_binding, only: c_int, c_ptr, c_char
+    use iso_c_binding, only: c_int, c_ptr
     integer(c_int) :: error_code
     type(c_ptr) :: name
     integer(c_int) :: name_size
@@ -54,10 +53,12 @@ interface
 
   !int fckit__main_displayname (char* &name, int &name_size)
   function fckit__main_displayname(name,name_size) result(error_code) bind(c)
-    use iso_c_binding, only: c_int, c_ptr, c_char
+    use iso_c_binding, only: c_int, c_ptr
     integer(c_int) :: error_code
     type(c_ptr) :: name
     integer(c_int) :: name_size
   end function
+
 end interface
+
 #endif

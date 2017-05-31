@@ -15,6 +15,8 @@ list( APPEND eckit_required_src
     module/fckit_mpi.F90
     module/fckit_main.cc
     module/fckit_main.F90
+    module/fckit_exception.F90
+    module/fckit_signal.F90
     module/fckit_resource.cc
     module/fckit_resource.F90
     module/fckit_log.cc
@@ -28,10 +30,8 @@ list( APPEND eckit_required_src
     Log.F90
 )
 
-if( FCKIT_HAVE_MPI AND EC_OS_NAME MATCHES "macosx" )
+if( EC_OS_NAME MATCHES "macosx" )
   list( APPEND FCKIT_DEFINITIONS BUG_ECKIT_166 )
-  list( APPEND ECKIT_LIBRARIES ${MPI_CXX_LIBRARIES} )
-  ecbuild_include_mpi()
 endif()
 
 list( APPEND ECKIT_LIBRARIES ${ECBUILD_CXX_IMPLICIT_LINK_LIBRARIES} )
@@ -64,8 +64,16 @@ else()
     set( fckit_type STATIC )
 endif()
 
+set( FCKIT_LINKER_LANGUAGE Fortran )
+if( HAVE_ECKIT )
+  # We need the C++ linker for the error handling to work
+  # Otherwise death by recursion in function "fckit_terminate"
+  # when uncaught exceptions are encountered 
+  set( FCKIT_LINKER_LANGUAGE CXX )
+endif()
+
 ecbuild_add_library( TARGET     fckit
-                     LINKER_LANGUAGE Fortran
+                     LINKER_LANGUAGE CXX
                      SOURCES
                                 fctest.F90
                                 module/fckit_array.F90
@@ -89,6 +97,3 @@ ecbuild_add_library( TARGET     fckit
 
                      HEADER_DESTINATION  ${INSTALL_INCLUDE_DIR}/fckit
                     )
-
-# install( FILES fctest.h DESTINATION ${INSTALL_INCLUDE_DIR}/fckit )
-# install( FILES ${CMAKE_Fortran_MODULE_DIRECTORY}/fctest.mod DESTINATION ${INSTALL_INCLUDE_DIR} )

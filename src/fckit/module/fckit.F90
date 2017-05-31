@@ -1,20 +1,46 @@
+#ifndef FORD
 #include "fckit_defines.h"
+#endif
 
 module fckit_module
-use fckit_main_module,     only: fckit_main
-use fckit_log_module,      only: fckit_log
-use fckit_resource_module, only: fckit_resource
-use fckit_mpi_module,      only: fckit_mpi_comm
+  !! author: Willem Deconinck
+  !!
+  !! Interface to fckit, forwarding the most used types, variables, and functions
+  !!
+
+use fckit_main_module,      only: &
+  fckit_main
+
+use fckit_log_module,       only: &
+  fckit_log
+
+use fckit_resource_module,  only: &
+  fckit_resource
+
+use fckit_mpi_module,       only: &
+  fckit_mpi_comm
+
+use fckit_exception_module, only: &
+  fckit_exception, &
+  fckit_exception_handler
+
+use fckit_signal_module, only: &
+  fckit_signal, &
+  fckit_signal_handler
+
 implicit none
 private
 
-public :: fckit_log
-public :: fckit_version
-public :: fckit_git_sha1
-public :: fckit_main
-public :: fckit_resource
-public :: fckit_mpi_comm
-
+public :: fckit_main                 !! - [[fckit_main_module:fckit_main(variable)]]
+public :: fckit_log                  !! - [[fckit_log_module:fckit_log(variable)]]
+public :: fckit_resource             !! - [[fckit_resource_module:fckit_resource(interface)]]
+public :: fckit_mpi_comm             !! - [[fckit_mpi_module:fckit_mpi_comm(type)]]
+public :: fckit_exception            !! - [[fckit_exception_module:fckit_exception(variable)]]
+public :: fckit_exception_handler    !! - [[fckit_exception_module:fckit_exception_handler(interface)]]
+public :: fckit_signal               !! - [[fckit_signal_module:fckit_signal(variable)]]
+public :: fckit_signal_handler       !! - [[fckit_signal_module:fckit_signal_handler(interface)]]
+public :: fckit_version              !! - [[fckit_module:fckit_version(function)]]
+public :: fckit_git_sha1             !! - [[fckit_module:fckit_git_sha1(function)]]
 
 ! =============================================================================
 CONTAINS
@@ -23,20 +49,24 @@ CONTAINS
 ! -----------------------------------------------------------------------------
 
 function fckit_version()
-character(len=8) :: fckit_version
-fckit_version = FCKIT_VERSION
+  !! Function that returns the version of fckit
+
+  character(len=8) :: fckit_version
+  fckit_version = FCKIT_VERSION
 end function
 
 ! -----------------------------------------------------------------------------
 
 function fckit_git_sha1(length) result( sha1 )
-character(len=40)        :: sha1
-integer, optional :: length
-integer           :: opt_length
-opt_length = 7
-if( present(length) ) opt_length = length
-sha1 = FCKIT_GIT_SHA1
-sha1 = sha1(1:min(opt_length, 40))
+  !! Function that returns the git-sha1 of the fckit repository
+
+  character(len=40)        :: sha1
+  integer, optional :: length
+  integer           :: opt_length
+  opt_length = 7
+  if( present(length) ) opt_length = length
+  sha1 = FCKIT_GIT_SHA1
+  sha1 = sha1(1:min(opt_length, 40))
 end function
 
 ! -----------------------------------------------------------------------------

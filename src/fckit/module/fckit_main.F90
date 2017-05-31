@@ -1,4 +1,6 @@
 module fckit_main_module
+  !! author: Willem Deconinck
+  !!
   !! Module providing [[fckit_main_module:fckit_main(variable)]] global variable
   !! to set up the ```eckit::Main``` object required by all libraries relying on eckit
   !!
@@ -130,9 +132,9 @@ end type fckit_main_type
 type(fckit_main_type), save :: fckit_main
   !! Instance of [[fckit_main_module:fckit_main_type(type)]]
 
-! =============================================================================
-CONTAINS
-! =============================================================================
+contains
+
+!------------------------------------------------------------------------------
 
 subroutine initialise()
   use, intrinsic :: iso_c_binding, only : c_ptr, c_int
