@@ -78,7 +78,8 @@ TEST( test_signal )
   use fckit_module
   use fckit_test_abort_fx
   implicit none
-  procedure(fckit_signal_handler), pointer:: signal_handler => sig_handler
+  procedure(fckit_signal_handler), pointer:: signal_handler
+  signal_handler => sig_handler
 #if TEST_ABORT
 !   call fckit_signal%restore_handlers()
 !   call fckit_signal%raise(fckit_signal%SIGABRT())
@@ -91,7 +92,8 @@ TEST( test_abort_1 )
   use fckit_module
   implicit none
   external :: abort_func_0
-  procedure(fckit_exception_handler), pointer:: exception_handler => abort_func_0
+  procedure(fckit_exception_handler), pointer:: exception_handler
+  exception_handler => abort_func_0
   call fckit_exception%set_handler( exception_handler )
 #if TEST_ABORT  
 !   call fckit_exception%abort()
@@ -102,7 +104,8 @@ TEST( test_abort_2 )
   use fckit_module
   use fckit_test_abort_fx
   implicit none
-  procedure(fckit_exception_handler), pointer:: exception_handler => abort_wrapper
+  procedure(fckit_exception_handler), pointer:: exception_handler
+  exception_handler => abort_wrapper
   call fckit_exception%set_handler( exception_handler )
 # if TEST_ABORT  
 !   call fckit_exception%abort("test_abort_2")
@@ -113,7 +116,8 @@ TEST( test_abort_3 )
   use fckit_module
   use fckit_test_abort_fx
   implicit none
-  procedure(fckit_exception_handler), pointer:: exception_handler => abort_wrapper
+  procedure(fckit_exception_handler), pointer:: exception_handler
+  exception_handler => abort_wrapper
   call fckit_exception%set_handler( exception_handler )
 #if TEST_ABORT  
 !   call fckit_exception%abort("test_abort_3","test_abort.F90",__LINE__)
