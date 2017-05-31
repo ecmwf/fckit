@@ -59,7 +59,7 @@ add_fctest( TARGET  fckit_test_configuration
             LIBS    fckit)
 
 ecbuild_add_test( TARGET  fckit_test_configuration_cpp 
-            LINKER_LANGUAGE Fortran
+            LINKER_LANGUAGE CXX
             SOURCES 
             test_configuration.cc
             test_configuration_fortcode.F90
