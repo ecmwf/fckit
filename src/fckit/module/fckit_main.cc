@@ -138,10 +138,10 @@ extern "C"
   int fckit__SIGKILL() { return SIGKILL; }
   int fckit__SIGINT()  { return SIGINT;  }
   int fckit__SIGALRM() { return SIGALRM; }
-  int fckit__SIGFPE()  { return SIGABRT; }
-  int fckit__SIGTERM() { return SIGKILL; }
-  int fckit__SIGSEGV() { return SIGINT;  }
-  int fckit__SIGILL()  { return SIGALRM; }
+  int fckit__SIGFPE()  { return SIGFPE;  }
+  int fckit__SIGTERM() { return SIGTERM; }
+  int fckit__SIGSEGV() { return SIGSEGV; }
+  int fckit__SIGILL()  { return SIGILL;  }
 
 } // extern "C"
 

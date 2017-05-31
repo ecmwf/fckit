@@ -51,7 +51,7 @@ subroutine abort_wrapper()
   endif
 end subroutine
 
-subroutine sig_handler(signum)
+subroutine sig_handler(signum) bind(c)
   use, intrinsic :: iso_c_binding, only : c_int
   use fckit_module
   integer(c_int), value, intent(in) :: signum

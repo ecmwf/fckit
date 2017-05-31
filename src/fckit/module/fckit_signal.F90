@@ -32,7 +32,7 @@ contains
     !!####Example usage
     !!
     !!```fortran
-    !! subroutine custom_signal_handler( signum )
+    !! subroutine custom_signal_handler( signum ) bind(c)
     !!   integer :: signum
     !!   ! handle abort
     !! end subroutine

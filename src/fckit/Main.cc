@@ -124,7 +124,7 @@ void fckit_signal_handler(int signum) {
     std::ostream& out = fckit::Log::error();
     out << "\n"
         << "=========================================\n"
-        << signal << " (intercepted by fckit)\n";
+        << signal << " (signal intercepted by fckit)\n";
     out << "-----------------------------------------\n"
         << "BACKTRACE\n"
         << "-----------------------------------------\n"
