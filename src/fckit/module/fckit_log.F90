@@ -2,6 +2,7 @@ module fckit_log_module
 use fckit_object_module, only: fckit_object
 implicit none
 private
+public :: log !! DEPRECATED, USE fckit_log INSTEAD!
 public :: fckit_log
 public :: fckit_logchannel
 private :: fckit_object
@@ -92,6 +93,10 @@ contains
 end type fckit_log_type
 
 type(fckit_log_type) :: fckit_log
+  !! Instance of [[fckit_log_module:fckit_log_type(type)]]
+
+type(fckit_log_type) :: log
+  !! deprecated: true
   !! Instance of [[fckit_log_module:fckit_log_type(type)]]
 
 !------------------------------------------------------------------------------
