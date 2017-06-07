@@ -33,7 +33,7 @@ use fckit_pathname_module, only: &
 
 use fckit_configuration_module, only: &
   fckit_configuration, &
-  fckit_JSONConfiguration
+  fckit_YAMLConfiguration
 
 implicit none
 private
@@ -48,7 +48,7 @@ public :: fckit_signal               !! - [[fckit_signal_module:fckit_signal(var
 public :: fckit_signal_handler       !! - [[fckit_signal_module:fckit_signal_handler(interface)]]
 public :: fckit_pathname             !! - [[fckit_pathname_module:fckit_pathname(type)]]
 public :: fckit_configuration        !! - [[fckit_configuration_module:fckit_configuration(type)]]
-public :: fckit_JSONConfiguration    !! - [[fckit_configuration_module:fckit_JSONConfiguration(interface)]]
+public :: fckit_YAMLConfiguration    !! - [[fckit_configuration_module:fckit_YAMLConfiguration(interface)]]
 public :: fckit_version              !! - [[fckit_module:fckit_version(function)]]
 public :: fckit_git_sha1             !! - [[fckit_module:fckit_git_sha1(function)]]
 

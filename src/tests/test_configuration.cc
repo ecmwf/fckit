@@ -1,5 +1,4 @@
 #include "eckit/config/LocalConfiguration.h"
-#include "eckit/config/JSONConfiguration.h"
 
 using namespace eckit;
 

@@ -16,7 +16,7 @@
 #include "eckit/filesystem/PathName.h"
 #include "eckit/config/Configuration.h"
 #include "eckit/config/LocalConfiguration.h"
-#include "eckit/config/JSONConfiguration.h"
+#include "eckit/config/YAMLConfiguration.h"
 #include "eckit/parser/JSON.h"
 #include "eckit/parser/JSONParser.h"
 
@@ -25,7 +25,7 @@ using std::string;
 using std::stringstream;
 using eckit::Configuration;
 using eckit::LocalConfiguration;
-using eckit::JSONConfiguration;
+using eckit::YAMLConfiguration;
 using eckit::JSON;
 using eckit::PathName;
 using eckit::Exception;
@@ -61,12 +61,12 @@ Configuration* c_fckit_configuration_new () {
 Configuration* c_fckit_configuration_new_from_json (const char* json) {
     stringstream s;
     s << json;
-    return new JSONConfiguration(s);
+    return new YAMLConfiguration(s);
 }
 
 const Configuration* c_fckit_configuration_new_from_file (const char* path) {
     PathName p(path);
-    return new JSONConfiguration( p );
+    return new YAMLConfiguration( p );
 }
 
 void c_fckit_configuration_delete (Configuration* This) {

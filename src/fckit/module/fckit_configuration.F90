@@ -7,7 +7,7 @@ module fckit_configuration_module
   !! The [[fckit_configuration_module:fckit_configuration(type)]] type can be used to 
   !! encapsulate name-value configurations, including nesting of subconfigurations.
   !!
-  !! The [[fckit_configuration_module:fckit_JSONconfiguration(interface)]] constructor
+  !! The [[fckit_configuration_module:fckit_YAMLConfiguration(interface)]] constructor
   !! for [[fckit_configuration_module:fckit_configuration(type)]] can create the 
   !! configuration from a JSON file
   
@@ -19,7 +19,7 @@ implicit none
 private :: fckit_object
 private :: fckit_pathname
 public :: fckit_configuration
-public :: fckit_JSONConfiguration
+public :: fckit_YAMLConfiguration
 
 private
 
@@ -249,7 +249,7 @@ interface fckit_configuration
   module procedure ctor_from_cptr
 end interface
 
-interface fckit_JSONConfiguration
+interface fckit_YAMLConfiguration
   module procedure ctor_from_jsonfile
   module procedure ctor_from_jsonstr
 end interface

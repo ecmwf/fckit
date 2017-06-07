@@ -147,7 +147,7 @@ TEST(test_configuration_json_string)
    &       '{"name":"Alison","age":43}' //&
    &    ']}'
  
-  config = fckit_JSONConfiguration(json)
+  config = fckit_YAMLConfiguration(json)
   call fckit_log%info(config%json())
   if( config%get("records",records) ) then
     do jrec=1,size(records)
@@ -183,7 +183,7 @@ TEST(test_configuration_json_file)
  &'"records":[{"age":42,"name":"Anne"},{"age":36,"name":"Bob"}]}'
  CLOSE(9)
 
- config = fckit_JSONConfiguration( fckit_PathName("fctest_configuration.json") )
+ config = fckit_YAMLConfiguration( fckit_PathName("fctest_configuration.json") )
  
  call fckit_log%info("config = "//config%json())
 
