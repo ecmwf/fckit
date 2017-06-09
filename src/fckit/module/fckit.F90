@@ -12,7 +12,8 @@ use fckit_main_module,      only: &
   fckit_main
 
 use fckit_log_module,       only: &
-  fckit_log
+  fckit_log, &
+  log ! DEPRECATED.. Use fckit_log instead
 
 use fckit_resource_module,  only: &
   fckit_resource
@@ -51,6 +52,10 @@ public :: fckit_configuration        !! - [[fckit_configuration_module:fckit_con
 public :: fckit_YAMLConfiguration    !! - [[fckit_configuration_module:fckit_YAMLConfiguration(interface)]]
 public :: fckit_version              !! - [[fckit_module:fckit_version(function)]]
 public :: fckit_git_sha1             !! - [[fckit_module:fckit_git_sha1(function)]]
+
+public :: log
+  !! deprecated: true
+  !! Use [[fckit_log_module:fckit_log(variable)]] instead
 
 ! =============================================================================
 CONTAINS

@@ -58,6 +58,8 @@ add_fctest( TARGET  fckit_test_configuration
             CONDITION HAVE_ECKIT
             LIBS    fckit)
 
+endif()
+
 ecbuild_add_test( TARGET  fckit_test_configuration_cpp 
             LINKER_LANGUAGE CXX
             SOURCES 
@@ -68,12 +70,10 @@ ecbuild_add_test( TARGET  fckit_test_configuration_cpp
             CONDITION HAVE_ECKIT
             LIBS    fckit)
 
-endif()
-
-
 ecbuild_add_test( TARGET fckit_test_cpp
   LINKER_LANGUAGE CXX
   SOURCES test_cpp.cc test_cpp_fortcode.F90
   INCLUDES ${ECKIT_INCLUDE_DIRS}
+  ENVIRONMENT "DEBUG=1"
   CONDITION HAVE_ECKIT
   LIBS fckit )

@@ -1,18 +1,26 @@
 #include "fckit/Main.h"
 #include "fckit/Log.h"
 #include "eckit/mpi/Comm.h"
+#include "fckit/Libfckit.h"
+
+using namespace fckit;
+
 extern "C" {
   void run();
 }
 int main(int argc, char* argv[])
 {
-  fckit::Main::initialize(argc,argv);
-  fckit::Main::instance().taskID(eckit::mpi::comm().rank());
-  if( fckit::Main::instance().taskID() == 0 )
-    fckit::Log::setFortranUnit(fckit::Log::output_unit(),fckit::Log::TIMESTAMP);
-  else
-    fckit::Log::reset();
+  Main::initialize(argc,argv);
+  Main::instance().taskID(eckit::mpi::comm().rank());
+
+  if( Main::instance().taskID() == 0 ) {
+    Log::setFortranUnit(Log::output_unit(),Log::TIMESTAMP);
+    Log::addFile("fckit_test_cpp.log",Log::TIMESTAMP);
+  } else {
+    Log::reset();
+  }
   run();
-  fckit::Main::finalize();
+  Log::debug<Libfckit>() << "message from Libfckit" << std::endl;
+  Main::finalize();
   return 0;
 }

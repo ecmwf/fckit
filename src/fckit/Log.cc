@@ -1,12 +1,19 @@
+#include <algorithm>
+#include "fckit/Libfckit.h"
 #include "fckit/Log.h"
 #include "eckit/log/TimeStampTarget.h"
 #include "eckit/log/PrefixTarget.h"
 #include "eckit/log/CallbackTarget.h"
 #include "eckit/log/FileTarget.h"
 #include "eckit/log/OStreamTarget.h"
+#include "eckit/runtime/Main.h"
 
 using fckit::Log;
+using eckit::system::Library;
 using eckit::Channel;
+using eckit::LogTarget;
+using eckit::PrefixTarget;
+using eckit::Main;
 
 extern "C" {
   void fckit_write_to_fortran_unit(int unit, const char* msg);
@@ -18,6 +25,31 @@ namespace {
 
 static void write_to_fortran_unit( void* ctxt, const char* msg ) {
   fckit_write_to_fortran_unit( *static_cast<int*>(ctxt), msg );
+}
+
+static std::string debug_prefix(const std::string& libname) {
+  std::string s = libname;
+  std::transform(s.begin(), s.end(), s.begin(), ::toupper);
+  s += "_DEBUG";
+  return s;
+}
+
+void libs_debug_addTarget(LogTarget* target) {
+  for( std::string libname : Library::list() ) {
+    const Library& lib = Library::lookup(libname);
+    if( lib.debug() ) {
+      lib.debugChannel().addTarget( new PrefixTarget(debug_prefix(libname), target ) );
+    }
+  }
+}
+
+void libs_debug_setTarget(LogTarget* target) {
+  for( std::string libname : Library::list() ) {
+    const Library& lib = Library::lookup(libname);
+    if( lib.debug() ) {
+      lib.debugChannel().setTarget( new PrefixTarget(debug_prefix(libname), target ) );
+    }
+  }
 }
 
 } // namespace
@@ -35,7 +67,7 @@ FortranUnitTarget::FortranUnitTarget(int unit) :
     eckit::CallbackTarget(&write_to_fortran_unit,&unit_),
     unit_(unit) {}
 
-eckit::LogTarget* createStyleTarget( eckit::LogTarget* target, Log::Style style, const char* prefix )
+LogTarget* createStyleTarget( LogTarget* target, Log::Style style, const char* prefix )
 {
   if( style == Log::SIMPLE    ) return target;
   if( style == Log::PREFIX    ) return new eckit::PrefixTarget( prefix, target ); 
@@ -45,61 +77,56 @@ eckit::LogTarget* createStyleTarget( eckit::LogTarget* target, Log::Style style,
 }
 
 void Log::addFortranUnit(int unit, Style style, const char*) {
-  eckit::LogTarget* funit = new FortranUnitTarget(unit);
+  LogTarget* funit = new FortranUnitTarget(unit);
   info().    addTarget( createStyleTarget(funit,style,"(I)") );
   warning(). addTarget( createStyleTarget(funit,style,"(W)") );
   error().   addTarget( createStyleTarget(funit,style,"(E)") );
-  if (debug()) {
-    debug().   addTarget( createStyleTarget(funit,style,"(D)") );
-  }
+  if(Main::instance().debug()) debug().addTarget( createStyleTarget(funit,style,"(D)") );
+  libs_debug_addTarget( funit );
 }
 void Log::setFortranUnit(int unit, Style style, const char*) {
-  eckit::LogTarget* funit = new FortranUnitTarget(unit);
+  LogTarget* funit = new FortranUnitTarget(unit);
   info().    setTarget( createStyleTarget(funit,style,"(I)") );
   warning(). setTarget( createStyleTarget(funit,style,"(W)") );
   error().   setTarget( createStyleTarget(funit,style,"(E)") );
-  if (debug()) {
-    debug(). setTarget( createStyleTarget(funit,style,"(D)") );
-  }
+  if(Main::instance().debug()) debug().setTarget( createStyleTarget(funit,style,"(D)") );
+  libs_debug_setTarget(funit);
 }
 
 void Log::addFile(const char* path, Style style, const char*) {
-  eckit::LogTarget* file = new eckit::FileTarget(path);
+  LogTarget* file = new eckit::FileTarget(path);
   info().    addTarget( createStyleTarget(file,style,"(I)") );
   warning(). addTarget( createStyleTarget(file,style,"(W)") );
   error().   addTarget( createStyleTarget(file,style,"(E)") );
-  if (debug()) {
-    debug(). addTarget( createStyleTarget(file,style,"(D)") );
-  }
+  if(Main::instance().debug()) debug().addTarget( createStyleTarget(file,style,"(D)") );
+  libs_debug_addTarget(file);
 }
 void Log::setFile(const char* path, Style style, const char*) {
-  eckit::LogTarget* file = new eckit::FileTarget(path);
+  LogTarget* file = new eckit::FileTarget(path);
   info().    setTarget( createStyleTarget(file,style,"(I)") );
   warning(). setTarget( createStyleTarget(file,style,"(W)") );
   error().   setTarget( createStyleTarget(file,style,"(E)") );
-  if (debug()) {
-    debug(). setTarget( createStyleTarget(file,style,"(D)") );
-  }
+  if(Main::instance().debug()) debug().setTarget( createStyleTarget(file,style,"(D)") );
+  libs_debug_setTarget( file );
 }
 
 void Log::addStdOut(Style style, const char*) {
-  eckit::LogTarget* stdout = new eckit::OStreamTarget(std::cout);
+  LogTarget* stdout = new eckit::OStreamTarget(std::cout);
   info().    addTarget( createStyleTarget(stdout,style,"(I)") );
   warning(). addTarget( createStyleTarget(stdout,style,"(W)") );
   error().   addTarget( createStyleTarget(stdout,style,"(E)") );
-  if (debug()) {
-    debug(). addTarget( createStyleTarget(stdout,style,"(D)") );
-  }
+  if(Main::instance().debug()) debug().addTarget( createStyleTarget(stdout,style,"(D)") );
+  libs_debug_addTarget( stdout );
+
 }
 
 void Log::setStdOut(Style style, const char*) {
-  eckit::LogTarget* stdout = new eckit::OStreamTarget(std::cout);
+  LogTarget* stdout = new eckit::OStreamTarget(std::cout);
   info().    setTarget( createStyleTarget(stdout,style,"(I)") );
   warning(). setTarget( createStyleTarget(stdout,style,"(W)") );
   error().   setTarget( createStyleTarget(stdout,style,"(E)") );
-  if (debug()) {
-    debug(). setTarget( createStyleTarget(stdout,style,"(D)") );
-  }
+  if(Main::instance().debug()) debug().setTarget( createStyleTarget(stdout,style,"(D)") );
+  libs_debug_setTarget( stdout );
 }
 
 int Log::output_unit() {
@@ -107,6 +134,24 @@ int Log::output_unit() {
 }
 int Log::error_unit() {
   return fckit_fortranunit_stderr();
+}
+
+void Log::reset() {
+  eckit::Log::reset();
+  for( std::string libname : Library::list() ) {
+    if( Channel& debug = Library::lookup(libname).debugChannel() ) {
+      debug.reset();
+    }
+  }
+}
+
+void Log::flush() {
+  eckit::Log::flush();
+  for( std::string libname : Library::list() ) {
+    if( Channel& debug = Library::lookup(libname).debugChannel() ) {
+      debug.flush();
+    }
+  }
 }
 
 } // namespace fckit

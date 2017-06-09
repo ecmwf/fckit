@@ -1,5 +1,6 @@
 #include <csignal>
 #include <exception>
+#include <iomanip>
 #include "fckit/Main.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
@@ -186,7 +187,8 @@ void Signals::setSignalHandlers() {
 }
 
 void Signals::setSignalHandler( const Signal& signal ) {
-  eckit::Log::debug() << "Registering signal handler for signal " << signal << std::endl;
+  if( Main::instance().taskID() == 0 ) 
+    eckit::Log::debug() << "Registering signal handler for signal " << std::setw(2) << int(signal) << " [" << signal << "]" << std::endl;
   registered_signals_[signal] = signal;
   std::signal( signal, signal.handler() );
 }
@@ -215,6 +217,7 @@ Main::Main(
     const char* homeenv)
     : eckit::Main(argc,argv,homeenv)
 {
+  taskID(eckit::mpi::comm("world").rank());
   Signals::instance().setSignalHandlers();
   std::set_terminate( &fckit_terminate );
 
@@ -231,8 +234,6 @@ Main::Main(
       if( j+1 < argc ) displayName_ = argv[j+1];
     }
   }
-  
-  taskID(eckit::mpi::comm("world").rank());
 }
 
 void Main::initialise(

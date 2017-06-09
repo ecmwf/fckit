@@ -1,5 +1,4 @@
-#ifndef fckit_log_Log_h
-#define fckit_log_Log_h
+#pragma once
 
 #include "eckit/log/Log.h"
 
@@ -20,11 +19,13 @@ public:
   static void addStdOut(Style=PREFIX, const char* prefix="");
   static void setStdOut(Style=PREFIX, const char* prefix="");
 
+  static void reset();
+
+  static void flush();
+
   // Fortran unit numbers
   static int output_unit();
   static int error_unit();
 };
 
 } // namespace fckit
-
-#endif
