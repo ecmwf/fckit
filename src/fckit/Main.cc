@@ -217,8 +217,6 @@ Main::Main(
     const char* homeenv)
     : eckit::Main(argc,argv,homeenv)
 {
-  taskID(eckit::mpi::comm("world").rank());
-  Signals::instance().setSignalHandlers();
   std::set_terminate( &fckit_terminate );
 
   for( int j=0; j<argc; ++j )
@@ -234,6 +232,8 @@ Main::Main(
       if( j+1 < argc ) displayName_ = argv[j+1];
     }
   }
+
+  taskID(eckit::mpi::comm("world").rank());
 }
 
 void Main::initialise(
