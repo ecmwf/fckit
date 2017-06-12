@@ -53,7 +53,7 @@ endif()
 
 ecbuild_add_option( FEATURE ECKIT
                     DESCRIPTION "Wrap ecKit functionality"
-                    REQUIRED_PACKAGES "PROJECT eckit VERSION 0.15.0"
+                    REQUIRED_PACKAGES "PROJECT eckit VERSION 0.17.0"
                    )
 if( HAVE_ECKIT )
     set( ECKIT_LIBRARIES eckit eckit_mpi )
