@@ -122,6 +122,8 @@ TEST( test_configuration )
   enddo
   call anested%final()
 
+  ! There is a reported PGI/16.7 bug that makes this test segfault here.
+  ! PGI/17.1 has this bug fixed.
 
   ! ---------------------------------------------
 
