@@ -1,4 +1,7 @@
 module fckit_refcounted_module
+  !! Provides [[fckit_refcounted_module:fckit_refcounted(type)]],
+  !! a reference counted implementation of [[fckit_object_module:fckit_object(type)]]
+
 use fckit_object_module, only: fckit_object
 implicit none
 private
@@ -15,6 +18,14 @@ public fckit__delete_Owned
 !========================================================================
 
 type, extends(fckit_object) :: fckit_refcounted
+  !! Implements a reference counted [[fckit_object_module:fckit_object(type)]]
+  !!
+  !! Assigning one such object to another copies the internal C pointer
+  !! and increases the reference count.
+  !! Finalising one such object decreases the reference count. When the
+  !! last object is destroyed, the reference count becomes zero, and the
+  !! internal C pointer is deleted.
+  
 contains
   procedure, public :: final => final_c
   procedure, private :: reset => reset_c
@@ -27,6 +38,7 @@ contains
   procedure, public :: delete
 
 #ifdef EC_HAVE_Fortran_FINALIZATION
+! Not yet implemented !
  final :: final_auto
 #endif
 

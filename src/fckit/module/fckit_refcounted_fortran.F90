@@ -1,4 +1,7 @@
 module fckit_refcounted_fortran_module
+  !! Provides [[fckit_refcounted_fortran_module:fckit_refcounted_fortran(type)]],
+  !! a reference counted implementation of [[fckit_object_module:fckit_object(type)]]
+
 use fckit_object_module, only: fckit_object
 implicit none
 private
@@ -13,6 +16,20 @@ public fckit_refcounted_fortran
 !========================================================================
 
 type, extends(fckit_object) :: fckit_refcounted_fortran
+  !! Implements a reference counted [[fckit_object_module:fckit_object(type)]]
+  !!
+  !! Very similar to [[fckit_refcounted_module:fckit_refcounted(type)]], with the
+  !! distinction that the internal C pointer is only used to track reference counts.
+  !!
+  !! Assigning one such object to another copies the data
+  !! and increases the reference count.
+  !! Finalising one such object decreases the reference count. When the
+  !! last object is destroyed, the reference count becomes zero, and the
+  !! object should be deallocated
+  !! 
+  !! note: The internal data besides the C pointer should also be a pointer so that
+  !! a copy only copies pointers!
+
   integer, pointer, private :: refcount => null()
 contains
   procedure, public :: final => final_f

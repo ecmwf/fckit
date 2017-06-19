@@ -2,7 +2,7 @@
 
 Fortran toolkit for interoperating Fortran with C/C++.
 
-In addition useful algorithms from ECKit are wrapped with Fortran.
+In addition useful algorithms from ecKit are wrapped with Fortran.
 
 ## fctest
 

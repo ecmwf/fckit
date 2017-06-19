@@ -1,4 +1,10 @@
 module fckit_mpi_module
+  !! Wrap eckit MPI capabilities.
+  !!
+  !! Depending on use of mpirun, aprun, srun, etc, a serial or true MPI
+  !! implementation is used, so that serial jobs do not require an alternative
+  !! library linked such as ```mpi_serial```
+
 use fckit_object_module, only: fckit_object
 implicit none
 private
@@ -28,19 +34,65 @@ end interface
 !========================================================================
 
 type, extends(fckit_object) :: fckit_mpi_comm
-  character(len=32) :: name
+  !! MPI communicator object
+  !!
+  !! This object forms the basis for communications within one
+  !! MPI communicator
+  !!
+  !! To use the default communicator, use:
+  !!
+  !!```fortran
+  !!type(fckit_mpi_comm) :: comm
+  !!comm = fckit_mpi_comm()
+  !!```
+  !!
+  !! Special constructors can be used such as:
+  !!
+  !!```fortran
+  !!type(fckit_mpi_comm) :: comm
+  !!comm = fckit_mpi_comm("world")
+  !!```
+  !!
+  !!```fortran
+  !!type(fckit_mpi_comm) :: comm
+  !!comm = fckit_mpi_comm("self")
+  !!```
+  !!
+  !! Existing fortran MPI communicators can be wrapped:
+  !!
+  !!```fortran
+  !!integer, intent(in) :: MPL_COMM
+  !!type(fckit_mpi_comm) :: comm
+  !!comm = fckit_mpi_comm(MPL_COMM)
+  !!```
+  !!
+  !! The default constructor can be changed with the routine
+  !! [[fckit_mpi_module:fckit_mpi_setCommDefault(subroutine)]]
+
 contains
   procedure, public :: final => final_c
   procedure, public :: delete
 
   procedure, public :: communicator
+    !! Fortran MPI communicator handle
+
   procedure, public :: size
+    !! Number of MPI tasks participating in this communicator
+
   procedure, public :: rank
+    !! Rank of this MPI task in this communicator
+
   procedure, public :: barrier
+    !! MPI Barrier in this communicator
+
   procedure, public :: abort
+    !! MPI Abort
 
   procedure, public :: anytag
+    !! anytag
+
   procedure, public :: anysource
+    !! anysource
   
   procedure, private :: allreduce_int32_r0
   procedure, private :: allreduce_int32_r1
@@ -183,6 +235,7 @@ contains
   procedure, private :: ireceive_real64_r3
   procedure, private :: ireceive_real64_r4
   
+  !> MPI allreduce interface for most array and scalar types
   generic, public :: allreduce => &
     & allreduce_int32_r0  ,&
     & allreduce_int32_r1  ,&
@@ -225,6 +278,7 @@ contains
     & allreduce_inplace_real64_r3 ,&
     & allreduce_inplace_real64_r4  
 
+  !> MPI broadcast for most array and scalar types
   generic, public :: broadcast => &
     & broadcast_int32_r0  ,&
     & broadcast_int32_r1  ,&
@@ -247,6 +301,7 @@ contains
     & broadcast_real64_r3 ,&
     & broadcast_real64_r4
 
+  !> MPI send for most array and scalar types
   generic, public :: send => &
     & send_int32_r0  ,&
     & send_int32_r1  ,&
@@ -269,6 +324,7 @@ contains
     & send_real64_r3 ,&
     & send_real64_r4
 
+  !> MPI receive for most array and scalar types
   generic, public :: receive => &
     & receive_int32_r0  ,&
     & receive_int32_r1  ,&
@@ -291,6 +347,7 @@ contains
     & receive_real64_r3 ,&
     & receive_real64_r4
 
+  !> MPI asynchronous send for most array and scalar types
   generic, public :: isend => &
     & isend_int32_r0  ,&
     & isend_int32_r1  ,&
@@ -313,6 +370,7 @@ contains
     & isend_real64_r3 ,&
     & isend_real64_r4
 
+  !> MPI asynchronous receive for most array and scalar types
   generic, public :: ireceive => &
     & ireceive_int32_r0  ,&
     & ireceive_int32_r1  ,&
@@ -334,7 +392,8 @@ contains
     & ireceive_real64_r2 ,&
     & ireceive_real64_r3 ,&
     & ireceive_real64_r4
-    
+  
+  !> MPI wait for this communicator
   procedure, public :: wait
 
 #ifdef EC_HAVE_Fortran_FINALIZATION

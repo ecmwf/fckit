@@ -1,5 +1,8 @@
-project: FCKit
-summary: Fortran support library, compatible with ECKit C++ support library
+project: fcKit
+project_website: https://software.ecmwf.int/wiki/display/FCKIT
+project_bitbucket: https://software.ecmwf.int/stash/projects/ECSDK/repos/fckit
+version: @FCKIT_VERSION@
+summary: Fortran support library, compatible with ecKit C++ support library.
 author: ECMWF
 author_website: www.ecmwf.int
 src_dir: @CMAKE_CURRENT_SOURCE_DIR@/../src/fckit
@@ -16,4 +19,54 @@ macro: FORD
 extra_filetypes: sh #
 exclude: Log.F90
 
-{!@CMAKE_CURRENT_SOURCE_DIR@/../README.md!}
+
+## Capabilities:
+
+#### Logging
+
+- Configure ecKit loggers to e.g. direct output to Fortran units
+- Multiple log channels ( info, debug, warning, error )
+- Each log channel may be configured with multiple destinations ( Fortran unit, file, none )
+
+#### MPI
+
+- Wraping of MPI functions (allreduce, broadcast, alltoall, allgather, ...)
+- Depending on environment variables set by mpirun, aprun, srun, the real MPI or a serial MPI
+implementation is selected at runtime, so that no ```mpi_serial``` dummy library is required for serial jobs.
+
+#### Exception handling
+
+- C++ exceptions are handled by a custom terminate function
+- This terminate function calls a configurable routine to abort the program
+
+#### Configuration
+
+- Configuration can be read from a YAML or JSON file
+- Access configuration by key-value with key being a string
+- Compatible with ecKit configuration (can be passed as argument)
+
+#### C/Fortran interoperability
+- Helper functions to convert strings, arrays
+
+## fctest
+
+Unit Testing Framwork for Fortran, made easy.
+
+- C Preprocessor Macros are used to make writing tests extremely fast
+- Tests in one file are bundled in a Test Suite (Fortran Module)
+- Python script generates a main program for a Test Suite
+- Driven by CMake build system ( and ctest )
+
+#### To use fctest in your ecbuild project
+
+Simply add following line to your project's CMakeLists.txt
+
+```
+ecbuild_add_option( FEATURE FCTEST  DEFAULT ${ENABLE_TESTS}
+                    DESCRIPTION "Fortran Unit Testing Framework"
+                    REQUIRED_PACKAGES "PROJECT fckit" )
+```
+
+See src/examples folder how to add and create the unit-tests.
+
+---------------------------------------------------------------------
