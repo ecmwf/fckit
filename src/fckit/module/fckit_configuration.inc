@@ -32,13 +32,24 @@ end function
 !-------------------------------------------------------------------------------
 
 !-------------------------------------------------------------------------------
-! const Configuration* c_fckit_configuration_new_from_file (const char* path)
+! Configuration* c_fckit_configuration_new_from_file (const char* path)
 !-------------------------------------------------------------------------------
 function c_fckit_configuration_new_from_file( path ) bind(C,name="c_fckit_confi&
   &guration_new_from_file")
     use iso_c_binding, only: c_ptr, c_char
     type(c_ptr) :: c_fckit_configuration_new_from_file
     character(c_char), dimension(*) :: path
+end function
+!-------------------------------------------------------------------------------
+
+!-------------------------------------------------------------------------------
+! Configuration* c_fckit_configuration_new_from_buffer (eckit::Buffer* buffer)
+!-------------------------------------------------------------------------------
+function c_fckit_configuration_new_from_buffer( buffer ) bind(C,name="c_fckit_c&
+  &onfiguration_new_from_buffer")
+    use iso_c_binding, only: c_ptr
+    type(c_ptr) :: c_fckit_configuration_new_from_buffer
+    type(c_ptr), value :: buffer
 end function
 !-------------------------------------------------------------------------------
 

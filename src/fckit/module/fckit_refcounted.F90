@@ -27,13 +27,13 @@ type, extends(fckit_object) :: fckit_refcounted
   !! internal C pointer is deleted.
   
 contains
-  procedure, public :: final => final_c
-  procedure, private :: reset => reset_c
+  procedure, public :: final
+  procedure, private :: reset
   generic, public :: assignment(=) => reset
-  procedure, public :: owners => owners_c
-  procedure, public :: attach => attach_c
-  procedure, public :: detach => detach_c
-  procedure, public :: return => return_c
+  procedure, public :: owners
+  procedure, public :: attach
+  procedure, public :: detach
+  procedure, public :: return
   procedure, public :: copy
   procedure, public :: delete
 
@@ -90,7 +90,7 @@ subroutine copy(this,obj_in)
   class(fckit_refcounted), target, intent(in) :: obj_in
 end subroutine
 
-subroutine final_c(this)
+subroutine final(this)
   class(fckit_refcounted), intent(inout) :: this
   if( .not. this%is_null() ) then
     if( this%owners() >  0 ) then
@@ -103,7 +103,7 @@ subroutine final_c(this)
   endif
 end subroutine
 
-subroutine reset_c(obj_out,obj_in)
+subroutine reset(obj_out,obj_in)
   use fckit_c_interop_module
   class(fckit_refcounted), intent(inout) :: obj_out
   class(fckit_refcounted), intent(in) :: obj_in
@@ -115,23 +115,23 @@ subroutine reset_c(obj_out,obj_in)
   endif
 end subroutine
 
-subroutine attach_c(this)
+subroutine attach(this)
   class(fckit_refcounted), intent(inout) :: this
   call fckit__Owned__attach(this%c_ptr())
 end subroutine
 
-subroutine detach_c(this)
+subroutine detach(this)
   class(fckit_refcounted), intent(inout) :: this
   call fckit__Owned__detach(this%c_ptr())
 end subroutine
 
-function owners_c(this)
-  integer :: owners_c
+function owners(this)
+  integer :: owners
   class(fckit_refcounted) :: this
-  owners_c = fckit__Owned__owners(this%c_ptr())
+  owners = fckit__Owned__owners(this%c_ptr())
 end function
 
-subroutine return_c(this)
+subroutine return(this)
   class(fckit_refcounted), intent(inout) :: this
 #ifdef Fortran_FINAL_FUNCTION_RESULT
   if( this%owners() == 0 ) call this%attach()

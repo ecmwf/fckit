@@ -6,6 +6,8 @@ module fckit_mpi_module
   !! library linked such as ```mpi_serial```
 
 use fckit_object_module, only: fckit_object
+  use fckit_buffer_module
+
 implicit none
 private
 
@@ -300,6 +302,8 @@ contains
     & broadcast_real64_r2 ,&
     & broadcast_real64_r3 ,&
     & broadcast_real64_r4
+
+  procedure, public :: broadcast_file
 
   !> MPI send for most array and scalar types
   generic, public :: send => &
@@ -610,6 +614,14 @@ interface
     integer(c_size_t), value :: count
     integer(c_size_t), value :: root
   end subroutine
+
+  function fckit__mpi__broadcast_file(comm,path,root) result(buffer) bind(c)
+    use, intrinsic :: iso_c_binding, only : c_ptr, c_size_t, c_char
+    type(c_ptr) :: buffer
+    type(c_ptr), value :: comm
+    character(kind=c_char), dimension(*) :: path
+    integer(c_size_t), value :: root
+  end function
   
   function fckit__mpi__anytag(comm) bind(c)
     use, intrinsic :: iso_c_binding, only : c_int, c_ptr
@@ -1672,6 +1684,20 @@ subroutine broadcast_real64_r4(this,buffer,root)
   view_buffer  => array_view1d(buffer)
   call fckit__mpi__broadcast_real64(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),int(root,c_size_t))
 end subroutine
+
+!---------------------------------------------------------------------------------------
+
+function broadcast_file(this,path,root) result(buffer)
+  use, intrinsic :: iso_c_binding, only : c_int, c_size_t, c_ptr
+  use fckit_c_interop_module, only : c_str
+  use fckit_buffer_module
+  type(fckit_buffer) :: buffer
+  class(fckit_mpi_comm), intent(in) :: this
+  character(len=*), intent(in) :: path
+  integer(c_int), intent(in) :: root
+  buffer = fckit_buffer( fckit__mpi__broadcast_file(this%c_ptr(),c_str(path),int(root,c_size_t)) )
+  call buffer%return()
+end function
 
 !---------------------------------------------------------------------------------------
 

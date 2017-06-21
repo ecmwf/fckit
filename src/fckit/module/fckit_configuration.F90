@@ -12,12 +12,10 @@ module fckit_configuration_module
   !! configuration from a JSON file
   
 use fckit_object_module, only : fckit_object
-use fckit_pathname_module, only : fckit_pathname
 
 implicit none
 
 private :: fckit_object
-private :: fckit_pathname
 public :: fckit_configuration
 public :: fckit_YAMLConfiguration
 
@@ -34,6 +32,24 @@ TYPE, extends(fckit_object) :: fckit_configuration
   !! - basic types int32, int64, real32, real64, string, or arrays of these.
   !! - arrays of basic types
   !! - Subconfiguration, or arrays of subconfigurations
+  !!
+  !!#### Example construction
+  !!
+  !! From JSON or YAML file (all MPI tasks read)
+  !!
+  !!```fortran
+  !! type(fckit_configuration) :: config
+  !! config = fckit_YAMLConfiguration( fckit_pathname("filepath" )
+  !!```
+  !!
+  !! From JSON or YAML file (only one MPI task reads, and broadcasts)
+  !!
+  !!```fortran
+  !! type(fckit_configuration) :: config
+  !! type(fckit_mpi_comm)      :: comm
+  !! comm = fckit_mpi_comm("world")
+  !! config = fckit_YAMLConfiguration( comm%broadcast_file("filepath", root=0) )
+  !!```
 
 contains
   
@@ -252,6 +268,7 @@ end interface
 interface fckit_YAMLConfiguration
   module procedure ctor_from_jsonfile
   module procedure ctor_from_jsonstr
+  module procedure ctor_from_buffer
 end interface
 
 !------------------------------------------------------------------------------
@@ -291,9 +308,19 @@ end function
 
 function ctor_from_jsonfile(path) result(config)
   use fckit_c_interop_module, only : c_str
+  use fckit_pathname_module, only : fckit_pathname
   type(fckit_Configuration) :: config
-  class(fckit_pathname), intent(in) :: path
+  type(fckit_pathname), intent(in) :: path
   call config%reset_c_ptr( c_fckit_configuration_new_from_file(c_str(path%str())) )
+end function
+
+function ctor_from_buffer(buffer) result(config)
+  use fckit_c_interop_module, only : c_str
+  use fckit_buffer_module, only : fckit_buffer
+  type(fckit_Configuration) :: config
+  type(fckit_buffer), intent(in) :: buffer
+  call config%reset_c_ptr( c_fckit_configuration_new_from_buffer(buffer%c_ptr()) )
+  call buffer%consumed() ! If buffer was constructed inline, this will delete the buffer
 end function
 
 subroutine delete(this)
