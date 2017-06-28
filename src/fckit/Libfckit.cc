@@ -21,7 +21,7 @@ namespace fckit {
 
 // Support for eckit 0.16.5 improved library registration using REGISTER_LIBRARY macro
 // See issue ECKIT-244
-#if ECKIT_MAJOR_VERSION >= 0 && ECKIT_MINOR_VERSION >= 16 && ECKIT_PATCH_VERSION >= 5
+#ifdef REGISTER_LIBRARY
 #define DECLARE_STATIC(Library,lib) static Library lib
 #else
 #define REGISTER_LIBRARY(Library) static Library library

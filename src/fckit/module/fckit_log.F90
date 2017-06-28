@@ -1,8 +1,10 @@
 module fckit_log_module
+  !! Provides [[fckit_log_module:fckit_log(variable)]] for logging and to configure logging
+
 use fckit_object_module, only: fckit_object
 implicit none
 private
-public :: log !! DEPRECATED, USE fckit_log INSTEAD!
+public :: log ! DEPRECATED, USE fckit_log INSTEAD!
 public :: fckit_log
 public :: fckit_logchannel
 private :: fckit_object
@@ -97,7 +99,8 @@ type(fckit_log_type) :: fckit_log
 
 type(fckit_log_type) :: log
   !! deprecated: true
-  !! Instance of [[fckit_log_module:fckit_log_type(type)]]
+  !! Deprecated instance of [[fckit_log_module:fckit_log_type(type)]].
+  !! Use [[fckit_log_module:fckit_log(variable)]] instead!
 
 !------------------------------------------------------------------------------
 

@@ -1,4 +1,6 @@
 module fckit_object_module
+  !! Provides abstract base class [[fckit_object_module:fckit_object(type)]]
+
 use, intrinsic :: iso_c_binding, only: c_ptr, c_null_ptr
 implicit none
 private
@@ -11,23 +13,37 @@ public fckit_object
 !========================================================================
 
 type, abstract :: fckit_object
+  !! Abstract base class for objects that wrap a C++ object
 
   type(c_ptr), private :: cpp_object_ptr = c_null_ptr
-  !logical, private :: initialized = .false.
+    !! Internal C pointer
 
 contains
 
   procedure, public :: is_null
+    !! Check if internal C pointer is set
+
   procedure, public :: c_ptr   => fckit_object__c_ptr
+    !! Access to internal C pointer
+
   procedure, public :: reset_c_ptr
+    !! Nullify internal C pointer
 
   procedure, private :: equal
   procedure, private :: not_equal
+
   generic, public :: operator(==) => equal
+    !! Compare two objects internal C pointer
+
   generic, public :: operator(/=) => not_equal
+    !! Compare two objects internal C pointer
 
   procedure, public :: final
+    !! Finalise object
+
   procedure(final), deferred, public :: delete
+    !! Deallocate internal C pointer
+
 
   ! Following line is to avoid PGI compiler bug
   procedure, private :: fckit_object__c_ptr

@@ -58,6 +58,14 @@ add_fctest( TARGET  fckit_test_configuration
             CONDITION HAVE_ECKIT
             LIBS    fckit)
 
+add_fctest( TARGET  fckit_test_broadcast_file
+            LINKER_LANGUAGE Fortran
+            SOURCES test_broadcast_file.F90
+            MPI 4
+            DEFINITIONS ${FCKIT_DEFINITIONS}
+            CONDITION HAVE_ECKIT AND ECKIT_HAVE_MPI
+            LIBS    fckit)
+
 endif()
 
 ecbuild_add_test( TARGET  fckit_test_configuration_cpp 

@@ -24,6 +24,8 @@ list( APPEND eckit_required_src
     module/fckit_resource.F90
     module/fckit_log.cc
     module/fckit_log.F90
+    module/fckit_buffer.cc
+    module/fckit_buffer.F90
     Libfckit.h
     Libfckit.cc
     Main.h
@@ -36,8 +38,6 @@ list( APPEND eckit_required_src
 if( EC_OS_NAME MATCHES "macosx" )
   list( APPEND FCKIT_DEFINITIONS BUG_ECKIT_166 )
 endif()
-
-list( APPEND ECKIT_LIBRARIES ${ECBUILD_CXX_IMPLICIT_LINK_LIBRARIES} )
 
 endif()
 

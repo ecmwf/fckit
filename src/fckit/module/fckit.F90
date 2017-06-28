@@ -13,7 +13,7 @@ use fckit_main_module,      only: &
 
 use fckit_log_module,       only: &
   fckit_log, &
-  log ! DEPRECATED.. Use fckit_log instead
+  log ! DEPRECATED. Use fckit_log instead
 
 use fckit_resource_module,  only: &
   fckit_resource
@@ -36,6 +36,9 @@ use fckit_configuration_module, only: &
   fckit_configuration, &
   fckit_YAMLConfiguration
 
+use fckit_buffer_module, only: &
+  fckit_buffer
+
 implicit none
 private
 
@@ -50,12 +53,11 @@ public :: fckit_signal_handler       !! - [[fckit_signal_module:fckit_signal_han
 public :: fckit_pathname             !! - [[fckit_pathname_module:fckit_pathname(type)]]
 public :: fckit_configuration        !! - [[fckit_configuration_module:fckit_configuration(type)]]
 public :: fckit_YAMLConfiguration    !! - [[fckit_configuration_module:fckit_YAMLConfiguration(interface)]]
+public :: fckit_buffer               !! - [[fckit_buffer_module:fckit_buffer(type)]]
 public :: fckit_version              !! - [[fckit_module:fckit_version(function)]]
 public :: fckit_git_sha1             !! - [[fckit_module:fckit_git_sha1(function)]]
 
-public :: log
-  !! deprecated: true
-  !! Use [[fckit_log_module:fckit_log(variable)]] instead
+public :: log ! DEPRECATED. Use fckit_log instead.
 
 ! =============================================================================
 CONTAINS

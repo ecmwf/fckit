@@ -174,6 +174,19 @@ extern "C" {
       eckit::mpi::comm().broadcast(buffer,count,root);
   }
 
+  static eckit::Buffer* extract_buffer( eckit::Buffer& b ) {
+    b.attach();
+    return &b;
+  }
+
+  eckit::Buffer* fckit__mpi__broadcast_file(const Comm* comm, const char* path, size_t root )
+  {
+    if( comm )
+      return extract_buffer( comm->broadcastFile(path,root) );
+    else
+      return extract_buffer( eckit::mpi::comm().broadcastFile(path,root) ); 
+  }
+
   int fckit__mpi__anytag(const Comm* comm)
   {
     if( comm )
