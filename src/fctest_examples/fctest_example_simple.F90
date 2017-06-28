@@ -1,6 +1,6 @@
 #include "fckit/fctest.h"
 
-TESTSUITE( example_simple )
+TESTSUITE( fctest_example_simple )
 
 TEST( test1 )
   write(0,*) "test1"

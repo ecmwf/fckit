@@ -1,5 +1,13 @@
 module fckit_mpi_module
+  !! Wrap eckit MPI capabilities.
+  !!
+  !! Depending on use of mpirun, aprun, srun, etc, a serial or true MPI
+  !! implementation is used, so that serial jobs do not require an alternative
+  !! library linked such as ```mpi_serial```
+
 use fckit_object_module, only: fckit_object
+  use fckit_buffer_module
+
 implicit none
 private
 
@@ -28,19 +36,65 @@ end interface
 !========================================================================
 
 type, extends(fckit_object) :: fckit_mpi_comm
-  character(len=32) :: name
+  !! MPI communicator object
+  !!
+  !! This object forms the basis for communications within one
+  !! MPI communicator
+  !!
+  !! To use the default communicator, use:
+  !!
+  !!```fortran
+  !!type(fckit_mpi_comm) :: comm
+  !!comm = fckit_mpi_comm()
+  !!```
+  !!
+  !! Special constructors can be used such as:
+  !!
+  !!```fortran
+  !!type(fckit_mpi_comm) :: comm
+  !!comm = fckit_mpi_comm("world")
+  !!```
+  !!
+  !!```fortran
+  !!type(fckit_mpi_comm) :: comm
+  !!comm = fckit_mpi_comm("self")
+  !!```
+  !!
+  !! Existing fortran MPI communicators can be wrapped:
+  !!
+  !!```fortran
+  !!integer, intent(in) :: MPL_COMM
+  !!type(fckit_mpi_comm) :: comm
+  !!comm = fckit_mpi_comm(MPL_COMM)
+  !!```
+  !!
+  !! The default constructor can be changed with the routine
+  !! [[fckit_mpi_module:fckit_mpi_setCommDefault(subroutine)]]
+
 contains
   procedure, public :: final => final_c
   procedure, public :: delete
 
   procedure, public :: communicator
+    !! Fortran MPI communicator handle
+
   procedure, public :: size
+    !! Number of MPI tasks participating in this communicator
+
   procedure, public :: rank
+    !! Rank of this MPI task in this communicator
+
   procedure, public :: barrier
+    !! MPI Barrier in this communicator
+
   procedure, public :: abort
+    !! MPI Abort
 
   procedure, public :: anytag
+    !! anytag
+
   procedure, public :: anysource
+    !! anysource
   
   procedure, private :: allreduce_int32_r0
   procedure, private :: allreduce_int32_r1
@@ -183,6 +237,7 @@ contains
   procedure, private :: ireceive_real64_r3
   procedure, private :: ireceive_real64_r4
   
+  !> MPI allreduce interface for most array and scalar types
   generic, public :: allreduce => &
     & allreduce_int32_r0  ,&
     & allreduce_int32_r1  ,&
@@ -225,6 +280,7 @@ contains
     & allreduce_inplace_real64_r3 ,&
     & allreduce_inplace_real64_r4  
 
+  !> MPI broadcast for most array and scalar types
   generic, public :: broadcast => &
     & broadcast_int32_r0  ,&
     & broadcast_int32_r1  ,&
@@ -247,6 +303,9 @@ contains
     & broadcast_real64_r3 ,&
     & broadcast_real64_r4
 
+  procedure, public :: broadcast_file
+
+  !> MPI send for most array and scalar types
   generic, public :: send => &
     & send_int32_r0  ,&
     & send_int32_r1  ,&
@@ -269,6 +328,7 @@ contains
     & send_real64_r3 ,&
     & send_real64_r4
 
+  !> MPI receive for most array and scalar types
   generic, public :: receive => &
     & receive_int32_r0  ,&
     & receive_int32_r1  ,&
@@ -291,6 +351,7 @@ contains
     & receive_real64_r3 ,&
     & receive_real64_r4
 
+  !> MPI asynchronous send for most array and scalar types
   generic, public :: isend => &
     & isend_int32_r0  ,&
     & isend_int32_r1  ,&
@@ -313,6 +374,7 @@ contains
     & isend_real64_r3 ,&
     & isend_real64_r4
 
+  !> MPI asynchronous receive for most array and scalar types
   generic, public :: ireceive => &
     & ireceive_int32_r0  ,&
     & ireceive_int32_r1  ,&
@@ -334,7 +396,8 @@ contains
     & ireceive_real64_r2 ,&
     & ireceive_real64_r3 ,&
     & ireceive_real64_r4
-    
+  
+  !> MPI wait for this communicator
   procedure, public :: wait
 
 #ifdef EC_HAVE_Fortran_FINALIZATION
@@ -551,6 +614,14 @@ interface
     integer(c_size_t), value :: count
     integer(c_size_t), value :: root
   end subroutine
+
+  function fckit__mpi__broadcast_file(comm,path,root) result(buffer) bind(c)
+    use, intrinsic :: iso_c_binding, only : c_ptr, c_size_t, c_char
+    type(c_ptr) :: buffer
+    type(c_ptr), value :: comm
+    character(kind=c_char), dimension(*) :: path
+    integer(c_size_t), value :: root
+  end function
   
   function fckit__mpi__anytag(comm) bind(c)
     use, intrinsic :: iso_c_binding, only : c_int, c_ptr
@@ -1613,6 +1684,20 @@ subroutine broadcast_real64_r4(this,buffer,root)
   view_buffer  => array_view1d(buffer)
   call fckit__mpi__broadcast_real64(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),int(root,c_size_t))
 end subroutine
+
+!---------------------------------------------------------------------------------------
+
+function broadcast_file(this,path,root) result(buffer)
+  use, intrinsic :: iso_c_binding, only : c_int, c_size_t, c_ptr
+  use fckit_c_interop_module, only : c_str
+  use fckit_buffer_module
+  type(fckit_buffer) :: buffer
+  class(fckit_mpi_comm), intent(in) :: this
+  character(len=*), intent(in) :: path
+  integer(c_int), intent(in) :: root
+  buffer = fckit_buffer( fckit__mpi__broadcast_file(this%c_ptr(),c_str(path),int(root,c_size_t)) )
+  call buffer%return()
+end function
 
 !---------------------------------------------------------------------------------------
 

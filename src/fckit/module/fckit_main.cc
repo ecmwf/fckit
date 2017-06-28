@@ -1,9 +1,30 @@
 #include <string.h>
+#include "eckit/config/LibEcKit.h"
+#include "eckit/config/LibEcKit.h"
 #include "fckit/Main.h"
 #include "fckit/Log.h"
 
 static int SUCCESS =  0;
 //static int ERROR   = -1;
+
+
+#include "eckit/os/BackTrace.h"
+#include "eckit/mpi/Comm.h"
+#include <csignal>
+#include <exception>
+#include <stdexcept>
+
+
+void fckit_abort( const std::string& what, const eckit::CodeLocation& loc ) {
+  throw eckit::Abort(what,loc);
+}
+
+void fckit_throw( const std::string& what, const eckit::CodeLocation& loc ) {
+  if( loc )
+    throw eckit::Exception(what,loc);
+  else
+    throw eckit::Exception(what);
+}
 
 extern "C"
 {
@@ -67,6 +88,60 @@ extern "C"
     return SUCCESS;
   }
 
+  void fckit__set_abort_handler( eckit::abort_handler_t h )
+  {
+    eckit::LibEcKit::instance().setAbortHandler(h);  
+  }
+
+  void fckit__abort( const char* what, const char* file, int line, const char* function )
+  {
+    fckit_abort( what, eckit::CodeLocation(file,line,function) );
+  }
+
+  void fckit__exception_throw( const char* what, const char* file, int line, const char* function )
+  {
+    fckit_throw( what, eckit::CodeLocation(file,line,function) );
+  }
+  
+  
+  void fckit__set_signal_handler( int signum, fckit::signal_handler_t signal_handler )
+  {
+    fckit::Signals::instance().setSignalHandler( fckit::Signal(signum, signal_handler) );
+  }
+  
+  void fckit__set_fckit_signal_handler( int signum )
+  {
+    fckit::Signals::instance().setSignalHandler( fckit::Signal(signum) );
+  }
+
+  void fckit__set_fckit_signal_handlers()
+  {
+    fckit::Signals::instance().setSignalHandlers();
+  }
+
+  void fckit__raise_signal( int signum )
+  {
+    std::raise( signum );
+  }
+
+  void fckit__restore_signal_handler( int signum )
+  {
+    fckit::Signals::instance().restoreSignalHandler( signum );
+  }
+
+  void fckit__restore_all_signal_handlers()
+  {
+    fckit::Signals::instance().restoreAllSignalHandlers();
+  }
+
+  int fckit__SIGABRT() { return SIGABRT; }
+  int fckit__SIGKILL() { return SIGKILL; }
+  int fckit__SIGINT()  { return SIGINT;  }
+  int fckit__SIGALRM() { return SIGALRM; }
+  int fckit__SIGFPE()  { return SIGFPE;  }
+  int fckit__SIGTERM() { return SIGTERM; }
+  int fckit__SIGSEGV() { return SIGSEGV; }
+  int fckit__SIGILL()  { return SIGILL;  }
 
 } // extern "C"
 

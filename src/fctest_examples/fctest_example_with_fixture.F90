@@ -1,11 +1,11 @@
 #include "fckit/fctest.h"
 
-module TestFixture
+module fctest_TestFixture
   implicit none
   integer, allocatable :: array(:)
 end module
 
-TESTSUITE_WITH_FIXTURE( example_with_fixture, TestFixture )
+TESTSUITE_WITH_FIXTURE( fctest_example_with_fixture, fctest_TestFixture )
 
 TESTSUITE_INIT
   write(0,*) "initializing testsuite"

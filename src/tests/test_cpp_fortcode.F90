@@ -6,6 +6,6 @@ subroutine run() bind(c)
   call fckit_log%info("info: "//name)
   call fckit_log%debug("debug")
   if( .not. fckit_main%debug() ) then
-    call fckit_log%warning("debug not active")
+    call fckit_log%warning("main debug not active")
   endif
 end subroutine
