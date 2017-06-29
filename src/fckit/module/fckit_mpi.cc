@@ -174,12 +174,13 @@ extern "C" {
       eckit::mpi::comm().broadcast(buffer,count,root);
   }
 
-  static eckit::Buffer* extract_buffer( eckit::Buffer& b ) {
-    b.attach();
-    return &b;
+  static eckit::CountedBuffer* extract_buffer( const eckit::SharedBuffer& cb ) {
+    eckit::CountedBuffer* buf = const_cast<eckit::SharedBuffer&>(cb).operator->();
+    buf->attach();
+    return buf;
   }
 
-  eckit::Buffer* fckit__mpi__broadcast_file(const Comm* comm, const char* path, size_t root )
+  eckit::CountedBuffer* fckit__mpi__broadcast_file(const Comm* comm, const char* path, size_t root )
   {
     if( comm )
       return extract_buffer( comm->broadcastFile(path,root) );

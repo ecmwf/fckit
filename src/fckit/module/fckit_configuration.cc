@@ -69,7 +69,8 @@ const Configuration* c_fckit_configuration_new_from_file (const char* path) {
     return new YAMLConfiguration( p );
 }
 
-const Configuration* c_fckit_configuration_new_from_buffer (eckit::Buffer* buffer) {
+const Configuration* c_fckit_configuration_new_from_buffer (eckit::CountedBuffer* buffer) {
+    eckit::SharedBuffer sb(buffer);
     return new YAMLConfiguration( eckit::SharedBuffer(buffer) );
 }
 

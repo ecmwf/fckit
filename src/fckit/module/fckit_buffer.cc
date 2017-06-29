@@ -1,5 +1,5 @@
 #include <string>
-#include "eckit/io/Buffer.h"
+#include "eckit/io/SharedBuffer.h"
 
 extern "C" {
 
@@ -11,7 +11,7 @@ extern "C" {
     return true;  
   }
 
-  void c_fckit_buffer_delete( eckit::Buffer* This ) {
+  void c_fckit_buffer_delete( eckit::CountedBuffer* This ) {
     delete This;
   }
 
