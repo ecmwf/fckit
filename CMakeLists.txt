@@ -110,6 +110,8 @@ add_subdirectory( doc )
 ecbuild_print_summary()
 #####################################################################################
 
-install(DIRECTORY ${CMAKE_Fortran_MODULE_DIRECTORY}/${CMAKE_CFG_INTDIR} DESTINATION ${INSTALL_INCLUDE_DIR} )
+if(ECBUILD_INSTALL_FORTRAN_MODULES)
+  install(DIRECTORY ${CMAKE_Fortran_MODULE_DIRECTORY}/${CMAKE_CFG_INTDIR} DESTINATION ${INSTALL_INCLUDE_DIR} )
+endif()
 
 ecbuild_install_project( NAME fckit )
