@@ -6,8 +6,7 @@
 #undef ECKIT_VERSION_INT
 #endif
 #define ECKIT_VERSION_INT (ECKIT_MAJOR_VERSION * 10000 \
-                         + ECKIT_MINOR_VERSION * 100 \
-                         + ECKIT_PATCH_VERSION)
+                         + ECKIT_MINOR_VERSION * 100 )
 
 using eckit::mpi::Comm;
 
