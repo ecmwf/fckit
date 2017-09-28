@@ -90,7 +90,7 @@ end interface
 #endif
 
 interface
-  subroutine fckit_signal_handler( signum )
+  subroutine fckit_signal_handler( signum ) bind(C)
     use, intrinsic :: iso_c_binding, only : c_int
     integer(c_int), value, intent(in) :: signum
   end subroutine

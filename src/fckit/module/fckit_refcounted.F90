@@ -25,7 +25,7 @@ type, extends(fckit_object) :: fckit_refcounted
   !! Finalising one such object decreases the reference count. When the
   !! last object is destroyed, the reference count becomes zero, and the
   !! internal C pointer is deleted.
-  
+
 contains
   procedure, public :: final
   procedure, private :: reset

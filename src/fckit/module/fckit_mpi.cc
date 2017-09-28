@@ -1,5 +1,12 @@
 #include <sstream>
 #include "eckit/mpi/Comm.h"
+#include "eckit/eckit_version.h"
+
+#ifdef ECKIT_VERSION_INT
+#undef ECKIT_VERSION_INT
+#endif
+#define ECKIT_VERSION_INT (ECKIT_MAJOR_VERSION * 10000 \
+                         + ECKIT_MINOR_VERSION * 100 )
 
 using eckit::mpi::Comm;
 
@@ -174,6 +181,21 @@ extern "C" {
       eckit::mpi::comm().broadcast(buffer,count,root);
   }
 
+#if ECKIT_VERSION_INT > 1700
+  static eckit::CountedBuffer* extract_buffer( const eckit::SharedBuffer& cb ) {
+    eckit::CountedBuffer* buf = const_cast<eckit::SharedBuffer&>(cb).operator->();
+    buf->attach();
+    return buf;
+  }
+
+  eckit::CountedBuffer* fckit__mpi__broadcast_file(const Comm* comm, const char* path, size_t root )
+  {
+    if( comm )
+      return extract_buffer( comm->broadcastFile(path,root) );
+    else
+      return extract_buffer( eckit::mpi::comm().broadcastFile(path,root) );
+  }
+#else
   static eckit::Buffer* extract_buffer( eckit::Buffer& b ) {
     b.attach();
     return &b;
@@ -184,8 +206,9 @@ extern "C" {
     if( comm )
       return extract_buffer( comm->broadcastFile(path,root) );
     else
-      return extract_buffer( eckit::mpi::comm().broadcastFile(path,root) ); 
+      return extract_buffer( eckit::mpi::comm().broadcastFile(path,root) );
   }
+#endif
 
   int fckit__mpi__anytag(const Comm* comm)
   {
