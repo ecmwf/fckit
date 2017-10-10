@@ -1,16 +1,23 @@
+! (C) Copyright 2013-2017 ECMWF.
+!
+! This software is licensed under the terms of the Apache Licence Version 2.0
+! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+! In applying this licence, ECMWF does not waive the privileges and immunities
+! granted to it by virtue of its status as an intergovernmental organisation nor
+! does it submit to any jurisdiction.
 
 module fckit_configuration_module
   !! author: Willem Deconinck
   !!
   !! Module providing the [[fckit_configuration_module:fckit_configuration(type)]] type
   !!
-  !! The [[fckit_configuration_module:fckit_configuration(type)]] type can be used to 
+  !! The [[fckit_configuration_module:fckit_configuration(type)]] type can be used to
   !! encapsulate name-value configurations, including nesting of subconfigurations.
   !!
   !! The [[fckit_configuration_module:fckit_YAMLConfiguration(interface)]] constructor
-  !! for [[fckit_configuration_module:fckit_configuration(type)]] can create the 
+  !! for [[fckit_configuration_module:fckit_configuration(type)]] can create the
   !! configuration from a JSON file
-  
+
 use fckit_object_module, only : fckit_object
 
 implicit none
@@ -52,7 +59,7 @@ TYPE, extends(fckit_object) :: fckit_configuration
   !!```
 
 contains
-  
+
   procedure, public :: has
     !! Function that returns whether a name is contained in the configuration
     !!
@@ -61,7 +68,7 @@ contains
     !!```fortran
     !! if( .not. fckit_configuration%has('levels') ) call abort()
     !!```
-  
+
   procedure, private :: set_config
   procedure, private :: set_config_list
   procedure, private :: set_logical
@@ -74,10 +81,10 @@ contains
   procedure, private :: set_array_int64
   procedure, private :: set_array_real32
   procedure, private :: set_array_real64
-  
+
   !----------------------------------------------------------------------------
   !> Subroutine to set a name-value configuration
-  !! 
+  !!
   !! Name is a string, and value any of the basic types, or subconfigurations
   !!
   !!#### Example usage
@@ -128,12 +135,12 @@ contains
   procedure, private :: get_array_int64
   procedure, private :: get_array_real32
   procedure, private :: get_array_real64
-  
+
   !----------------------------------------------------------------------------
   !> Function that gets a name-value configuration
-  !! 
+  !!
   !! Name is a string, and value any of the basic types, or subconfigurations
-  !! 
+  !!
   !! @Note
   !! This is a function that returns a logical which is ```.true.``` if the name is found
   !! in the configuration, and ```.false.``` otherwise.
@@ -198,11 +205,11 @@ contains
     procedure, private :: get_array_int64_or_die
     procedure, private :: get_array_real32_or_die
     procedure, private :: get_array_real64_or_die
-    
+
     !----------------------------------------------------------------------------
     !> Subroutine that gets a name-value configuration, and throws exception
     !! when not found
-    !! 
+    !!
     !! Name is a string, and value any of the basic types, or subconfigurations
     !!
     !!#### Example usage

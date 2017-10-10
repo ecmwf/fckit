@@ -1,3 +1,11 @@
+# (C) Copyright 2013-2017 ECMWF.
+#
+# This software is licensed under the terms of the Apache Licence Version 2.0
+# which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+# In applying this licence, ECMWF does not waive the privileges and immunities
+# granted to it by virtue of its status as an intergovernmental organisation nor
+# does it submit to any jurisdiction.
+
 if( HAVE_FCTEST )
 
 add_fctest( TARGET  fckit_test_array
@@ -21,7 +29,7 @@ add_fctest( TARGET  fckit_test_log
             CONDITION HAVE_ECKIT
             LIBS    fckit)
 
-add_fctest( TARGET  fckit_test_refcounting 
+add_fctest( TARGET  fckit_test_refcounting
             LINKER_LANGUAGE Fortran
             SOURCES test_refcounting.F90
             DEFINITIONS ${FCKIT_DEFINITIONS}
@@ -68,9 +76,9 @@ add_fctest( TARGET  fckit_test_broadcast_file
 
 endif()
 
-ecbuild_add_test( TARGET  fckit_test_configuration_cpp 
+ecbuild_add_test( TARGET  fckit_test_configuration_cpp
             LINKER_LANGUAGE CXX
-            SOURCES 
+            SOURCES
             test_configuration.cc
             test_configuration_fortcode.F90
             DEFINITIONS ${FCKIT_DEFINITIONS}

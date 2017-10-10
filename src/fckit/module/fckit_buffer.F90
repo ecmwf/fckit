@@ -1,3 +1,11 @@
+! (C) Copyright 2013-2017 ECMWF.
+!
+! This software is licensed under the terms of the Apache Licence Version 2.0
+! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+! In applying this licence, ECMWF does not waive the privileges and immunities
+! granted to it by virtue of its status as an intergovernmental organisation nor
+! does it submit to any jurisdiction.
+
 module fckit_buffer_module
   !! Wrap eckit Buffer capabilities.
 
@@ -42,7 +50,7 @@ end interface
 
 type, extends(fckit_object) :: fckit_buffer
   !! Buffer
-  !! 
+  !!
   !! Can contain any data
   !! A typical use case is with the function [[fckit_mpi_module:fckit_mpi_comm(type):broadcast_file(function)]]
   !! where a file is read on one MPI task, and broadcast to all MPI tasks, storing it in a buffer.

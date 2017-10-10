@@ -1,3 +1,11 @@
+# (C) Copyright 2013-2017 ECMWF.
+#
+# This software is licensed under the terms of the Apache Licence Version 2.0
+# which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+# In applying this licence, ECMWF does not waive the privileges and immunities
+# granted to it by virtue of its status as an intergovernmental organisation nor
+# does it submit to any jurisdiction.
+
 add_custom_target( fctest_includes SOURCES
        fctest.h
        ../../tools/fctest_generate_runner.py )
@@ -71,7 +79,7 @@ set( FCKIT_LINKER_LANGUAGE Fortran )
 if( HAVE_ECKIT )
   # We need the C++ linker for the error handling to work
   # Otherwise death by recursion in function "fckit_terminate"
-  # when uncaught exceptions are encountered 
+  # when uncaught exceptions are encountered
   set( FCKIT_LINKER_LANGUAGE CXX )
 endif()
 

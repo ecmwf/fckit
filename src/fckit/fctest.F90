@@ -1,3 +1,11 @@
+! (C) Copyright 2013-2017 ECMWF.
+!
+! This software is licensed under the terms of the Apache Licence Version 2.0
+! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+! In applying this licence, ECMWF does not waive the privileges and immunities
+! granted to it by virtue of its status as an intergovernmental organisation nor
+! does it submit to any jurisdiction.
+
 module fctest
   use, intrinsic :: iso_c_binding, only: c_float, c_double, c_int, c_long
   implicit none
@@ -270,5 +278,5 @@ function get_source_line(line_number) result(source_line)
   99 continue
   close (10)
 end function get_source_line
-                                      
+
 end module fctest

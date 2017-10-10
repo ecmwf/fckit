@@ -1,3 +1,11 @@
+# (C) Copyright 2013-2017 ECMWF.
+#
+# This software is licensed under the terms of the Apache Licence Version 2.0
+# which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+# In applying this licence, ECMWF does not waive the privileges and immunities
+# granted to it by virtue of its status as an intergovernmental organisation nor
+# does it submit to any jurisdiction.
+
 if( @PNAME@_IS_BUILD_DIR_EXPORT )
   set( FCTEST_GENERATOR @PYTHON_EXECUTABLE@ @CMAKE_CURRENT_SOURCE_DIR@/tools/fctest_generate_runner.py )
 else()
@@ -48,8 +56,8 @@ macro( add_fctest )
 
   list( APPEND _PAR_LIBS fckit )
 
-  fctest_generate_runner( OUTPUT TESTRUNNER 
-                          FILENAME ${TESTSUITE} 
+  fctest_generate_runner( OUTPUT TESTRUNNER
+                          FILENAME ${TESTSUITE}
                           DEPENDS ${_PAR_LIBS} )
 
   set( _PAR_LABELS fortran ${_PAR_LABELS} )

@@ -1,3 +1,11 @@
+! (C) Copyright 2013-2017 ECMWF.
+!
+! This software is licensed under the terms of the Apache Licence Version 2.0
+! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+! In applying this licence, ECMWF does not waive the privileges and immunities
+! granted to it by virtue of its status as an intergovernmental organisation nor
+! does it submit to any jurisdiction.
+
 #ifndef FORD
 interface
 
@@ -64,7 +72,7 @@ end subroutine
 !-------------------------------------------------------------------------------
 
 !-------------------------------------------------------------------------------
-! void c_fckit_configuration_set_config (Configuration* This, const char* name, 
+! void c_fckit_configuration_set_config (Configuration* This, const char* name,
 !   const Configuration* value)
 !-------------------------------------------------------------------------------
 subroutine c_fckit_configuration_set_config( This, name, value ) bind(C,name="c&
@@ -130,7 +138,7 @@ end subroutine
 !-------------------------------------------------------------------------------
 
 !-------------------------------------------------------------------------------
-! void c_fckit_configuration_set_double (Configuration* This, const char* name, 
+! void c_fckit_configuration_set_double (Configuration* This, const char* name,
 !   double value)
 !-------------------------------------------------------------------------------
 subroutine c_fckit_configuration_set_double( This, name, value ) bind(C,name="c&
@@ -143,7 +151,7 @@ end subroutine
 !-------------------------------------------------------------------------------
 
 !-------------------------------------------------------------------------------
-! void c_fckit_configuration_set_string (Configuration* This, const char* name, 
+! void c_fckit_configuration_set_string (Configuration* This, const char* name,
 !   const char* value)
 !-------------------------------------------------------------------------------
 subroutine c_fckit_configuration_set_string( This, name, value ) bind(C,name="c&
@@ -198,7 +206,7 @@ end subroutine
 !-------------------------------------------------------------------------------
 
 !-------------------------------------------------------------------------------
-! void c_fckit_configuration_set_array_double (Configuration* This, const char* 
+! void c_fckit_configuration_set_array_double (Configuration* This, const char*
 !   name, double value[], int size)
 !-------------------------------------------------------------------------------
 subroutine c_fckit_configuration_set_array_double( This, name, value, size ) bi&

@@ -1,9 +1,11 @@
-! (C) Copyright 1996-2017 ECMWF.
+! (C) Copyright 2013-2017 ECMWF.
+!
 ! This software is licensed under the terms of the Apache Licence Version 2.0
 ! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
 ! In applying this licence, ECMWF does not waive the privileges and immunities
 ! granted to it by virtue of its status as an intergovernmental organisation nor
 ! does it submit to any jurisdiction.
+
 
 ! This File contains Unit Tests for testing the
 ! C++ / Fortran Interfaces to the Mesh Datastructure
@@ -148,7 +150,7 @@ TEST(test_configuration_json_string)
    &       '{"name":"Joe",   "age":30},'//&
    &       '{"name":"Alison","age":43}' //&
    &    ']}'
- 
+
   config = fckit_YAMLConfiguration(json)
   call fckit_log%info(config%json())
   if( config%get("records",records) ) then
@@ -186,7 +188,7 @@ TEST(test_configuration_json_file)
  CLOSE(9)
 
  config = fckit_YAMLConfiguration( fckit_PathName("fctest_configuration.json") )
- 
+
  call fckit_log%info("config = "//config%json())
 
  if( config%get("records",records) ) then
@@ -223,7 +225,7 @@ TEST(test_throw)
   integer :: missing_value
 
   config = fckit_Configuration()
-  
+
   !call config%get_or_die("missing",missing_value)
     !! UNCOMMENT TO TEST IF THROW WILL WORK
 

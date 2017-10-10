@@ -1,3 +1,11 @@
+! (C) Copyright 2013-2017 ECMWF.
+!
+! This software is licensed under the terms of the Apache Licence Version 2.0
+! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+! In applying this licence, ECMWF does not waive the privileges and immunities
+! granted to it by virtue of its status as an intergovernmental organisation nor
+! does it submit to any jurisdiction.
+
 module fckit_mpi_module
   !! Wrap eckit MPI capabilities.
   !!
@@ -95,7 +103,7 @@ contains
 
   procedure, public :: anysource
     !! anysource
-  
+
   procedure, private :: allreduce_int32_r0
   procedure, private :: allreduce_int32_r1
   procedure, private :: allreduce_int32_r2
@@ -236,7 +244,7 @@ contains
   procedure, private :: ireceive_real64_r2
   procedure, private :: ireceive_real64_r3
   procedure, private :: ireceive_real64_r4
-  
+
   !> MPI allreduce interface for most array and scalar types
   generic, public :: allreduce => &
     & allreduce_int32_r0  ,&
@@ -278,7 +286,7 @@ contains
     & allreduce_inplace_real64_r1 ,&
     & allreduce_inplace_real64_r2 ,&
     & allreduce_inplace_real64_r3 ,&
-    & allreduce_inplace_real64_r4  
+    & allreduce_inplace_real64_r4
 
   !> MPI broadcast for most array and scalar types
   generic, public :: broadcast => &
@@ -396,7 +404,7 @@ contains
     & ireceive_real64_r2 ,&
     & ireceive_real64_r3 ,&
     & ireceive_real64_r4
-  
+
   !> MPI wait for this communicator
   procedure, public :: wait
 
@@ -494,22 +502,22 @@ interface
     use, intrinsic :: iso_c_binding, only : c_int
     integer(c_int) :: fckit__mpi__prod
   end function
-  
+
   function fckit__mpi__min() bind(c)
     use, intrinsic :: iso_c_binding, only : c_int
     integer(c_int) :: fckit__mpi__min
   end function
-  
+
   function fckit__mpi__max() bind(c)
     use, intrinsic :: iso_c_binding, only : c_int
     integer(c_int) :: fckit__mpi__max
   end function
-  
+
   function fckit__mpi__minloc() bind(c)
     use, intrinsic :: iso_c_binding, only : c_int
     integer(c_int) :: fckit__mpi__minloc
   end function
-  
+
   function fckit__mpi__maxloc() bind(c)
     use, intrinsic :: iso_c_binding, only : c_int
     integer(c_int) :: fckit__mpi__maxloc
@@ -523,7 +531,7 @@ interface
     integer(c_size_t), value :: count
     integer(c_int), value :: operation
   end subroutine
-  
+
   subroutine fckit__mpi__allreduce_int64(comm,in,out,count,operation) bind(c)
     use, intrinsic :: iso_c_binding, only : c_ptr, c_int, c_long, c_size_t
     type(c_ptr), value :: comm
@@ -541,7 +549,7 @@ interface
     integer(c_size_t), value :: count
     integer(c_int), value :: operation
   end subroutine
-  
+
   subroutine fckit__mpi__allreduce_real64(comm,in,out,count,operation) bind(c)
     use, intrinsic :: iso_c_binding, only : c_ptr, c_int, c_double, c_size_t
     type(c_ptr), value :: comm
@@ -574,7 +582,7 @@ interface
     integer(c_size_t), value :: count
     integer(c_int), value :: operation
   end subroutine
-  
+
   subroutine fckit__mpi__allreduce_inplace_real64(comm,inout,count,operation) bind(c)
     use, intrinsic :: iso_c_binding, only : c_ptr, c_int, c_double, c_size_t
     type(c_ptr), value :: comm
@@ -582,7 +590,7 @@ interface
     integer(c_size_t), value :: count
     integer(c_int), value :: operation
   end subroutine
-  
+
   subroutine fckit__mpi__broadcast_int32(comm,buffer,count,root) bind(c)
     use, intrinsic :: iso_c_binding, only : c_ptr, c_int, c_size_t
     type(c_ptr), value :: comm
@@ -606,7 +614,7 @@ interface
     integer(c_size_t), value :: count
     integer(c_size_t), value :: root
   end subroutine
-  
+
   subroutine fckit__mpi__broadcast_real64(comm,buffer,count,root) bind(c)
     use, intrinsic :: iso_c_binding, only : c_ptr, c_double, c_size_t
     type(c_ptr), value :: comm
@@ -622,7 +630,7 @@ interface
     character(kind=c_char), dimension(*) :: path
     integer(c_size_t), value :: root
   end function
-  
+
   function fckit__mpi__anytag(comm) bind(c)
     use, intrinsic :: iso_c_binding, only : c_int, c_ptr
     integer(c_int) fckit__mpi__anytag
@@ -634,9 +642,9 @@ interface
     integer(c_int) fckit__mpi__anysource
     type(c_ptr), value :: comm
   end function
-  
+
   subroutine fckit__mpi__send_int32(comm,buffer,count,dest,tag) bind(c)
-    use, intrinsic :: iso_c_binding, only : c_ptr, c_size_t, c_int  
+    use, intrinsic :: iso_c_binding, only : c_ptr, c_size_t, c_int
     type(c_ptr), value :: comm
     integer(c_int), dimension(*) :: buffer
     integer(c_size_t), value :: count
@@ -645,7 +653,7 @@ interface
   end subroutine
 
   subroutine fckit__mpi__send_int64(comm,buffer,count,dest,tag) bind(c)
-    use, intrinsic :: iso_c_binding, only : c_ptr, c_long, c_size_t, c_int  
+    use, intrinsic :: iso_c_binding, only : c_ptr, c_long, c_size_t, c_int
     type(c_ptr), value :: comm
     integer(c_long), dimension(*) :: buffer
     integer(c_size_t), value :: count
@@ -654,7 +662,7 @@ interface
   end subroutine
 
   subroutine fckit__mpi__send_real32(comm,buffer,count,dest,tag) bind(c)
-    use, intrinsic :: iso_c_binding, only : c_ptr, c_float, c_size_t, c_int  
+    use, intrinsic :: iso_c_binding, only : c_ptr, c_float, c_size_t, c_int
     type(c_ptr), value :: comm
     real(c_float), dimension(*) :: buffer
     integer(c_size_t), value :: count
@@ -663,16 +671,16 @@ interface
   end subroutine
 
   subroutine fckit__mpi__send_real64(comm,buffer,count,dest,tag) bind(c)
-    use, intrinsic :: iso_c_binding, only : c_ptr, c_double, c_size_t, c_int  
+    use, intrinsic :: iso_c_binding, only : c_ptr, c_double, c_size_t, c_int
     type(c_ptr), value :: comm
     real(c_double), dimension(*) :: buffer
     integer(c_size_t), value :: count
     integer(c_int), value :: dest
     integer(c_int), value :: tag
   end subroutine
-  
+
   subroutine fckit__mpi__receive_int32(comm,buffer,count,source,tag,status) bind(c)
-    use, intrinsic :: iso_c_binding, only : c_ptr, c_size_t, c_int  
+    use, intrinsic :: iso_c_binding, only : c_ptr, c_size_t, c_int
     type(c_ptr), value :: comm
     integer(c_int), dimension(*) :: buffer
     integer(c_size_t), value :: count
@@ -680,9 +688,9 @@ interface
     integer(c_int), value :: tag
     integer(c_int), dimension(*) :: status
   end subroutine
-  
+
   subroutine fckit__mpi__receive_int64(comm,buffer,count,source,tag,status) bind(c)
-    use, intrinsic :: iso_c_binding, only : c_ptr, c_long, c_size_t, c_int  
+    use, intrinsic :: iso_c_binding, only : c_ptr, c_long, c_size_t, c_int
     type(c_ptr), value :: comm
     integer(c_long), dimension(*) :: buffer
     integer(c_size_t), value :: count
@@ -690,9 +698,9 @@ interface
     integer(c_int), value :: tag
     integer(c_int), dimension(*) :: status
   end subroutine
-  
+
   subroutine fckit__mpi__receive_real32(comm,buffer,count,source,tag,status) bind(c)
-    use, intrinsic :: iso_c_binding, only : c_ptr, c_float, c_size_t, c_int  
+    use, intrinsic :: iso_c_binding, only : c_ptr, c_float, c_size_t, c_int
     type(c_ptr), value :: comm
     real(c_float), dimension(*) :: buffer
     integer(c_size_t), value :: count
@@ -700,9 +708,9 @@ interface
     integer(c_int), value :: tag
     integer(c_int), dimension(*) :: status
   end subroutine
-  
+
   subroutine fckit__mpi__receive_real64(comm,buffer,count,source,tag,status) bind(c)
-    use, intrinsic :: iso_c_binding, only : c_ptr, c_double, c_size_t, c_int  
+    use, intrinsic :: iso_c_binding, only : c_ptr, c_double, c_size_t, c_int
     type(c_ptr), value :: comm
     real(c_double), dimension(*) :: buffer
     integer(c_size_t), value :: count
@@ -710,7 +718,7 @@ interface
     integer(c_int), value :: tag
     integer(c_int), dimension(*) :: status
   end subroutine
-  
+
   function fckit__mpi__isend_int32(comm,buffer,count,dest,tag) result(request) bind(c)
     use, intrinsic :: iso_c_binding, only : c_ptr, c_size_t, c_int
     integer(c_int) :: request
@@ -722,7 +730,7 @@ interface
   end function
 
   function fckit__mpi__isend_int64(comm,buffer,count,dest,tag) result(request) bind(c)
-    use, intrinsic :: iso_c_binding, only : c_ptr, c_long, c_size_t, c_int  
+    use, intrinsic :: iso_c_binding, only : c_ptr, c_long, c_size_t, c_int
     integer(c_int) :: request
     type(c_ptr), value :: comm
     integer(c_long), dimension(*) :: buffer
@@ -732,7 +740,7 @@ interface
   end function
 
   function fckit__mpi__isend_real32(comm,buffer,count,dest,tag) result(request) bind(c)
-    use, intrinsic :: iso_c_binding, only : c_ptr, c_float, c_size_t, c_int  
+    use, intrinsic :: iso_c_binding, only : c_ptr, c_float, c_size_t, c_int
     integer(c_int) :: request
     type(c_ptr), value :: comm
     real(c_float), dimension(*) :: buffer
@@ -742,7 +750,7 @@ interface
   end function
 
   function fckit__mpi__isend_real64(comm,buffer,count,dest,tag) result(request) bind(c)
-    use, intrinsic :: iso_c_binding, only : c_ptr, c_double, c_size_t, c_int  
+    use, intrinsic :: iso_c_binding, only : c_ptr, c_double, c_size_t, c_int
     integer(c_int) :: request
     type(c_ptr), value :: comm
     real(c_double), dimension(*) :: buffer
@@ -750,9 +758,9 @@ interface
     integer(c_int), value :: dest
     integer(c_int), value :: tag
   end function
-  
+
   function fckit__mpi__ireceive_int32(comm,buffer,count,source,tag) result(request) bind(c)
-    use, intrinsic :: iso_c_binding, only : c_ptr, c_size_t, c_int  
+    use, intrinsic :: iso_c_binding, only : c_ptr, c_size_t, c_int
     integer(c_int) :: request
     type(c_ptr), value :: comm
     integer(c_int), dimension(*) :: buffer
@@ -760,9 +768,9 @@ interface
     integer(c_int), value :: source
     integer(c_int), value :: tag
   end function
-  
+
   function fckit__mpi__ireceive_int64(comm,buffer,count,source,tag) result(request) bind(c)
-    use, intrinsic :: iso_c_binding, only : c_ptr, c_long, c_size_t, c_int  
+    use, intrinsic :: iso_c_binding, only : c_ptr, c_long, c_size_t, c_int
     integer(c_int) :: request
     type(c_ptr), value :: comm
     integer(c_long), dimension(*) :: buffer
@@ -770,9 +778,9 @@ interface
     integer(c_int), value :: source
     integer(c_int), value :: tag
   end function
-  
+
   function fckit__mpi__ireceive_real32(comm,buffer,count,source,tag) result(request) bind(c)
-    use, intrinsic :: iso_c_binding, only : c_ptr, c_float, c_size_t, c_int  
+    use, intrinsic :: iso_c_binding, only : c_ptr, c_float, c_size_t, c_int
     integer(c_int) :: request
     type(c_ptr), value :: comm
     real(c_float), dimension(*) :: buffer
@@ -780,9 +788,9 @@ interface
     integer(c_int), value :: source
     integer(c_int), value :: tag
   end function
-  
+
   function fckit__mpi__ireceive_real64(comm,buffer,count,source,tag) result(request) bind(c)
-    use, intrinsic :: iso_c_binding, only : c_ptr, c_double, c_size_t, c_int  
+    use, intrinsic :: iso_c_binding, only : c_ptr, c_double, c_size_t, c_int
     integer(c_int) :: request
     type(c_ptr), value :: comm
     real(c_double), dimension(*) :: buffer
@@ -790,14 +798,14 @@ interface
     integer(c_int), value :: source
     integer(c_int), value :: tag
   end function
-  
+
   subroutine fckit__mpi__wait(comm,request,status) bind(c)
-    use, intrinsic :: iso_c_binding, only : c_ptr, c_int  
+    use, intrinsic :: iso_c_binding, only : c_ptr, c_int
     type(c_ptr), value :: comm
     integer(c_int), value :: request
-    integer(c_int), dimension(*) :: status    
+    integer(c_int), dimension(*) :: status
   end subroutine
-  
+
 end interface
 
 !========================================================================
@@ -929,7 +937,7 @@ function communicator(this)
 end function
 
 !---------------------------------------------------------------------------------------
-  
+
 function rank(this)
   integer :: rank
   class(fckit_mpi_comm), intent(in) :: this

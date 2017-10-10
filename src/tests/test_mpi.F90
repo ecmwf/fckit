@@ -1,3 +1,11 @@
+! (C) Copyright 2013-2017 ECMWF.
+!
+! This software is licensed under the terms of the Apache Licence Version 2.0
+! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+! In applying this licence, ECMWF does not waive the privileges and immunities
+! granted to it by virtue of its status as an intergovernmental organisation nor
+! does it submit to any jurisdiction.
+
 #include "fckit/fctest.h"
 
 TESTSUITE( test_mpi )
@@ -44,7 +52,7 @@ TEST( test_add_comm )
 
   comm1 = fckit_mpi_comm("self")
   fcomm_self = comm1%communicator()
-  
+
   comm2 = fckit_mpi_comm(fcomm_self)
 
   FCTEST_CHECK_EQUAL( comm2%size(), 1 )
@@ -88,7 +96,7 @@ TEST( test_allreduce )
   real(c_float)   :: real32, res_real32, real32_r2(3,2),    res_real32_r2(3,2)
   integer(c_int)  :: int32,  res_int32,  int32_r3(4,3,2),   res_int32_r3(4,3,2), j
   integer(c_long) :: int64,  res_int64,  int64_r4(4,3,2,2), res_int64_r4(4,3,2,2), check_prod, check_sum
-  
+
   write(0,*) "test_allreduce"
   comm = fckit_mpi_comm("world")
 
@@ -109,7 +117,7 @@ TEST( test_allreduce )
   enddo
   call comm%allreduce(real64,res_real64,fckit_mpi_prod())
   FCTEST_CHECK_EQUAL( int(res_real64), int(check_prod) )
-  
+
   real32 = 3
   call comm%allreduce(real32,res_real32,fckit_mpi_sum())
   FCTEST_CHECK_EQUAL( int(res_real32), 3*comm%size() )
@@ -156,7 +164,7 @@ TEST( test_allreduce_inplace )
   real(c_float)   :: real32, real32_r2(3,2)
   integer(c_int)  :: int32,  int32_r3(4,3,2), j
   integer(c_long) :: int64,  int64_r4(4,3,2,2), check_prod, check_sum
-  
+
   write(0,*) "test_allreduce_inplace"
   comm = fckit_mpi_comm("world")
 
@@ -179,7 +187,7 @@ TEST( test_allreduce_inplace )
   real64 = comm%rank()+1
   call comm%allreduce(real64,fckit_mpi_prod())
   FCTEST_CHECK_EQUAL( int(real64), int(check_prod) )
-  
+
   real32 = 3
   call comm%allreduce(real32,fckit_mpi_sum())
   FCTEST_CHECK_EQUAL( int(real32), 3*comm%size() )
@@ -192,7 +200,7 @@ TEST( test_allreduce_inplace )
   call comm%allreduce(int64,fckit_mpi_sum())
   FCTEST_CHECK_EQUAL( int(int64), 5*comm%size() )
 
- 
+
   int64_r4(1,1,1,1) = 2
   int64_r4(2,3,1,2) = comm%rank()+1
   int64_r4(3,1,2,1) = comm%size()
@@ -217,11 +225,11 @@ TEST( test_allreduce_inplace )
   FCTEST_CHECK_EQUAL(int64_r4(2,3,1,2),int(comm%size(),c_long))
   FCTEST_CHECK_EQUAL(int64_r4(3,1,2,1),int(comm%size(),c_long))
   FCTEST_CHECK_EQUAL(int64_r4(1,1,1,1),int(2,c_long))
-  
+
   int64_r4(1,1,1,1) = 2
   int64_r4(2,3,1,2) = comm%rank()+1
   int64_r4(3,1,2,1) = comm%size()
-  
+
   call comm%allreduce(int64_r4,fckit_mpi_min())
   FCTEST_CHECK_EQUAL(int64_r4(2,3,1,2),int(1,c_long))
   FCTEST_CHECK_EQUAL(int64_r4(3,1,2,1),int(comm%size(),c_long))
@@ -238,7 +246,7 @@ TEST( test_broadcast )
   real(c_float)   :: real32, real32_r2(3,2)
   integer(c_int)  :: int32,  int32_r3(4,3,2)
   integer(c_long) :: int64,  int64_r4(4,3,2,2)
-  
+
   write(0,*) "test_broadcast"
   comm = fckit_mpi_comm("world")
   if(comm%rank()==0) real64 = 0.1_c_double
@@ -264,7 +272,7 @@ TEST( test_broadcast )
   if(comm%rank()==comm%size()-1) int32_r3(2,1,1) = 3
   call comm%broadcast(int32_r3,root=comm%size()-1)
   FCTEST_CHECK_EQUAL(int32_r3(2,1,1), 3)
-  
+
 
 END_TEST
 
@@ -278,7 +286,7 @@ TEST( test_nonblocking_send_receive )
   type(fckit_mpi_status) :: status
   integer :: tag=1
   real(c_double)  :: send_real64, recv_real64
-  
+
   write(0,*) "test_nonblocking_send_receive"
   comm = fckit_mpi_comm("world")
 
@@ -297,7 +305,7 @@ TEST( test_nonblocking_send_receive )
 
     send_real64 = 0.1_c_double
     sendreq = comm%isend(send_real64,comm%size()-1,tag)
-    
+
     write(0,*) "send-request:",sendreq
 
   endif
@@ -307,11 +315,11 @@ TEST( test_nonblocking_send_receive )
     call comm%wait(recvreq,status)
     FCTEST_CHECK_CLOSE(recv_real64, 0.1_c_double,1.e-9_c_double)
   endif
-  
+
   if(comm%rank()==0) then
     call comm%wait(sendreq,status)
   endif
-  
+
 !   FCTEST_CHECK_EQUAL(status%source(), 0)
 !   FCTEST_CHECK_EQUAL(status%tag(), tag)
 !   FCTEST_CHECK_EQUAL(status%error(), 0)
@@ -326,7 +334,7 @@ TEST( test_blocking_send_receive )
   type(fckit_mpi_status) :: status
   integer :: tag=99
   real(c_double)  :: send_real64, recv_real64
-  
+
   write(0,*) "test_blocking_send_receive"
   comm = fckit_mpi_comm("world")
 
@@ -352,7 +360,7 @@ TEST( test_blocking_send_receive )
     call comm%receive(recv_real64,0,tag=comm%anytag(),status=status)
     FCTEST_CHECK_EQUAL(status%tag(), tag+1)
     FCTEST_CHECK_CLOSE(recv_real64, 0.2_c_double,1.e-9_c_double)
-    
+
   endif
 
 END_TEST

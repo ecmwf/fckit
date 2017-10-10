@@ -1,3 +1,11 @@
+! (C) Copyright 2013-2017 ECMWF.
+!
+! This software is licensed under the terms of the Apache Licence Version 2.0
+! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+! In applying this licence, ECMWF does not waive the privileges and immunities
+! granted to it by virtue of its status as an intergovernmental organisation nor
+! does it submit to any jurisdiction.
+
 module fckit_log_module
   !! Provides [[fckit_log_module:fckit_log(variable)]] for logging and to configure logging
 
@@ -16,7 +24,7 @@ type, FORD_PRIVATE :: fckit_log_type
   !!
   !! It wraps ```eckit::Log```, allowing Fortran and C++ code to log to the
   !! same output channels
-  
+
   integer :: SIMPLE = 0
     !! Style for logging without any prefix
   integer :: PREFIX = 1
@@ -54,19 +62,19 @@ contains
 
   procedure, nopass, public :: reset
     !! Reset all log channels (No more logging)
-  
+
   procedure, nopass, public :: flush
     !! Flush all log channels (empty buffers)
 
   procedure, nopass, public :: add_stdout
-    !! Add the C++ ```std::cout``` output stream to each logchannel 
+    !! Add the C++ ```std::cout``` output stream to each logchannel
 
   procedure, nopass, public :: set_stdout
     !! Replace each logchannels streams with the C++ ```std::cout``` output stream
 
   procedure, nopass, public :: add_fortran_unit
-    !! Add a given fortran unit as output stream to each logchannel 
-  
+    !! Add a given fortran unit as output stream to each logchannel
+
   procedure, nopass, public :: set_fortran_unit
     !! Replace each logchannel streams with a given fortran unit
 

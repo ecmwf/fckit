@@ -1,3 +1,11 @@
+# (C) Copyright 2013-2017 ECMWF.
+#
+# This software is licensed under the terms of the Apache Licence Version 2.0
+# which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+# In applying this licence, ECMWF does not waive the privileges and immunities
+# granted to it by virtue of its status as an intergovernmental organisation nor
+# does it submit to any jurisdiction.
+
 from argparse import ArgumentParser
 import re
 
@@ -14,10 +22,10 @@ source_in = args.input
 source_out = args.output
 
 with open(source_in,'r') as file:
-    
+
     for line in file.readlines():
         stripped = line.strip()
-        
+
         m = re.search(r'^\s*TESTSUITE\s*\(\s*([^\)]+)\s*\)',stripped)
         if m:
             testsuite = m.group(1).strip()
@@ -25,11 +33,11 @@ with open(source_in,'r') as file:
         m = re.search(r'^\s*TESTSUITE_WITH_FIXTURE\s*\(([^,]+),([^\)]+)\)',stripped)
         if m:
             testsuite = m.group(1).strip()
-         
+
         m = re.search(r'^\s*TEST\s*\(\s*([^\)]+)\s*\)',stripped)
         if m:
             test_names.append( m.group(1).strip() )
-        
+
         if( re.search(r'^\s*TESTSUITE_INIT',stripped) ):
             init = True
         if( re.search(r'^\s*TESTSUITE_FINALI[SZ]E',stripped) ):

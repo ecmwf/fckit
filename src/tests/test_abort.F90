@@ -1,3 +1,11 @@
+! (C) Copyright 2013-2017 ECMWF.
+!
+! This software is licensed under the terms of the Apache Licence Version 2.0
+! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+! In applying this licence, ECMWF does not waive the privileges and immunities
+! granted to it by virtue of its status as an intergovernmental organisation nor
+! does it submit to any jurisdiction.
+
 #include "fckit/fctest.h"
 #define TEST_ABORT 0
 
@@ -17,7 +25,7 @@ subroutine abort_func_1(msg)
   character(len=1024) :: string
   write(string,*) "custom abort 1,  msg = ", msg
   call fckit_log%info(string,flush=.true.)
-  
+
   mpi = fckit_mpi_comm("world")
   call mpi%abort()
 end subroutine
@@ -29,11 +37,11 @@ subroutine abort_func_2(msg,file,line)
   character(len=*), intent(in) :: msg
   character(len=*), intent(in) :: file
   integer, intent(in) :: line
-  
+
   character(len=1024) :: string
   write(string,*) "custom abort 2,  msg = ", msg, ", file = ",file, ", line = ",line
   call fckit_log%info(string,flush=.true.)
-  
+
   mpi = fckit_mpi_comm("world")
   call mpi%abort()
 end subroutine
@@ -44,7 +52,7 @@ contains
 
 subroutine abort_wrapper()
   use fckit_module
-  if( fckit_exception%location%is_set() ) then 
+  if( fckit_exception%location%is_set() ) then
     call abort_func_2( fckit_exception%what(), fckit_exception%location%file(), fckit_exception%location%line() )
   else
     call abort_func_1( fckit_exception%what() )
@@ -95,7 +103,7 @@ TEST( test_abort_1 )
   procedure(fckit_exception_handler), pointer:: exception_handler
   exception_handler => abort_func_0
   call fckit_exception%set_handler( exception_handler )
-#if TEST_ABORT  
+#if TEST_ABORT
 !   call fckit_exception%abort()
 #endif
 END_TEST
@@ -107,7 +115,7 @@ TEST( test_abort_2 )
   procedure(fckit_exception_handler), pointer:: exception_handler
   exception_handler => abort_wrapper
   call fckit_exception%set_handler( exception_handler )
-# if TEST_ABORT  
+# if TEST_ABORT
 !   call fckit_exception%abort("test_abort_2")
 #endif
 END_TEST
@@ -119,7 +127,7 @@ TEST( test_abort_3 )
   procedure(fckit_exception_handler), pointer:: exception_handler
   exception_handler => abort_wrapper
   call fckit_exception%set_handler( exception_handler )
-#if TEST_ABORT  
+#if TEST_ABORT
 !   call fckit_exception%abort("test_abort_3","test_abort.F90",__LINE__)
 #endif
 END_TEST
@@ -127,7 +135,7 @@ END_TEST
 TEST( test_throw )
   use fckit_module
   implicit none
-#if TEST_ABORT  
+#if TEST_ABORT
 !   call fckit_exception%throw("Exception: test throw","test_abort.F90",__LINE__)
 #endif
 END_TEST
