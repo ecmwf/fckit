@@ -20,15 +20,6 @@
 #include "eckit/parser/JSON.h"
 #include "eckit/parser/JSONParser.h"
 
-#include "eckit/eckit_version.h"
-
-#ifdef ECKIT_VERSION_INT
-#undef ECKIT_VERSION_INT
-#endif
-#define ECKIT_VERSION_INT (ECKIT_MAJOR_VERSION * 10000 \
-                         + ECKIT_MINOR_VERSION * 100 )
-
-
 using std::vector;
 using std::string;
 using std::stringstream;
@@ -78,17 +69,10 @@ const Configuration* c_fckit_configuration_new_from_file (const char* path) {
     return new YAMLConfiguration( p );
 }
 
-#if ECKIT_VERSION_INT > 1700
 const Configuration* c_fckit_configuration_new_from_buffer (eckit::CountedBuffer* buffer) {
     eckit::SharedBuffer sb(buffer);
     return new YAMLConfiguration( eckit::SharedBuffer(buffer) );
 }
-#else
-const Configuration* c_fckit_configuration_new_from_buffer (eckit::Buffer* buffer) {
-    return new YAMLConfiguration( eckit::SharedBuffer(buffer) );
-}
-#endif
-
 
 void c_fckit_configuration_delete (Configuration* This) {
     ASSERT( This != 0 );

@@ -19,22 +19,14 @@ namespace fckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-// Support for eckit 0.16.5 improved library registration using REGISTER_LIBRARY macro
-// See issue ECKIT-244
-#ifdef REGISTER_LIBRARY
-#define DECLARE_STATIC(Library,lib) static Library lib
-#else
-#define REGISTER_LIBRARY(Library) static Library library
-#define DECLARE_STATIC(Library,lib)
-#endif
-
+// eckit 0.16.5 improved library registration using REGISTER_LIBRARY macro
 REGISTER_LIBRARY(Libfckit);
 
 Libfckit::Libfckit() : eckit::system::Library("fckit") {}
 
 const Libfckit& Libfckit::instance()
 {
-    DECLARE_STATIC(Libfckit,library);
+    static Libfckit library;
     return library;
 }
 

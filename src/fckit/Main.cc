@@ -258,11 +258,6 @@ void Main::initialise(
 
 void Main::finalise()
 {
-    // Temporary until ECKIT-166 is fixed, only included for MacOSX
-#ifdef BUG_ECKIT_166
-    eckit::mpi::finaliseAllComms();
-#endif
-
     eckit::Log::flush();
 }
 

@@ -43,10 +43,6 @@ list( APPEND eckit_required_src
     Log.F90
 )
 
-if( EC_OS_NAME MATCHES "macosx" )
-  list( APPEND FCKIT_DEFINITIONS BUG_ECKIT_166 )
-endif()
-
 endif()
 
 if( EC_HAVE_Fortran_FINALIZATION )
