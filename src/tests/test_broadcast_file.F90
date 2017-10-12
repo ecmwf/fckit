@@ -16,10 +16,12 @@ TESTSUITE_INIT
   call fckit_log%set_fortran_unit(0)
 
   ! Write a json file
-  OPEN (UNIT=199 , FILE="fctest_broadcast.json", STATUS='REPLACE')
-  write(199,'(A)') '{"location":{"city":"Reading","company":"ECMWF","street":"Shinfield Road"},'//&
-      &          '"records":[{"age":42,"name":"Anne"},{"age":36,"name":"Bob"}]}'
-  CLOSE(199)
+  if( fckit_main%taskID() == 0 ) then
+    OPEN (UNIT=199 , FILE="fctest_broadcast.json", STATUS='REPLACE')
+    write(199,'(A)') '{"location":{"city":"Reading","company":"ECMWF","street":"Shinfield Road"},'//&
+        &          '"records":[{"age":42,"name":"Anne"},{"age":36,"name":"Bob"}]}'
+    CLOSE(199)
+  endif
 
 END_TESTSUITE_INIT
 

@@ -5,6 +5,9 @@
 ! In applying this licence, ECMWF does not waive the privileges and immunities
 ! granted to it by virtue of its status as an intergovernmental organisation nor
 ! does it submit to any jurisdiction.
+#ifndef FORD
+#include "fckit_defines.h"
+#endif
 
 module fckit_module
   !! author: Willem Deconinck
@@ -66,10 +69,6 @@ public :: log ! DEPRECATED. Use fckit_log instead.
 ! =============================================================================
 CONTAINS
 ! =============================================================================
-
-#ifndef FORD
-#include "fckit_defines.h"
-#endif
 
 ! -----------------------------------------------------------------------------
 
