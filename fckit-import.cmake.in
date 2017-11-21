@@ -62,6 +62,7 @@ macro( add_fctest )
     target_link_libraries( ${_PAR_TARGET} fckit )
     set_property( TEST ${_PAR_TARGET} APPEND PROPERTY LABELS "fortran" )
     target_sources( ${_PAR_TARGET} PUBLIC ${TESTRUNNER} )
+    add_custom_target( ${_PAR_TARGET}_testsuite SOURCES ${TESTSUITE} )
   endif()
 
 endmacro()
