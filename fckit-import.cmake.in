@@ -43,27 +43,25 @@ endfunction()
 
 macro( add_fctest )
 
+  ecbuild_add_test( ${ARGV} )
+
   set( options           )
   set( single_value_args TARGET )
-  set( multi_value_args SOURCES LIBS LABELS )
+  set( multi_value_args )
 
-  cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
+  cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}" ${_FIRST_ARG} ${ARGN} )
 
-  include_directories( ${FCKIT_INCLUDE_DIRS} )
-
-  list( GET _PAR_SOURCES 0 TESTSUITE )
-  list( REMOVE_ITEM _PAR_SOURCES ${TESTSUITE})
-
-  list( APPEND _PAR_LIBS fckit )
-
-  fctest_generate_runner( OUTPUT TESTRUNNER
-                          FILENAME ${TESTSUITE}
-                          DEPENDS ${_PAR_LIBS} )
-
-  set( _PAR_LABELS fortran ${_PAR_LABELS} )
-  ecbuild_add_test( TARGET ${_PAR_TARGET} ${_PAR_UNPARSED_ARGUMENTS}
-                    SOURCES ${TESTRUNNER} ${_PAR_SOURCES}
-                    LIBS ${_PAR_LIBS}
-                    LABELS ${_PAR_LABELS} )
+  if( TARGET ${_PAR_TARGET} )
+    get_property( test_sources TARGET ${_PAR_TARGET} PROPERTY SOURCES )
+    list( GET test_sources 0 TESTSUITE )
+    list( REMOVE_ITEM test_sources ${TESTSUITE} )
+    set_property( TARGET ${_PAR_TARGET} PROPERTY SOURCES ${test_sources} )
+    fctest_generate_runner( OUTPUT TESTRUNNER
+                            FILENAME ${TESTSUITE} )
+    target_include_directories( ${_PAR_TARGET} PUBLIC ${FCKIT_INCLUDE_DIRS} )
+    target_link_libraries( ${_PAR_TARGET} fckit )
+    set_property( TEST ${_PAR_TARGET} APPEND PROPERTY LABELS "fortran" )
+    target_sources( ${_PAR_TARGET} PUBLIC ${TESTRUNNER} )
+  endif()
 
 endmacro()
