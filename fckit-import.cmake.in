@@ -28,7 +28,6 @@ function( fctest_generate_runner )
   list( APPEND _depends
     ${_PAR_FILENAME}
     ${_PAR_DEPENDS}
-    fckit
   )
 
   add_custom_command(
@@ -45,21 +44,26 @@ endfunction()
 macro( add_fctest )
 
   set( options           )
-  set( single_value_args TARGET SOURCES )
-  set( multi_value_args )
+  set( single_value_args TARGET )
+  set( multi_value_args SOURCES LIBS LABELS )
 
-  cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}" ${_FIRST_ARG} ${ARGN} )
-  set( TESTSUITE ${_PAR_SOURCES} )
+  cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
 
-  ecbuild_add_test( ${ARGN} )
+  include_directories( ${FCKIT_INCLUDE_DIRS} )
 
-  if( TARGET ${_PAR_TARGET} )
-    fctest_generate_runner( OUTPUT TESTRUNNER
-                            FILENAME ${TESTSUITE} )
-    target_include_directories( ${_PAR_TARGET} PUBLIC ${FCKIT_INCLUDE_DIRS} )
-    target_link_libraries( ${_PAR_TARGET} fckit )
-    set_property( TEST ${_PAR_TARGET} APPEND PROPERTY LABELS "fortran" )
-    target_sources( ${_PAR_TARGET} PUBLIC ${TESTRUNNER} )
-  endif()
+  list( GET _PAR_SOURCES 0 TESTSUITE )
+  list( REMOVE_ITEM _PAR_SOURCES ${TESTSUITE})
+
+  list( APPEND _PAR_LIBS fckit )
+
+  fctest_generate_runner( OUTPUT TESTRUNNER
+                          FILENAME ${TESTSUITE}
+                          DEPENDS ${_PAR_LIBS} )
+
+  set( _PAR_LABELS fortran ${_PAR_LABELS} )
+  ecbuild_add_test( TARGET ${_PAR_TARGET} ${_PAR_UNPARSED_ARGUMENTS}
+                    SOURCES ${TESTRUNNER} ${_PAR_SOURCES}
+                    LIBS ${_PAR_LIBS}
+                    LABELS ${_PAR_LABELS} )
 
 endmacro()

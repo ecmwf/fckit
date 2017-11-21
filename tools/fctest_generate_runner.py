@@ -45,7 +45,8 @@ with open(source_in,'r') as file:
 
 source_file_pieces = source_in.split('/')
 
-runner = 'program run_'+testsuite+'\n'
+runner =  '#include "'+source_in+'"\n'
+runner += 'program run_'+testsuite+'\n'
 runner += 'use '+testsuite+'\n'
 runner += 'implicit none\n'
 runner += 'source_file=""\n'
