@@ -9,9 +9,9 @@
 ############################################################################################
 # FCKIT
 
-cmake_minimum_required( VERSION 3.1 FATAL_ERROR )
+cmake_minimum_required( VERSION 2.8 FATAL_ERROR )
 
-set( ENABLE_OS_TESTS       OFF   CACHE BOOL " " )
+set( ENABLE_OS_TESTS            OFF   CACHE BOOL " " )
 set( ENABLE_LARGE_FILE_SUPPORT  OFF   CACHE BOOL " " )
 
 project( fckit CXX Fortran )

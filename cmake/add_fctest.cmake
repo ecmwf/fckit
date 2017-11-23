@@ -30,7 +30,13 @@ if( NOT (CMAKE_VERSION VERSION_LESS 3.4 ) )
   cmake_policy( SET CMP0064 NEW )
 endif()
 
+if( CMAKE_VERSION VERSION_LESS 3.1 )
+  ecbuild_deprecate( "add_fctest is better supported with CMake > 3.1 (have ${CMAKE_VERSION})" )
+endif()
+
 macro( add_fctest )
+
+if( NOT (CMAKE_VERSION VERSION_LESS 3.1) )
 
   ecbuild_add_test( ${ARGV} )
 
@@ -58,5 +64,32 @@ macro( add_fctest )
       target_sources( ${_PAR_TARGET} PUBLIC ${TESTRUNNER} )
       add_custom_target( ${_PAR_TARGET}_testsuite SOURCES ${TESTSUITE} )
   endif()
+
+else()
+
+  set( options           )
+  set( single_value_args TARGET )
+  set( multi_value_args SOURCES LIBS LABELS )
+
+  cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
+
+  include_directories( ${FCKIT_INCLUDE_DIRS} )
+
+  list( GET _PAR_SOURCES 0 TESTSUITE )
+  list( REMOVE_ITEM _PAR_SOURCES ${TESTSUITE})
+
+  list( APPEND _PAR_LIBS fckit )
+
+  fctest_generate_runner( OUTPUT TESTRUNNER
+                          FILENAME ${TESTSUITE}
+                          DEPENDS ${_PAR_LIBS} )
+
+  set( _PAR_LABELS fortran ${_PAR_LABELS} )
+  ecbuild_add_test( TARGET ${_PAR_TARGET} ${_PAR_UNPARSED_ARGUMENTS}
+                    SOURCES ${TESTRUNNER} ${_PAR_SOURCES}
+                    LIBS ${_PAR_LIBS}
+                    LABELS ${_PAR_LABELS} )
+
+endif()
 
 endmacro()
