@@ -72,30 +72,11 @@ list( APPEND FCKIT_INCLUDE_DIRS
     ${CMAKE_Fortran_MODULE_DIRECTORY})
 set( FCKIT_LIBRARIES  fckit )
 
-#
-# --- IMPORT ---
-#
-set( INSTALL_LIBEXEC_DIR libexec )
-# At this point fckit-import.cmake has not been configured in the build tree yet
-# Include the template and fix the path to fctest_generate_runner.py
-# Set Policy CMP0053 to allow to include fckit-import.cmake.in directly
-# Run "cmake --help-policy CMP0053" for policy details
-if(POLICY CMP0053)
-  cmake_policy(PUSH)
-  cmake_policy(SET CMP0053 OLD)
-endif()
-include(${CMAKE_CURRENT_SOURCE_DIR}/fckit-import.cmake.in)
-if(POLICY CMP0053)
-  cmake_policy(POP)
-endif()
-set( FCTEST_GENERATOR ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/tools/fctest_generate_runner.py )
-
-if( NOT PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
-  set( FCTEST_GENERATOR ${FCTEST_GENERATOR} PARENT_SCOPE )
-endif()
-
 ############################################################################################
 # sources
+
+set( FCTEST_GENERATOR ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/tools/fctest_generate_runner.py )
+include(add_fctest)
 
 include_directories( ${FCKIT_INCLUDE_DIRS} )
 
@@ -112,5 +93,11 @@ ecbuild_print_summary()
 if(ECBUILD_INSTALL_FORTRAN_MODULES)
   install(DIRECTORY ${CMAKE_Fortran_MODULE_DIRECTORY}/${CMAKE_CFG_INTDIR} DESTINATION ${INSTALL_INCLUDE_DIR} )
 endif()
+
+set( INSTALL_LIBEXEC_DIR libexec )
+if( NOT PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
+  set( FCTEST_GENERATOR ${FCTEST_GENERATOR} PARENT_SCOPE )
+endif()
+file(READ ${CMAKE_CURRENT_SOURCE_DIR}/cmake/add_fctest.cmake FCKIT_IMPORT)
 
 ecbuild_install_project( NAME fckit )
