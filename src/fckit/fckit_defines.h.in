@@ -14,4 +14,25 @@ does it submit to any jurisdiction.
 #define FCKIT_GIT_SHA1      "@FCKIT_GIT_SHA1@"
 #define FCKIT_VERSION       "@FCKIT_VERSION@"
 
+#if @EC_HAVE_Fortran_FINALIZATION@
+#define EC_HAVE_Fortran_FINALIZATION
+
+#if @Fortran_FINAL_FUNCTION_RESULT@
+#define Fortran_FINAL_FUNCTION_RESULT
+#endif
+
+#if @Fortran_FINAL_UNINITIALIZED_LOCAL@
+#define Fortran_FINAL_UNINITIALIZED_LOCAL
+#endif
+
+#if @Fortran_FINAL_UNINITIALIZED_INTENT_OUT@
+#define Fortran_FINAL_UNINITIALIZED_INTENT_OUT
+#endif
+
+#if @Fortran_FINAL_UNINITIALIZED_INTENT_INOUT@
+#define Fortran_FINAL_UNINITIALIZED_INTENT_INOUT
+#endif
+
+#endif
+
 #endif

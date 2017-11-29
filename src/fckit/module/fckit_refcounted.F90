@@ -6,6 +6,8 @@
 ! granted to it by virtue of its status as an intergovernmental organisation nor
 ! does it submit to any jurisdiction.
 
+#include "fckit/fckit_defines.h"
+
 module fckit_refcounted_module
   !! Provides [[fckit_refcounted_module:fckit_refcounted(type)]],
   !! a reference counted implementation of [[fckit_object_module:fckit_object(type)]]
@@ -46,7 +48,6 @@ contains
   procedure, public :: delete
 
 #ifdef EC_HAVE_Fortran_FINALIZATION
-! Not yet implemented !
  final :: final_auto
 #endif
 

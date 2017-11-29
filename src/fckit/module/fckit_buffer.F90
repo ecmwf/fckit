@@ -6,6 +6,8 @@
 ! granted to it by virtue of its status as an intergovernmental organisation nor
 ! does it submit to any jurisdiction.
 
+#include "fckit/fckit_defines.h"
+
 module fckit_buffer_module
   !! Wrap eckit Buffer capabilities.
 

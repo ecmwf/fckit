@@ -6,6 +6,7 @@
 ! granted to it by virtue of its status as an intergovernmental organisation nor
 ! does it submit to any jurisdiction.
 
+#include "fckit/fckit_defines.h"
 
 module fckit_refcounted_fortran_module
   !! Provides [[fckit_refcounted_fortran_module:fckit_refcounted_fortran(type)]],
@@ -44,7 +45,7 @@ contains
   procedure, public :: delete
 
 #ifdef EC_HAVE_Fortran_FINALIZATION
-  final :: final_auto_f
+  final :: final_auto
 #endif
 
 endtype
