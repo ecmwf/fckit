@@ -19,13 +19,15 @@ use fctest
 use iso_c_binding
 implicit none
 
+integer, SAVE :: deleted = 0
+
 type :: payload_t
   integer :: id
 contains
 endtype
 
 type, extends(fckit_refcounted) :: RefObj
-  type(payload_t), pointer :: payload
+  type(payload_t), pointer :: payload => null()
 contains
   procedure :: delete => RefObj__delete
   procedure :: copy => RefObj__copy
@@ -46,7 +48,11 @@ contains
 function id(this)
   integer :: id
   class(RefObj), intent(in) :: this
-  id = this%payload%id
+  if( associated( this%payload ) ) then
+    id = this%payload%id
+  else
+    id = -1
+  endif
 end function
 
 function create_obj(id) result(obj)
@@ -78,6 +84,7 @@ subroutine RefObj__delete(this)
   write(0,*) "deleting obj",this%id()
   deallocate(this%payload)
   call fckit__delete_Owned(this%c_ptr())
+  deleted = deleted + 1
 end subroutine
 #endif
 
@@ -96,7 +103,7 @@ subroutine RefObj__copy(this,obj_in)
 end subroutine
 
 subroutine consume_obj(obj)
-  class(RefObj) :: obj
+  class(RefObj), intent(in) :: obj
   call obj%attach()
   write(0,*) "Consume obj",obj%id(),"  owners =",obj%owners() !,obj%id
   call obj%detach()
@@ -128,6 +135,8 @@ TEST( test_ref )
   write(0,*) "Fortran supports automatic finalization!"
 #endif
 
+  FCTEST_CHECK_EQUAL( obj%id(), -1 )
+
   obj = RefObj(1)
   FCTEST_CHECK_EQUAL( obj%owners(), 1 )
   FCTEST_CHECK_EQUAL( obj%id(), 1 )
@@ -146,12 +155,20 @@ TEST( test_ref )
 
 #ifndef EC_HAVE_Fortran_FINALIZATION
   call obj%final()
+#else
+  write(0,*) "Trust automatic finalisation to delete obj when scope ends"
 #endif
   call consume_obj(bjo)
 #ifndef EC_HAVE_Fortran_FINALIZATION
   call bjo%final()
+#else
+  write(0,*) "Trust automatic finalisation to delete bjo when scope ends"
 #endif
 
+END_TEST
+
+TEST( test_deleted )
+  FCTEST_CHECK_EQUAL( deleted , 2 )
 END_TEST
 
 ! -----------------------------------------------------------------------------

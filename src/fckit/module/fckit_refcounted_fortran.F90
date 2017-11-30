@@ -107,13 +107,13 @@ subroutine reset(obj_out,obj_in)
 end subroutine
 
 subroutine attach(this)
-  class(fckit_refcounted_fortran), intent(inout) :: this
+  class(fckit_refcounted_fortran), intent(in) :: this
   call assert_refcount(this)
   this%refcount = this%refcount + 1
 end subroutine
 
 subroutine detach(this)
-  class(fckit_refcounted_fortran), intent(inout) :: this
+  class(fckit_refcounted_fortran), intent(in) :: this
   call assert_refcount(this)
   this%refcount = max(0, this%refcount - 1)
 end subroutine
@@ -126,11 +126,14 @@ function owners(this)
 end function
 
 subroutine return(this)
-  class(fckit_refcounted_fortran), intent(inout) :: this
+  !! Transfer ownership to left hand side of "assignment(=)"
+  class(fckit_refcounted_fortran), intent(in) :: this
 #ifdef Fortran_FINAL_FUNCTION_RESULT
-  if( this%owners() == 0 ) call this%attach()
+  ! final will be called, which will detach, so attach.
+  call this%attach()
 #else
-  call this%detach()
+  ! final will not be called, so detach manually
+  if( this%owners() > 0 ) call this%detach()
 #endif
 end subroutine
 

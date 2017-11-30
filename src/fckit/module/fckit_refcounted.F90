@@ -125,12 +125,12 @@ subroutine reset(obj_out,obj_in)
 end subroutine
 
 subroutine attach(this)
-  class(fckit_refcounted), intent(inout) :: this
+  class(fckit_refcounted), intent(in) :: this
   call fckit__Owned__attach(this%c_ptr())
 end subroutine
 
 subroutine detach(this)
-  class(fckit_refcounted), intent(inout) :: this
+  class(fckit_refcounted), intent(in) :: this
   call fckit__Owned__detach(this%c_ptr())
 end subroutine
 
@@ -141,10 +141,13 @@ function owners(this)
 end function
 
 subroutine return(this)
-  class(fckit_refcounted), intent(inout) :: this
+  !! Transfer ownership to left hand side of "assignment(=)"
+  class(fckit_refcounted), intent(in) :: this
 #ifdef Fortran_FINAL_FUNCTION_RESULT
-  if( this%owners() == 0 ) call this%attach()
+  ! final will be called, which will detach, so attach.   ( PGI )
+  call this%attach()
 #else
+  ! final will not be called, so detach manually          ( GNU, Intel, Cray )
   if( this%owners() > 0 ) call this%detach()
 #endif
 end subroutine
