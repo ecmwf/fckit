@@ -6,6 +6,11 @@
 # granted to it by virtue of its status as an intergovernmental organisation nor
 # does it submit to any jurisdiction.
 
+
+set( FCKIT_EXTRA_LINK_LIBRARIES 
+  /usr/local/apps/gcc/5.3.0/lib/gcc/x86_64-suse-linux/5.3.0/libstdc++.so
+)
+
 add_subdirectory(fckit)
 add_subdirectory(fctest_examples)
 add_subdirectory(tests)

@@ -37,7 +37,7 @@ type, extends(fckit_object) :: fckit_refcounted
   !! internal C pointer is deleted.
 
 contains
-  procedure, public :: final
+  procedure, public :: final => fckit_refcounted__final
   procedure, private :: reset
   generic, public :: assignment(=) => reset
   procedure, public :: owners
@@ -48,7 +48,7 @@ contains
   procedure, public :: delete
 
 #ifdef EC_HAVE_Fortran_FINALIZATION
- final :: final_auto
+ final :: fckit_refcounted__final_auto
 #endif
 
 endtype
@@ -91,25 +91,35 @@ contains
 subroutine delete(this)
   use fckit_c_interop_module
   class(fckit_refcounted), intent(inout) :: this
-  call c_ptr_free(this%c_ptr())
+  write(0,*) "fckit_refcounted::delete"
+  call fckit__delete_Owned(this%c_ptr())
+  call this%reset_c_ptr()
 end subroutine
 
 subroutine copy(this,obj_in)
   class(fckit_refcounted), intent(inout) :: this
   class(fckit_refcounted), target, intent(in) :: obj_in
+  write(0,*) "fckit_refcounted::copy"
 end subroutine
 
-subroutine final(this)
+subroutine fckit_refcounted__final(this)
   class(fckit_refcounted), intent(inout) :: this
   if( .not. this%is_null() ) then
+    write(0,*) "fckit_refcounted__final owners ",this%owners()
     if( this%owners() >  0 ) then
+      write(0,*) __LINE__
       call this%detach()
+      if( this%owners() == 0 ) then
+        write(0,*) __LINE__
+
+        call this%delete()
+      endif
     endif
-    if( this%owners() == 0 ) then
-      call this%delete()
-    endif
-    call this%reset_c_ptr()
+  else
+    write(0,*) "fckit_refcounted__final (uninitialized)"
   endif
+
+
 end subroutine
 
 subroutine reset(obj_out,obj_in)
@@ -117,10 +127,18 @@ subroutine reset(obj_out,obj_in)
   class(fckit_refcounted), intent(inout) :: obj_out
   class(fckit_refcounted), intent(in) :: obj_in
   if( obj_out /= obj_in ) then
-    if( .not. obj_out%is_null() ) call obj_out%final()
+    if( .not. obj_out%is_null() ) then
+      write(0,*) "final LHS"
+      call obj_out%final()
+    endif
     call obj_out%reset_c_ptr( obj_in%c_ptr() )
+    write(0,*) ">>> copy"
     call obj_out%copy(obj_in)
+    write(0,*) "<<< copy"
     call obj_out%attach()
+  endif
+  if( .not. obj_out%is_null() ) then
+    write(0,*) "reset --> owners = ",obj_out%owners()
   endif
 end subroutine
 
@@ -144,16 +162,17 @@ subroutine return(this)
   !! Transfer ownership to left hand side of "assignment(=)"
   class(fckit_refcounted), intent(in) :: this
 #ifdef Fortran_FINAL_FUNCTION_RESULT
-  ! final will be called, which will detach, so attach.   ( PGI )
+  ! final will be called, which will detach, so attach. 
   call this%attach()
 #else
-  ! final will not be called, so detach manually          ( GNU, Intel, Cray )
+  ! final will not be called, so detach manually
   if( this%owners() > 0 ) call this%detach()
 #endif
 end subroutine
 
-subroutine final_auto(this)
+subroutine fckit_refcounted__final_auto(this)
   type(fckit_refcounted), intent(inout) :: this
+  write(0,*) "fckit_refcounted__final_auto"
   call this%final()
 end subroutine
 

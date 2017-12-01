@@ -16,7 +16,6 @@ module fckit_mpi_module
   !! library linked such as ```mpi_serial```
 
 use fckit_object_module, only: fckit_object
-  use fckit_buffer_module
 
 implicit none
 private
@@ -82,7 +81,7 @@ type, extends(fckit_object) :: fckit_mpi_comm
   !! [[fckit_mpi_module:fckit_mpi_setCommDefault(subroutine)]]
 
 contains
-  procedure, public :: final => final_c
+  procedure, public :: final => fckit_mpi_comm__final
   procedure, public :: delete
 
   procedure, public :: communicator
@@ -313,6 +312,7 @@ contains
     & broadcast_real64_r3 ,&
     & broadcast_real64_r4
 
+  !> MPI broadcast file to buffer
   procedure, public :: broadcast_file
 
   !> MPI send for most array and scalar types
@@ -411,7 +411,7 @@ contains
   procedure, public :: wait
 
 #ifdef EC_HAVE_Fortran_FINALIZATION
- final :: final_auto
+  final :: fckit_mpi_comm__final_auto
 #endif
 
 endtype
@@ -872,6 +872,7 @@ end function
 
 !---------------------------------------------------------------------------------------
 
+#if 1
 subroutine fckit_mpi_setCommDefault_int(comm)
   use, intrinsic :: iso_c_binding, only : c_int
   integer(c_int), intent(in) :: comm
@@ -885,7 +886,7 @@ subroutine fckit_mpi_setCommDefault_name(name)
   character(len=*), intent(in), optional :: name
   call fckit__mpi__setCommDefault_name(c_str(name))
 end subroutine
-
+#endif
 !---------------------------------------------------------------------------------------
 
 function comm_constructor(name) result(this)
@@ -916,7 +917,7 @@ end subroutine
 
 !---------------------------------------------------------------------------------------
 
-subroutine final_c(this)
+subroutine fckit_mpi_comm__final(this)
   class(fckit_mpi_comm), intent(inout) :: this
   if( .not. this%is_null() ) then
     call this%delete()
@@ -925,7 +926,7 @@ end subroutine
 
 !---------------------------------------------------------------------------------------
 
-subroutine final_auto(this)
+subroutine fckit_mpi_comm__final_auto(this)
   type(fckit_mpi_comm), intent(inout) :: this
   call this%final()
 end subroutine
@@ -1700,7 +1701,7 @@ end subroutine
 function broadcast_file(this,path,root) result(buffer)
   use, intrinsic :: iso_c_binding, only : c_int, c_size_t, c_ptr
   use fckit_c_interop_module, only : c_str
-  use fckit_buffer_module
+  use fckit_buffer_module, only : fckit_buffer
   type(fckit_buffer) :: buffer
   class(fckit_mpi_comm), intent(in) :: this
   character(len=*), intent(in) :: path
@@ -3016,7 +3017,6 @@ function ireceive_real64_r4(this,buffer,source,tag) result(request)
   view_buffer  => array_view1d(buffer)
   request = fckit__mpi__ireceive_real64(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),source,tag_opt)
 end function
-
 !---------------------------------------------------------------------------------------
 
 subroutine wait(this,request,status)

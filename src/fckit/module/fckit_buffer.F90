@@ -11,12 +11,9 @@
 module fckit_buffer_module
   !! Wrap eckit Buffer capabilities.
 
-use fckit_refcounted_fortran_module, only: fckit_refcounted_fortran
-use fckit_refcounted_module, only: fckit_refcounted
 use fckit_object_module, only: fckit_object
 implicit none
 
-private :: fckit_refcounted_fortran
 private :: fckit_object
 
 !========================================================================
@@ -68,7 +65,7 @@ contains
 ! prevents it. The only difference is that the reset_f function uses
 ! "type" instead of "class" for the second "obj_in" argument.
 
-  procedure, public :: final
+  procedure, public :: final => fckit_buffer__final
   procedure, private :: reset
   generic, public :: assignment(=) => reset
   procedure, public :: owners
@@ -80,7 +77,7 @@ contains
   procedure, public :: consumed
 
 #ifdef EC_HAVE_Fortran_FINALIZATION
-!  final :: final_auto
+  final :: fckit_buffer__final_auto
 #endif
 
 endtype
@@ -142,12 +139,12 @@ subroutine copy(this,obj_in)
 end subroutine
 
 
-subroutine final_auto(this)
+subroutine fckit_buffer__final_auto(this)
   type(fckit_buffer), intent(inout) :: this
   call this%final()
 end subroutine
 
-subroutine final(this)
+subroutine fckit_buffer__final(this)
   class(fckit_buffer), intent(inout) :: this
   if( .not. this%is_null() ) then
     if( this%owners() >  0 ) then

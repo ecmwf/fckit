@@ -74,6 +74,8 @@ ecbuild_add_library( TARGET     fckit
                                 ${CMAKE_CURRENT_BINARY_DIR}
                      LIBS
                                 ${ECKIT_LIBRARIES}
+                                ${FCKIT_EXTRA_LINK_LIBRARIES}
+
                      DEFINITIONS
                                 ${FCKIT_DEFINITIONS}
 

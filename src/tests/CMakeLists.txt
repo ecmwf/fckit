@@ -54,7 +54,7 @@ add_fctest( TARGET  fckit_test_abort
             LINKER_LANGUAGE Fortran
             SOURCES test_abort.F90
             CONDITION HAVE_ECKIT
-            LIBS fckit )
+            LIBS    fckit)
 
 add_fctest( TARGET  fckit_test_configuration
             LINKER_LANGUAGE Fortran
@@ -82,7 +82,7 @@ ecbuild_add_test( TARGET  fckit_test_configuration_cpp
             DEFINITIONS ${FCKIT_DEFINITIONS}
             INCLUDES ${ECKIT_INCLUDE_DIRS}
             CONDITION HAVE_ECKIT
-            LIBS    fckit)
+            LIBS    fckit ${FCKIT_EXTRA_LINK_LIBRARIES})
 
 ecbuild_add_test( TARGET fckit_test_cpp
   LINKER_LANGUAGE CXX

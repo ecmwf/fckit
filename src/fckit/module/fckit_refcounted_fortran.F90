@@ -34,7 +34,7 @@ type, extends(fckit_object) :: fckit_refcounted_fortran
 
   integer, pointer, private :: refcount => null()
 contains
-  procedure, public :: final
+  procedure, public :: final => fckit_refcounted_fortran__final
   procedure, private :: reset
   generic, public :: assignment(=) => reset
   procedure, public :: owners
@@ -45,7 +45,7 @@ contains
   procedure, public :: delete
 
 #ifdef EC_HAVE_Fortran_FINALIZATION
-  final :: final_auto
+  final :: fckit_refcounted_fortran__final_auto
 #endif
 
 endtype
@@ -74,12 +74,12 @@ subroutine copy(this,obj_in)
   class(fckit_refcounted_fortran), target, intent(in) :: obj_in
 end subroutine
 
-subroutine final_auto(this)
+subroutine fckit_refcounted_fortran__final_auto(this)
   type(fckit_refcounted_fortran), intent(inout) :: this
   call this%final()
 end subroutine
 
-subroutine final(this)
+subroutine fckit_refcounted_fortran__final(this)
   class(fckit_refcounted_Fortran), intent(inout) :: this
   if( .not. this%is_null() ) then
     if( this%owners() >  0 ) then

@@ -29,12 +29,12 @@ endtype
 type, extends(fckit_refcounted) :: RefObj
   type(payload_t), pointer :: payload => null()
 contains
-  procedure :: delete => RefObj__delete
-  procedure :: copy => RefObj__copy
+  procedure, public :: delete => RefObj__delete
+  procedure, public :: copy   => RefObj__copy
   procedure :: id
 
 #ifdef  EC_HAVE_Fortran_FINALIZATION
-  final :: RefObj__final
+  final :: RefObj__final_auto
 #endif
 
 endtype
@@ -55,33 +55,45 @@ function id(this)
   endif
 end function
 
-function create_obj(id) result(obj)
-  type(RefObj) :: obj
+function create_obj(id) result(anobj)
+  type(RefObj) :: anobj
   integer :: id
-  obj = RefObj(id)
-  call obj%return()
+  write(0,'(A,I0,A)') ">>>  anobj = RefObj(",id,")"
+  anobj = RefObj(id)
+  write(0,'(A,I0,A)') "<<<  anobj = RefObj(",id,")"
+  call anobj%return()
+  write(0,*) "create_obj --> owners = ",anobj%owners()
 end function
 
 function RefObj__constructor(id) result(this)
   type(RefObj) :: this
   integer, intent(in) :: id
-  write(0,*) "constructing obj ", id
+  write(0,*)''
   call this%reset_c_ptr( fckit__new_Owned() )
-  write(0,*) "                    ptr = ",c_ptr_to_loc(this%c_ptr())
+  write(0,*) "constructing obj ", id, " ptr = ",c_ptr_to_loc(this%c_ptr())
   allocate( this%payload )
   this%payload%id = id
   call this%return()
+  write(0,*) "RefObj__constructor --> owners = ",this%owners()
 end function
 
-subroutine RefObj__final(this)
+subroutine RefObj__final_auto(this)
   type(RefObj) :: this
-  call this%final()
+  write(0,*) "RefObj__final"
+  if( this%id() >= 0 ) then
+    write(0,*) "final obj",this%id(), " starting with owners = ",this%owners()
+  else
+    write(0,*) "final obj",this%id(), " (uninitialized) "
+  endif
+
+  ! Should now call base-class fckit_refcounted::final_auto
+  !call this%final()
 end subroutine
 
 #if 1
 subroutine RefObj__delete(this)
   class(RefObj), intent(inout) :: this
-  write(0,*) "deleting obj",this%id()
+  write(0,*) "deleting obj",this%id(), " ptr = ", c_ptr_to_loc(this%c_ptr())
   deallocate(this%payload)
   call fckit__delete_Owned(this%c_ptr())
   deleted = deleted + 1
@@ -98,8 +110,9 @@ subroutine RefObj__copy(this,obj_in)
     type is (RefObj)
       obj_in_cast => obj_in
   end select
-  write(0,*) "copy obj",obj_in_cast%id()
+  write(0,*) "copy obj ",obj_in_cast%id()," to ",this%id()
   this%payload => obj_in_cast%payload
+  write(0,*) "   check: obj is now ", this%id()
 end subroutine
 
 subroutine consume_obj(obj)
@@ -129,32 +142,46 @@ END_TESTSUITE_FINALIZE
 
 TEST( test_ref )
   use fckit_c_interop_module
-  type(RefObj) :: obj, bjo
+  type(RefObj) :: obj1, bjo, obj2
 
 #ifdef EC_HAVE_Fortran_FINALIZATION
   write(0,*) "Fortran supports automatic finalization!"
 #endif
 
-  FCTEST_CHECK_EQUAL( obj%id(), -1 )
+  FCTEST_CHECK_EQUAL( obj1%id(), -1 )
 
-  obj = RefObj(1)
-  FCTEST_CHECK_EQUAL( obj%owners(), 1 )
-  FCTEST_CHECK_EQUAL( obj%id(), 1 )
+  obj1 = RefObj(1)
+  FCTEST_CHECK_EQUAL( obj1%owners(), 1 )
+  FCTEST_CHECK_EQUAL( obj1%id(), 1 )
 
-  call consume_obj(obj)
-  FCTEST_CHECK_EQUAL( obj%owners(), 1 )
+  write(0,*) ">>> consume_obj"
+  call consume_obj(obj1)
+  write(0,*) "<<< consume_obj"
+
+  FCTEST_CHECK_EQUAL( obj1%owners(), 1 )
 
   !call obj%final() will be done in next statement upon assignment(=)
-  obj = create_obj(3)
-  FCTEST_CHECK_EQUAL( obj%id(), 3 )
-  FCTEST_CHECK_EQUAL( obj%owners(), 1 )
-  bjo = obj
-  FCTEST_CHECK_EQUAL( obj%owners(), 2 )
-  obj = bjo
-  FCTEST_CHECK_EQUAL( obj%owners(), 2 )
+  write(0,*) ">>> obj2 = create_obj(3)"
+  obj2 = create_obj(3)
+  write(0,*) "<<< obj2 = create_obj(3)"
+
+      FCTEST_CHECK_EQUAL( obj2%owners(), 1 )
+
+  FCTEST_CHECK( associated(obj2%payload) )
+  FCTEST_CHECK_EQUAL( obj2%id(), 3 )
+  FCTEST_CHECK_EQUAL( obj2%owners(), 1 )
+
+
+  bjo = obj2
+  FCTEST_CHECK_EQUAL( obj2%owners(), 2 )
+! no-op
+!  obj2 = bjo
+  FCTEST_CHECK_EQUAL( obj2%owners(), 2 )
+
+  FCTEST_CHECK_EQUAL( obj1%owners(), 1 )
 
 #ifndef EC_HAVE_Fortran_FINALIZATION
-  call obj%final()
+  call obj1%final()
 #else
   write(0,*) "Trust automatic finalisation to delete obj when scope ends"
 #endif

@@ -1,7 +1,7 @@
 
 macro( check_final_support )
 
-set( DEBUG_FINAL_SUPPORT FALSE )
+set( DEBUG_FINAL_SUPPORT TRUE  )
 macro( debug_test case )
   if( DEBUG_FINAL_SUPPORT )
     file( WRITE ${CMAKE_CURRENT_BINARY_DIR}/fckit-test-${case}.F90 ${FINAL_SUPPORT_SOURCE} )
