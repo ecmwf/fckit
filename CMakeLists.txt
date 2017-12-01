@@ -53,6 +53,7 @@ ecbuild_warn( "EC_HAVE_Fortran_FINALIZATION = ${EC_HAVE_Fortran_FINALIZATION} " 
   endif()
 endif()
 
+#[[
 ecbuild_add_option( FEATURE ECKIT
                     DESCRIPTION "Wrap ecKit functionality"
                     REQUIRED_PACKAGES "PROJECT eckit VERSION 0.18" )
@@ -64,6 +65,7 @@ endif()
 if( NOT ECKIT_HAVE_MPI )
   ecbuild_warn("ecKit has been compiled without MPI. This causes fckit to not be able to run parallel executables.")
 endif()
+#]]
 
 ############################################################################################
 # export package info

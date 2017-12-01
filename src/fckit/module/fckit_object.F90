@@ -26,6 +26,8 @@ type, abstract :: fckit_object
   type(c_ptr), private :: cpp_object_ptr = c_null_ptr
     !! Internal C pointer
 
+  integer :: refcount = 0
+
 contains
 
   procedure, public :: is_null
@@ -38,7 +40,10 @@ contains
     !! Nullify internal C pointer
 
   procedure, private :: equal
+    !! Compare two object's C pointers
+
   procedure, private :: not_equal
+    !! Compare two object's C pointers
 
   generic, public :: operator(==) => equal
     !! Compare two objects internal C pointer
@@ -46,15 +51,12 @@ contains
   generic, public :: operator(/=) => not_equal
     !! Compare two objects internal C pointer
 
-  procedure, public :: final
+  procedure(final), deferred, public :: final
     !! Finalise object
-
-  procedure(final), deferred, public :: delete
-    !! Deallocate internal C pointer
-
 
   ! Following line is to avoid PGI compiler bug
   procedure, private :: fckit_object__c_ptr
+
 end type
 
 !========================================================================
@@ -114,6 +116,8 @@ logical function not_equal(obj1,obj2)
   endif
 end function
 
+!========================================================================
+! Interface
 
 subroutine final(this)
   class(fckit_object), intent(inout) :: this

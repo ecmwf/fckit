@@ -85,7 +85,7 @@ function RefObj__constructor(id) result(this)
   type(RefObj) :: this
   integer, intent(in) :: id
   write(0,*) "constructing obj ", id
-  call this%reset_c_ptr( fckit__new_Owned() )
+!  call this%reset_c_ptr( fckit__new_Owned() )
   write(0,*) "                    ptr = ",c_ptr_to_loc(this%c_ptr())
   allocate( this%payload )
   this%payload%id = id
@@ -98,7 +98,7 @@ subroutine RefObj__delete(this)
   class(RefObj), intent(inout) :: this
   write(0,*) "deleting obj",this%id()
   deallocate(this%payload)
-  call fckit__delete_Owned(this%c_ptr())
+!  call fckit__delete_Owned(this%c_ptr())
 end subroutine
 #endif
 

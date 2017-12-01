@@ -10,6 +10,8 @@
 #include "fckit/fctest.h"
 #include "fckit/fckit_defines.h"
 
+!#define PREVIOUS
+
 ! -----------------------------------------------------------------------------
 
 module fcta_refcounting_fxt
@@ -21,6 +23,9 @@ implicit none
 
 integer, SAVE :: deleted = 0
 
+#ifdef PREVIOUS
+#include "previous.h"
+#else
 type :: payload_t
   integer :: id
 contains
@@ -114,6 +119,7 @@ subroutine RefObj__copy(this,obj_in)
   this%payload => obj_in_cast%payload
   write(0,*) "   check: obj is now ", this%id()
 end subroutine
+#endif
 
 subroutine consume_obj(obj)
   class(RefObj), intent(in) :: obj
@@ -171,8 +177,9 @@ TEST( test_ref )
   FCTEST_CHECK_EQUAL( obj2%id(), 3 )
   FCTEST_CHECK_EQUAL( obj2%owners(), 1 )
 
-
+write(0,*) " >>> bjo=obj2"
   bjo = obj2
+write(0,*) " <<< bjo=obj2"
   FCTEST_CHECK_EQUAL( obj2%owners(), 2 )
 ! no-op
 !  obj2 = bjo
@@ -191,6 +198,7 @@ TEST( test_ref )
 #else
   write(0,*) "Trust automatic finalisation to delete bjo when scope ends"
 #endif
+
 
 END_TEST
 
