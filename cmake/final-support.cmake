@@ -44,7 +44,7 @@ set( FINAL_SUPPORT_SOURCE
 #define OUTPUT
 #endif
 
-module final_support_mod
+module final_support_module
 implicit none
 public
 
@@ -254,7 +254,7 @@ end module
 
 
 program final_support
-  use final_support_mod
+  use final_support_module
   implicit none
 
   call run_test(1)

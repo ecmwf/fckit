@@ -39,10 +39,10 @@ ecbuild_enable_fortran( REQUIRED MODULE_DIRECTORY ${CMAKE_BINARY_DIR}/module )
 # Experimental... (read: not working!)
 #ecbuild_add_option( FEATURE FORTRAN_FINALIZATION
 #                    DEFAULT OFF )
-ecbuild_warn( "ENABLE_FORTRAN_FINALIZATION = ${ENABLE_FORTRAN_FINALIZATION} " )
+
+set( ENABLE_FORTRAN_FINALIZATION 1)
 if( ENABLE_FORTRAN_FINALIZATION )
   ecbuild_check_fortran( FEATURES finalization )
-ecbuild_warn( "EC_HAVE_Fortran_FINALIZATION = ${EC_HAVE_Fortran_FINALIZATION} " )
   if( EC_HAVE_Fortran_FINALIZATION )
     include( final-support )
     check_final_support()
@@ -53,7 +53,6 @@ ecbuild_warn( "EC_HAVE_Fortran_FINALIZATION = ${EC_HAVE_Fortran_FINALIZATION} " 
   endif()
 endif()
 
-#[[
 ecbuild_add_option( FEATURE ECKIT
                     DESCRIPTION "Wrap ecKit functionality"
                     REQUIRED_PACKAGES "PROJECT eckit VERSION 0.18" )
@@ -65,7 +64,6 @@ endif()
 if( NOT ECKIT_HAVE_MPI )
   ecbuild_warn("ecKit has been compiled without MPI. This causes fckit to not be able to run parallel executables.")
 endif()
-#]]
 
 ############################################################################################
 # export package info

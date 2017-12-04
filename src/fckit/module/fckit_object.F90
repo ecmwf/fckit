@@ -10,6 +10,7 @@ module fckit_object_module
   !! Provides abstract base class [[fckit_object_module:fckit_object(type)]]
 
 use, intrinsic :: iso_c_binding, only: c_ptr, c_null_ptr
+use fckit_final_module, only: fckit_final
 implicit none
 private
 
@@ -20,13 +21,11 @@ public fckit_object
 
 !========================================================================
 
-type, abstract :: fckit_object
+type, abstract, extends(fckit_final) :: fckit_object
   !! Abstract base class for objects that wrap a C++ object
 
   type(c_ptr), private :: cpp_object_ptr = c_null_ptr
     !! Internal C pointer
-
-  integer :: refcount = 0
 
 contains
 
@@ -50,9 +49,6 @@ contains
 
   generic, public :: operator(/=) => not_equal
     !! Compare two objects internal C pointer
-
-  procedure(final), deferred, public :: final
-    !! Finalise object
 
   ! Following line is to avoid PGI compiler bug
   procedure, private :: fckit_object__c_ptr
@@ -119,8 +115,8 @@ end function
 !========================================================================
 ! Interface
 
-subroutine final(this)
-  class(fckit_object), intent(inout) :: this
-end subroutine
+! subroutine final(this)
+!   class(fckit_object), intent(inout) :: this
+! end subroutine
 
 end module

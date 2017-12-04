@@ -9,7 +9,6 @@
 #include "fckit/fckit_defines.h"
 
 module fckit_shared_ptr_module
-use fckit_object_module, only: fckit_object
 implicit none
 private
 
@@ -17,15 +16,19 @@ private
 ! Public interface
 
 public fckit_shared_ptr
+public fckit_make_shared
 
 !========================================================================
 
-
 type :: fckit_shared_ptr
-  class(fckit_object), pointer :: shared_ptr => null()
+  class(*), pointer :: shared_ptr => null()
+  integer,  pointer :: refcount   => null()
 contains
   procedure, public :: final => fckit_shared_ptr__final
+
+#ifdef EC_HAVE_Fortran_FINALIZATION
   final :: fckit_shared_ptr__final_auto
+#endif
 
   procedure, private :: reset
   generic, public :: assignment(=) => reset
@@ -33,22 +36,24 @@ contains
   procedure, public :: attach
   procedure, public :: detach
   procedure, public :: return
-  procedure, public :: cast
-  procedure, public :: share
+  procedure, public :: shared_ptr_cast
+  procedure, public :: make_shared
 
 end type
 
-interface fckit_shared_ptr
-  module procedure fckit_shared_ptr
-end interface
-
 !========================================================================
-
-private :: fckit_object
-
-! =============================================================================
 CONTAINS
 ! =============================================================================
+
+subroutine fckit_finalise( shared_ptr )
+  use fckit_final_module, only: fckit_final
+  class(*), pointer :: shared_ptr
+  select type(shared_ptr)
+    class is(fckit_final)
+      write(0,*) "fckit_final%final()"
+      call shared_ptr%final()
+  end select
+end subroutine
 
 subroutine fckit_shared_ptr__final_auto(this)
   type(fckit_shared_ptr), intent(inout) :: this
@@ -63,12 +68,14 @@ subroutine fckit_shared_ptr__final(this)
       write(0,*) "fckit_shared_ptr__final  , owners = ", this%owners()
       call this%detach()
       if( this%owners() == 0 ) then
-        call this%shared_ptr%final()
+        call fckit_finalise(this%shared_ptr)
         deallocate(this%shared_ptr)
+        deallocate(this%refcount)
       endif
     endif
   endif
   nullify(this%shared_ptr)
+  nullify(this%refcount)
 end subroutine
 
 subroutine reset(obj_out,obj_in)
@@ -76,34 +83,42 @@ subroutine reset(obj_out,obj_in)
   class(fckit_shared_ptr), intent(inout) :: obj_out
   class(fckit_shared_ptr), intent(in)    :: obj_in
   if( .not. associated( obj_out%shared_ptr, obj_in%shared_ptr ) ) then
+    write(0,*) "fckit_shared_ptr::reset"
     call obj_out%final()
     obj_out%shared_ptr => obj_in%shared_ptr
-    if( obj_out%cast() ) then
+    obj_out%refcount   => obj_in%refcount
+    if( obj_out%shared_ptr_cast() ) then
       call obj_out%attach()
     else
       nullify(obj_out%shared_ptr)
+      nullify(obj_out%refcount)
       call bad_cast
     endif
+    write(0,*) "fckit_shared_ptr::reset... done"
   else
-    if( obj_out%cast() ) then ; endif
+    if( obj_out%shared_ptr_cast() ) then ; endif
   endif
 end subroutine
 
 subroutine attach(this)
   class(fckit_shared_ptr), intent(inout) :: this
-  this%shared_ptr%refcount = this%shared_ptr%refcount + 1
+  if( associated(this%shared_ptr) ) then
+    this%refcount = this%refcount + 1
+  endif
 end subroutine
 
 subroutine detach(this)
   class(fckit_shared_ptr), intent(inout) :: this
-  this%shared_ptr%refcount = max(0, this%shared_ptr%refcount - 1)
+  if( associated(this%shared_ptr) ) then
+    this%refcount = max(0, this%refcount - 1)
+  endif
 end subroutine
 
 function owners(this)
   integer :: owners
   class(fckit_shared_ptr), intent(in) :: this
   if( associated( this%shared_ptr) ) then
-    owners = this%shared_ptr%refcount
+    owners = this%refcount
   else
     owners = 0
   endif
@@ -121,17 +136,28 @@ subroutine return(this)
 #endif
 end subroutine
 
-function cast(this) result(success)
+function shared_ptr_cast(this) result(success)
   class(fckit_shared_ptr) :: this
   logical :: success
   success = .true.
+  write(0,*) "wrong cast"
 end function
 
-subroutine share(this)
+function fckit_make_shared( ptr ) result(this)
+  type(fckit_shared_ptr) :: this
+  class(*), target :: ptr
+  call this%make_shared(ptr)
+  call this%return()
+end function
+
+subroutine make_shared(this,ptr)
   class(fckit_shared_ptr) :: this
-  logical :: success
-  success = this%cast()
+  class(*), target :: ptr
+  this%shared_ptr => ptr
+  allocate(this%refcount)
+  call this%attach()
 end subroutine
+
 
 subroutine bad_cast(message)
   character(len=*), optional :: message

@@ -68,6 +68,7 @@ ecbuild_add_library( TARGET     fckit
                                 module/fckit_C_interop.F90
                                 module/fckit_object.F90
                                 module/fckit_unique_ptr.F90
+                                module/fckit_final.F90
                                 module/fckit_shared_ptr.F90
 #                                module/fckit_refcounted_fortran.F90
                                 ${eckit_required_src}
