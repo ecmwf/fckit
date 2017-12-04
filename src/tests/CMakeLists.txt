@@ -42,7 +42,9 @@ add_fctest( TARGET  fckit_test_refcounting
 
 add_fctest( TARGET  fckit_test_shared_ptr
             LINKER_LANGUAGE Fortran
-            SOURCES test_shared_ptr.F90
+            SOURCES 
+              test_shared_ptr.F90
+              test_shared_ptr.cc
             LIBS    fckit)
 
 add_fctest( TARGET  fckit_test_mpi

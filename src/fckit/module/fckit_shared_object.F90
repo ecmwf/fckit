@@ -8,26 +8,28 @@
 
 #include "fckit/fckit_defines.h"
 
-module fckit_shared_ptr_module
+module fckit_shared_object_module
+use fckit_object_module, only : fckit_object, fckit_c_deleter
 implicit none
 private
 
 !========================================================================
 ! Public interface
 
-public fckit_shared_ptr
-public fckit_make_shared
+public fckit_shared_object
+public fckit_c_deleter
 
 !========================================================================
 
-type :: fckit_shared_ptr
-  class(*), pointer :: shared_ptr => null()
-  integer,  pointer, private :: refcount   => null()
+type :: fckit_shared_object
+  class(fckit_object), pointer, public  :: shared_ptr => null()
+  integer,             pointer, private :: refcount   => null()
 contains
-  procedure, public :: final => fckit_shared_ptr__final
+
+  procedure, public :: final => fckit_shared_object__final
 
 #ifdef EC_HAVE_Fortran_FINALIZATION
-  final :: fckit_shared_ptr__final_auto
+  final :: fckit_shared_object__final_auto
 #endif
 
   procedure, private :: reset
@@ -37,38 +39,32 @@ contains
   procedure, public :: detach
   procedure, public :: return
   procedure, public :: shared_ptr_cast
+
   procedure, public :: make_shared
+
+  procedure, public  :: c_ptr => fckit_shared_object_c_ptr
+  procedure, private :: fckit_shared_object_c_ptr
 
 end type
 
+private fckit_object
+
 !========================================================================
 CONTAINS
-! =============================================================================
+!========================================================================
 
-subroutine fckit_finalise( shared_ptr )
-  use fckit_final_module, only: fckit_final
-  class(*), pointer :: shared_ptr
-  select type(shared_ptr)
-    class is(fckit_final)
-      write(0,*) "fckit_final%final()"
-      call shared_ptr%final()
-  end select
-end subroutine
-
-subroutine fckit_shared_ptr__final_auto(this)
-  type(fckit_shared_ptr), intent(inout) :: this
-  write(0,*) "fckit_shared_ptr__final_auto"
+subroutine fckit_shared_object__final_auto(this)
+  type(fckit_shared_object), intent(inout) :: this
   call this%final()
 end subroutine
 
-subroutine fckit_shared_ptr__final(this)
-  class(fckit_shared_ptr), intent(inout) :: this
+subroutine fckit_shared_object__final(this)
+  class(fckit_shared_object), intent(inout) :: this
   if( associated(this%shared_ptr) ) then
     if( this%owners() > 0 ) then
-      write(0,*) "fckit_shared_ptr__final  , owners = ", this%owners()
       call this%detach()
       if( this%owners() == 0 ) then
-        call fckit_finalise(this%shared_ptr)
+        call this%shared_ptr%final()
         deallocate(this%shared_ptr)
         deallocate(this%refcount)
       endif
@@ -80,8 +76,8 @@ end subroutine
 
 subroutine reset(obj_out,obj_in)
   use, intrinsic :: iso_c_binding, only : c_loc, c_associated
-  class(fckit_shared_ptr), intent(inout) :: obj_out
-  class(fckit_shared_ptr), intent(in)    :: obj_in
+  class(fckit_shared_object), intent(inout) :: obj_out
+  class(fckit_shared_object), intent(in)    :: obj_in
   if( .not. associated( obj_out%shared_ptr, obj_in%shared_ptr ) ) then
     call obj_out%final()
     obj_out%shared_ptr => obj_in%shared_ptr
@@ -91,7 +87,7 @@ subroutine reset(obj_out,obj_in)
     else
       nullify(obj_out%shared_ptr)
       nullify(obj_out%refcount)
-      call bad_cast
+      call fckit_shared_object_bad_cast
     endif
   else
     if( obj_out%shared_ptr_cast() ) then ; endif
@@ -99,14 +95,14 @@ subroutine reset(obj_out,obj_in)
 end subroutine
 
 subroutine attach(this)
-  class(fckit_shared_ptr), intent(inout) :: this
+  class(fckit_shared_object), intent(in) :: this
   if( associated(this%shared_ptr) ) then
     this%refcount = this%refcount + 1
   endif
 end subroutine
 
 subroutine detach(this)
-  class(fckit_shared_ptr), intent(inout) :: this
+  class(fckit_shared_object), intent(in) :: this
   if( associated(this%shared_ptr) ) then
     this%refcount = max(0, this%refcount - 1)
   endif
@@ -114,7 +110,7 @@ end subroutine
 
 function owners(this)
   integer :: owners
-  class(fckit_shared_ptr), intent(in) :: this
+  class(fckit_shared_object), intent(in) :: this
   if( associated( this%shared_ptr) ) then
     owners = this%refcount
   else
@@ -124,9 +120,9 @@ end function
 
 subroutine return(this)
   !! Transfer ownership to left hand side of "assignment(=)"
-  class(fckit_shared_ptr), intent(inout) :: this
+  class(fckit_shared_object), intent(inout) :: this
 #ifdef Fortran_FINAL_FUNCTION_RESULT
-  ! final will be called, which will detach, so attach first
+  ! (auto) final will be called, which will detach, so attach first
   call this%attach()
 #else
   ! final will not be called, so detach manually
@@ -135,28 +131,12 @@ subroutine return(this)
 end subroutine
 
 function shared_ptr_cast(this) result(success)
-  class(fckit_shared_ptr) :: this
+  class(fckit_shared_object) :: this
   logical :: success
   success = .true.
 end function
 
-function fckit_make_shared( ptr ) result(this)
-  type(fckit_shared_ptr) :: this
-  class(*), target :: ptr
-  call this%make_shared(ptr)
-  call this%return()
-end function
-
-subroutine make_shared(this,ptr)
-  class(fckit_shared_ptr) :: this
-  class(*), target :: ptr
-  this%shared_ptr => ptr
-  allocate(this%refcount)
-  call this%attach()
-end subroutine
-
-
-subroutine bad_cast(message)
+subroutine fckit_shared_object_bad_cast(message)
   character(len=*), optional :: message
   if( present(message) ) then
     write(0,'("ERROR: bad_cast -- ",A)') message
@@ -164,5 +144,31 @@ subroutine bad_cast(message)
     write(0,'("ERROR: bad cast")')
   endif
 end subroutine
+
+subroutine make_shared(this, cptr, deleter)
+  use, intrinsic :: iso_c_binding, only : c_ptr, c_funptr
+  class(fckit_shared_object) :: this
+  type(c_ptr), optional :: cptr
+  type(c_funptr), optional :: deleter
+  allocate( fckit_object::this%shared_ptr )
+  if( present( cptr ) ) then
+    if( present( deleter) ) then 
+      call this%shared_ptr%reset_c_ptr( cptr, deleter )
+    else
+      call this%shared_ptr%reset_c_ptr( cptr )
+    endif
+  else
+    call this%shared_ptr%reset_c_ptr()
+  endif
+  allocate(this%refcount)
+  call this%attach()
+end subroutine
+
+function fckit_shared_object_c_ptr(this) result(cptr)
+  use, intrinsic :: iso_c_binding, only : c_ptr
+  type(c_ptr) :: cptr
+  class(fckit_shared_object) :: this
+  cptr = this%shared_ptr%c_ptr()
+end function
 
 end module

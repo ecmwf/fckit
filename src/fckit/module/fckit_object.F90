@@ -9,7 +9,7 @@
 module fckit_object_module
   !! Provides abstract base class [[fckit_object_module:fckit_object(type)]]
 
-use, intrinsic :: iso_c_binding, only: c_ptr, c_null_ptr
+use, intrinsic :: iso_c_binding, only: c_ptr, c_funptr, c_null_ptr
 use fckit_final_module, only: fckit_final
 implicit none
 private
@@ -18,13 +18,15 @@ private
 ! Public interface
 
 public fckit_object
+public fckit_c_deleter
 
 !========================================================================
 
-type, abstract, extends(fckit_final) :: fckit_object
+type, extends(fckit_final) :: fckit_object
   !! Abstract base class for objects that wrap a C++ object
 
   type(c_ptr), private :: cpp_object_ptr = c_null_ptr
+  type(c_funptr), private :: deleter
     !! Internal C pointer
 
 contains
@@ -52,17 +54,49 @@ contains
 
   ! Following line is to avoid PGI compiler bug
   procedure, private :: fckit_object__c_ptr
+  
+  procedure, public :: final
 
 end type
+
+interface fckit_object
+  module procedure fckit_object_constructor
+end interface
 
 !========================================================================
 
 private :: c_ptr
 private :: c_null_ptr
 
+abstract interface
+  subroutine fckit_c_deleter_interface(cptr) 
+    use, intrinsic :: iso_c_binding
+    type(c_ptr), value :: cptr
+  end subroutine
+end interface
+
+
 ! =============================================================================
 CONTAINS
 ! =============================================================================
+
+function fckit_c_deleter( deleter )
+  use, intrinsic :: iso_c_binding, only : c_funloc
+  type(c_funptr) :: fckit_c_deleter
+  procedure(fckit_c_deleter_interface) :: deleter
+  fckit_c_deleter = c_funloc(deleter)
+end function
+
+function fckit_object_constructor( cptr, deleter ) result(this)
+  type(fckit_object) :: this
+  type(c_ptr) :: cptr
+  type(c_funptr), optional :: deleter
+  if( present(deleter) ) then
+    call this%reset_c_ptr( cptr, deleter )
+  else
+    call this%reset_c_ptr( cptr )
+  endif
+end function
 
 function fckit_object__c_ptr(this)
   use, intrinsic :: iso_c_binding, only: c_ptr
@@ -71,15 +105,21 @@ function fckit_object__c_ptr(this)
   fckit_object__c_ptr = this%cpp_object_ptr
 end function
 
-subroutine reset_c_ptr(this,cptr)
-  use, intrinsic :: iso_c_binding, only: c_ptr
+subroutine reset_c_ptr(this,cptr,deleter)
+  use, intrinsic :: iso_c_binding, only: c_ptr, c_funptr, c_null_funptr
   use fckit_c_interop_module
   class(fckit_object) :: this
   type(c_ptr), optional :: cptr
+  type(c_funptr), optional :: deleter
   if( present(cptr) ) then
     this%cpp_object_ptr = cptr
   else
     this%cpp_object_ptr = c_null_ptr
+  endif
+  if( present(deleter) ) then
+    this%deleter = deleter
+  else
+    this%deleter = c_null_funptr
   endif
 end subroutine
 
@@ -111,6 +151,18 @@ logical function not_equal(obj1,obj2)
     not_equal = .True.
   endif
 end function
+
+subroutine final( this )
+  use, intrinsic :: iso_c_binding, only: c_ptr, c_funptr, c_f_procpointer, c_associated
+  class(fckit_object), intent(inout) :: this
+  procedure(fckit_c_deleter_interface), pointer :: deleter
+  if( c_associated( this%cpp_object_ptr ) ) then
+    if( c_associated( this%deleter ) ) then
+      call c_f_procpointer( this%deleter, deleter )
+      call deleter( this%cpp_object_ptr )
+    endif
+  endif
+end subroutine
 
 !========================================================================
 ! Interface
