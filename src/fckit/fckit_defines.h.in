@@ -35,4 +35,8 @@ does it submit to any jurisdiction.
 
 #endif
 
+#if 0
+#define Fortran_FINAL_DEBUGGING
+#endif
+
 #endif

@@ -56,14 +56,18 @@ subroutine fckit_finalise( shared_ptr )
   class(*), pointer :: shared_ptr
   select type(shared_ptr)
     class is(fckit_final)
+#ifdef Fortran_FINAL_DEBUGGING
       write(0,*) "fckit_final%final()"
+#endif
       call shared_ptr%final()
   end select
 end subroutine
 
 subroutine fckit_shared_ptr__final_auto(this)
   type(fckit_shared_ptr), intent(inout) :: this
+#ifdef Fortran_FINAL_DEBUGGING
   write(0,*) "fckit_shared_ptr__final_auto"
+#endif
   call this%final()
 end subroutine
 
@@ -71,7 +75,9 @@ subroutine fckit_shared_ptr__final(this)
   class(fckit_shared_ptr), intent(inout) :: this
   if( associated(this%shared_ptr_) ) then
     if( this%owners() > 0 ) then
+#ifdef Fortran_FINAL_DEBUGGING
       write(0,*) "fckit_shared_ptr__final  , owners = ", this%owners()
+#endif
       call this%detach()
       if( this%owners() == 0 ) then
         call fckit_finalise(this%shared_ptr_)
@@ -79,6 +85,10 @@ subroutine fckit_shared_ptr__final(this)
         deallocate(this%refcount_)
       endif
     endif
+#ifdef Fortran_FINAL_DEBUGGING
+  else
+    write(0,*) "fckit_shared_ptr__final  (uninitialised --> no-op)"
+#endif
   endif
   call this%clear()
 end subroutine
@@ -104,9 +114,16 @@ subroutine reset_shared_ptr(obj_out,obj_in)
   class(fckit_shared_ptr), intent(inout) :: obj_out
   class(fckit_shared_ptr), intent(in)    :: obj_in
   if( .not. associated( obj_in%shared_ptr_) ) then
-    write(0,*) "obj_in was not initialised"
+    write(0,*) "ERROR! obj_in was not initialised"
   endif
   if( .not. associated( obj_out%shared_ptr_, obj_in%shared_ptr_ ) ) then
+#ifdef Fortran_FINAL_DEBUGGING
+    if( .not. associated( obj_out%shared_ptr_ ) ) then
+      write(0,*) "reset_shared_ptr of uninitialised"
+    else
+      write(0,*) "reset_shared_ptr of initialised"
+    endif
+#endif
     call obj_out%final()
     obj_out%shared_ptr_ => obj_in%shared_ptr_
     obj_out%refcount_   => obj_in%refcount_
@@ -172,6 +189,9 @@ end function
 function fckit_make_shared( ptr ) result(this)
   type(fckit_shared_ptr) :: this
   class(*), target :: ptr
+#ifdef Fortran_FINAL_DEBUGGING
+  write(0,*) "fckit_make_shared"
+#endif
   call this%share( ptr )
   call this%return()
 end function

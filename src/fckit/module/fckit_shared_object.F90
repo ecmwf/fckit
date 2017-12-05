@@ -33,9 +33,13 @@ contains
   procedure, public  :: c_ptr => fckit_shared_object_c_ptr
   procedure, private :: fckit_shared_object_c_ptr
 
+! WARNING: Not strictly necessary, as base class (fckit_shared_ptr) has the
+!          destructor defined, but PGI-17.7 needs this, as it does not call
+!          the base class destructor (COMPILER BUG!)
 #ifdef EC_HAVE_Fortran_FINALIZATION
   final :: fckit_shared_object__final_auto
 #endif
+
 end type
 
 !========================================================================
@@ -49,7 +53,9 @@ CONTAINS
 
 subroutine fckit_shared_object__final_auto(this)
   type(fckit_shared_object), intent(inout) :: this
+#ifdef Fortran_FINAL_DEBUGGING
   write(0,*) "fckit_shared_object__final_auto"
+#endif
   call this%final()
 end subroutine
 
