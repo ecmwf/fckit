@@ -35,7 +35,7 @@ does it submit to any jurisdiction.
 
 #endif
 
-#if 0
+#if 1
 #define Fortran_FINAL_DEBUGGING
 #endif
 

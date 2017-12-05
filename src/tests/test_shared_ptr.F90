@@ -19,6 +19,7 @@ use fckit_final_module
 use fckit_shared_ptr_module
 use fckit_shared_object_module
 ! use fckit_c_interop_module
+
 use fctest
 implicit none
 
@@ -77,14 +78,17 @@ interface
    
 end interface
 
-type, extends(fckit_shared_object) :: ObjectCxx
+type, extends(fckit_shared_object) :: ObjectCXX
 contains
 ! public :
-  procedure :: id => ObjectCxx_id
+  procedure :: id => ObjectCXX_id
+#ifdef EC_HAVE_Fortran_FINALIZATION
+  final :: ObjectCXX_final_auto
+#endif
 end type
 
-interface ObjectCxx
-  module procedure ObjectCxx_constructor
+interface ObjectCXX
+  module procedure ObjectCXX_constructor
 end interface
 
 ! -----------------------------------------------------------------------------
@@ -102,18 +106,25 @@ subroutine end_scope()
   scope_ended = .true.
 end subroutine
 
-function ObjectCxx_constructor(id) result(this)
-  type(ObjectCxx) :: this
+function ObjectCXX_constructor(id) result(this)
+  type(ObjectCXX) :: this
   integer :: id
-  call this%make_shared( new_Object(id) , fckit_c_deleter(delete_Object) )
+  call this%share_c_ptr( new_Object(id) , fckit_c_deleter(delete_Object) )
+  FCTEST_CHECK_EQUAL( this%owners(), 0 )
   call this%return()
+  FCTEST_CHECK_EQUAL( this%owners(), 1 )
 end function
 
-function ObjectCxx_id(this) result(id)
-  class(ObjectCxx) :: this
+function ObjectCXX_id(this) result(id)
+  class(ObjectCXX) :: this
   integer :: id
   id = Object__id( this%c_ptr() )
 end function
+
+subroutine ObjectCXX_final_auto(this)
+  type(ObjectCXX) :: this
+  write(0,*) "ObjectCXX_final_auto"
+end subroutine
 
 
 subroutine ObjectFortranSafer_final(this)
@@ -152,15 +163,20 @@ END_TESTSUITE_FINALIZE
 
 ! -----------------------------------------------------------------------------
 
-function create_ObjectFortranSafer(id) result(obj)
-  type(fckit_shared_ptr) :: obj
+function create_ObjectFortranSafer(id) result(this)
+  type(fckit_shared_ptr) :: this
   integer :: id
-  class(ObjectFortranSafer), pointer :: obj_ptr
+  class(ObjectFortranSafer), pointer :: ptr
   write(0,'(A,I0)') "Constructing ObjectFortranSafer, id = ",id
-  allocate( ObjectFortranSafer::obj_ptr )
-  obj_ptr%id = id
-  obj = fckit_make_shared( obj_ptr )
-  call obj%return()
+  allocate( ObjectFortranSafer::ptr )
+  ptr%id = id
+  write(0,'(A)') "----> this = fckit_make_shared( obj_ptr )"
+  !this = fckit_make_shared( ptr )
+  call this%share( ptr )
+  write(0,'(A)') "<---- this = fckit_make_shared( obj_ptr )"
+  FCTEST_CHECK_EQUAL( this%owners(), 0 )
+  call this%return()
+  FCTEST_CHECK_EQUAL( this%owners(), 1 )
 end function
 
 subroutine test_shared_ptr_safer( final_auto )
@@ -174,6 +190,7 @@ subroutine test_shared_ptr_safer( final_auto )
 
   obj1 = create_ObjectFortranSafer(5)
   FCTEST_CHECK_EQUAL( obj1%owners(), 1 )
+
   obj2 = obj1
   FCTEST_CHECK_EQUAL( obj1%owners(), 2 )
   associate( shared_ptr => obj2%shared_ptr() )
@@ -189,6 +206,7 @@ subroutine test_shared_ptr_safer( final_auto )
   obj1 = obj3
   FCTEST_CHECK_EQUAL( obj1%owners(), 3 )
   if( .not. final_auto ) then
+    write(0,*) "manual final , owners = ", obj1%owners()
     call obj1%final()
     call obj2%final()
     call obj3%final()
@@ -199,7 +217,7 @@ subroutine test_shared_ptr_safer( final_auto )
 end subroutine
 
 TEST( test_shared_ptr_safer_manual )
-#if 1 
+#if 1
   write(0,'(A)') "-------------------------------------------------------------"
   write(0,'(A)') "TEST     test_shared_ptr_safer_manual"
 
@@ -233,15 +251,15 @@ END_TEST
 
 ! -----------------------------------------------------------------------------
 
-function create_ObjectFortranUnSafe(id) result(obj)
-  type(fckit_shared_ptr) :: obj
+function create_ObjectFortranUnSafe(id) result(this)
+  type(fckit_shared_ptr) :: this
   integer :: id
-  class(ObjectFortranUnSafe), pointer :: obj_ptr
+  class(ObjectFortranUnSafe), pointer :: ptr
   write(0,'(A,I0)') "Constructing ObjectFortranUnsafe, id = ",id
-  allocate( ObjectFortranUnSafe::obj_ptr )
-  obj_ptr%id = id
-  obj = fckit_make_shared( obj_ptr )
-  call obj%return()
+  allocate( ObjectFortranUnSafe::ptr )
+  ptr%id = id
+  call this%share( ptr )
+  call this%return()
 end function
 
 subroutine test_shared_ptr_unsafe( final_auto )
@@ -314,6 +332,7 @@ END_TEST
 ! -----------------------------------------------------------------------------
 
 subroutine test_shared_object( final_auto )
+
   logical :: final_auto
   type(ObjectCXX) :: obj1
   type(fckit_shared_object) :: obj2
@@ -329,7 +348,6 @@ subroutine test_shared_object( final_auto )
   obj3 = obj2
   FCTEST_CHECK_EQUAL( obj1%owners(), 3 )
   FCTEST_CHECK_EQUAL( obj3%id(), 7 )
-
   if( .not. final_auto ) then
     call obj1%final()
     FCTEST_CHECK_EQUAL( obj2%owners(), 2 )

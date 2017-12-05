@@ -14,12 +14,36 @@ macro( debug_test case )
 endmacro()
 
 macro( check_final_support_case case )
-  ecbuild_check_fortran_source_return(
-    ${FINAL_SUPPORT_SOURCE}
-    VAR ${case}
-    OUTPUT Fortran_${case}
-  )
+#  ecbuild_check_fortran_source_return(
+#    ${FINAL_SUPPORT_SOURCE}
+#    VAR ${case}
+#    OUTPUT Fortran_${case}
+#  )
+
+  file( WRITE ${CMAKE_CURRENT_BINARY_DIR}/fckit-test-${case}.F90 ${FINAL_SUPPORT_SOURCE} )
+
+  try_compile( ${case}_compiled
+               ${CMAKE_CURRENT_BINARY_DIR} 
+               ${CMAKE_CURRENT_BINARY_DIR}/fckit-test-${case}.F90 
+               COMPILE_DEFINITIONS -D${case}
+               OUTPUT_VARIABLE Fortran_${case} 
+               COPY_FILE ${CMAKE_CURRENT_BINARY_DIR}/${case}.bin )
+               # [COPY_FILE_ERROR <var>]])
+
+  execute_process( COMMAND ${CMAKE_CURRENT_BINARY_DIR}/${case}.bin 
+                   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} 
+                   RESULT_VARIABLE _run_res
+                   OUTPUT_VARIABLE Fortran_${case} ERROR_VARIABLE _run_err )
+
+  ecbuild_warn( "Fortran_${case} = ${Fortran_${case}}" )
+  ecbuild_warn( "_run_err = ${_run_err}" )
+
   debug_test( ${case} )
+  ecbuild_warn("string( STRIP ${Fortran_${case}} Fortran_${case} )")
+
+  string( STRIP ${Fortran_${case}} Fortran_${case} )
+  ecbuild_warn( "Fortran_${case} = ${Fortran_${case}}" )
+
 endmacro()
 
 set( FINAL_SUPPORT_SOURCE
@@ -62,6 +86,7 @@ interface Object
   module procedure construct_Object
 end interface
 
+integer, parameter :: output_unit = 6
 
 integer :: final_uninitialized = 0
 integer :: final_return        = 0
@@ -135,7 +160,7 @@ subroutine destructor(this)
     final_uninitialized = final_uninitialized+1
   else
     if( this%return ) then
-      call write_indented( 'final( FINAL_FUNCTION_RESULTed )' )
+      call write_indented( 'final( returned )' )
       final_return = final_return+1
     else
       call write_indented( 'final( initialized )' )
@@ -276,10 +301,10 @@ program final_support
     call write_indented( 'Behaviour of Intel 17-18' )
   endif
 #ifdef FINAL_FUNCTION_RESULT
-  write(6,'(I0)',advance='no') final_return
+  write(output_unit,'(I0)',advance='no') final_return
 #endif
 #ifdef FINAL_UNINITIALIZED_LOCAL
-  write(6,'(I0)',advance='no') final_uninitialized
+  write(output_unit,'(I0)',advance='no') final_uninitialized
 #endif
 
   call run_test(2)
@@ -296,7 +321,7 @@ program final_support
     call write_indented( 'Behaviour of PGI 17.10' )
   endif
 #ifdef FINAL_UNINITIALIZED_INTENT_OUT
-  write(6,'(I0)',advance='no') final_uninitialized
+  write(output_unit,'(I0)',advance='no') final_uninitialized
 #endif
 
 
@@ -312,7 +337,7 @@ program final_support
     call write_indented( 'Behaviour of PGI 17.1' )
   endif
 #ifdef FINAL_UNINITIALIZED_INTENT_INOUT
-  write(6,'(I0)',advance='no') final_uninitialized
+  write(output_unit,'(I0)',advance='no') final_uninitialized
 #endif
 
   call run_test(4)

@@ -28,14 +28,15 @@ contains
 
   procedure, public :: shared_ptr_cast
 
-  procedure, public :: make_shared
+  procedure, public :: share_c_ptr
 
   procedure, public  :: c_ptr => fckit_shared_object_c_ptr
   procedure, private :: fckit_shared_object_c_ptr
 
 ! WARNING: Not strictly necessary, as base class (fckit_shared_ptr) has the
-!          destructor defined, but PGI-17.7 needs this, as it does not call
-!          the base class destructor (COMPILER BUG!)
+!          destructor defined.
+!     - PGI-17.7 needs this, as it does not call the base class destructor (COMPILER BUG!)
+!     - Cray 8.5.6 needs this as well   
 #ifdef EC_HAVE_Fortran_FINALIZATION
   final :: fckit_shared_object__final_auto
 #endif
@@ -74,7 +75,7 @@ function shared_ptr_cast(this) result(success)
   end associate
 end function
 
-subroutine make_shared(this, cptr, deleter)
+subroutine share_c_ptr(this, cptr, deleter)
   use, intrinsic :: iso_c_binding, only : c_ptr, c_funptr
   class(fckit_shared_object) :: this
   type(c_ptr), optional :: cptr

@@ -23,6 +23,11 @@ public fckit_make_shared
 type :: fckit_shared_ptr
   class(*), pointer, private :: shared_ptr_ => null()
   integer,  pointer, private :: refcount_   => null()
+
+#ifdef Fortran_FINAL_DEBUGGING
+    logical :: return_value = .false.
+#endif
+
 contains
   procedure, public :: final => fckit_shared_ptr__final
 
@@ -74,6 +79,13 @@ end subroutine
 subroutine fckit_shared_ptr__final(this)
   class(fckit_shared_ptr), intent(inout) :: this
   if( associated(this%shared_ptr_) ) then
+
+#ifdef Fortran_FINAL_DEBUGGING
+    if( this%return_value ) then
+      write(0,*) "fckit_shared_ptr__final on return value, owners = ", this%owners()
+    endif
+#endif
+
     if( this%owners() > 0 ) then
 #ifdef Fortran_FINAL_DEBUGGING
       write(0,*) "fckit_shared_ptr__final  , owners = ", this%owners()
@@ -116,6 +128,11 @@ subroutine reset_shared_ptr(obj_out,obj_in)
   if( .not. associated( obj_in%shared_ptr_) ) then
     write(0,*) "ERROR! obj_in was not initialised"
   endif
+#ifdef Fortran_FINAL_DEBUGGING
+  if( obj_in%return_value ) then
+    write(0,*) "obj_in is a return value"
+  endif
+#endif
   if( .not. associated( obj_out%shared_ptr_, obj_in%shared_ptr_ ) ) then
 #ifdef Fortran_FINAL_DEBUGGING
     if( .not. associated( obj_out%shared_ptr_ ) ) then
@@ -166,11 +183,22 @@ subroutine return(this)
   !! Transfer ownership to left hand side of "assignment(=)"
   class(fckit_shared_ptr), intent(inout) :: this
 #ifdef Fortran_FINAL_FUNCTION_RESULT
+  ! Cray example
   ! final will be called, which will detach, so attach first
-  call this%attach()
+  if( this%owners() == 0 ) then
+    call this%attach()
+  endif
 #else
   ! final will not be called, so detach manually
-  if( this%owners() > 0 ) call this%detach()
+  if( this%owners() > 0 ) then
+#ifdef Fortran_FINAL_DEBUGGING
+    write(0,*) "return --> detach"
+    call this%detach()
+#endif
+  endif
+#endif
+#ifdef Fortran_FINAL_DEBUGGING
+  this%return_value = .true.
 #endif
 end subroutine
 
@@ -190,10 +218,14 @@ function fckit_make_shared( ptr ) result(this)
   type(fckit_shared_ptr) :: this
   class(*), target :: ptr
 #ifdef Fortran_FINAL_DEBUGGING
-  write(0,*) "fckit_make_shared"
+  write(0,*) "begin fckit_make_shared"
 #endif
   call this%share( ptr )
   call this%return()
+#ifdef Fortran_FINAL_DEBUGGING
+  write(0,*) " this%owners() = ", this%owners()
+  write(0,*) "end   fckit_make_shared"
+#endif
 end function
 
 subroutine share( this, ptr )
@@ -202,7 +234,6 @@ subroutine share( this, ptr )
   this%shared_ptr_ => ptr
   allocate(this%refcount_)
   this%refcount_ = 0
-  call this%attach()
 end subroutine
 
 
