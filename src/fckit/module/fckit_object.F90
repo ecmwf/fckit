@@ -69,7 +69,7 @@ private :: c_ptr
 private :: c_null_ptr
 
 abstract interface
-  subroutine fckit_c_deleter_interface(cptr) 
+  subroutine fckit_c_deleter_interface(cptr) bind(c)
     use, intrinsic :: iso_c_binding
     type(c_ptr), value :: cptr
   end subroutine

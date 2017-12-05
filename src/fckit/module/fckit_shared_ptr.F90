@@ -43,7 +43,6 @@ contains
   procedure, public :: attach
   procedure, public :: detach
   procedure, public :: return
-  !procedure, public :: make_shared
   procedure, public :: shared_ptr => get_shared_ptr
 
   procedure, public :: shared_ptr_cast

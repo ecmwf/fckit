@@ -83,7 +83,7 @@ contains
 ! public :
   procedure :: id => ObjectCXX_id
 
-! We need this for Cray, and PGI
+! We need this for Cray, and PGI (see fckit_shared_object.F90)
 #ifdef EC_HAVE_Fortran_FINALIZATION
   final :: ObjectCXX_final_auto
 #endif
