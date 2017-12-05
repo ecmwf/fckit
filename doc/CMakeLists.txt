@@ -9,7 +9,7 @@
 ecbuild_add_option(
   FEATURE DOCS
   DESCRIPTION "Generate reference documentation"
-  REQUIRED_PACKAGES "FORD" )
+  REQUIRED_PACKAGES "FORD QUIET" )
 
 if( HAVE_DOCS )
 

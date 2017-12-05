@@ -37,19 +37,19 @@ ecbuild_find_python( REQUIRED NO_LIBS )
 ecbuild_enable_fortran( REQUIRED MODULE_DIRECTORY ${CMAKE_BINARY_DIR}/module )
 
 # Experimental... (read: not working!)
-#ecbuild_add_option( FEATURE FORTRAN_FINALIZATION
-#                    DEFAULT OFF )
+ecbuild_add_option( FEATURE FORTRAN_FINALIZATION
+                    DEFAULT OFF )
 
-set( ENABLE_FORTRAN_FINALIZATION 1)
 if( ENABLE_FORTRAN_FINALIZATION )
   ecbuild_check_fortran( FEATURES finalization )
   if( EC_HAVE_Fortran_FINALIZATION )
     include( final-support )
     check_final_support()
-    message( "Fortran_FINAL_FUNCTION_RESULT            = ${Fortran_FINAL_FUNCTION_RESULT}")
-    message( "Fortran_FINAL_UNINITIALIZED_LOCAL        = ${Fortran_FINAL_UNINITIALIZED_LOCAL}")
-    message( "Fortran_FINAL_UNINITIALIZED_INTENT_OUT   = ${Fortran_FINAL_UNINITIALIZED_INTENT_OUT}")
-    message( "Fortran_FINAL_UNINITIALIZED_INTENT_INOUT = ${Fortran_FINAL_UNINITIALIZED_INTENT_INOUT}")
+    ecbuild_info( "Define: EC_HAVE_Fortran_Finalization")
+    ecbuild_info( "  Fortran_FINAL_FUNCTION_RESULT            = ${Fortran_FINAL_FUNCTION_RESULT}")
+    ecbuild_info( "  Fortran_FINAL_UNINITIALIZED_LOCAL        = ${Fortran_FINAL_UNINITIALIZED_LOCAL}")
+    ecbuild_info( "  Fortran_FINAL_UNINITIALIZED_INTENT_OUT   = ${Fortran_FINAL_UNINITIALIZED_INTENT_OUT}")
+    ecbuild_info( "  Fortran_FINAL_UNINITIALIZED_INTENT_INOUT = ${Fortran_FINAL_UNINITIALIZED_INTENT_INOUT}")
   endif()
 endif()
 

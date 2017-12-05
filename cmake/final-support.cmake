@@ -1,7 +1,7 @@
 
 macro( check_final_support )
 
-set( DEBUG_FINAL_SUPPORT TRUE  )
+set( DEBUG_FINAL_SUPPORT FALSE  )
 macro( debug_test case )
   if( DEBUG_FINAL_SUPPORT )
     file( WRITE ${CMAKE_CURRENT_BINARY_DIR}/fckit-test-${case}.F90 ${FINAL_SUPPORT_SOURCE} )
@@ -14,35 +14,26 @@ macro( debug_test case )
 endmacro()
 
 macro( check_final_support_case case )
-#  ecbuild_check_fortran_source_return(
-#    ${FINAL_SUPPORT_SOURCE}
-#    VAR ${case}
-#    OUTPUT Fortran_${case}
-#  )
 
-  file( WRITE ${CMAKE_CURRENT_BINARY_DIR}/fckit-test-${case}.F90 ${FINAL_SUPPORT_SOURCE} )
+  if( NOT DEFINED Fortran_${case} )
+    file( WRITE ${CMAKE_CURRENT_BINARY_DIR}/fckit-test-${case}.F90 ${FINAL_SUPPORT_SOURCE} )
 
-  try_compile( ${case}_compiled
-               ${CMAKE_CURRENT_BINARY_DIR} 
-               ${CMAKE_CURRENT_BINARY_DIR}/fckit-test-${case}.F90 
-               COMPILE_DEFINITIONS -D${case}
-               OUTPUT_VARIABLE Fortran_${case} 
-               COPY_FILE ${CMAKE_CURRENT_BINARY_DIR}/${case}.bin )
-               # [COPY_FILE_ERROR <var>]])
+    try_compile( ${case}_compiled
+                 ${CMAKE_CURRENT_BINARY_DIR} 
+                 ${CMAKE_CURRENT_BINARY_DIR}/fckit-test-${case}.F90 
+                 COMPILE_DEFINITIONS -D${case}
+                 OUTPUT_VARIABLE Fortran_${case} 
+                 COPY_FILE ${CMAKE_CURRENT_BINARY_DIR}/${case}.bin )
 
-  execute_process( COMMAND ${CMAKE_CURRENT_BINARY_DIR}/${case}.bin 
-                   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} 
-                   RESULT_VARIABLE _run_res
-                   OUTPUT_VARIABLE Fortran_${case} ERROR_VARIABLE _run_err )
+    execute_process( COMMAND ${CMAKE_CURRENT_BINARY_DIR}/${case}.bin 
+                     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} 
+                     RESULT_VARIABLE _run_res
+                     OUTPUT_VARIABLE Fortran_${case} ERROR_VARIABLE _run_err )
 
-  ecbuild_warn( "Fortran_${case} = ${Fortran_${case}}" )
-  ecbuild_warn( "_run_err = ${_run_err}" )
-
-  debug_test( ${case} )
-  ecbuild_warn("string( STRIP ${Fortran_${case}} Fortran_${case} )")
-
-  string( STRIP ${Fortran_${case}} Fortran_${case} )
-  ecbuild_warn( "Fortran_${case} = ${Fortran_${case}}" )
+    string( STRIP ${Fortran_${case}} Fortran_${case} )
+    set( Fortran_${case} ${Fortran_${case}} CACHE STRING "" )
+    debug_test( ${case} )
+  endif()
 
 endmacro()
 

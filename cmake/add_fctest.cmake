@@ -64,8 +64,6 @@ if( NOT (CMAKE_VERSION VERSION_LESS 3.1) )
       target_sources( ${_PAR_TARGET} PUBLIC ${TESTRUNNER} )
       add_custom_target( ${_PAR_TARGET}_testsuite SOURCES ${TESTSUITE} )
       
-      get_target_property( tgt_src ${_PAR_TARGET} SOURCES )
-      ecbuild_warn("${_PAR_TARGET} sources = ${tgt_src}" )
   endif()
 
 else()
