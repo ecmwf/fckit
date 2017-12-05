@@ -39,4 +39,8 @@ does it submit to any jurisdiction.
 #define Fortran_FINAL_DEBUGGING
 #endif
 
+#ifdef __PGI
+#define Fortran_FINAL_NOT_PROPAGATING
+#endif 
+
 #endif

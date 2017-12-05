@@ -59,8 +59,6 @@ type, extends(fckit_shared_object) :: fckit_buffer
 contains
   procedure, public :: str
 
-  procedure, public :: consumed
-
 #ifdef EC_HAVE_Fortran_FINALIZATION
   final :: fckit_buffer__final_auto
 #endif
@@ -104,16 +102,12 @@ end function
 
 subroutine fckit_buffer__final_auto(this)
   type(fckit_buffer), intent(inout) :: this
+#ifdef Fortran_FINAL_DEBUGGING
+  write(0,*) "fckit_buffer__final_auto"
+#endif
+#ifdef Fortran_FINAL_NOT_PROPAGATING
   call this%final()
+#endif
 end subroutine
-
-subroutine consumed(this)
-  use fckit_c_interop_module
-  class(fckit_buffer), intent(in) :: this
-  type(fckit_buffer) :: consumedbuffer
-  consumedbuffer = this
-  call consumedbuffer%final()
-end subroutine
-
 
 end module

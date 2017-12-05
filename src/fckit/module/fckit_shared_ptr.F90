@@ -49,6 +49,8 @@ contains
   procedure, public :: clear
   procedure, public :: share
 
+  procedure, public :: consumed
+
 end type
 
 !========================================================================
@@ -244,5 +246,14 @@ subroutine bad_cast(message)
     write(0,'("ERROR: bad cast")')
   endif
 end subroutine
+
+subroutine consumed(this)
+  class(fckit_shared_ptr), intent(in) :: this
+  type(fckit_shared_ptr) :: consumed_object
+  consumed_object = this
+  call consumed_object%final()
+end subroutine
+
+
 
 end module

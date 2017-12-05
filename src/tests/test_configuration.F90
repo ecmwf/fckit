@@ -12,6 +12,7 @@
 ! @author Willem Deconinck
 
 #include "fckit/fctest.h"
+#include "fckit/fckit_defines.h"
 
 ! -----------------------------------------------------------------------------
 
@@ -34,6 +35,7 @@ END_TESTSUITE_FINALIZE
 ! -----------------------------------------------------------------------------
 
 TEST( test_configuration )
+#if 1
   use fckit_module
   use fckit_configuration_module
   type(fckit_Configuration) :: config
@@ -45,6 +47,8 @@ TEST( test_configuration )
 
   type(fckit_Configuration) :: anested
   type(fckit_Configuration), allocatable :: alist(:)
+
+  write(0,*) "~~~~~~~~~~~~~~ SCOPE BEGIN ~~~~~~~~~~~~~~~"
 
   ! --------------------- SET ------------------
 
@@ -89,6 +93,9 @@ TEST( test_configuration )
 
   call fckit_log%info("config = "//config%json())
 
+  FCTEST_CHECK_EQUAL( config%owners(), 1 )
+
+
   ! --------------------- GET ------------------
 
   found = config%get("p1",intval)
@@ -119,9 +126,20 @@ TEST( test_configuration )
   FCTEST_CHECK( found )
   FCTEST_CHECK_EQUAL(intval, 22)
 
-  do j=1,size(alist)
-    call alist(j)%final()
-  enddo
+#ifndef EC_HAVE_Fortran_FINALIZATION
+    call deallocate_fckit_configuration(alist)
+#else
+    write(0,*) "deallocate alist..."
+#ifdef _CRAYFTN
+#warning We need to use this workaround for Cray (tested 8.5.6 and 8.6.2)
+    ! previous deallocate did nothing
+    call deallocate_fckit_configuration(alist)
+#else
+    deallocate(alist)
+#endif
+    write(0,*) "deallocate alist... done"
+#endif
+
   call anested%final()
 
   ! There is a reported PGI/16.7 bug that makes this test segfault here.
@@ -129,13 +147,23 @@ TEST( test_configuration )
 
   ! ---------------------------------------------
 
-  call config%final()
+  write(0,*) "config%owners() = ", config%owners()
 
+#ifndef EC_HAVE_Fortran_FINALIZATION
+  call config%final()
+  write(0,*) "config%owners() = ", config%owners()
+#endif
+
+  write(0,*) "~~~~~~~~~~~~~~~ SCOPE END ~~~~~~~~~~~~~~~~"
+#else
+#warning disabled
+#endif
 END_TEST
 
 ! -----------------------------------------------------------------------------
 
 TEST(test_configuration_json_string)
+#if 1
   use fckit_module
   use fckit_configuration_module
 
@@ -146,6 +174,9 @@ TEST(test_configuration_json_string)
   character(len=1024) :: msg
   integer :: age
   integer :: jrec
+
+  write(0,*) "~~~~~~~~~~~~~~ SCOPE BEGIN ~~~~~~~~~~~~~~~"
+
   json='{"records":['//&
    &       '{"name":"Joe",   "age":30},'//&
    &       '{"name":"Alison","age":43}' //&
@@ -159,76 +190,122 @@ TEST(test_configuration_json_string)
       FCTEST_CHECK( records(jrec)%get("age",age)   )
       write(msg,'(2A,I0,A)') name," is ",age," years old"; call fckit_log%info(msg)
    enddo
-   do jrec=1,size(records)
-     call records(jrec)%final()
-   enddo
-  endif
-  call config%final()
 
+#ifndef EC_HAVE_Fortran_FINALIZATION
+    call deallocate_fckit_configuration(records)
+#else
+    write(0,*) "deallocate records..."
+#ifdef _CRAYFTN
+#warning We need to use this workaround for Cray (tested 8.5.6 and 8.6.2)
+    ! previous deallocate did nothing
+    call deallocate_fckit_configuration(records)
+#else
+    deallocate(records)
+#endif
+    write(0,*) "deallocate records... done"
+#endif
+  endif
+  write(0,*) "config%owners() = ", config%owners()
+
+#ifndef EC_HAVE_Fortran_FINALIZATION
+  call config%final()
+#endif
+  write(0,*) "~~~~~~~~~~~~~~~ SCOPE END ~~~~~~~~~~~~~~~~"
+#else
+#warning disabled
+#endif
 END_TEST
 
 TEST(test_configuration_json_file)
+#if 1
   use fckit_module
   use fckit_configuration_module
   use fckit_pathname_module
 
- type(fckit_Configuration) :: config
- type(fckit_Configuration), allocatable :: records(:)
- type(fckit_Configuration) :: location
- character (len=:), allocatable :: name, company, street, city
- integer :: age
- integer :: jrec
- character(len=1024) :: msg
+  type(fckit_Configuration) :: config
+  type(fckit_Configuration), allocatable :: records(:)
+  type(fckit_Configuration) :: location
+  character (len=:), allocatable :: name, company, street, city
+  integer :: age
+  integer :: jrec
+  character(len=1024) :: msg
+
+  write(0,*) "~~~~~~~~~~~~~~ SCOPE BEGIN ~~~~~~~~~~~~~~~"
 
 
- ! Write a json file
- OPEN (UNIT=9 , FILE="fctest_configuration.json", STATUS='REPLACE')
- write(9,'(A)') '{"location":{"city":"Reading","company":"ECMWF","street":"Shinfield Road"},'//&
- &'"records":[{"age":42,"name":"Anne"},{"age":36,"name":"Bob"}]}'
- CLOSE(9)
+  ! Write a json file
+  OPEN (UNIT=9 , FILE="fctest_configuration.json", STATUS='REPLACE')
+  write(9,'(A)') '{"location":{"city":"Reading","company":"ECMWF","street":"Shinfield Road"},'//&
+  &'"records":[{"age":42,"name":"Anne"},{"age":36,"name":"Bob"}]}'
+  CLOSE(9)
 
- config = fckit_YAMLConfiguration( fckit_PathName("fctest_configuration.json") )
+  config = fckit_YAMLConfiguration( fckit_PathName("fctest_configuration.json") )
 
- call fckit_log%info("config = "//config%json())
+  call fckit_log%info("config = "//config%json(),flush=.true.)
 
- if( config%get("records",records) ) then
-   do jrec=1,size(records)
-     FCTEST_CHECK( records(jrec)%get("name",name) )
-     FCTEST_CHECK( records(jrec)%get("age",age)   )
-     write(msg,'(2A,I0,A)') name," is ",age," years old"; call fckit_log%info(msg)
-   enddo
-   do jrec=1,size(records)
-     call records(jrec)%final()
-   enddo
- endif
- if( config%get("location",location) ) then
-   call fckit_log%info("location = "//location%json())
+  if( config%get("records",records) ) then
+    do jrec=1,size(records)
+      FCTEST_CHECK( records(jrec)%get("name",name) )
+      FCTEST_CHECK( records(jrec)%get("age",age)   )
+      write(msg,'(2A,I0,A)') name," is ",age," years old"; call fckit_log%info(msg)
+    enddo
+#ifndef EC_HAVE_Fortran_FINALIZATION
+    call deallocate_fckit_configuration(records)
+#else
+    write(0,*) "deallocate records..."
+#ifdef _CRAYFTN
+#warning We need to use this workaround for Cray (tested 8.5.6 and 8.6.2)
+    ! previous deallocate did nothing
+    call deallocate_fckit_configuration(records)
+#else
+    deallocate(records)
+#endif
+    write(0,*) "deallocate records... done"
+#endif
+  endif
+  if( config%get("location",location) ) then
+    call fckit_log%info("location = "//location%json(),flush=.true.)
 
-   if( location%get("company",company) ) then
-     write(0,*) "company = ",company
-   endif
-   if( location%get("street",street) ) then
-     write(0,*) "street = ",street
-   endif
-   if( location%get("city",city) ) then
-     write(0,*) "city = ",city
-   endif
-   call location%final()
- endif
- call config%final()
-
+    if( location%get("company",company) ) then
+      write(0,*) "company = ",company
+    endif
+    if( location%get("street",street) ) then
+      write(0,*) "street = ",street
+    endif
+    if( location%get("city",city) ) then
+      write(0,*) "city = ",city
+    endif
+#ifndef EC_HAVE_Fortran_FINALIZATION
+    call location%final()
+#endif
+  endif
+  write(0,*) "config%owners() = ", config%owners()
+#ifndef EC_HAVE_Fortran_FINALIZATION
+  call config%final()
+#endif
+  write(0,*) "~~~~~~~~~~~~~~~ SCOPE END ~~~~~~~~~~~~~~~~"
+#else
+#warning disabled
+#endif
 END_TEST
 
 TEST(test_throw)
+!! ENABLE TO TEST IF THROW WILL WORK
+#if 0
   use fckit_configuration_module
   type(fckit_Configuration) :: config
+
   integer :: missing_value
+
+  write(0,*) "~~~~~~~~~~~~~~ SCOPE BEGIN ~~~~~~~~~~~~~~~"
 
   config = fckit_Configuration()
 
-  !call config%get_or_die("missing",missing_value)
-    !! UNCOMMENT TO TEST IF THROW WILL WORK
+  call config%get_or_die("missing",missing_value)
 
+  call config%final()
+  write(0,*) "~~~~~~~~~~~~~~~ SCOPE END ~~~~~~~~~~~~~~~~"
+#endif
 END_TEST
 ! -----------------------------------------------------------------------------
 

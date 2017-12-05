@@ -6,6 +6,8 @@
 ! granted to it by virtue of its status as an intergovernmental organisation nor
 ! does it submit to any jurisdiction.
 
+#include "fckit/fckit_defines.h"
+
 module fckit_configuration_module
   !! author: Willem Deconinck
   !!
@@ -18,20 +20,23 @@ module fckit_configuration_module
   !! for [[fckit_configuration_module:fckit_configuration(type)]] can create the
   !! configuration from a JSON file
 
-use fckit_object_module, only : fckit_object
+use fckit_shared_object_module, only : fckit_shared_object, fckit_c_deleter
 
 implicit none
 
-private :: fckit_object
+private :: fckit_shared_object
+private :: fckit_c_deleter
+
 public  :: fckit_configuration
 public  :: fckit_YAMLConfiguration
+public  :: deallocate_fckit_configuration
 
 private
 
 #include "fckit_configuration.inc"
 
 !----------------------------------------------------------------------------
-TYPE, extends(fckit_object) :: fckit_configuration
+TYPE, extends(fckit_shared_object) :: fckit_configuration
   !! Name-Value configuration type
   !!
   !! Names are strings, and values can be
@@ -59,6 +64,10 @@ TYPE, extends(fckit_object) :: fckit_configuration
   !!```
 
 contains
+
+#ifdef EC_HAVE_Fortran_FINALIZATION
+  final :: fckit_configuration__final_auto
+#endif
 
   procedure, public :: has
     !! Function that returns whether a name is contained in the configuration
@@ -260,9 +269,6 @@ contains
     !! json_str = config%json()
     !!```
 
-  procedure, public :: delete
-    !! Delete internal C++ object
-
 END TYPE fckit_configuration
 
 !------------------------------------------------------------------------------
@@ -293,50 +299,71 @@ end subroutine
 ! -----------------------------------------------------------------------------
 ! Config routines
 
-function ctor() result(config)
-  type(fckit_Configuration) :: config
-  call config%reset_c_ptr( c_fckit_configuration_new() )
+subroutine deallocate_fckit_configuration( array )
+  type(fckit_configuration), allocatable, intent(inout) :: array(:)
+  integer :: j
+  do j=1,size(array)
+    call array(j)%final()
+  enddo
+  deallocate(array)
+end subroutine
+
+subroutine fckit_configuration__final_auto(this)
+  type(fckit_configuration), intent(inout) :: this
+#ifdef Fortran_FINAL_DEBUGGING
+  write(0,*) "fckit_configuration__final_auto"
+#endif
+#ifdef Fortran_FINAL_NOT_PROPAGATING
+  call this%final()
+#endif
+end subroutine
+
+function ctor() result(this)
+  type(fckit_Configuration) :: this
+  call this%share_c_ptr( c_fckit_configuration_new(), &
+    & fckit_c_deleter(c_fckit_configuration_delete) )
+  call this%return()
 end function
 
-function ctor_from_cptr(cptr) result(config)
+function ctor_from_cptr(cptr) result(this)
   use, intrinsic :: iso_c_binding, only : c_ptr
   type(c_ptr), value :: cptr
-  type(fckit_Configuration) :: config
-  call config%reset_c_ptr( cptr )
+  type(fckit_Configuration) :: this
+  call this%share_c_ptr( cptr, &
+    & fckit_c_deleter(c_fckit_configuration_delete) )
+  call this%return()
 end function
 
 
-function ctor_from_jsonstr(json) result(config)
+function ctor_from_jsonstr(json) result(this)
   use fckit_c_interop_module, only : c_str
-  type(fckit_Configuration) :: config
+  type(fckit_Configuration) :: this
   character(len=*), intent(in) :: json
-  call Config%reset_c_ptr( c_fckit_configuration_new_from_json(c_str(json)) )
+  call this%share_c_ptr( c_fckit_configuration_new_from_json(c_str(json)), &
+    & fckit_c_deleter(c_fckit_configuration_delete) )
+  call this%return()
 end function
 
-function ctor_from_jsonfile(path) result(config)
+function ctor_from_jsonfile(path) result(this)
   use fckit_c_interop_module, only : c_str
   use fckit_pathname_module, only : fckit_pathname
-  type(fckit_Configuration) :: config
+  type(fckit_Configuration) :: this
   type(fckit_pathname), intent(in) :: path
-  call config%reset_c_ptr( c_fckit_configuration_new_from_file(c_str(path%str())) )
+  call this%share_c_ptr( c_fckit_configuration_new_from_file(c_str(path%str())), &
+    & fckit_c_deleter(c_fckit_configuration_delete) )
+  call this%return()
 end function
 
-function ctor_from_buffer(buffer) result(config)
+function ctor_from_buffer(buffer) result(this)
   use fckit_c_interop_module, only : c_str
   use fckit_buffer_module, only : fckit_buffer
-  type(fckit_Configuration) :: config
+  type(fckit_Configuration) :: this
   type(fckit_buffer), intent(in) :: buffer
-  call config%reset_c_ptr( c_fckit_configuration_new_from_buffer(buffer%c_ptr()) )
+  call this%share_c_ptr( c_fckit_configuration_new_from_buffer(buffer%c_ptr()), &
+    & fckit_c_deleter(c_fckit_configuration_delete) )
   call buffer%consumed() ! If buffer was constructed inline, this will delete the buffer
+  call this%return()
 end function
-
-subroutine delete(this)
-  class(fckit_Configuration), intent(inout) :: this
-  if ( .not. this%is_null() ) then
-    call c_fckit_configuration_delete(this%c_ptr())
-  end if
-  call this%reset_c_ptr()
-end subroutine
 
 
 function has(this, name) result(value)
@@ -473,18 +500,19 @@ subroutine set_array_real64(this, name, value)
 end subroutine
 
 function get_config(this, name, value) result(found)
+  use, intrinsic :: iso_c_binding, only : c_ptr
   use fckit_c_interop_module, only : c_str
   logical :: found
   class(fckit_Configuration), intent(in) :: this
   character(len=*), intent(in) :: name
   class(fckit_Configuration), intent(inout) :: value
   integer :: found_int
-  if( value%is_null() ) then
-    call value%reset_c_ptr( c_fckit_configuration_new() )
-  endif
+  value = fckit_Configuration()
   found_int = c_fckit_configuration_get_config(this%c_ptr(), c_str(name), value%c_ptr() )
   found = .False.
-  if (found_int == 1) found = .True.
+  if (found_int == 1) then
+    found = .True.
+  endif
 end function
 
 subroutine get_config_or_die(this,name,value)
@@ -509,17 +537,16 @@ function get_config_list(this, name, value) result(found)
   value_list_cptr = c_null_ptr
   found_int = c_fckit_configuration_get_config_list(this%c_ptr(), c_str(name), &
     & value_list_cptr, value_list_size)
+  found = .False.
   if( found_int == 1 ) then
+    found = .true.
     call c_f_pointer(value_list_cptr,value_cptrs,(/value_list_size/))
     if( allocated(value) ) deallocate(value)
     allocate(value(value_list_size))
     do j=1,value_list_size
-      call value(j)%reset_c_ptr( value_cptrs(j) )
+      value(j) = fckit_Configuration( value_cptrs(j) )
     enddo
-    call c_ptr_free(value_list_cptr)
   endif
-  found = .False.
-  if (found_int == 1) found = .True.
 end function
 
 subroutine get_config_list_or_die(this,name,value)

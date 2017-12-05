@@ -59,7 +59,9 @@ subroutine fckit_shared_object__final_auto(this)
 #ifdef Fortran_FINAL_DEBUGGING
   write(0,*) "fckit_shared_object__final_auto"
 #endif
+#ifdef Fortran_FINAL_NOT_PROPAGATING
   call this%final()
+#endif
 end subroutine
 
 function shared_ptr_cast(this) result(success)
