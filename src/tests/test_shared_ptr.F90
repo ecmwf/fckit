@@ -51,24 +51,24 @@ endtype
 
 interface
     function new_Object(i) bind(c,name="new_Object")
-      use, intrinsic :: iso_c_binding
+      use, intrinsic :: iso_c_binding, only : c_ptr, c_int
       type(c_ptr) :: new_Object
       integer(c_int), value :: i
     end function
 
    subroutine delete_Object(cptr) bind(c,name="delete_Object")
-     use, intrinsic :: iso_c_binding
+     use, intrinsic :: iso_c_binding, only : c_ptr
      type(c_ptr), value :: cptr
    end subroutine
    
    function Object__id(this) bind(c,name="Object__id")
-     use, intrinsic :: iso_c_binding
+     use, intrinsic :: iso_c_binding, only : c_ptr, c_int
      type(c_ptr), value :: this
      integer(c_int) :: Object__id
    end function
    
    function cxx_destructor_called() bind(c,name="cxx_destructor_called")
-     use, intrinsic :: iso_c_binding
+     use, intrinsic :: iso_c_binding, only : c_int
      integer(c_int) :: cxx_destructor_called
    end function
 
@@ -158,6 +158,7 @@ subroutine test_shared_ptr_safer( final_auto )
   type(fckit_shared_ptr) :: obj1
   class(ObjectFortranSafer), pointer :: obj2_ptr => null()
   type(fckit_shared_ptr) :: obj2
+  type(fckit_shared_ptr) :: obj3
 
   write(0,*) "~~~~~~~~~~~~~~~~~~~~~~~~ BEGIN SCOPE ~~~~~~~~~~~~~~~~~~~~~~~~"
 
@@ -165,8 +166,10 @@ subroutine test_shared_ptr_safer( final_auto )
   obj1_ptr%id = 5
   obj1 = fckit_make_shared( obj1_ptr )
   FCTEST_CHECK_EQUAL( obj1_ptr%id, 5 )
+  FCTEST_CHECK_EQUAL( obj1%owners(), 1 )
   obj2 = obj1
-  associate( shared_ptr => obj2%shared_ptr )
+  FCTEST_CHECK_EQUAL( obj1%owners(), 2 )
+  associate( shared_ptr => obj2%shared_ptr() )
   select type(shared_ptr)
     class is(ObjectFortranSafer)
       obj2_ptr=>shared_ptr
@@ -174,10 +177,14 @@ subroutine test_shared_ptr_safer( final_auto )
   end associate
   FCTEST_CHECK( associated(obj2_ptr) )
   FCTEST_CHECK_EQUAL( obj1_ptr%id, 5 )
-  
+  obj3 = obj2
+  FCTEST_CHECK_EQUAL( obj1%owners(), 3 )
+  obj1 = obj3
+  FCTEST_CHECK_EQUAL( obj1%owners(), 3 )
   if( .not. final_auto ) then
     call obj1%final()
     call obj2%final()
+    call obj3%final()
   endif
 
   write(0,*) "~~~~~~~~~~~~~~~~~~~~~~~~~ END SCOPE ~~~~~~~~~~~~~~~~~~~~~~~~~"
@@ -185,13 +192,24 @@ subroutine test_shared_ptr_safer( final_auto )
 end subroutine
 
 TEST( test_shared_ptr_safer_manual )
+#if 1 
+  write(0,*) "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+  write(0,*) "TEST     test_shared_ptr_safer_manual"
+
   call reset_counters()
   call test_shared_ptr_safer( .false. )
-  FCTEST_CHECK_EQUAL( final_called, 1 )
-  FCTEST_CHECK_EQUAL( final_called_after_scope, 0 )
+  FCTEST_CHECK_EQUAL( final_called , 1 )
+  FCTEST_CHECK_EQUAL( final_called_after_scope , 0 )
+  write(0,*) "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+  write(0,*)
+#endif
 END_TEST
 
 TEST( test_shared_ptr_safer_auto )
+#if 1
+  write(0,*) "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+  write(0,*) "TEST     test_shared_ptr_safer_auto"
+
   call reset_counters()
   call test_shared_ptr_safer( .true. )
 #ifdef EC_HAVE_Fortran_FINALIZATION
@@ -200,6 +218,9 @@ TEST( test_shared_ptr_safer_auto )
 #else
   FCTEST_CHECK_EQUAL( final_called, 0 )
   FCTEST_CHECK_EQUAL( final_called_after_scope, 0 )
+#endif
+  write(0,*) "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+  write(0,*)
 #endif
 END_TEST
 
@@ -219,7 +240,7 @@ subroutine test_shared_ptr_unsafe( final_auto )
   obj1 = fckit_make_shared( obj1_ptr )
   FCTEST_CHECK_EQUAL( obj1_ptr%id, 5 )
   obj2 = obj1
-  associate( shared_ptr => obj2%shared_ptr )
+  associate( shared_ptr => obj2%shared_ptr() )
   select type(shared_ptr)
     class is(ObjectFortranUnSafe)
       obj2_ptr=>shared_ptr
@@ -238,6 +259,10 @@ subroutine test_shared_ptr_unsafe( final_auto )
 end subroutine
 
 TEST( test_shared_ptr_unsafe_manual )
+#if 1
+  write(0,*) "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+  write(0,*) "TEST    test_shared_ptr_unsafe_manual"
+
   call reset_counters()
   FCTEST_CHECK_EQUAL( final_called, 0 )
   call test_shared_ptr_unsafe( .false. )
@@ -248,9 +273,16 @@ TEST( test_shared_ptr_unsafe_manual )
   FCTEST_CHECK_EQUAL( final_called, 0 )  ! --> without finalisation this didnt work as opposed to "safer"
   FCTEST_CHECK_EQUAL( final_called_after_scope, 0 )
 #endif
+  write(0,*) "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+  write(0,*)
+#endif
 END_TEST
 
 TEST( test_shared_ptr_unsafe_auto )
+#if 1
+  write(0,*) "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+  write(0,*) "TEST    test_shared_ptr_unsafe_auto"
+
   call reset_counters()
   call test_shared_ptr_unsafe( .true. )
 #ifdef EC_HAVE_Fortran_FINALIZATION
@@ -259,6 +291,9 @@ TEST( test_shared_ptr_unsafe_auto )
 #else
   FCTEST_CHECK_EQUAL( final_called, 0 )
   FCTEST_CHECK_EQUAL( final_called_after_scope, 0 )
+#endif
+  write(0,*) "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+  write(0,*)
 #endif
 END_TEST
 
@@ -274,13 +309,18 @@ subroutine test_shared_object( final_auto )
 
   obj1 = ObjectCXX(7)
   FCTEST_CHECK_EQUAL( obj1%id(), 7 )
+  FCTEST_CHECK_EQUAL( obj1%owners(), 1 )
   obj2 = obj1
+  FCTEST_CHECK_EQUAL( obj1%owners(), 2 )
   obj3 = obj2
+  FCTEST_CHECK_EQUAL( obj1%owners(), 3 )
   FCTEST_CHECK_EQUAL( obj3%id(), 7 )
 
   if( .not. final_auto ) then
     call obj1%final()
+    FCTEST_CHECK_EQUAL( obj2%owners(), 2 )
     call obj2%final()
+    FCTEST_CHECK_EQUAL( obj3%owners(), 1 )
     call obj3%final()
   endif
 
@@ -289,20 +329,30 @@ subroutine test_shared_object( final_auto )
 end subroutine
 
 TEST( test_shared_object_manual )
-write(0,*) "test_shared_object_manual"
+#if 1
+  write(0,*) "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+  write(0,*) "TEST     test_shared_object_manual"
   call reset_counters()
   call test_shared_object( final_auto = .false. )
   FCTEST_CHECK_EQUAL( cxx_destructor_called(), 1 )
+  write(0,*) "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+  write(0,*)  
+#endif
 END_TEST
 
 TEST( test_shared_object_auto )
-write(0,*) "test_shared_object_auto"
+#if 1
+  write(0,*) "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+  write(0,*) "TEST     test_shared_object_auto"
   call reset_counters()
   call test_shared_object( final_auto = .true. )
 #ifdef EC_HAVE_Fortran_FINALIZATION
   FCTEST_CHECK_EQUAL( cxx_destructor_called(), 1 )
 #else
   FCTEST_CHECK_EQUAL( cxx_destructor_called(), 0 )
+#endif
+  write(0,*) "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+  write(0,*)
 #endif
 END_TEST
 

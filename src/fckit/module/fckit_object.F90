@@ -88,6 +88,7 @@ function fckit_c_deleter( deleter )
 end function
 
 function fckit_object_constructor( cptr, deleter ) result(this)
+  use, intrinsic :: iso_c_binding, only : c_ptr, c_funptr
   type(fckit_object) :: this
   type(c_ptr) :: cptr
   type(c_funptr), optional :: deleter

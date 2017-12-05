@@ -21,8 +21,8 @@ public fckit_make_shared
 !========================================================================
 
 type :: fckit_shared_ptr
-  class(*), pointer :: shared_ptr => null()
-  integer,  pointer, private :: refcount   => null()
+  class(*), pointer, private :: shared_ptr_ => null()
+  integer,  pointer, private :: refcount_   => null()
 contains
   procedure, public :: final => fckit_shared_ptr__final
 
@@ -30,14 +30,20 @@ contains
   final :: fckit_shared_ptr__final_auto
 #endif
 
-  procedure, private :: reset
-  generic, public :: assignment(=) => reset
+  procedure, private :: clear_shared_ptr
+  procedure, private :: reset_shared_ptr
+  generic, private :: reset => clear_shared_ptr, reset_shared_ptr
+  generic, public :: assignment(=) => reset_shared_ptr
   procedure, public :: owners
   procedure, public :: attach
   procedure, public :: detach
   procedure, public :: return
+  !procedure, public :: make_shared
+  procedure, public :: shared_ptr => get_shared_ptr
+
   procedure, public :: shared_ptr_cast
-  procedure, public :: make_shared
+  procedure, public :: clear
+  procedure, public :: share
 
 end type
 
@@ -63,35 +69,52 @@ end subroutine
 
 subroutine fckit_shared_ptr__final(this)
   class(fckit_shared_ptr), intent(inout) :: this
-  if( associated(this%shared_ptr) ) then
+  if( associated(this%shared_ptr_) ) then
     if( this%owners() > 0 ) then
       write(0,*) "fckit_shared_ptr__final  , owners = ", this%owners()
       call this%detach()
       if( this%owners() == 0 ) then
-        call fckit_finalise(this%shared_ptr)
-        deallocate(this%shared_ptr)
-        deallocate(this%refcount)
+        call fckit_finalise(this%shared_ptr_)
+        deallocate(this%shared_ptr_)
+        deallocate(this%refcount_)
       endif
     endif
   endif
-  nullify(this%shared_ptr)
-  nullify(this%refcount)
+  call this%clear()
 end subroutine
 
-subroutine reset(obj_out,obj_in)
+subroutine clear_shared_ptr(obj_out)
+  use, intrinsic :: iso_c_binding, only : c_loc, c_associated
+  class(fckit_shared_ptr), intent(inout) :: obj_out
+  if( associated( obj_out%shared_ptr_ ) ) then
+    nullify(obj_out%shared_ptr_)
+    nullify(obj_out%refcount_)
+  endif
+end subroutine
+
+subroutine clear(obj_out)
+  use, intrinsic :: iso_c_binding, only : c_loc, c_associated
+  class(fckit_shared_ptr), intent(inout) :: obj_out
+  call obj_out%clear_shared_ptr()
+end subroutine
+
+
+subroutine reset_shared_ptr(obj_out,obj_in)
   use, intrinsic :: iso_c_binding, only : c_loc, c_associated
   class(fckit_shared_ptr), intent(inout) :: obj_out
   class(fckit_shared_ptr), intent(in)    :: obj_in
-  if( .not. associated( obj_out%shared_ptr, obj_in%shared_ptr ) ) then
+  if( .not. associated( obj_in%shared_ptr_) ) then
+    write(0,*) "obj_in was not initialised"
+  endif
+  if( .not. associated( obj_out%shared_ptr_, obj_in%shared_ptr_ ) ) then
     call obj_out%final()
-    obj_out%shared_ptr => obj_in%shared_ptr
-    obj_out%refcount   => obj_in%refcount
+    obj_out%shared_ptr_ => obj_in%shared_ptr_
+    obj_out%refcount_   => obj_in%refcount_
     if( obj_out%shared_ptr_cast() ) then
       call obj_out%attach()
     else
-      nullify(obj_out%shared_ptr)
-      nullify(obj_out%refcount)
-      call bad_cast
+      call obj_out%clear()
+      call bad_cast()
     endif
   else
     if( obj_out%shared_ptr_cast() ) then ; endif
@@ -100,23 +123,23 @@ end subroutine
 
 subroutine attach(this)
   class(fckit_shared_ptr), intent(inout) :: this
-  if( associated(this%shared_ptr) ) then
-    this%refcount = this%refcount + 1
+  if( associated(this%shared_ptr_) ) then
+    this%refcount_ = this%refcount_ + 1
   endif
 end subroutine
 
 subroutine detach(this)
   class(fckit_shared_ptr), intent(inout) :: this
-  if( associated(this%shared_ptr) ) then
-    this%refcount = max(0, this%refcount - 1)
+  if( associated(this%shared_ptr_) ) then
+    this%refcount_ = max(0, this%refcount_ - 1)
   endif
 end subroutine
 
 function owners(this)
   integer :: owners
   class(fckit_shared_ptr), intent(in) :: this
-  if( associated( this%shared_ptr) ) then
-    owners = this%refcount
+  if( associated( this%shared_ptr_) ) then
+    owners = this%refcount_
   else
     owners = 0
   endif
@@ -134,6 +157,12 @@ subroutine return(this)
 #endif
 end subroutine
 
+function get_shared_ptr(this) result(shared_ptr)
+  class(*), pointer :: shared_ptr
+  class(fckit_shared_ptr), intent(in) :: this
+  shared_ptr => this%shared_ptr_
+end function
+
 function shared_ptr_cast(this) result(success)
   class(fckit_shared_ptr) :: this
   logical :: success
@@ -143,15 +172,16 @@ end function
 function fckit_make_shared( ptr ) result(this)
   type(fckit_shared_ptr) :: this
   class(*), target :: ptr
-  call this%make_shared(ptr)
+  call this%share( ptr )
   call this%return()
 end function
 
-subroutine make_shared(this,ptr)
+subroutine share( this, ptr )
   class(fckit_shared_ptr) :: this
   class(*), target :: ptr
-  this%shared_ptr => ptr
-  allocate(this%refcount)
+  this%shared_ptr_ => ptr
+  allocate(this%refcount_)
+  this%refcount_ = 0
   call this%attach()
 end subroutine
 
