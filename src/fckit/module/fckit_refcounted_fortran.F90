@@ -130,7 +130,7 @@ subroutine return(this)
   class(fckit_refcounted_fortran), intent(in) :: this
 #ifdef Fortran_FINAL_FUNCTION_RESULT
   ! final will be called, which will detach, so attach.
-  call this%attach()
+  if( this%owners() == 0 ) call this%attach()
 #else
   ! final will not be called, so detach manually
   if( this%owners() > 0 ) call this%detach()

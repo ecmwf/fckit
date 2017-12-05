@@ -13,7 +13,7 @@
 ! -----------------------------------------------------------------------------
 
 module fcta_refcounting_f_fxt
-use fckit_refcounted_module, only : fckit__new_Owned, fckit__delete_Owned
+!use fckit_refcounted_module, only : fckit__new_Owned, fckit__delete_Owned
 use fckit_refcounted_fortran_module
 use fckit_c_interop_module
 use fctest
@@ -90,6 +90,7 @@ function RefObj__constructor(id) result(this)
   allocate( this%payload )
   this%payload%id = id
   this%uid = id
+  FCTEST_CHECK_EQUAL( this%owners(), 0 )
   call this%return()
 end function
 

@@ -23,8 +23,8 @@ use fckit_object_module, only : fckit_object
 implicit none
 
 private :: fckit_object
-public :: fckit_configuration
-public :: fckit_YAMLConfiguration
+public  :: fckit_configuration
+public  :: fckit_YAMLConfiguration
 
 private
 

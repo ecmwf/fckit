@@ -7,6 +7,7 @@
 ! does it submit to any jurisdiction.
 
 #include "fckit/fctest.h"
+#include "fckit/fckit_defines.h"
 
 TESTSUITE( test_broadcast_file )
 
@@ -31,27 +32,44 @@ TESTSUITE_FINALIZE
 END_TESTSUITE_FINALIZE
 
 TEST( broadcast_file_inline )
+#if 1
   use fckit_module
   implicit none
   type(fckit_mpi_comm) :: comm
   type(fckit_Configuration) :: config
+  write(0,*) "~~~~~~~~~~~~~~ SCOPE BEGIN ~~~~~~~~~~~~~~~"
   comm = fckit_mpi_comm()
   config = fckit_YAMLConfiguration( comm%broadcast_file("fctest_broadcast.json",0) )
   FCTEST_CHECK( config%has("location") )
+#ifndef EC_HAVE_Fortran_FINALIZATION
+  call config%final()
+#endif
+  write(0,*) "~~~~~~~~~~~~~~~ SCOPE END ~~~~~~~~~~~~~~~~"
+#else
+#warning disabled
+#endif
 END_TEST
 
 TEST( broadcast_file_arg )
+#if 0
   use fckit_module
   implicit none
   type(fckit_mpi_comm) :: comm
   type(fckit_Configuration) :: config
   type(fckit_buffer) :: buffer
+  write(0,*) "~~~~~~~~~~~~~~ SCOPE BEGIN ~~~~~~~~~~~~~~~"
   comm = fckit_mpi_comm()
   buffer = comm%broadcast_file("fctest_broadcast.json",0)
   config = fckit_YAMLConfiguration( buffer )
   FCTEST_CHECK( config%has("location") )
   FCTEST_CHECK_EQUAL( buffer%owners(), 1 )
+#ifndef EC_HAVE_Fortran_FINALIZATION
   call buffer%final()
+#endif
+  write(0,*) "~~~~~~~~~~~~~~~ SCOPE END ~~~~~~~~~~~~~~~~"
+#else
+#warning disabled
+#endif
 END_TEST
 
 
