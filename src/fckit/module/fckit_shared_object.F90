@@ -36,7 +36,9 @@ contains
 ! WARNING: Not strictly necessary, as base class (fckit_shared_ptr) has the
 !          destructor defined.
 !     - PGI-17.7 needs this, as it does not call the base class destructor (COMPILER BUG!)
-!     - Cray 8.5.6 needs this as well   
+!                from derived types
+!     - Cray 8.5.6 needs this as well as it otherwise does not call constructor from
+!                  from function returns
 #ifdef EC_HAVE_Fortran_FINALIZATION
   final :: fckit_shared_object__final_auto
 #endif
