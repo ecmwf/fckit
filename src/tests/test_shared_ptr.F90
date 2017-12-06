@@ -26,6 +26,7 @@ implicit none
 integer, SAVE :: final_called = 0
 integer, SAVE :: final_called_after_scope = 0
 logical, SAVE :: scope_ended = .false.
+logical, SAVE :: deallocate_called = .false.
 
 ! -----------------------------------------------------------------------------
 
@@ -92,7 +93,7 @@ contains
   procedure :: id => ObjectCXX_id
 
 ! We need this for Cray, and PGI (see fckit_shared_object.F90)
-#ifdef Fortran_FINAL_NOT_INHERITING
+#if  defined(Fortran_FINAL_NOT_INHERITING)
   final :: ObjectCXX_final_auto
 #endif
 end type
@@ -106,6 +107,7 @@ contains
 ! -----------------------------------------------------------------------------
 
 subroutine reset_counters()
+  deallocate_called = .false.
   final_called = 0
   final_called_after_scope = 0
   scope_ended = .false.
@@ -424,6 +426,8 @@ subroutine test_shared_object_allocatable( final_auto, deallocate_auto )
   endif
 
   if( .not. deallocate_auto ) then
+    write(0,'(A)') "~~~~~~~~~~~~~~ DEALLOCATE ~~~~~~~~~~~~~~~"
+    deallocate_called = .true.
     deallocate( obj1 )
   endif
 
@@ -523,6 +527,8 @@ subroutine test_shared_object_allocatable_list( final_auto, deallocate_auto )
   endif
 
   if( .not. deallocate_auto ) then
+    write(0,'(A)') "~~~~~~~~~~~~~~ DEALLOCATE ~~~~~~~~~~~~~~~"
+    deallocate_called = .true.
     deallocate( list )
   endif
 
@@ -536,9 +542,11 @@ TEST( test_shared_object_allocatable_list_auto_auto )
   write(0,'(A)') "TEST     test_shared_object_allocatable_list_auto_auto"
   call reset_counters()
   call test_shared_object_allocatable_list( final_auto = .true., deallocate_auto = .true. )
-#if defined(EC_HAVE_Fortran_FINALIZATION) && !defined(Fortran_FINAL_BROKEN_FOR_ALLOCATABLE_ARRAY)
+#ifdef EC_HAVE_Fortran_FINALIZATION 
+#ifndef Fortran_FINAL_BROKEN_FOR_ALLOCATABLE_ARRAY
   FCTEST_CHECK_EQUAL( cxx_destructor_called(), 2 )
   FCTEST_CHECK_EQUAL( cxx_destructor_called_after_scope(), 2 )
+#endif
 #else
   FCTEST_CHECK_EQUAL( cxx_destructor_called(), 0 )
 #endif
@@ -553,9 +561,11 @@ TEST( test_shared_object_allocatable_list_auto_manual )
   write(0,'(A)') "TEST     test_shared_object_allocatable_list_auto_manual"
   call reset_counters()
   call test_shared_object_allocatable_list( final_auto = .true., deallocate_auto = .false. )
-#if defined(EC_HAVE_Fortran_FINALIZATION) && !defined(Fortran_FINAL_BROKEN_FOR_ALLOCATABLE_ARRAY)
+#ifdef EC_HAVE_Fortran_FINALIZATION
+#ifndef Fortran_FINAL_BROKEN_FOR_ALLOCATABLE_ARRAY
   FCTEST_CHECK_EQUAL( cxx_destructor_called(), 2 )
   FCTEST_CHECK_EQUAL( cxx_destructor_called_after_scope(), 0 )
+#endif
 #else
   FCTEST_CHECK_EQUAL( cxx_destructor_called(), 0 )
 #endif
@@ -570,7 +580,7 @@ TEST( test_shared_object_allocatable_list_manual_auto )
   write(0,'(A)') "TEST     test_shared_object_allocatable_list_manual_auto"
   call reset_counters()
   call test_shared_object_allocatable_list( final_auto = .false., deallocate_auto = .true. )
-#if defined(EC_HAVE_Fortran_FINALIZATION)
+#ifdef EC_HAVE_Fortran_FINALIZATION
   FCTEST_CHECK_EQUAL( cxx_destructor_called(), 2 )
   FCTEST_CHECK_EQUAL( cxx_destructor_called_after_scope(), 0 )
 #else
@@ -587,7 +597,7 @@ TEST( test_shared_object_allocatable_list_manual_manual )
   write(0,'(A)') "TEST     test_shared_object_allocatable_list_manual_manual"
   call reset_counters()
   call test_shared_object_allocatable_list( final_auto = .false., deallocate_auto = .false. )
-#if defined(EC_HAVE_Fortran_FINALIZATION)
+#ifdef EC_HAVE_Fortran_FINALIZATION
   FCTEST_CHECK_EQUAL( cxx_destructor_called(), 2 )
   FCTEST_CHECK_EQUAL( cxx_destructor_called_after_scope(), 0 )
 #else
@@ -629,9 +639,11 @@ TEST( test_shared_object_automatic_list_auto )
   write(0,'(A)') "TEST     test_shared_object_automatic_list_auto"
   call reset_counters()
   call test_shared_object_automatic_list( final_auto = .true. )
-#if defined(EC_HAVE_Fortran_FINALIZATION) && !defined(Fortran_FINAL_BROKEN_FOR_AUTOMATIC_ARRAY)
+#ifdef EC_HAVE_Fortran_FINALIZATION
+#ifndef Fortran_FINAL_BROKEN_FOR_AUTOMATIC_ARRAY
   FCTEST_CHECK_EQUAL( cxx_destructor_called(), 2 )
   FCTEST_CHECK_EQUAL( cxx_destructor_called_after_scope(), 2 )
+#endif
 #else
   FCTEST_CHECK_EQUAL( cxx_destructor_called(), 0 )
 #endif
