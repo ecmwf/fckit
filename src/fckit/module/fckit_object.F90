@@ -6,6 +6,8 @@
 ! granted to it by virtue of its status as an intergovernmental organisation nor
 ! does it submit to any jurisdiction.
 
+#include "fckit/fckit_defines.h"
+
 module fckit_object_module
   !! Provides abstract base class [[fckit_object_module:fckit_object(type)]]
 
@@ -55,6 +57,8 @@ contains
   procedure, private :: fckit_object__c_ptr
   
   procedure, public :: final
+
+  final :: fckit_object_final_auto
 
 end type
 
@@ -138,7 +142,7 @@ logical function not_equal(obj1,obj2)
 end function
 
 subroutine final( this )
-  use, intrinsic :: iso_c_binding, only: c_ptr, c_funptr, c_f_procpointer, c_associated
+  use, intrinsic :: iso_c_binding, only: c_ptr, c_funptr, c_f_procpointer, c_associated, c_null_ptr
   use fckit_c_interop_module, only : fckit_c_deleter_interface
   class(fckit_object), intent(inout) :: this
   procedure(fckit_c_deleter_interface), pointer :: deleter
@@ -146,8 +150,18 @@ subroutine final( this )
     if( c_associated( this%deleter ) ) then
       call c_f_procpointer( this%deleter, deleter )
       call deleter( this%cpp_object_ptr )
+      this%cpp_object_ptr = c_null_ptr
     endif
   endif
+  this%cpp_object_ptr = c_null_ptr
+end subroutine
+
+subroutine fckit_object_final_auto( this )
+  type(fckit_object), intent(inout) :: this
+#if FCKIT_FINAL_DEBUGGING
+  write(0,*) "fckit_object_final_auto"
+#endif
+  call this%final()
 end subroutine
 
 end module

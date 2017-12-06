@@ -92,7 +92,6 @@ contains
 ! public :
   procedure :: id => ObjectCXX_id
 
-! We need this for Cray, and PGI (see fckit_shared_object.F90)
 #if Fortran_FINAL_NOT_INHERITING
   final :: ObjectCXX_final_auto
 #endif
@@ -125,7 +124,6 @@ function ObjectCXX_constructor(id) result(this)
   call this%share_c_ptr( new_Object(id) , fckit_c_deleter(delete_Object) )
   FCTEST_CHECK_EQUAL( this%owners(), 0 )
   call this%return()
-  !FCTEST_CHECK_EQUAL( this%owners(), 1 )
 end function
 
 function ObjectCXX_id(this) result(id)
@@ -137,8 +135,6 @@ end function
 subroutine ObjectCXX_final_auto(this)
   type(ObjectCXX) :: this
   write(0,*) "ObjectCXX_final_auto"
-  if( this%owners() ) write(0,*) "id = ", this%id()
-  ! following only for PGI, as Cray calls base class destructor
 #if Fortran_FINAL_NOT_PROPAGATING
   call this%final()
 #endif
@@ -195,7 +191,6 @@ function create_ObjectFortranSafer(id) result(this)
   write(0,'(A)') "<---- this = fckit_make_shared( obj_ptr )"
   FCTEST_CHECK_EQUAL( this%owners(), 0 )
   call this%return()
-  !FCTEST_CHECK_EQUAL( this%owners(), 1 )
 end function
 
 subroutine test_shared_ptr_safer( final_auto )
@@ -236,7 +231,7 @@ subroutine test_shared_ptr_safer( final_auto )
 end subroutine
 
 TEST( test_shared_ptr_safer_manual )
-#if 0
+#if 1
   write(0,'(A)') "-------------------------------------------------------------"
   write(0,'(A)') "TEST     test_shared_ptr_safer_manual"
 
@@ -250,7 +245,7 @@ TEST( test_shared_ptr_safer_manual )
 END_TEST
 
 TEST( test_shared_ptr_safer_auto )
-#if 0
+#if 1
   write(0,'(A)') "-------------------------------------------------------------"
   write(0,'(A)') "TEST     test_shared_ptr_safer_auto"
 
@@ -310,7 +305,7 @@ subroutine test_shared_ptr_unsafe( final_auto )
 end subroutine
 
 TEST( test_shared_ptr_unsafe_manual )
-#if 0
+#if 1
   write(0,'(A)') "-------------------------------------------------------------"
   write(0,'(A)') "TEST    test_shared_ptr_unsafe_manual"
 
@@ -330,7 +325,7 @@ TEST( test_shared_ptr_unsafe_manual )
 END_TEST
 
 TEST( test_shared_ptr_unsafe_auto )
-#if 0
+#if 1
   write(0,'(A)') "-------------------------------------------------------------"
   write(0,'(A)') "TEST    test_shared_ptr_unsafe_auto"
 
@@ -354,7 +349,7 @@ subroutine test_shared_object( final_auto )
 
   logical :: final_auto
   type(ObjectCXX) :: obj1
-  type(fckit_shared_object) :: obj2
+  type(fckit_shared_ptr) :: obj2
   type(ObjectCXX) :: obj3
 
   write(0,'(A)') "~~~~~~~~~~~~~~ BEGIN SCOPE ~~~~~~~~~~~~~~~"
@@ -362,8 +357,12 @@ subroutine test_shared_object( final_auto )
   obj1 = ObjectCXX(7)
   FCTEST_CHECK_EQUAL( obj1%id(), 7 )
   FCTEST_CHECK_EQUAL( obj1%owners(), 1 )
+
+  write(0,*) "obj2 = obj1"
   obj2 = obj1
   FCTEST_CHECK_EQUAL( obj1%owners(), 2 )
+
+  write(0,*) "obj3 = obj2"
   obj3 = obj2
   FCTEST_CHECK_EQUAL( obj1%owners(), 3 )
   FCTEST_CHECK_EQUAL( obj3%id(), 7 )
@@ -392,7 +391,7 @@ subroutine test_shared_object( final_auto )
 end subroutine
 
 TEST( test_shared_object_manual )
-#if 0
+#if 1
   write(0,'(A)') "-------------------------------------------------------------"
   write(0,'(A)') "TEST     test_shared_object_manual"
   call reset_counters()
@@ -449,7 +448,7 @@ subroutine test_shared_object_allocatable( final_auto, deallocate_auto )
 end subroutine
 
 TEST( test_shared_object_allocatable_auto_auto )
-#if 0
+#if 1
   write(0,'(A)') "-------------------------------------------------------------"
   write(0,'(A)') "TEST     test_shared_object_allocatable_auto_auto"
   call reset_counters()
@@ -466,7 +465,7 @@ TEST( test_shared_object_allocatable_auto_auto )
 END_TEST
 
 TEST( test_shared_object_allocatable_auto_manual )
-#if 0
+#if 1
   write(0,'(A)') "-------------------------------------------------------------"
   write(0,'(A)') "TEST     test_shared_object_allocatable_auto_manual"
   call reset_counters()
@@ -483,7 +482,7 @@ TEST( test_shared_object_allocatable_auto_manual )
 END_TEST
 
 TEST( test_shared_object_allocatable_manual_auto )
-#if 0
+#if 1
   write(0,'(A)') "-------------------------------------------------------------"
   write(0,'(A)') "TEST     test_shared_object_allocatable_manual_auto"
   call reset_counters()
@@ -500,7 +499,7 @@ TEST( test_shared_object_allocatable_manual_auto )
 END_TEST
 
 TEST( test_shared_object_allocatable_manual_manual )
-#if 0
+#if 1
   write(0,'(A)') "-------------------------------------------------------------"
   write(0,'(A)') "TEST     test_shared_object_allocatable_manual_manual"
   call reset_counters()
@@ -550,7 +549,7 @@ subroutine test_shared_object_allocatable_list( final_auto, deallocate_auto )
 end subroutine
 
 TEST( test_shared_object_allocatable_list_auto_auto )
-#if 0
+#if 1
   write(0,'(A)') "-------------------------------------------------------------"
   write(0,'(A)') "TEST     test_shared_object_allocatable_list_auto_auto"
   call reset_counters()
@@ -569,7 +568,7 @@ TEST( test_shared_object_allocatable_list_auto_auto )
 END_TEST
 
 TEST( test_shared_object_allocatable_list_auto_manual )
-#if 0
+#if 1
   write(0,'(A)') "-------------------------------------------------------------"
   write(0,'(A)') "TEST     test_shared_object_allocatable_list_auto_manual"
   call reset_counters()
@@ -588,7 +587,7 @@ TEST( test_shared_object_allocatable_list_auto_manual )
 END_TEST
 
 TEST( test_shared_object_allocatable_list_manual_auto )
-#if 0
+#if 1
   write(0,'(A)') "-------------------------------------------------------------"
   write(0,'(A)') "TEST     test_shared_object_allocatable_list_manual_auto"
   call reset_counters()
@@ -605,7 +604,7 @@ TEST( test_shared_object_allocatable_list_manual_auto )
 END_TEST
 
 TEST( test_shared_object_allocatable_list_manual_manual )
-#if 0
+#if 1
   write(0,'(A)') "-------------------------------------------------------------"
   write(0,'(A)') "TEST     test_shared_object_allocatable_list_manual_manual"
   call reset_counters()
@@ -647,7 +646,7 @@ subroutine test_shared_object_automatic_list( final_auto )
 end subroutine
 
 TEST( test_shared_object_automatic_list_auto )
-#if 0
+#if 1
   write(0,'(A)') "-------------------------------------------------------------"
   write(0,'(A)') "TEST     test_shared_object_automatic_list_auto"
   call reset_counters()
@@ -666,7 +665,7 @@ TEST( test_shared_object_automatic_list_auto )
 END_TEST
 
 TEST( test_shared_object_automatic_list_manual )
-#if 0
+#if 1
   write(0,'(A)') "-------------------------------------------------------------"
   write(0,'(A)') "TEST     test_shared_object_automatic_list_manual"
   call reset_counters()

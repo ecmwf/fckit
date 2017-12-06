@@ -46,11 +46,6 @@ if( ENABLE_FORTRAN_FINALIZATION )
     include( final-support )
     check_final_support()
 
-# PGI
-set( Fortran_FINAL_NOT_PROPAGATING 1 )
-set( Fortran_FINAL_NOT_INHERITING  1 )
-
-
     ecbuild_info( "Define: EC_HAVE_Fortran_FINALIZATION")
     ecbuild_info( "  Fortran_FINAL_FUNCTION_RESULT              = ${Fortran_FINAL_FUNCTION_RESULT}")
     ecbuild_info( "  Fortran_FINAL_UNINITIALIZED_LOCAL          = ${Fortran_FINAL_UNINITIALIZED_LOCAL}")

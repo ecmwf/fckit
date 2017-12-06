@@ -24,7 +24,7 @@ does it submit to any jurisdiction.
 #define Fortran_FINAL_BROKEN_FOR_ALLOCATABLE_ARRAY @Fortran_FINAL_BROKEN_FOR_ALLOCATABLE_ARRAY@
 #define Fortran_FINAL_BROKEN_FOR_AUTOMATIC_ARRAY   @Fortran_FINAL_BROKEN_FOR_AUTOMATIC_ARRAY@
 
-#define FCKIT_FINAL_DEBUGGING  1
+#define FCKIT_FINAL_DEBUGGING  0
 
 #define FCKIT_SUPPRESS_UNUSED( X ) \
 associate( unused_ => X ); \
