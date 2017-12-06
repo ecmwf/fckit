@@ -135,11 +135,11 @@ end function
 subroutine ObjectCXX_final_auto(this)
   type(ObjectCXX) :: this
   write(0,*) "ObjectCXX_final_auto"
-
   ! following only for PGI, as Cray calls base class destructor
 #ifdef Fortran_FINAL_NOT_PROPAGATING
   call this%final()
 #endif
+  FCKIT_SUPPRESS_UNUSED( this )
 end subroutine
 
 

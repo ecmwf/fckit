@@ -317,16 +317,31 @@ subroutine test8
   implicit none
   type(Object), allocatable :: list(:)
   allocate( list(2) )
+  call write_indented('list(1) = Object()')
+  indent=indent+1
   list(1) = Object()
+  indent=indent-1
+  call write_indented('list(2) = Object()')
+  indent=indent+1
   list(2) = Object()
+  indent=indent-1
+  call write_indented('--- deallocate ---')
   deallocate( list )
+  call write_indented('--- scope end ---')
 end subroutine
 
 subroutine test9
   implicit none
   type(Object) :: list(2)
+  call write_indented('list(1) = Object()')
+  indent=indent+1
   list(1) = Object()
+  indent=indent-1
+  call write_indented('list(2) = Object()')
+  indent=indent+1
   list(2) = Object()
+  indent=indent-1
+  call write_indented('--- scope end ---')
 end subroutine
 
 subroutine run_test(i)

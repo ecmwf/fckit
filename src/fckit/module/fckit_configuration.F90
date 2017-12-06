@@ -315,6 +315,7 @@ subroutine fckit_configuration__final_auto(this)
 #endif
 #ifdef Fortran_FINAL_NOT_PROPAGATING
   call this%final()
+  FCKIT_SUPPRESS_UNUSED( this )
 #endif
 end subroutine
 

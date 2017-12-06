@@ -915,6 +915,7 @@ subroutine delete(this)
   use fckit_c_interop_module
   class(fckit_mpi_comm), intent(inout) :: this
 !   call c_ptr_free(this%c_ptr())
+  FCKIT_SUPPRESS_UNUSED( this )
 end subroutine
 
 !---------------------------------------------------------------------------------------

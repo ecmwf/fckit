@@ -100,6 +100,8 @@ subroutine copy(this,obj_in)
   class(fckit_refcounted), intent(inout) :: this
   class(fckit_refcounted), target, intent(in) :: obj_in
   write(0,*) "fckit_refcounted::copy"
+  FCKIT_SUPPRESS_UNUSED( this )
+  FCKIT_SUPPRESS_UNUSED( obj_in )
 end subroutine
 
 subroutine fckit_refcounted__final(this)

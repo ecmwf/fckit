@@ -72,6 +72,8 @@ end subroutine
 subroutine copy(this,obj_in)
   class(fckit_refcounted_fortran), intent(inout) :: this
   class(fckit_refcounted_fortran), target, intent(in) :: obj_in
+  FCKIT_SUPPRESS_UNUSED( this )
+  FCKIT_SUPPRESS_UNUSED( obj_in )
 end subroutine
 
 subroutine fckit_refcounted_fortran__final_auto(this)

@@ -55,4 +55,8 @@ does it submit to any jurisdiction.
 #define Fortran_FINAL_DEBUGGING
 #endif
 
+#define FCKIT_SUPPRESS_UNUSED( X ) \
+associate( unused_ => X ); \
+end associate
+
 #endif

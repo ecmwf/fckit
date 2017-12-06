@@ -108,6 +108,7 @@ subroutine fckit_buffer__final_auto(this)
 #ifdef Fortran_FINAL_NOT_PROPAGATING
   call this%final()
 #endif
+  FCKIT_SUPPRESS_UNUSED( this )
 end subroutine
 
 end module

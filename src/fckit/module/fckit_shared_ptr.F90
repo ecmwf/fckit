@@ -213,6 +213,7 @@ function shared_ptr_cast(this) result(success)
   class(fckit_shared_ptr) :: this
   logical :: success
   success = .true.
+  FCKIT_SUPPRESS_UNUSED( this )
 end function
 
 function fckit_make_shared( ptr ) result(this)
