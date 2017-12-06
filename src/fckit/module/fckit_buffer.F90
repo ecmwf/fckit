@@ -111,7 +111,7 @@ end function
 
 subroutine fckit_buffer__final_auto(this)
   type(fckit_buffer), intent(inout) :: this
-#iff FCKIT_FINAL_DEBUGGING
+#if FCKIT_FINAL_DEBUGGING
   write(0,*) "fckit_buffer__final_auto"
 #endif
 #if Fortran_FINAL_NOT_PROPAGATING

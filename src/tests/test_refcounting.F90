@@ -187,7 +187,7 @@ write(0,*) " <<< bjo=obj2"
   write(0,*) "Trust automatic finalisation to delete obj1 when scope ends"
 #endif
   call consume_obj(bjo)
-#i f! EC_HAVE_Fortran_FINALIZATION
+#if ! EC_HAVE_Fortran_FINALIZATION
   call bjo%final()
 #else
   write(0,*) "Trust automatic finalisation to delete bjo when scope ends"
