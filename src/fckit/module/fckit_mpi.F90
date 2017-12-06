@@ -412,7 +412,7 @@ contains
   !> MPI wait for this communicator
   procedure, public :: wait
 
-#ifdef EC_HAVE_Fortran_FINALIZATION
+#if EC_HAVE_Fortran_FINALIZATION
   final :: fckit_mpi_comm__final_auto
 #endif
 

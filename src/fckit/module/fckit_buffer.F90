@@ -60,7 +60,7 @@ type, extends(fckit_shared_object) :: fckit_buffer
 contains
   procedure, public :: str
 
-#ifdef Fortran_FINAL_NOT_INHERITING
+#if Fortran_FINAL_NOT_INHERITING
   final :: fckit_buffer__final_auto
 #endif
 
@@ -111,10 +111,10 @@ end function
 
 subroutine fckit_buffer__final_auto(this)
   type(fckit_buffer), intent(inout) :: this
-#ifdef Fortran_FINAL_DEBUGGING
+#iff FCKIT_FINAL_DEBUGGING
   write(0,*) "fckit_buffer__final_auto"
 #endif
-#ifdef Fortran_FINAL_NOT_PROPAGATING
+#if Fortran_FINAL_NOT_PROPAGATING
   call this%final()
 #endif
   FCKIT_SUPPRESS_UNUSED( this )

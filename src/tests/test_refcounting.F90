@@ -10,8 +10,6 @@
 #include "fckit/fctest.h"
 #include "fckit/fckit_defines.h"
 
-!#define PREVIOUS
-
 ! -----------------------------------------------------------------------------
 
 module fcta_refcounting_fxt
@@ -23,9 +21,6 @@ implicit none
 
 integer, SAVE :: deleted = 0
 
-#ifdef PREVIOUS
-#include "previous.h"
-#else
 type :: payload_t
   integer :: id
 contains
@@ -38,7 +33,7 @@ contains
   procedure, public :: copy   => RefObj__copy
   procedure :: id
 
-#ifdef  EC_HAVE_Fortran_FINALIZATION
+#if  EC_HAVE_Fortran_FINALIZATION
   final :: RefObj__final_auto
 #endif
 
@@ -90,7 +85,7 @@ subroutine RefObj__final_auto(this)
   else
     write(0,*) "final obj",this%id(), " (uninitialized) "
   endif
-#ifdef Fortran_FINAL_NOT_PROPAGATING
+#if Fortran_FINAL_NOT_PROPAGATING
   call this%final()
 #endif
 end subroutine
@@ -119,7 +114,6 @@ subroutine RefObj__copy(this,obj_in)
   this%payload => obj_in_cast%payload
   write(0,*) "   check: obj is now ", this%id()
 end subroutine
-#endif
 
 subroutine consume_obj(obj)
   class(RefObj), intent(in) :: obj
@@ -150,7 +144,7 @@ TEST( test_ref )
   use fckit_c_interop_module
   type(RefObj) :: obj1, bjo, obj2
 
-#ifdef EC_HAVE_Fortran_FINALIZATION
+#if EC_HAVE_Fortran_FINALIZATION
   write(0,*) "Fortran supports automatic finalization!"
 #endif
 
@@ -187,18 +181,18 @@ write(0,*) " <<< bjo=obj2"
 
   FCTEST_CHECK_EQUAL( obj1%owners(), 1 )
 
-#ifndef EC_HAVE_Fortran_FINALIZATION
+#if ! EC_HAVE_Fortran_FINALIZATION
   call obj1%final()
 #else
   write(0,*) "Trust automatic finalisation to delete obj1 when scope ends"
 #endif
   call consume_obj(bjo)
-#ifndef EC_HAVE_Fortran_FINALIZATION
+#i f! EC_HAVE_Fortran_FINALIZATION
   call bjo%final()
 #else
   write(0,*) "Trust automatic finalisation to delete bjo when scope ends"
 #endif
-#ifndef EC_HAVE_Fortran_FINALIZATION
+#if ! EC_HAVE_Fortran_FINALIZATION
   call obj2%final()
 #else
   write(0,*) "Trust automatic finalisation to delete obj2 when scope ends"
@@ -208,7 +202,7 @@ write(0,*) " <<< bjo=obj2"
 END_TEST
 
 TEST( test_deleted )
-#ifndef EC_HAVE_Fortran_FINALIZATION
+#if ! EC_HAVE_Fortran_FINALIZATION
   FCTEST_CHECK_EQUAL( deleted , 2 )
 #else
   write(0,*) "WARNING: baseclass fckit_refcounted%delete() is called instead of RefObj%delete()"

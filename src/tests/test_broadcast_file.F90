@@ -41,7 +41,7 @@ TEST( broadcast_file_inline )
   comm = fckit_mpi_comm()
   config = fckit_YAMLConfiguration( comm%broadcast_file("fctest_broadcast.json",0) )
   FCTEST_CHECK( config%has("location") )
-#ifndef EC_HAVE_Fortran_FINALIZATION
+#if ! EC_HAVE_Fortran_FINALIZATION
   call config%final()
 #endif
   write(0,*) "~~~~~~~~~~~~~~~ SCOPE END ~~~~~~~~~~~~~~~~"
@@ -63,7 +63,7 @@ TEST( broadcast_file_arg )
   config = fckit_YAMLConfiguration( buffer )
   FCTEST_CHECK( config%has("location") )
   FCTEST_CHECK_EQUAL( buffer%owners(), 1 )
-#ifndef EC_HAVE_Fortran_FINALIZATION
+#if ! EC_HAVE_Fortran_FINALIZATION
   call buffer%final()
 #endif
   write(0,*) "~~~~~~~~~~~~~~~ SCOPE END ~~~~~~~~~~~~~~~~"

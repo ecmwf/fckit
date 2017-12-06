@@ -455,7 +455,7 @@ program final_support
   
   call run_test(6)
 #ifdef FINAL_NOT_PROPAGATING
-  if( final_derived == 1 .and. final_initialized == 0 ) then
+  if( final_derived > 0 .and. final_initialized == 0 ) then
     write(output_unit,'(I0)',advance='no') 1
   else
     write(output_unit,'(I0)',advance='no') 0

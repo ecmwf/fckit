@@ -22,6 +22,7 @@ list( APPEND eckit_required_src
     module/fckit_configuration.cc
     module/fckit_refcounted.cc
     module/fckit_refcounted.F90
+    module/fckit_refcounted_fortran.F90
     module/fckit_mpi.cc
     module/fckit_mpi.F90
     module/fckit_main.cc
@@ -70,7 +71,6 @@ ecbuild_add_library( TARGET     fckit
                                 module/fckit_final.F90
                                 module/fckit_shared_ptr.F90
                                 module/fckit_shared_object.F90
-                                module/fckit_refcounted_fortran.F90
                                 ${eckit_required_src}
                      PRIVATE_INCLUDES
                                 ${ECKIT_INCLUDE_DIRS}

@@ -41,7 +41,7 @@ contains
 !                from derived types
 !     - Cray-8.5.6 needs this as well as it otherwise does not call constructor from
 !                  from function returns
-#ifdef Fortran_FINAL_NOT_INHERITING
+#if Fortran_FINAL_NOT_INHERITING
   final :: fckit_shared_object__final_auto
 #endif
 
@@ -58,10 +58,10 @@ CONTAINS
 
 subroutine fckit_shared_object__final_auto(this)
   type(fckit_shared_object), intent(inout) :: this
-#ifdef Fortran_FINAL_DEBUGGING
+#if FCKIT_FINAL_DEBUGGING
   write(0,*) "fckit_shared_object__final_auto"
 #endif
-#ifdef Fortran_FINAL_NOT_PROPAGATING
+#if Fortran_FINAL_NOT_PROPAGATING
   call this%final()
 #endif
   FCKIT_SUPPRESS_UNUSED( this )

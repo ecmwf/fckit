@@ -83,13 +83,13 @@ TEST( test_configuration )
   enddo
   call nested%set("list",list)
 
-#if !defined(EC_HAVE_Fortran_FINALIZATION) || defined(Fortran_FINAL_BROKEN_FOR_AUTOMATIC_ARRAY)
+#if ! EC_HAVE_Fortran_FINALIZATION || Fortran_FINAL_BROKEN_FOR_AUTOMATIC_ARRAY
 do j=1,2
   call list(j)%final()
 enddo
 #endif
   call config%set("nested",nested)
-#ifndef EC_HAVE_Fortran_FINALIZATION
+#if ! EC_HAVE_Fortran_FINALIZATION
   call nested%final()
 #endif
   
@@ -131,7 +131,7 @@ enddo
   FCTEST_CHECK_EQUAL(intval, 22)
 
   write(0,*) "deallocate alist..."
-#if !defined(EC_HAVE_Fortran_FINALIZATION) || defined(Fortran_FINAL_BROKEN_FOR_ALLOCATABLE_ARRAY)
+#if ! EC_HAVE_Fortran_FINALIZATION || Fortran_FINAL_BROKEN_FOR_ALLOCATABLE_ARRAY
     call deallocate_fckit_configuration(alist)
 #else
     deallocate(alist)
@@ -147,7 +147,7 @@ enddo
 
   write(0,*) "config%owners() = ", config%owners()
 
-#ifndef EC_HAVE_Fortran_FINALIZATION
+#if ! EC_HAVE_Fortran_FINALIZATION
   call config%final()
   write(0,*) "config%owners() = ", config%owners()
 #endif
@@ -190,7 +190,7 @@ TEST(test_configuration_json_string)
    enddo
 
    write(0,*) "deallocate records..."
-#if !defined(EC_HAVE_Fortran_FINALIZATION) || defined(Fortran_FINAL_BROKEN_FOR_ALLOCATABLE_ARRAY)
+#if ! EC_HAVE_Fortran_FINALIZATION || Fortran_FINAL_BROKEN_FOR_ALLOCATABLE_ARRAY
     call deallocate_fckit_configuration(records)
 #else
     deallocate(records)
@@ -199,7 +199,7 @@ TEST(test_configuration_json_string)
   endif
   write(0,*) "config%owners() = ", config%owners()
 
-#ifndef EC_HAVE_Fortran_FINALIZATION
+#if ! EC_HAVE_Fortran_FINALIZATION
   call config%final()
 #endif
   write(0,*) "~~~~~~~~~~~~~~~ SCOPE END ~~~~~~~~~~~~~~~~"
@@ -242,7 +242,7 @@ TEST(test_configuration_json_file)
       write(msg,'(2A,I0,A)') name," is ",age," years old"; call fckit_log%info(msg)
     enddo
     write(0,*) "deallocate records..."
-#if !defined(EC_HAVE_Fortran_FINALIZATION) || defined(Fortran_FINAL_BROKEN_FOR_ALLOCATABLE_ARRAY)
+#if ! EC_HAVE_Fortran_FINALIZATION || Fortran_FINAL_BROKEN_FOR_ALLOCATABLE_ARRAY
     call deallocate_fckit_configuration(records)
 #else
     deallocate(records)
@@ -261,12 +261,12 @@ TEST(test_configuration_json_file)
     if( location%get("city",city) ) then
       write(0,*) "city = ",city
     endif
-#ifndef EC_HAVE_Fortran_FINALIZATION
+#if ! EC_HAVE_Fortran_FINALIZATION
     call location%final()
 #endif
   endif
   write(0,*) "config%owners() = ", config%owners()
-#ifndef EC_HAVE_Fortran_FINALIZATION
+#if ! EC_HAVE_Fortran_FINALIZATION
   call config%final()
 #endif
   write(0,*) "~~~~~~~~~~~~~~~ SCOPE END ~~~~~~~~~~~~~~~~"

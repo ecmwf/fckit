@@ -10,7 +10,7 @@ contains
   procedure :: copy => RefObj__copy
   procedure :: id
 
-#ifdef  EC_HAVE_Fortran_FINALIZATION
+#if  EC_HAVE_Fortran_FINALIZATION
   final :: RefObj__final
 #endif
 

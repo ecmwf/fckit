@@ -34,7 +34,7 @@ contains
   procedure :: copy => RefObj__copy
   procedure :: id
 
-#ifdef EC_HAVE_Fortran_FINALIZATION
+#if EC_HAVE_Fortran_FINALIZATION
   final :: RefObj__final
 #endif
 endtype
@@ -147,7 +147,7 @@ TEST( test_ref )
   use fckit_c_interop_module
   type(RefObj) :: obj, bjo
 
-#ifdef EC_HAVE_Fortran_FINALIZATION
+#if EC_HAVE_Fortran_FINALIZATION
   write(0,*) "Fortran supports automatic finalization!"
 #endif
 
@@ -171,11 +171,11 @@ TEST( test_ref )
   obj = bjo
   FCTEST_CHECK_EQUAL( obj%owners(), 2 )
 
-#ifndef EC_HAVE_Fortran_FINALIZATION
+#if ! EC_HAVE_Fortran_FINALIZATION
   call obj%final()
 #endif
   call consume_obj(bjo)
-#ifndef EC_HAVE_Fortran_FINALIZATION
+#if ! EC_HAVE_Fortran_FINALIZATION
   call bjo%final()
 #endif
 

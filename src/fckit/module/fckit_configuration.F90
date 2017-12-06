@@ -66,7 +66,7 @@ TYPE, extends(fckit_shared_object) :: fckit_configuration
 
 contains
 
-#ifdef Fortran_FINAL_NOT_INHERITING
+#if Fortran_FINAL_NOT_INHERITING
   final :: fckit_configuration__final_auto
 #endif
 
@@ -311,10 +311,10 @@ end subroutine
 
 subroutine fckit_configuration__final_auto(this)
   type(fckit_configuration), intent(inout) :: this
-#ifdef Fortran_FINAL_DEBUGGING
+#if FCKIT_FINAL_DEBUGGING
   write(0,*) "fckit_configuration__final_auto"
 #endif
-#ifdef Fortran_FINAL_NOT_PROPAGATING
+#if Fortran_FINAL_NOT_PROPAGATING
   call this%final()
 #endif
   FCKIT_SUPPRESS_UNUSED( this )

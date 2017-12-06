@@ -47,7 +47,7 @@ contains
   procedure, public :: copy
   procedure, public :: delete
 
-#ifdef EC_HAVE_Fortran_FINALIZATION
+#if EC_HAVE_Fortran_FINALIZATION
  final :: fckit_refcounted__final_auto
 #endif
 
@@ -91,7 +91,7 @@ contains
 subroutine delete(this)
   use fckit_c_interop_module
   class(fckit_refcounted), intent(inout) :: this
-#ifdef Fortran_FINAL_DEBUGGING
+#if FCKIT_FINAL_DEBUGGING
   write(0,*) "delete Owned"
 #endif
   call fckit__delete_Owned(this%c_ptr())
@@ -107,18 +107,18 @@ end subroutine
 
 subroutine fckit_refcounted__final(this)
   class(fckit_refcounted), intent(inout) :: this
-#ifdef Fortran_FINAL_DEBUGGING
+#if FCKIT_FINAL_DEBUGGING
   write(0,*) "fckit_refcounted__final"
 #endif
 
   if( .not. this%is_null() ) then
     if( this%owners() >  0 ) then
-#ifdef Fortran_FINAL_DEBUGGING
+#if FCKIT_FINAL_DEBUGGING
   write(0,*) "detach"
 #endif
       call this%detach()
       if( this%owners() == 0 ) then
-#ifdef Fortran_FINAL_DEBUGGING
+#if FCKIT_FINAL_DEBUGGING
   write(0,*) "delete"
 #endif
         call this%delete()
@@ -163,7 +163,7 @@ end function
 subroutine return(this)
   !! Transfer ownership to left hand side of "assignment(=)"
   class(fckit_refcounted), intent(inout) :: this
-#ifdef Fortran_FINAL_FUNCTION_RESULT
+#if Fortran_FINAL_FUNCTION_RESULT
   ! Cray example
   ! final will be called, which will detach, so attach first
   if( this%owners() == 0 ) then
@@ -173,7 +173,7 @@ subroutine return(this)
 #else
   ! final will not be called, so detach manually
   if( this%owners() > 0 ) then
-#ifdef Fortran_FINAL_DEBUGGING
+#if FCKIT_FINAL_DEBUGGING
     write(0,*) "return --> detach"
     call this%detach()
 #endif
@@ -183,7 +183,7 @@ end subroutine
 
 subroutine fckit_refcounted__final_auto(this)
   type(fckit_refcounted), intent(inout) :: this
-#ifdef Fortran_FINAL_DEBUGGING
+#if FCKIT_FINAL_DEBUGGING
   write(0,*) "fckit_refcounted__final_auto"
 #endif
   call this%final()

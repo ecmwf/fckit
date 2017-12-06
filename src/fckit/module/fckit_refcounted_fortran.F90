@@ -44,7 +44,7 @@ contains
   procedure, public :: copy
   procedure, public :: delete
 
-#ifdef EC_HAVE_Fortran_FINALIZATION
+#if EC_HAVE_Fortran_FINALIZATION
   final :: fckit_refcounted_fortran__final_auto
 #endif
 
@@ -130,7 +130,7 @@ end function
 subroutine return(this)
   !! Transfer ownership to left hand side of "assignment(=)"
   class(fckit_refcounted_fortran), intent(inout) :: this
-#ifdef Fortran_FINAL_FUNCTION_RESULT
+#if Fortran_FINAL_FUNCTION_RESULT
   ! Cray example
   ! final will be called, which will detach, so attach first
   if( this%owners() == 0 ) then
@@ -140,7 +140,7 @@ subroutine return(this)
 #else
   ! final will not be called, so detach manually
   if( this%owners() > 0 ) then
-#ifdef Fortran_FINAL_DEBUGGING
+#if FCKIT_FINAL_DEBUGGING
     write(0,*) "return --> detach"
     call this%detach()
 #endif

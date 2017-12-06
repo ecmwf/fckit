@@ -35,7 +35,7 @@ type :: ObjectFortranUnsafe
   integer :: id = -1
     !! Data of Object (could be anything, like allocatable pointers)
 contains
-#ifdef EC_HAVE_Fortran_FINALIZATION
+#if EC_HAVE_Fortran_FINALIZATION
   final :: ObjectFortranUnsafe_final
 #endif
 endtype
@@ -93,7 +93,7 @@ contains
   procedure :: id => ObjectCXX_id
 
 ! We need this for Cray, and PGI (see fckit_shared_object.F90)
-#if  defined(Fortran_FINAL_NOT_INHERITING)
+#if Fortran_FINAL_NOT_INHERITING
   final :: ObjectCXX_final_auto
 #endif
 end type
@@ -137,8 +137,9 @@ end function
 subroutine ObjectCXX_final_auto(this)
   type(ObjectCXX) :: this
   write(0,*) "ObjectCXX_final_auto"
+  if( this%owners() ) write(0,*) "id = ", this%id()
   ! following only for PGI, as Cray calls base class destructor
-#ifdef Fortran_FINAL_NOT_PROPAGATING
+#if Fortran_FINAL_NOT_PROPAGATING
   call this%final()
 #endif
   FCKIT_SUPPRESS_UNUSED( this )
@@ -235,7 +236,7 @@ subroutine test_shared_ptr_safer( final_auto )
 end subroutine
 
 TEST( test_shared_ptr_safer_manual )
-#if 1
+#if 0
   write(0,'(A)') "-------------------------------------------------------------"
   write(0,'(A)') "TEST     test_shared_ptr_safer_manual"
 
@@ -249,13 +250,13 @@ TEST( test_shared_ptr_safer_manual )
 END_TEST
 
 TEST( test_shared_ptr_safer_auto )
-#if 1
+#if 0
   write(0,'(A)') "-------------------------------------------------------------"
   write(0,'(A)') "TEST     test_shared_ptr_safer_auto"
 
   call reset_counters()
   call test_shared_ptr_safer( .true. )
-#ifdef EC_HAVE_Fortran_FINALIZATION
+#if EC_HAVE_Fortran_FINALIZATION
   FCTEST_CHECK_EQUAL( final_called, 1 )
   FCTEST_CHECK_EQUAL( final_called_after_scope, 1 )
 #else
@@ -309,14 +310,14 @@ subroutine test_shared_ptr_unsafe( final_auto )
 end subroutine
 
 TEST( test_shared_ptr_unsafe_manual )
-#if 1
+#if 0
   write(0,'(A)') "-------------------------------------------------------------"
   write(0,'(A)') "TEST    test_shared_ptr_unsafe_manual"
 
   call reset_counters()
   FCTEST_CHECK_EQUAL( final_called, 0 )
   call test_shared_ptr_unsafe( .false. )
-#ifdef EC_HAVE_Fortran_FINALIZATION
+#if EC_HAVE_Fortran_FINALIZATION
   FCTEST_CHECK_EQUAL( final_called, 1 )
   FCTEST_CHECK_EQUAL( final_called_after_scope, 0 )
 #else
@@ -329,13 +330,13 @@ TEST( test_shared_ptr_unsafe_manual )
 END_TEST
 
 TEST( test_shared_ptr_unsafe_auto )
-#if 1
+#if 0
   write(0,'(A)') "-------------------------------------------------------------"
   write(0,'(A)') "TEST    test_shared_ptr_unsafe_auto"
 
   call reset_counters()
   call test_shared_ptr_unsafe( .true. )
-#ifdef EC_HAVE_Fortran_FINALIZATION
+#if EC_HAVE_Fortran_FINALIZATION
   FCTEST_CHECK_EQUAL( final_called, 1 )
   FCTEST_CHECK_EQUAL( final_called_after_scope, 1 )
 #else
@@ -391,7 +392,7 @@ subroutine test_shared_object( final_auto )
 end subroutine
 
 TEST( test_shared_object_manual )
-#if 1
+#if 0
   write(0,'(A)') "-------------------------------------------------------------"
   write(0,'(A)') "TEST     test_shared_object_manual"
   call reset_counters()
@@ -408,7 +409,7 @@ TEST( test_shared_object_auto )
   write(0,'(A)') "TEST     test_shared_object_auto"
   call reset_counters()
   call test_shared_object( final_auto = .true. )
-#ifdef EC_HAVE_Fortran_FINALIZATION
+#if EC_HAVE_Fortran_FINALIZATION
   FCTEST_CHECK_EQUAL( cxx_destructor_called(), 2 )
 #else
   FCTEST_CHECK_EQUAL( cxx_destructor_called(), 0 )
@@ -448,12 +449,12 @@ subroutine test_shared_object_allocatable( final_auto, deallocate_auto )
 end subroutine
 
 TEST( test_shared_object_allocatable_auto_auto )
-#if 1
+#if 0
   write(0,'(A)') "-------------------------------------------------------------"
   write(0,'(A)') "TEST     test_shared_object_allocatable_auto_auto"
   call reset_counters()
   call test_shared_object_allocatable( final_auto = .true., deallocate_auto = .true. )
-#ifdef EC_HAVE_Fortran_FINALIZATION
+#if EC_HAVE_Fortran_FINALIZATION
   FCTEST_CHECK_EQUAL( cxx_destructor_called(), 1 )
   FCTEST_CHECK_EQUAL( cxx_destructor_called_after_scope(), 1 )
 #else
@@ -465,12 +466,12 @@ TEST( test_shared_object_allocatable_auto_auto )
 END_TEST
 
 TEST( test_shared_object_allocatable_auto_manual )
-#if 1
+#if 0
   write(0,'(A)') "-------------------------------------------------------------"
   write(0,'(A)') "TEST     test_shared_object_allocatable_auto_manual"
   call reset_counters()
   call test_shared_object_allocatable( final_auto = .true., deallocate_auto = .false. )
-#ifdef EC_HAVE_Fortran_FINALIZATION
+#if EC_HAVE_Fortran_FINALIZATION
   FCTEST_CHECK_EQUAL( cxx_destructor_called(), 1 )
   FCTEST_CHECK_EQUAL( cxx_destructor_called_after_scope(), 0 )
 #else
@@ -482,12 +483,12 @@ TEST( test_shared_object_allocatable_auto_manual )
 END_TEST
 
 TEST( test_shared_object_allocatable_manual_auto )
-#if 1
+#if 0
   write(0,'(A)') "-------------------------------------------------------------"
   write(0,'(A)') "TEST     test_shared_object_allocatable_manual_auto"
   call reset_counters()
   call test_shared_object_allocatable( final_auto = .false., deallocate_auto = .true. )
-#ifdef EC_HAVE_Fortran_FINALIZATION
+#if EC_HAVE_Fortran_FINALIZATION
   FCTEST_CHECK_EQUAL( cxx_destructor_called(), 1 )
   FCTEST_CHECK_EQUAL( cxx_destructor_called_after_scope(), 0 )
 #else
@@ -499,12 +500,12 @@ TEST( test_shared_object_allocatable_manual_auto )
 END_TEST
 
 TEST( test_shared_object_allocatable_manual_manual )
-#if 1
+#if 0
   write(0,'(A)') "-------------------------------------------------------------"
   write(0,'(A)') "TEST     test_shared_object_allocatable_manual_manual"
   call reset_counters()
   call test_shared_object_allocatable( final_auto = .false., deallocate_auto = .false. )
-#ifdef EC_HAVE_Fortran_FINALIZATION
+#if EC_HAVE_Fortran_FINALIZATION
   FCTEST_CHECK_EQUAL( cxx_destructor_called(), 1 )
   FCTEST_CHECK_EQUAL( cxx_destructor_called_after_scope(), 0 )
 #else
@@ -549,13 +550,13 @@ subroutine test_shared_object_allocatable_list( final_auto, deallocate_auto )
 end subroutine
 
 TEST( test_shared_object_allocatable_list_auto_auto )
-#if 1
+#if 0
   write(0,'(A)') "-------------------------------------------------------------"
   write(0,'(A)') "TEST     test_shared_object_allocatable_list_auto_auto"
   call reset_counters()
   call test_shared_object_allocatable_list( final_auto = .true., deallocate_auto = .true. )
-#ifdef EC_HAVE_Fortran_FINALIZATION 
-#ifndef Fortran_FINAL_BROKEN_FOR_ALLOCATABLE_ARRAY
+#if EC_HAVE_Fortran_FINALIZATION 
+#if ! Fortran_FINAL_BROKEN_FOR_ALLOCATABLE_ARRAY
   FCTEST_CHECK_EQUAL( cxx_destructor_called(), 2 )
   FCTEST_CHECK_EQUAL( cxx_destructor_called_after_scope(), 2 )
 #endif
@@ -568,13 +569,13 @@ TEST( test_shared_object_allocatable_list_auto_auto )
 END_TEST
 
 TEST( test_shared_object_allocatable_list_auto_manual )
-#if 1
+#if 0
   write(0,'(A)') "-------------------------------------------------------------"
   write(0,'(A)') "TEST     test_shared_object_allocatable_list_auto_manual"
   call reset_counters()
   call test_shared_object_allocatable_list( final_auto = .true., deallocate_auto = .false. )
-#ifdef EC_HAVE_Fortran_FINALIZATION
-#ifndef Fortran_FINAL_BROKEN_FOR_ALLOCATABLE_ARRAY
+#if EC_HAVE_Fortran_FINALIZATION
+#if ! Fortran_FINAL_BROKEN_FOR_ALLOCATABLE_ARRAY
   FCTEST_CHECK_EQUAL( cxx_destructor_called(), 2 )
   FCTEST_CHECK_EQUAL( cxx_destructor_called_after_scope(), 0 )
 #endif
@@ -587,12 +588,12 @@ TEST( test_shared_object_allocatable_list_auto_manual )
 END_TEST
 
 TEST( test_shared_object_allocatable_list_manual_auto )
-#if 1
+#if 0
   write(0,'(A)') "-------------------------------------------------------------"
   write(0,'(A)') "TEST     test_shared_object_allocatable_list_manual_auto"
   call reset_counters()
   call test_shared_object_allocatable_list( final_auto = .false., deallocate_auto = .true. )
-#ifdef EC_HAVE_Fortran_FINALIZATION
+#if EC_HAVE_Fortran_FINALIZATION
   FCTEST_CHECK_EQUAL( cxx_destructor_called(), 2 )
   FCTEST_CHECK_EQUAL( cxx_destructor_called_after_scope(), 0 )
 #else
@@ -604,12 +605,12 @@ TEST( test_shared_object_allocatable_list_manual_auto )
 END_TEST
 
 TEST( test_shared_object_allocatable_list_manual_manual )
-#if 1
+#if 0
   write(0,'(A)') "-------------------------------------------------------------"
   write(0,'(A)') "TEST     test_shared_object_allocatable_list_manual_manual"
   call reset_counters()
   call test_shared_object_allocatable_list( final_auto = .false., deallocate_auto = .false. )
-#ifdef EC_HAVE_Fortran_FINALIZATION
+#if EC_HAVE_Fortran_FINALIZATION
   FCTEST_CHECK_EQUAL( cxx_destructor_called(), 2 )
   FCTEST_CHECK_EQUAL( cxx_destructor_called_after_scope(), 0 )
 #else
@@ -646,13 +647,13 @@ subroutine test_shared_object_automatic_list( final_auto )
 end subroutine
 
 TEST( test_shared_object_automatic_list_auto )
-#if 1
+#if 0
   write(0,'(A)') "-------------------------------------------------------------"
   write(0,'(A)') "TEST     test_shared_object_automatic_list_auto"
   call reset_counters()
   call test_shared_object_automatic_list( final_auto = .true. )
-#ifdef EC_HAVE_Fortran_FINALIZATION
-#ifndef Fortran_FINAL_BROKEN_FOR_AUTOMATIC_ARRAY
+#if EC_HAVE_Fortran_FINALIZATION
+#if ! Fortran_FINAL_BROKEN_FOR_AUTOMATIC_ARRAY
   FCTEST_CHECK_EQUAL( cxx_destructor_called(), 2 )
   FCTEST_CHECK_EQUAL( cxx_destructor_called_after_scope(), 2 )
 #endif
@@ -665,12 +666,12 @@ TEST( test_shared_object_automatic_list_auto )
 END_TEST
 
 TEST( test_shared_object_automatic_list_manual )
-#if 1
+#if 0
   write(0,'(A)') "-------------------------------------------------------------"
   write(0,'(A)') "TEST     test_shared_object_automatic_list_manual"
   call reset_counters()
   call test_shared_object_automatic_list( final_auto = .false. )
-#ifdef EC_HAVE_Fortran_FINALIZATION
+#if EC_HAVE_Fortran_FINALIZATION
   FCTEST_CHECK_EQUAL( cxx_destructor_called(), 2 )
   FCTEST_CHECK_EQUAL( cxx_destructor_called_after_scope(), 0 )
 #else
