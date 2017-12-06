@@ -65,7 +65,7 @@ TYPE, extends(fckit_shared_object) :: fckit_configuration
 
 contains
 
-#ifdef EC_HAVE_Fortran_FINALIZATION
+#ifdef Fortran_FINAL_NOT_INHERITING
   final :: fckit_configuration__final_auto
 #endif
 

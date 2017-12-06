@@ -51,7 +51,7 @@ TEST( broadcast_file_inline )
 END_TEST
 
 TEST( broadcast_file_arg )
-#if 0
+#if 1
   use fckit_module
   implicit none
   type(fckit_mpi_comm) :: comm

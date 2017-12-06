@@ -82,13 +82,17 @@ TEST( test_configuration )
     call list(j)%set("l2",22)
   enddo
   call nested%set("list",list)
-  do j=1,2
-    call list(j)%final()
-  enddo
 
+#if !defined(EC_HAVE_Fortran_FINALIZATION) || defined(Fortran_FINAL_BROKEN_FOR_AUTOMATIC_ARRAY)
+do j=1,2
+  call list(j)%final()
+enddo
+#endif
   call config%set("nested",nested)
+#ifndef EC_HAVE_Fortran_FINALIZATION
   call nested%final()
-
+#endif
+  
   ! --------------------- JSON ------------------
 
   call fckit_log%info("config = "//config%json())
@@ -126,19 +130,13 @@ TEST( test_configuration )
   FCTEST_CHECK( found )
   FCTEST_CHECK_EQUAL(intval, 22)
 
-#ifndef EC_HAVE_Fortran_FINALIZATION
-    call deallocate_fckit_configuration(alist)
-#else
-    write(0,*) "deallocate alist..."
-#ifdef _CRAYFTN
-#warning We need to use this workaround for Cray (tested 8.5.6 and 8.6.2)
-    ! previous deallocate did nothing
+  write(0,*) "deallocate alist..."
+#if !defined(EC_HAVE_Fortran_FINALIZATION) || defined(Fortran_FINAL_BROKEN_FOR_ALLOCATABLE_ARRAY)
     call deallocate_fckit_configuration(alist)
 #else
     deallocate(alist)
 #endif
     write(0,*) "deallocate alist... done"
-#endif
 
   call anested%final()
 
@@ -191,19 +189,13 @@ TEST(test_configuration_json_string)
       write(msg,'(2A,I0,A)') name," is ",age," years old"; call fckit_log%info(msg)
    enddo
 
-#ifndef EC_HAVE_Fortran_FINALIZATION
-    call deallocate_fckit_configuration(records)
-#else
-    write(0,*) "deallocate records..."
-#ifdef _CRAYFTN
-#warning We need to use this workaround for Cray (tested 8.5.6 and 8.6.2)
-    ! previous deallocate did nothing
+   write(0,*) "deallocate records..."
+#if !defined(EC_HAVE_Fortran_FINALIZATION) || defined(Fortran_FINAL_BROKEN_FOR_ALLOCATABLE_ARRAY)
     call deallocate_fckit_configuration(records)
 #else
     deallocate(records)
 #endif
     write(0,*) "deallocate records... done"
-#endif
   endif
   write(0,*) "config%owners() = ", config%owners()
 
@@ -249,19 +241,13 @@ TEST(test_configuration_json_file)
       FCTEST_CHECK( records(jrec)%get("age",age)   )
       write(msg,'(2A,I0,A)') name," is ",age," years old"; call fckit_log%info(msg)
     enddo
-#ifndef EC_HAVE_Fortran_FINALIZATION
-    call deallocate_fckit_configuration(records)
-#else
     write(0,*) "deallocate records..."
-#ifdef _CRAYFTN
-#warning We need to use this workaround for Cray (tested 8.5.6 and 8.6.2)
-    ! previous deallocate did nothing
+#if !defined(EC_HAVE_Fortran_FINALIZATION) || defined(Fortran_FINAL_BROKEN_FOR_ALLOCATABLE_ARRAY)
     call deallocate_fckit_configuration(records)
 #else
     deallocate(records)
 #endif
-    write(0,*) "deallocate records... done"
-#endif
+     write(0,*) "deallocate records... done"
   endif
   if( config%get("location",location) ) then
     call fckit_log%info("location = "//location%json(),flush=.true.)

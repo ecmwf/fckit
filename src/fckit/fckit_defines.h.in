@@ -33,14 +33,26 @@ does it submit to any jurisdiction.
 #define Fortran_FINAL_UNINITIALIZED_INTENT_INOUT
 #endif
 
+#if @Fortran_FINAL_NOT_PROPAGATING@
+#define Fortran_FINAL_NOT_PROPAGATING
+#endif
+
+#if @Fortran_FINAL_NOT_INHERITING@
+#define Fortran_FINAL_NOT_INHERITING
+#endif
+
+#if @Fortran_FINAL_BROKEN_FOR_ALLOCATABLE_ARRAY@
+#define Fortran_FINAL_BROKEN_FOR_ALLOCATABLE_ARRAY
+#endif
+
+#if @Fortran_FINAL_BROKEN_FOR_AUTOMATIC_ARRAY@
+#define Fortran_FINAL_BROKEN_FOR_AUTOMATIC_ARRAY
+#endif
+
 #endif
 
 #if 1
 #define Fortran_FINAL_DEBUGGING
 #endif
-
-#ifdef __PGI
-#define Fortran_FINAL_NOT_PROPAGATING
-#endif 
 
 #endif

@@ -73,7 +73,15 @@ interface
      integer(c_int) :: cxx_destructor_called
    end function
 
+   function cxx_destructor_called_after_scope() bind(c,name="cxx_destructor_called_after_scope")
+     use, intrinsic :: iso_c_binding, only : c_int
+     integer(c_int) :: cxx_destructor_called_after_scope
+   end function
+
    subroutine cxx_reset_counters() bind(c,name="cxx_reset_counters")
+   end subroutine
+
+   subroutine cxx_end_scope() bind(c,name="cxx_end_scope")
    end subroutine
    
 end interface
@@ -84,7 +92,7 @@ contains
   procedure :: id => ObjectCXX_id
 
 ! We need this for Cray, and PGI (see fckit_shared_object.F90)
-#ifdef EC_HAVE_Fortran_FINALIZATION
+#ifdef Fortran_FINAL_NOT_INHERITING
   final :: ObjectCXX_final_auto
 #endif
 end type
@@ -106,6 +114,7 @@ end subroutine
 
 subroutine end_scope()
   scope_ended = .true.
+  call cxx_end_scope()
 end subroutine
 
 function ObjectCXX_constructor(id) result(this)
@@ -389,6 +398,259 @@ TEST( test_shared_object_auto )
   FCTEST_CHECK_EQUAL( cxx_destructor_called(), 1 )
 #else
   FCTEST_CHECK_EQUAL( cxx_destructor_called(), 0 )
+#endif
+  write(0,'(A)') "-------------------------------------------------------------"
+  write(0,'(A)')
+#endif
+END_TEST
+
+! -----------------------------------------------------------------------------
+
+subroutine test_shared_object_allocatable( final_auto, deallocate_auto )
+
+  logical :: final_auto
+  logical :: deallocate_auto
+  type(ObjectCXX), allocatable :: obj1
+
+  write(0,'(A)') "~~~~~~~~~~~~~~ BEGIN SCOPE ~~~~~~~~~~~~~~~"
+
+  allocate( obj1 )
+  obj1 = ObjectCXX(7)
+  FCTEST_CHECK_EQUAL( obj1%id(), 7 )
+  FCTEST_CHECK_EQUAL( obj1%owners(), 1 )
+
+  if( .not. final_auto ) then
+    call obj1%final()
+  endif
+
+  if( .not. deallocate_auto ) then
+    deallocate( obj1 )
+  endif
+
+  write(0,'(A)') "~~~~~~~~~~~~~~~ END SCOPE ~~~~~~~~~~~~~~~"
+  call end_scope()
+end subroutine
+
+TEST( test_shared_object_allocatable_auto_auto )
+#if 1
+  write(0,'(A)') "-------------------------------------------------------------"
+  write(0,'(A)') "TEST     test_shared_object_allocatable_auto_auto"
+  call reset_counters()
+  call test_shared_object_allocatable( final_auto = .true., deallocate_auto = .true. )
+#ifdef EC_HAVE_Fortran_FINALIZATION
+  FCTEST_CHECK_EQUAL( cxx_destructor_called(), 1 )
+  FCTEST_CHECK_EQUAL( cxx_destructor_called_after_scope(), 1 )
+#else
+  FCTEST_CHECK_EQUAL( cxx_destructor_called(), 0 )
+#endif
+  write(0,'(A)') "-------------------------------------------------------------"
+  write(0,'(A)')
+#endif
+END_TEST
+
+TEST( test_shared_object_allocatable_auto_manual )
+#if 1
+  write(0,'(A)') "-------------------------------------------------------------"
+  write(0,'(A)') "TEST     test_shared_object_allocatable_auto_manual"
+  call reset_counters()
+  call test_shared_object_allocatable( final_auto = .true., deallocate_auto = .false. )
+#ifdef EC_HAVE_Fortran_FINALIZATION
+  FCTEST_CHECK_EQUAL( cxx_destructor_called(), 1 )
+  FCTEST_CHECK_EQUAL( cxx_destructor_called_after_scope(), 0 )
+#else
+  FCTEST_CHECK_EQUAL( cxx_destructor_called(), 0 )
+#endif
+  write(0,'(A)') "-------------------------------------------------------------"
+  write(0,'(A)')
+#endif
+END_TEST
+
+TEST( test_shared_object_allocatable_manual_auto )
+#if 1
+  write(0,'(A)') "-------------------------------------------------------------"
+  write(0,'(A)') "TEST     test_shared_object_allocatable_manual_auto"
+  call reset_counters()
+  call test_shared_object_allocatable( final_auto = .false., deallocate_auto = .true. )
+#ifdef EC_HAVE_Fortran_FINALIZATION
+  FCTEST_CHECK_EQUAL( cxx_destructor_called(), 1 )
+  FCTEST_CHECK_EQUAL( cxx_destructor_called_after_scope(), 0 )
+#else
+  FCTEST_CHECK_EQUAL( cxx_destructor_called(), 1 )
+#endif
+  write(0,'(A)') "-------------------------------------------------------------"
+  write(0,'(A)')
+#endif
+END_TEST
+
+TEST( test_shared_object_allocatable_manual_manual )
+#if 1
+  write(0,'(A)') "-------------------------------------------------------------"
+  write(0,'(A)') "TEST     test_shared_object_allocatable_manual_manual"
+  call reset_counters()
+  call test_shared_object_allocatable( final_auto = .false., deallocate_auto = .false. )
+#ifdef EC_HAVE_Fortran_FINALIZATION
+  FCTEST_CHECK_EQUAL( cxx_destructor_called(), 1 )
+  FCTEST_CHECK_EQUAL( cxx_destructor_called_after_scope(), 0 )
+#else
+  FCTEST_CHECK_EQUAL( cxx_destructor_called(), 1 )
+#endif
+  write(0,'(A)') "-------------------------------------------------------------"
+  write(0,'(A)')
+#endif
+END_TEST
+
+! -----------------------------------------------------------------------------
+
+subroutine test_shared_object_allocatable_list( final_auto, deallocate_auto )
+
+  logical :: final_auto
+  logical :: deallocate_auto
+  type(ObjectCXX), allocatable :: list(:)
+
+  write(0,'(A)') "~~~~~~~~~~~~~~ BEGIN SCOPE ~~~~~~~~~~~~~~~"
+
+  allocate( list(2) )
+  list(1) = ObjectCXX(1)
+  list(2) = ObjectCXX(2)
+  FCTEST_CHECK_EQUAL( list(1)%id(), 1 )
+  FCTEST_CHECK_EQUAL( list(1)%owners(), 1 )
+  FCTEST_CHECK_EQUAL( list(2)%id(), 2 )
+  FCTEST_CHECK_EQUAL( list(2)%owners(), 1 )
+
+  if( .not. final_auto ) then
+    call list(1)%final()
+    call list(2)%final()
+  endif
+
+  if( .not. deallocate_auto ) then
+    deallocate( list )
+  endif
+
+  write(0,'(A)') "~~~~~~~~~~~~~~~ END SCOPE ~~~~~~~~~~~~~~~"
+  call end_scope()
+end subroutine
+
+TEST( test_shared_object_allocatable_list_auto_auto )
+#if 1
+  write(0,'(A)') "-------------------------------------------------------------"
+  write(0,'(A)') "TEST     test_shared_object_allocatable_list_auto_auto"
+  call reset_counters()
+  call test_shared_object_allocatable_list( final_auto = .true., deallocate_auto = .true. )
+#if defined(EC_HAVE_Fortran_FINALIZATION) && !defined(Fortran_FINAL_BROKEN_FOR_ALLOCATABLE_ARRAY)
+  FCTEST_CHECK_EQUAL( cxx_destructor_called(), 2 )
+  FCTEST_CHECK_EQUAL( cxx_destructor_called_after_scope(), 2 )
+#else
+  FCTEST_CHECK_EQUAL( cxx_destructor_called(), 0 )
+#endif
+  write(0,'(A)') "-------------------------------------------------------------"
+  write(0,'(A)')
+#endif
+END_TEST
+
+TEST( test_shared_object_allocatable_list_auto_manual )
+#if 1
+  write(0,'(A)') "-------------------------------------------------------------"
+  write(0,'(A)') "TEST     test_shared_object_allocatable_list_auto_manual"
+  call reset_counters()
+  call test_shared_object_allocatable_list( final_auto = .true., deallocate_auto = .false. )
+#if defined(EC_HAVE_Fortran_FINALIZATION) && !defined(Fortran_FINAL_BROKEN_FOR_ALLOCATABLE_ARRAY)
+  FCTEST_CHECK_EQUAL( cxx_destructor_called(), 2 )
+  FCTEST_CHECK_EQUAL( cxx_destructor_called_after_scope(), 0 )
+#else
+  FCTEST_CHECK_EQUAL( cxx_destructor_called(), 0 )
+#endif
+  write(0,'(A)') "-------------------------------------------------------------"
+  write(0,'(A)')
+#endif
+END_TEST
+
+TEST( test_shared_object_allocatable_list_manual_auto )
+#if 1
+  write(0,'(A)') "-------------------------------------------------------------"
+  write(0,'(A)') "TEST     test_shared_object_allocatable_list_manual_auto"
+  call reset_counters()
+  call test_shared_object_allocatable_list( final_auto = .false., deallocate_auto = .true. )
+#if defined(EC_HAVE_Fortran_FINALIZATION)
+  FCTEST_CHECK_EQUAL( cxx_destructor_called(), 2 )
+  FCTEST_CHECK_EQUAL( cxx_destructor_called_after_scope(), 0 )
+#else
+  FCTEST_CHECK_EQUAL( cxx_destructor_called(), 2 )
+#endif
+  write(0,'(A)') "-------------------------------------------------------------"
+  write(0,'(A)')
+#endif
+END_TEST
+
+TEST( test_shared_object_allocatable_list_manual_manual )
+#if 1
+  write(0,'(A)') "-------------------------------------------------------------"
+  write(0,'(A)') "TEST     test_shared_object_allocatable_list_manual_manual"
+  call reset_counters()
+  call test_shared_object_allocatable_list( final_auto = .false., deallocate_auto = .false. )
+#if defined(EC_HAVE_Fortran_FINALIZATION)
+  FCTEST_CHECK_EQUAL( cxx_destructor_called(), 2 )
+  FCTEST_CHECK_EQUAL( cxx_destructor_called_after_scope(), 0 )
+#else
+  FCTEST_CHECK_EQUAL( cxx_destructor_called(), 2 )
+#endif
+  write(0,'(A)') "-------------------------------------------------------------"
+  write(0,'(A)')
+#endif
+END_TEST
+
+! -----------------------------------------------------------------------------
+
+subroutine test_shared_object_automatic_list( final_auto )
+
+  logical :: final_auto
+  type(ObjectCXX) :: list(2)
+
+  write(0,'(A)') "~~~~~~~~~~~~~~ BEGIN SCOPE ~~~~~~~~~~~~~~~"
+
+  list(1) = ObjectCXX(1)
+  list(2) = ObjectCXX(2)
+  FCTEST_CHECK_EQUAL( list(1)%id(), 1 )
+  FCTEST_CHECK_EQUAL( list(1)%owners(), 1 )
+  FCTEST_CHECK_EQUAL( list(2)%id(), 2 )
+  FCTEST_CHECK_EQUAL( list(2)%owners(), 1 )
+
+  if( .not. final_auto ) then
+    call list(1)%final()
+    call list(2)%final()
+  endif
+
+  write(0,'(A)') "~~~~~~~~~~~~~~~ END SCOPE ~~~~~~~~~~~~~~~"
+  call end_scope()
+end subroutine
+
+TEST( test_shared_object_automatic_list_auto )
+#if 1
+  write(0,'(A)') "-------------------------------------------------------------"
+  write(0,'(A)') "TEST     test_shared_object_automatic_list_auto"
+  call reset_counters()
+  call test_shared_object_automatic_list( final_auto = .true. )
+#if defined(EC_HAVE_Fortran_FINALIZATION) && !defined(Fortran_FINAL_BROKEN_FOR_AUTOMATIC_ARRAY)
+  FCTEST_CHECK_EQUAL( cxx_destructor_called(), 2 )
+  FCTEST_CHECK_EQUAL( cxx_destructor_called_after_scope(), 2 )
+#else
+  FCTEST_CHECK_EQUAL( cxx_destructor_called(), 0 )
+#endif
+  write(0,'(A)') "-------------------------------------------------------------"
+  write(0,'(A)')
+#endif
+END_TEST
+
+TEST( test_shared_object_automatic_list_manual )
+#if 1
+  write(0,'(A)') "-------------------------------------------------------------"
+  write(0,'(A)') "TEST     test_shared_object_automatic_list_manual"
+  call reset_counters()
+  call test_shared_object_automatic_list( final_auto = .false. )
+#ifdef EC_HAVE_Fortran_FINALIZATION
+  FCTEST_CHECK_EQUAL( cxx_destructor_called(), 2 )
+  FCTEST_CHECK_EQUAL( cxx_destructor_called_after_scope(), 0 )
+#else
+  FCTEST_CHECK_EQUAL( cxx_destructor_called(), 2 )
 #endif
   write(0,'(A)') "-------------------------------------------------------------"
   write(0,'(A)')

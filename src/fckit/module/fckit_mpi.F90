@@ -16,11 +16,13 @@ module fckit_mpi_module
   !! library linked such as ```mpi_serial```
 
 use fckit_object_module, only: fckit_object
+use fckit_buffer_module, only: fckit_buffer
 
 implicit none
 private
 
 private :: fckit_object
+private :: fckit_buffer
 
 !========================================================================
 ! Public interface
@@ -1701,7 +1703,6 @@ end subroutine
 function broadcast_file(this,path,root) result(buffer)
   use, intrinsic :: iso_c_binding, only : c_int, c_size_t, c_ptr
   use fckit_c_interop_module, only : c_str
-  use fckit_buffer_module, only : fckit_buffer
   type(fckit_buffer) :: buffer
   class(fckit_mpi_comm), intent(in) :: this
   character(len=*), intent(in) :: path

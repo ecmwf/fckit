@@ -22,13 +22,14 @@ macro( check_final_support_case case )
                  ${CMAKE_CURRENT_BINARY_DIR} 
                  ${CMAKE_CURRENT_BINARY_DIR}/fckit-test-${case}.F90 
                  COMPILE_DEFINITIONS -D${case}
-                 OUTPUT_VARIABLE Fortran_${case} 
+                 OUTPUT_VARIABLE Fortran_${case}_compile_output
                  COPY_FILE ${CMAKE_CURRENT_BINARY_DIR}/${case}.bin )
 
     execute_process( COMMAND ${CMAKE_CURRENT_BINARY_DIR}/${case}.bin 
                      WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} 
                      RESULT_VARIABLE _run_res
                      OUTPUT_VARIABLE Fortran_${case} ERROR_VARIABLE _run_err )
+
 
     string( STRIP ${Fortran_${case}} Fortran_${case} )
     set( Fortran_${case} ${Fortran_${case}} CACHE STRING "" )
@@ -55,6 +56,22 @@ set( FINAL_SUPPORT_SOURCE
 #define TEST 3
 #endif
 
+#ifdef FINAL_NOT_PROPAGATING
+#define TEST 6
+#endif
+
+#ifdef FINAL_NOT_INHERITING
+#define TEST 7
+#endif
+
+#ifdef FINAL_BROKEN_FOR_ALLOCATABLE_ARRAY
+#define TEST 8
+#endif
+
+#ifdef FINAL_BROKEN_FOR_AUTOMATIC_ARRAY
+#define TEST 9
+#endif
+
 #ifndef TEST
 #define OUTPUT
 #endif
@@ -62,11 +79,12 @@ set( FINAL_SUPPORT_SOURCE
 module final_support_module
 implicit none
 public
+integer, parameter :: output_unit = 6
 
 type :: Object
-  logical, private :: return = .false.
-  logical, private :: initialized = .false.
-  logical, private :: finalized = .false.
+  logical, public :: return = .false.
+  logical, public :: initialized = .false.
+  logical, public :: finalized = .false.
 contains
   procedure, public :: copy => copy_f
   generic, public :: assignment(=) => copy
@@ -77,12 +95,29 @@ interface Object
   module procedure construct_Object
 end interface
 
-integer, parameter :: output_unit = 6
+type, extends(Object) :: ObjectDerivedWithFinal
+contains
+  final :: destructor_ObjectDerivedWithFinal
+endtype
+
+interface ObjectDerivedWithFinal
+  module procedure construct_ObjectDerivedWithFinal
+end interface
+
+type, extends(Object) :: ObjectDerivedWithoutFinal
+contains
+endtype
+
+interface ObjectDerivedWithoutFinal
+  module procedure construct_ObjectDerivedWithoutFinal
+end interface
+
 
 integer :: final_uninitialized = 0
 integer :: final_return        = 0
 integer :: final_initialized   = 0
-integer :: final_total         = 0
+integer :: final_base         = 0
+integer :: final_derived       = 0
 integer :: indent=0
 
 contains
@@ -91,7 +126,8 @@ subroutine reset()
   final_uninitialized = 0
   final_return        = 0
   final_initialized   = 0
-  final_total         = 0
+  final_base          = 0
+  final_derived       = 0
 end subroutine
 
 subroutine write_indented( string )
@@ -110,7 +146,8 @@ subroutine write_counters()
   write(0,*) 'final_uninitialized: ',final_uninitialized
   write(0,*) 'final_initialized:   ',final_initialized
   write(0,*) 'final_return:        ',final_return
-  write(0,*) 'final_total:         ',final_total
+  write(0,*) 'final_base:          ',final_base
+  write(0,*) 'final_derived:       ',final_derived
 #endif
 end subroutine
 
@@ -119,6 +156,24 @@ function construct_Object() result(this)
   this%initialized = .true.
   this%return = .true.
 end function
+
+function construct_ObjectDerivedWithFinal() result(this)
+  type(ObjectDerivedWithFinal) :: this
+  this%initialized = .true.
+  this%return = .true.
+end function
+
+function construct_ObjectDerivedWithoutFinal() result(this)
+  type(ObjectDerivedWithoutFinal) :: this
+  this%initialized = .true.
+  this%return = .true.
+end function
+
+subroutine destructor_ObjectDerivedWithFinal(this)
+  type(ObjectDerivedWithFinal) :: this
+  call write_indented( 'final( derived )' )
+  final_derived = final_derived + 1
+end subroutine
 
 subroutine copy_f(this,obj_in)
   class(Object), intent(inout) :: this
@@ -144,7 +199,7 @@ end subroutine
 
 subroutine destructor(this)
   type(Object), intent(inout) :: this
-  final_total = final_total + 1
+  final_base = final_base + 1
 
   if( .not. this%initialized ) then
     call write_indented( 'final( uninitialized )' )
@@ -240,6 +295,40 @@ subroutine test5
   indent = indent-1
 end subroutine
 
+subroutine test6
+  implicit none
+  type(ObjectDerivedWithFinal) :: obj
+  indent = indent+1
+  obj = ObjectDerivedWithFinal()
+  indent = indent-1
+  call write_indented('--- scope end ---')
+end subroutine
+
+subroutine test7
+  implicit none
+  type(ObjectDerivedWithoutFinal) :: obj
+  indent = indent+1
+  obj = ObjectDerivedWithoutFinal()
+  indent = indent-1
+  call write_indented('--- scope end ---')
+end subroutine
+
+subroutine test8
+  implicit none
+  type(Object), allocatable :: list(:)
+  allocate( list(2) )
+  list(1) = Object()
+  list(2) = Object()
+  deallocate( list )
+end subroutine
+
+subroutine test9
+  implicit none
+  type(Object) :: list(2)
+  list(1) = Object()
+  list(2) = Object()
+end subroutine
+
 subroutine run_test(i)
   integer, intent(in) :: i
   character(len=1) :: test_number
@@ -260,6 +349,10 @@ subroutine run_test(i)
   if( COMPARE_TEST(3) ) call test3
   if( COMPARE_TEST(4) ) call test4
   if( COMPARE_TEST(5) ) call test5
+  if( COMPARE_TEST(6) ) call test6
+  if( COMPARE_TEST(7) ) call test7
+  if( COMPARE_TEST(8) ) call test8
+  if( COMPARE_TEST(9) ) call test9
   indent = indent-1
   call write_indented( 'end subroutine test'//test_number )
   call write_counters()
@@ -344,6 +437,43 @@ program final_support
   if( final_uninitialized == 0 .and. final_initialized == 2 ) then
     call write_indented( 'Behaviour of GNU 6.3.0' )
   endif
+  
+  call run_test(6)
+#ifdef FINAL_NOT_PROPAGATING
+  if( final_derived == 1 .and. final_initialized == 0 ) then
+    write(output_unit,'(I0)',advance='no') 1
+  else
+    write(output_unit,'(I0)',advance='no') 0
+  endif
+#endif
+
+  call run_test(7)
+#ifdef FINAL_NOT_INHERITING
+  if( final_initialized == 0 ) then
+    write(output_unit,'(I0)',advance='no') 1
+  else
+    write(output_unit,'(I0)',advance='no') 0
+  endif
+#endif
+
+  call run_test(8)
+#ifdef FINAL_BROKEN_FOR_ALLOCATABLE_ARRAY
+  if( final_initialized == 0 ) then
+    write(output_unit,'(I0)',advance='no') 1
+  else
+    write(output_unit,'(I0)',advance='no') 0
+  endif
+#endif
+
+  call run_test(9)
+#ifdef FINAL_BROKEN_FOR_AUTOMATIC_ARRAY
+  if( final_initialized == 0 ) then
+    write(output_unit,'(I0)',advance='no') 1
+  else
+    write(output_unit,'(I0)',advance='no') 0
+  endif
+#endif
+
 end program
 " )
 
@@ -352,9 +482,20 @@ list( APPEND cases
   FINAL_UNINITIALIZED_LOCAL
   FINAL_UNINITIALIZED_INTENT_OUT
   FINAL_UNINITIALIZED_INTENT_INOUT
+  FINAL_NOT_PROPAGATING
+  FINAL_NOT_INHERITING
+  FINAL_BROKEN_FOR_ALLOCATABLE_ARRAY
+  FINAL_BROKEN_FOR_AUTOMATIC_ARRAY
 )
 foreach( case ${cases})
   check_final_support_case( ${case} )
 endforeach()
+
+file( WRITE ${CMAKE_CURRENT_BINARY_DIR}/fckit-final-support.F90 ${FINAL_SUPPORT_SOURCE} )
+ecbuild_add_executable(
+  TARGET  fckit-final-support
+  SOURCES ${CMAKE_CURRENT_BINARY_DIR}/fckit-final-support.F90
+)
+
 
 endmacro()
