@@ -9,11 +9,12 @@
 
 
 #include "fckit/fctest.h"
+#include "fckit/fckit_defines.h"
 
 ! -----------------------------------------------------------------------------
 
 module fcta_refcounting_f_fxt
-!use fckit_refcounted_module, only : fckit__new_Owned, fckit__delete_Owned
+use fckit_refcounted_module, only : fckit__new_Owned, fckit__delete_Owned
 use fckit_refcounted_fortran_module
 use fckit_c_interop_module
 use fctest
@@ -85,7 +86,7 @@ function RefObj__constructor(id) result(this)
   type(RefObj) :: this
   integer, intent(in) :: id
   write(0,*) "constructing obj ", id
-!  call this%reset_c_ptr( fckit__new_Owned() )
+  call this%reset_c_ptr( fckit__new_Owned() )
   write(0,*) "                    ptr = ",c_ptr_to_loc(this%c_ptr())
   allocate( this%payload )
   this%payload%id = id

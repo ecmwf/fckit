@@ -91,7 +91,9 @@ contains
 subroutine delete(this)
   use fckit_c_interop_module
   class(fckit_refcounted), intent(inout) :: this
-  write(0,*) "fckit_refcounted::delete"
+#ifdef Fortran_FINAL_DEBUGGING
+  write(0,*) "delete Owned"
+#endif
   call fckit__delete_Owned(this%c_ptr())
   call this%reset_c_ptr()
 end subroutine
@@ -99,29 +101,31 @@ end subroutine
 subroutine copy(this,obj_in)
   class(fckit_refcounted), intent(inout) :: this
   class(fckit_refcounted), target, intent(in) :: obj_in
-  write(0,*) "fckit_refcounted::copy"
   FCKIT_SUPPRESS_UNUSED( this )
   FCKIT_SUPPRESS_UNUSED( obj_in )
 end subroutine
 
 subroutine fckit_refcounted__final(this)
   class(fckit_refcounted), intent(inout) :: this
+#ifdef Fortran_FINAL_DEBUGGING
+  write(0,*) "fckit_refcounted__final"
+#endif
+
   if( .not. this%is_null() ) then
-    write(0,*) "fckit_refcounted__final owners ",this%owners()
     if( this%owners() >  0 ) then
-      write(0,*) __LINE__
+#ifdef Fortran_FINAL_DEBUGGING
+  write(0,*) "detach"
+#endif
       call this%detach()
       if( this%owners() == 0 ) then
-        write(0,*) __LINE__
-
+#ifdef Fortran_FINAL_DEBUGGING
+  write(0,*) "delete"
+#endif
         call this%delete()
       endif
     endif
   else
-    write(0,*) "fckit_refcounted__final (uninitialized)"
   endif
-
-
 end subroutine
 
 subroutine reset(obj_out,obj_in)
@@ -130,17 +134,13 @@ subroutine reset(obj_out,obj_in)
   class(fckit_refcounted), intent(in) :: obj_in
   if( obj_out /= obj_in ) then
     if( .not. obj_out%is_null() ) then
-      write(0,*) "final LHS"
       call obj_out%final()
     endif
     call obj_out%reset_c_ptr( obj_in%c_ptr() )
-    write(0,*) ">>> copy"
     call obj_out%copy(obj_in)
-    write(0,*) "<<< copy"
     call obj_out%attach()
   endif
   if( .not. obj_out%is_null() ) then
-    write(0,*) "reset --> owners = ",obj_out%owners()
   endif
 end subroutine
 
@@ -162,19 +162,30 @@ end function
 
 subroutine return(this)
   !! Transfer ownership to left hand side of "assignment(=)"
-  class(fckit_refcounted), intent(in) :: this
+  class(fckit_refcounted), intent(inout) :: this
 #ifdef Fortran_FINAL_FUNCTION_RESULT
-  ! final will be called, which will detach, so attach. 
-  call this%attach()
+  ! Cray example
+  ! final will be called, which will detach, so attach first
+  if( this%owners() == 0 ) then
+    write(0,*) "return --> attach"
+    call this%attach()
+  endif
 #else
   ! final will not be called, so detach manually
-  if( this%owners() > 0 ) call this%detach()
+  if( this%owners() > 0 ) then
+#ifdef Fortran_FINAL_DEBUGGING
+    write(0,*) "return --> detach"
+    call this%detach()
+#endif
+  endif
 #endif
 end subroutine
 
 subroutine fckit_refcounted__final_auto(this)
   type(fckit_refcounted), intent(inout) :: this
+#ifdef Fortran_FINAL_DEBUGGING
   write(0,*) "fckit_refcounted__final_auto"
+#endif
   call this%final()
 end subroutine
 

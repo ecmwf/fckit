@@ -366,6 +366,18 @@ subroutine test_shared_object( final_auto )
   obj3 = obj2
   FCTEST_CHECK_EQUAL( obj1%owners(), 3 )
   FCTEST_CHECK_EQUAL( obj3%id(), 7 )
+
+  write(0,*) "obj1 = obj3"
+  obj1 = obj3
+
+  FCTEST_CHECK_EQUAL( obj1%owners(), 3 )
+  FCTEST_CHECK_EQUAL( obj2%owners(), 3 )
+
+  write(0,*) "obj1 = ObjectCXX(4)"
+  obj1 = ObjectCXX(4)
+  FCTEST_CHECK_EQUAL( obj1%owners(), 1 )
+  FCTEST_CHECK_EQUAL( obj2%owners(), 2 )
+
   if( .not. final_auto ) then
     call obj1%final()
     FCTEST_CHECK_EQUAL( obj2%owners(), 2 )
@@ -384,7 +396,7 @@ TEST( test_shared_object_manual )
   write(0,'(A)') "TEST     test_shared_object_manual"
   call reset_counters()
   call test_shared_object( final_auto = .false. )
-  FCTEST_CHECK_EQUAL( cxx_destructor_called(), 1 )
+  FCTEST_CHECK_EQUAL( cxx_destructor_called(), 2 )
   write(0,'(A)') "-------------------------------------------------------------"
   write(0,'(A)')  
 #endif
@@ -397,7 +409,7 @@ TEST( test_shared_object_auto )
   call reset_counters()
   call test_shared_object( final_auto = .true. )
 #ifdef EC_HAVE_Fortran_FINALIZATION
-  FCTEST_CHECK_EQUAL( cxx_destructor_called(), 1 )
+  FCTEST_CHECK_EQUAL( cxx_destructor_called(), 2 )
 #else
   FCTEST_CHECK_EQUAL( cxx_destructor_called(), 0 )
 #endif

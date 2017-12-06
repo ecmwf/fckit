@@ -7,6 +7,7 @@
 ! does it submit to any jurisdiction.
 
 #include "fckit/fctest.h"
+#include "fckit/fckit_defines.h"
 
 TESTSUITE( test_mpi )
 
@@ -97,6 +98,13 @@ TEST( test_allreduce )
   integer(c_int)  :: int32,  res_int32,  int32_r3(4,3,2),   res_int32_r3(4,3,2), j
   integer(c_long) :: int64,  res_int64,  int64_r4(4,3,2,2), res_int64_r4(4,3,2,2), check_prod, check_sum
 
+  FCKIT_SUPPRESS_UNUSED( real64_r1 )
+  FCKIT_SUPPRESS_UNUSED( res_real64_r1 )
+  FCKIT_SUPPRESS_UNUSED( res_int32_r3 )
+  FCKIT_SUPPRESS_UNUSED( int32_r3 )
+  FCKIT_SUPPRESS_UNUSED( res_real32_r2 )
+  FCKIT_SUPPRESS_UNUSED( real32_r2 )
+
   write(0,*) "test_allreduce"
   comm = fckit_mpi_comm("world")
 
@@ -164,6 +172,10 @@ TEST( test_allreduce_inplace )
   real(c_float)   :: real32, real32_r2(3,2)
   integer(c_int)  :: int32,  int32_r3(4,3,2), j
   integer(c_long) :: int64,  int64_r4(4,3,2,2), check_prod, check_sum
+
+  FCKIT_SUPPRESS_UNUSED( real64_r1 )
+  FCKIT_SUPPRESS_UNUSED( int32_r3 )
+  FCKIT_SUPPRESS_UNUSED( real32_r2 )
 
   write(0,*) "test_allreduce_inplace"
   comm = fckit_mpi_comm("world")
@@ -246,6 +258,10 @@ TEST( test_broadcast )
   real(c_float)   :: real32, real32_r2(3,2)
   integer(c_int)  :: int32,  int32_r3(4,3,2)
   integer(c_long) :: int64,  int64_r4(4,3,2,2)
+
+  FCKIT_SUPPRESS_UNUSED( real64_r1 )
+  FCKIT_SUPPRESS_UNUSED( int64 )
+  FCKIT_SUPPRESS_UNUSED( real32_r2 )
 
   write(0,*) "test_broadcast"
   comm = fckit_mpi_comm("world")

@@ -129,13 +129,22 @@ end function
 
 subroutine return(this)
   !! Transfer ownership to left hand side of "assignment(=)"
-  class(fckit_refcounted_fortran), intent(in) :: this
+  class(fckit_refcounted_fortran), intent(inout) :: this
 #ifdef Fortran_FINAL_FUNCTION_RESULT
-  ! final will be called, which will detach, so attach.
-  if( this%owners() == 0 ) call this%attach()
+  ! Cray example
+  ! final will be called, which will detach, so attach first
+  if( this%owners() == 0 ) then
+    write(0,*) "return --> attach"
+    call this%attach()
+  endif
 #else
   ! final will not be called, so detach manually
-  if( this%owners() > 0 ) call this%detach()
+  if( this%owners() > 0 ) then
+#ifdef Fortran_FINAL_DEBUGGING
+    write(0,*) "return --> detach"
+    call this%detach()
+#endif
+  endif
 #endif
 end subroutine
 

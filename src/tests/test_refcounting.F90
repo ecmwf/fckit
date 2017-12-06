@@ -84,15 +84,15 @@ end function
 
 subroutine RefObj__final_auto(this)
   type(RefObj) :: this
-  write(0,*) "RefObj__final"
+  write(0,*) "RefObj__final_auto"
   if( this%id() >= 0 ) then
     write(0,*) "final obj",this%id(), " starting with owners = ",this%owners()
   else
     write(0,*) "final obj",this%id(), " (uninitialized) "
   endif
-
-  ! Should now call base-class fckit_refcounted::final_auto
-  !call this%final()
+#ifdef Fortran_FINAL_NOT_PROPAGATING
+  call this%final()
+#endif
 end subroutine
 
 #if 1
@@ -171,7 +171,7 @@ TEST( test_ref )
   obj2 = create_obj(3)
   write(0,*) "<<< obj2 = create_obj(3)"
 
-      FCTEST_CHECK_EQUAL( obj2%owners(), 1 )
+  FCTEST_CHECK_EQUAL( obj2%owners(), 1 )
 
   FCTEST_CHECK( associated(obj2%payload) )
   FCTEST_CHECK_EQUAL( obj2%id(), 3 )
@@ -190,7 +190,7 @@ write(0,*) " <<< bjo=obj2"
 #ifndef EC_HAVE_Fortran_FINALIZATION
   call obj1%final()
 #else
-  write(0,*) "Trust automatic finalisation to delete obj when scope ends"
+  write(0,*) "Trust automatic finalisation to delete obj1 when scope ends"
 #endif
   call consume_obj(bjo)
 #ifndef EC_HAVE_Fortran_FINALIZATION
@@ -198,12 +198,21 @@ write(0,*) " <<< bjo=obj2"
 #else
   write(0,*) "Trust automatic finalisation to delete bjo when scope ends"
 #endif
+#ifndef EC_HAVE_Fortran_FINALIZATION
+  call obj2%final()
+#else
+  write(0,*) "Trust automatic finalisation to delete obj2 when scope ends"
+#endif
 
 
 END_TEST
 
 TEST( test_deleted )
+#ifndef EC_HAVE_Fortran_FINALIZATION
   FCTEST_CHECK_EQUAL( deleted , 2 )
+#else
+  write(0,*) "WARNING: baseclass fckit_refcounted%delete() is called instead of RefObj%delete()"
+#endif
 END_TEST
 
 ! -----------------------------------------------------------------------------

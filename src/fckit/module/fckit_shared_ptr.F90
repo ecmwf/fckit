@@ -78,15 +78,17 @@ subroutine fckit_shared_ptr__final_auto(this)
 end subroutine
 
 subroutine fckit_shared_ptr__final(this)
-  use, intrinsic :: iso_c_binding, only : c_loc, c_null_ptr
+  use, intrinsic :: iso_c_binding, only : c_loc, c_associated, c_null_ptr
   class(fckit_shared_ptr), intent(inout) :: this
 
   ! Guard necessary for Cray compiler...
   ! ... when "this" has already been deallocated, and then
   ! fckit_shared_ptr__final_auto is called...
+#ifdef _CRAYFTN
   if( c_loc(this) == c_null_ptr ) then
     return
   endif
+#endif
 
   if( associated(this%shared_ptr_) ) then
 
@@ -162,6 +164,9 @@ subroutine reset_shared_ptr(obj_out,obj_in)
       call bad_cast()
     endif
   else
+#ifdef Fortran_FINAL_DEBUGGING
+    write(0,*) "reset_shared_ptr ( identity )"
+#endif
     if( obj_out%shared_ptr_cast() ) then ; endif
   endif
 end subroutine
