@@ -9,7 +9,8 @@
 #include "fckit/fckit_defines.h"
 
 module fckit_shared_object_module
-use fckit_object_module, only : fckit_object, fckit_c_deleter
+use fckit_object_module, only : fckit_object
+use fckit_c_interop_module, only : fckit_c_deleter, fckit_c_nodeleter
 use fckit_shared_ptr_module, only : fckit_shared_ptr
 implicit none
 private
@@ -19,6 +20,7 @@ private
 
 public :: fckit_shared_object
 public :: fckit_c_deleter
+public :: fckit_c_nodeleter
 
 !========================================================================
 

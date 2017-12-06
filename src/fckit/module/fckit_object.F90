@@ -18,7 +18,6 @@ private
 ! Public interface
 
 public fckit_object
-public fckit_c_deleter
 
 !========================================================================
 
@@ -68,24 +67,9 @@ end interface
 private :: c_ptr
 private :: c_null_ptr
 
-abstract interface
-  subroutine fckit_c_deleter_interface(cptr) bind(c)
-    use, intrinsic :: iso_c_binding
-    type(c_ptr), value :: cptr
-  end subroutine
-end interface
-
-
 ! =============================================================================
 CONTAINS
 ! =============================================================================
-
-function fckit_c_deleter( deleter )
-  use, intrinsic :: iso_c_binding, only : c_funloc
-  type(c_funptr) :: fckit_c_deleter
-  procedure(fckit_c_deleter_interface) :: deleter
-  fckit_c_deleter = c_funloc(deleter)
-end function
 
 function fckit_object_constructor( cptr, deleter ) result(this)
   use, intrinsic :: iso_c_binding, only : c_ptr, c_funptr
@@ -155,6 +139,7 @@ end function
 
 subroutine final( this )
   use, intrinsic :: iso_c_binding, only: c_ptr, c_funptr, c_f_procpointer, c_associated
+  use fckit_c_interop_module, only : fckit_c_deleter_interface
   class(fckit_object), intent(inout) :: this
   procedure(fckit_c_deleter_interface), pointer :: deleter
   if( c_associated( this%cpp_object_ptr ) ) then
@@ -164,12 +149,5 @@ subroutine final( this )
     endif
   endif
 end subroutine
-
-!========================================================================
-! Interface
-
-! subroutine final(this)
-!   class(fckit_object), intent(inout) :: this
-! end subroutine
 
 end module

@@ -20,12 +20,13 @@ module fckit_configuration_module
   !! for [[fckit_configuration_module:fckit_configuration(type)]] can create the
   !! configuration from a JSON file
 
-use fckit_shared_object_module, only : fckit_shared_object, fckit_c_deleter
+use fckit_shared_object_module, only : fckit_shared_object, fckit_c_deleter, fckit_c_nodeleter
 
 implicit none
 
 private :: fckit_shared_object
 private :: fckit_c_deleter
+private :: fckit_c_nodeleter
 
 public  :: fckit_configuration
 public  :: fckit_YAMLConfiguration
@@ -330,8 +331,7 @@ function ctor_from_cptr(cptr) result(this)
   use, intrinsic :: iso_c_binding, only : c_ptr
   type(c_ptr), value :: cptr
   type(fckit_Configuration) :: this
-  call this%share_c_ptr( cptr, &
-    & fckit_c_deleter(c_fckit_configuration_delete) )
+  call this%share_c_ptr( cptr, fckit_c_nodeleter() )
   call this%return()
 end function
 

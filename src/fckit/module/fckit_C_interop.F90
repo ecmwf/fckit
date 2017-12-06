@@ -22,6 +22,9 @@ public :: c_ptr_to_string
 public :: c_str
 public :: c_str_no_trim
 public :: c_str_right_trim
+public :: fckit_c_deleter_interface
+public :: fckit_c_deleter
+public :: fckit_c_nodeleter
 
 ! =============================================================================
 ! External functions
@@ -48,9 +51,35 @@ interface
   end function
 end interface
 
+abstract interface
+  subroutine fckit_c_deleter_interface(cptr) bind(c)
+    use, intrinsic :: iso_c_binding
+    type(c_ptr), value :: cptr
+  end subroutine
+end interface
+
+
 ! =============================================================================
 CONTAINS
 ! =============================================================================
+
+function fckit_c_deleter( deleter )
+  use, intrinsic :: iso_c_binding, only : c_funloc, c_funptr
+  type(c_funptr) :: fckit_c_deleter
+  procedure(fckit_c_deleter_interface) :: deleter
+  fckit_c_deleter = c_funloc(deleter)
+end function
+
+subroutine fckit_c_nodelete(cptr) bind(c)
+  use, intrinsic :: iso_c_binding
+  type(c_ptr), value :: cptr
+end subroutine
+
+function fckit_c_nodeleter()
+  use, intrinsic :: iso_c_binding, only : c_funloc, c_funptr
+  type(c_funptr) :: fckit_c_nodeleter
+  fckit_c_nodeleter = c_funloc(fckit_c_nodelete)
+end function
 
 function c_ptr_compare_equal(p1,p2) result(equal)
   use, intrinsic :: iso_c_binding, only: c_ptr

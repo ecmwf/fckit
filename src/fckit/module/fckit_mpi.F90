@@ -1708,7 +1708,7 @@ function broadcast_file(this,path,root) result(buffer)
   class(fckit_mpi_comm), intent(in) :: this
   character(len=*), intent(in) :: path
   integer(c_int), intent(in) :: root
-  buffer = fckit_buffer( fckit__mpi__broadcast_file(this%c_ptr(),c_str(path),int(root,c_size_t)) )
+  buffer = fckit_buffer( fckit__mpi__broadcast_file(this%c_ptr(),c_str(path),int(root,c_size_t)), share=.true. )
   call buffer%return()
 end function
 

@@ -11,11 +11,12 @@
 module fckit_buffer_module
   !! Wrap eckit Buffer capabilities.
 
-use fckit_shared_object_module, only: fckit_shared_object, fckit_c_deleter
+use fckit_shared_object_module, only: fckit_shared_object, fckit_c_deleter, fckit_c_nodeleter
 implicit none
 
 private :: fckit_shared_object
 private :: fckit_c_deleter
+private :: fckit_c_nodeleter
 
 !========================================================================
 ! Public interface
@@ -73,11 +74,19 @@ end interface
 contains
 !---------------------------------------------------------------------------------------
 
-function ctor_from_cptr(cptr) result(this)
+function ctor_from_cptr(cptr, share) result(this)
   use, intrinsic :: iso_c_binding, only : c_ptr
   type(c_ptr), value :: cptr
   type(fckit_buffer) :: this
-  call this%share_c_ptr( cptr , fckit_c_deleter(c_fckit_buffer_delete) )
+  logical, optional  :: share
+  logical :: opt_share
+  opt_share = .false.
+  if( present(share) ) opt_share = share
+  if( opt_share ) then
+    call this%share_c_ptr( cptr , fckit_c_deleter(c_fckit_buffer_delete) )
+  else
+    call this%share_c_ptr( cptr , fckit_c_nodeleter() )
+  endif
   call this%return()
 end function
 
