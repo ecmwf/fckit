@@ -202,6 +202,9 @@ subroutine return(this)
   ! Cray example
   ! final will be called, which will detach, so attach first
   if( this%owners() == 0 ) then
+    #if FCKIT_FINAL_DEBUGGING
+        write(0,*) "return --> detach"
+    #endif
     call this%attach()
   endif
 #else
@@ -209,8 +212,8 @@ subroutine return(this)
   if( this%owners() > 0 ) then
 #if FCKIT_FINAL_DEBUGGING
     write(0,*) "return --> detach"
-    call this%detach()
 #endif
+    call this%detach()
   endif
 #endif
 #if FCKIT_FINAL_DEBUGGING
