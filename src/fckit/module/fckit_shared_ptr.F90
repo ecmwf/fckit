@@ -74,13 +74,6 @@ subroutine fckit_shared_ptr__final_auto(this)
 #if FCKIT_FINAL_DEBUGGING
   write(0,*) "fckit_shared_ptr__final_auto"
 #endif
-  call this%final()
-end subroutine
-
-subroutine fckit_shared_ptr__final(this)
-  use, intrinsic :: iso_c_binding, only : c_loc, c_associated, c_null_ptr
-  class(fckit_shared_ptr), intent(inout) :: this
-
   ! Guard necessary for Cray compiler...
   ! ... when "this" has already been deallocated, and then
   ! fckit_shared_ptr__final_auto is called...
@@ -90,29 +83,37 @@ subroutine fckit_shared_ptr__final(this)
   endif
 #endif
 
-  if( associated(this%shared_ptr_) ) then
+  call this%final()
+end subroutine
 
-#if FCKIT_FINAL_DEBUGGING
-    if( this%return_value ) then
-      write(0,*) "fckit_shared_ptr__final on return value, owners = ", this%owners()
-    endif
-#endif
+subroutine fckit_shared_ptr__final(this)
+  use, intrinsic :: iso_c_binding, only : c_loc, c_associated, c_null_ptr
+  class(fckit_shared_ptr), intent(inout) :: this
 
-    if( this%owners() > 0 ) then
+  if( .not. associated(this%shared_ptr_) ) then
 #if FCKIT_FINAL_DEBUGGING
-      write(0,*) "fckit_shared_ptr__final  , owners = ", this%owners()
-#endif
-      call this%detach()
-      if( this%owners() == 0 ) then
-        call fckit_finalise(this%shared_ptr_)
-        deallocate(this%shared_ptr_)
-        deallocate(this%refcount_)
-      endif
-    endif
-#if FCKIT_FINAL_DEBUGGING
-  else
     write(0,*) "fckit_shared_ptr__final  (uninitialised --> no-op)"
 #endif
+    call this%clear()
+    return
+  endif
+
+#if FCKIT_FINAL_DEBUGGING
+  if( this%return_value ) then
+    write(0,*) "fckit_shared_ptr__final on return value, owners = ", this%owners()
+  endif
+#endif
+
+  if( this%owners() > 0 ) then
+#if FCKIT_FINAL_DEBUGGING
+    write(0,*) "fckit_shared_ptr__final  , owners = ", this%owners()
+#endif
+    call this%detach()
+    if( this%owners() == 0 ) then
+      call fckit_finalise(this%shared_ptr_)
+      deallocate(this%shared_ptr_)
+      deallocate(this%refcount_)
+    endif
   endif
 
   call this%clear()
