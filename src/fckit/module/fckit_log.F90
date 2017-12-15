@@ -136,10 +136,10 @@ subroutine debug(msg,newl,flush)
     !! Default ```.true.```
   logical, intent(in), optional :: flush
     !! Flush channel after message.
-    !! Default ```.false.```
+    !! Default ```.true.```
   integer :: opt_newl, opt_flush
-  opt_newl  = 1 ; if( present(newl) ) then; if( .not. newl ) opt_newl  = 0; endif
-  opt_flush = 0 ; if( present(flush)) then; if(      flush ) opt_flush = 1; endif
+  opt_newl  = 1 ; if( present(newl) ) then; if( .not.  newl ) opt_newl  = 0; endif
+  opt_flush = 1 ; if( present(flush)) then; if( .not. flush ) opt_flush = 0; endif
   call fckit__log_debug(c_str_right_trim(msg),opt_newl,opt_flush)
 end subroutine
 
@@ -154,10 +154,10 @@ subroutine info(msg,newl,flush)
     !! Default ```.true.```
   logical, intent(in), optional :: flush
     !! Flush channel after message.
-    !! Default ```.false.```
+    !! Default ```.true.```
   integer :: opt_newl, opt_flush
-  opt_newl  = 1 ; if( present(newl) ) then; if( .not. newl ) opt_newl  = 0; endif
-  opt_flush = 0 ; if( present(flush)) then; if(      flush ) opt_flush = 1; endif
+  opt_newl  = 1 ; if( present(newl) ) then; if( .not.  newl ) opt_newl  = 0; endif
+  opt_flush = 1 ; if( present(flush)) then; if( .not. flush ) opt_flush = 0; endif
   call fckit__log_info(c_str_right_trim(msg),opt_newl,opt_flush)
 end subroutine
 
@@ -172,10 +172,10 @@ subroutine warning(msg,newl,flush)
     !! Default ```.true.```
   logical, intent(in), optional :: flush
     !! Flush channel after message.
-    !! Default ```.false.```
+    !! Default ```.true.```
   integer :: opt_newl, opt_flush
-  opt_newl  = 1 ; if( present(newl) ) then; if( .not. newl ) opt_newl  = 0; endif
-  opt_flush = 0 ; if( present(flush)) then; if(      flush ) opt_flush = 1; endif
+  opt_newl  = 1 ; if( present(newl) ) then; if( .not.  newl ) opt_newl  = 0; endif
+  opt_flush = 1 ; if( present(flush)) then; if( .not. flush ) opt_flush = 0; endif
   call fckit__log_warning(c_str_right_trim(msg),opt_newl,opt_flush)
 end subroutine
 
@@ -190,10 +190,10 @@ subroutine error(msg,newl,flush)
     !! Default ```.true.```
   logical, intent(in), optional :: flush
     !! Flush channel after message.
-    !! Default ```.false.```
+    !! Default ```.true.```
   integer :: opt_newl, opt_flush
-  opt_newl  = 1 ; if( present(newl) ) then; if( .not. newl ) opt_newl  = 0; endif
-  opt_flush = 0 ; if( present(flush)) then; if(      flush ) opt_flush = 1; endif
+  opt_newl  = 1 ; if( present(newl) ) then; if( .not.  newl ) opt_newl  = 0; endif
+  opt_flush = 1 ; if( present(flush)) then; if( .not. flush ) opt_flush = 0; endif
   call fckit__log_error(c_str_right_trim(msg),opt_newl,opt_flush)
 end subroutine
 
