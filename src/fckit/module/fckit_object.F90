@@ -55,10 +55,12 @@ contains
 
   ! Following line is to avoid PGI compiler bug
   procedure, private :: fckit_object__c_ptr
-  
+
   procedure, public :: final
 
+#if EC_HAVE_Fortran_FINALIZATION
   final :: fckit_object_final_auto
+#endif
 
 end type
 
