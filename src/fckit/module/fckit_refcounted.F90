@@ -6,7 +6,7 @@
 ! granted to it by virtue of its status as an intergovernmental organisation nor
 ! does it submit to any jurisdiction.
 
-#include "fckit/fckit_defines.h"
+#include "fckit/defines.h"
 
 module fckit_refcounted_module
   !! Provides [[fckit_refcounted_module:fckit_refcounted(type)]],
@@ -47,7 +47,7 @@ contains
   procedure, public :: copy
   procedure, public :: delete
 
-#if EC_HAVE_Fortran_FINALIZATION
+#if FCKIT_HAVE_FINAL
  final :: fckit_refcounted__final_auto
 #endif
 
@@ -163,7 +163,7 @@ end function
 subroutine return(this)
   !! Transfer ownership to left hand side of "assignment(=)"
   class(fckit_refcounted), intent(inout) :: this
-#if Fortran_FINAL_FUNCTION_RESULT
+#if FCKIT_FINAL_FUNCTION_RESULT
   ! Cray example
   ! final will be called, which will detach, so attach first
   if( this%owners() == 0 ) then

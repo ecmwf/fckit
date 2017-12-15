@@ -7,7 +7,7 @@
 ! does it submit to any jurisdiction.
 
 #include "fckit/fctest.h"
-#include "fckit/fckit_defines.h"
+#include "fckit/defines.h"
 
 TESTSUITE( test_broadcast_file )
 
@@ -41,7 +41,7 @@ TEST( broadcast_file_inline )
   comm = fckit_mpi_comm()
   config = fckit_YAMLConfiguration( comm%broadcast_file("fctest_broadcast.json",0) )
   FCTEST_CHECK( config%has("location") )
-#if ! EC_HAVE_Fortran_FINALIZATION
+#if ! FCKIT_HAVE_FINAL
   call config%final()
 #endif
   write(0,*) "~~~~~~~~~~~~~~~ SCOPE END ~~~~~~~~~~~~~~~~"
@@ -63,7 +63,7 @@ TEST( broadcast_file_arg )
   config = fckit_YAMLConfiguration( buffer )
   FCTEST_CHECK( config%has("location") )
   FCTEST_CHECK_EQUAL( buffer%owners(), 1 )
-#if ! EC_HAVE_Fortran_FINALIZATION
+#if ! FCKIT_HAVE_FINAL
   call buffer%final()
 #endif
   write(0,*) "~~~~~~~~~~~~~~~ SCOPE END ~~~~~~~~~~~~~~~~"

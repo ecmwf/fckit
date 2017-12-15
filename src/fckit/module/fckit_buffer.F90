@@ -6,7 +6,7 @@
 ! granted to it by virtue of its status as an intergovernmental organisation nor
 ! does it submit to any jurisdiction.
 
-#include "fckit/fckit_defines.h"
+#include "fckit/defines.h"
 
 module fckit_buffer_module
   !! Wrap eckit Buffer capabilities.
@@ -60,7 +60,7 @@ type, extends(fckit_shared_object) :: fckit_buffer
 contains
   procedure, public :: str
 
-#if Fortran_FINAL_NOT_INHERITING
+#if FCKIT_FINAL_NOT_INHERITING
   final :: fckit_buffer__final_auto
 #endif
 
@@ -114,7 +114,7 @@ subroutine fckit_buffer__final_auto(this)
 #if FCKIT_FINAL_DEBUGGING
   write(0,*) "fckit_buffer__final_auto"
 #endif
-#if Fortran_FINAL_NOT_PROPAGATING
+#if FCKIT_FINAL_NOT_PROPAGATING
   call this%final()
 #endif
   FCKIT_SUPPRESS_UNUSED( this )

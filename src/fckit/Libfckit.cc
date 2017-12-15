@@ -12,7 +12,7 @@
 #include <algorithm>
 
 #include "fckit/Libfckit.h"
-#include "fckit/fckit_defines.h"
+#include "fckit/defines.h"
 #include "eckit/eckit_version.h"
 
 namespace fckit {

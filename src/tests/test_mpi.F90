@@ -7,7 +7,7 @@
 ! does it submit to any jurisdiction.
 
 #include "fckit/fctest.h"
-#include "fckit/fckit_defines.h"
+#include "fckit/defines.h"
 
 TESTSUITE( test_mpi )
 

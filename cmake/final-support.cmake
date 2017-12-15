@@ -15,24 +15,24 @@ endmacro()
 
 macro( check_final_support_case case )
 
-  if( NOT DEFINED Fortran_${case} )
+  if( NOT DEFINED FCKIT_${case} )
     file( WRITE ${CMAKE_CURRENT_BINARY_DIR}/fckit-test-${case}.F90 ${FINAL_SUPPORT_SOURCE} )
 
     try_compile( ${case}_compiled
-                 ${CMAKE_CURRENT_BINARY_DIR} 
-                 ${CMAKE_CURRENT_BINARY_DIR}/fckit-test-${case}.F90 
+                 ${CMAKE_CURRENT_BINARY_DIR}
+                 ${CMAKE_CURRENT_BINARY_DIR}/fckit-test-${case}.F90
                  COMPILE_DEFINITIONS -D${case}
-                 OUTPUT_VARIABLE Fortran_${case}_compile_output
+                 OUTPUT_VARIABLE FCKIT_${case}_compile_output
                  COPY_FILE ${CMAKE_CURRENT_BINARY_DIR}/${case}.bin )
 
-    execute_process( COMMAND ${CMAKE_CURRENT_BINARY_DIR}/${case}.bin 
-                     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} 
+    execute_process( COMMAND ${CMAKE_CURRENT_BINARY_DIR}/${case}.bin
+                     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
                      RESULT_VARIABLE _run_res
-                     OUTPUT_VARIABLE Fortran_${case} ERROR_VARIABLE _run_err )
+                     OUTPUT_VARIABLE FCKIT_${case} ERROR_VARIABLE _run_err )
 
 
-    string( STRIP ${Fortran_${case}} Fortran_${case} )
-    set( Fortran_${case} ${Fortran_${case}} CACHE STRING "" )
+    string( STRIP ${FCKIT_${case}} FCKIT_${case} )
+    set( FCKIT_${case} ${FCKIT_${case}} CACHE STRING "" )
     debug_test( ${case} )
   endif()
 
@@ -452,7 +452,7 @@ program final_support
   if( final_uninitialized == 0 .and. final_initialized == 2 ) then
     call write_indented( 'Behaviour of GNU 6.3.0' )
   endif
-  
+
   call run_test(6)
 #ifdef FINAL_NOT_PROPAGATING
   if( final_derived > 0 .and. final_initialized == 0 ) then

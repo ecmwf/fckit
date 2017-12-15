@@ -6,7 +6,7 @@
 ! granted to it by virtue of its status as an intergovernmental organisation nor
 ! does it submit to any jurisdiction.
 
-#include "fckit/fckit_defines.h"
+#include "fckit/defines.h"
 
 module fckit_object_module
   !! Provides abstract base class [[fckit_object_module:fckit_object(type)]]
@@ -58,7 +58,7 @@ contains
 
   procedure, public :: final
 
-#if EC_HAVE_Fortran_FINALIZATION
+#if FCKIT_HAVE_FINAL
   final :: fckit_object_final_auto
 #endif
 

@@ -9,7 +9,7 @@
 
 
 #include "fckit/fctest.h"
-#include "fckit/fckit_defines.h"
+#include "fckit/defines.h"
 
 ! -----------------------------------------------------------------------------
 
@@ -34,7 +34,7 @@ contains
   procedure :: copy => RefObj__copy
   procedure :: id
 
-#if EC_HAVE_Fortran_FINALIZATION
+#if FCKIT_HAVE_FINAL
   final :: RefObj__final
 #endif
 endtype
@@ -147,7 +147,7 @@ TEST( test_ref )
   use fckit_c_interop_module
   type(RefObj) :: obj, bjo
 
-#if EC_HAVE_Fortran_FINALIZATION
+#if FCKIT_HAVE_FINAL
   write(0,*) "Fortran supports automatic finalization!"
 #endif
 
@@ -171,11 +171,11 @@ TEST( test_ref )
   obj = bjo
   FCTEST_CHECK_EQUAL( obj%owners(), 2 )
 
-#if ! EC_HAVE_Fortran_FINALIZATION
+#if ! FCKIT_HAVE_FINAL
   call obj%final()
 #endif
   call consume_obj(bjo)
-#if ! EC_HAVE_Fortran_FINALIZATION
+#if ! FCKIT_HAVE_FINAL
   call bjo%final()
 #endif
 

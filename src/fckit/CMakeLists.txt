@@ -12,7 +12,8 @@ add_custom_target( fctest_includes SOURCES
 
 install( FILES ../../tools/fctest_generate_runner.py DESTINATION libexec )
 
-configure_file(fckit_defines.h.in  fckit_defines.h)
+configure_file(defines.h.in  defines.h)
+install( FILES ${CMAKE_CURRENT_BINARY_DIR}/defines.h DESTINATION ${INSTALL_INCLUDE_DIR}/fckit )
 
 if( HAVE_ECKIT )
 list( APPEND eckit_required_src

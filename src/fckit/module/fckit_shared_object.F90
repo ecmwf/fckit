@@ -6,7 +6,7 @@
 ! granted to it by virtue of its status as an intergovernmental organisation nor
 ! does it submit to any jurisdiction.
 
-#include "fckit/fckit_defines.h"
+#include "fckit/defines.h"
 
 module fckit_shared_object_module
 use fckit_object_module, only : fckit_object
@@ -41,7 +41,7 @@ contains
 !                from derived types
 !     - Cray-8.5.6 needs this as well as it otherwise does not call constructor from
 !                  from function returns
-#if Fortran_FINAL_NOT_INHERITING
+#if FCKIT_FINAL_NOT_INHERITING
   final :: fckit_shared_object__final_auto
 #endif
 
@@ -61,7 +61,7 @@ subroutine fckit_shared_object__final_auto(this)
 #if FCKIT_FINAL_DEBUGGING
   write(0,*) "fckit_shared_object__final_auto"
 #endif
-#if Fortran_FINAL_NOT_PROPAGATING
+#if FCKIT_FINAL_NOT_PROPAGATING
   call this%final()
 #endif
   FCKIT_SUPPRESS_UNUSED( this )
@@ -89,7 +89,7 @@ subroutine share_c_ptr(this, cptr, deleter)
   type(c_funptr), optional :: deleter
   allocate( fckit_object::this%shared_object_ )
   if( present( cptr ) ) then
-    if( present( deleter) ) then 
+    if( present( deleter) ) then
       call this%shared_object_%reset_c_ptr( cptr, deleter )
     else
       call this%shared_object_%reset_c_ptr( cptr )

@@ -8,7 +8,7 @@
 
 
 #include "fckit/fctest.h"
-#include "fckit/fckit_defines.h"
+#include "fckit/defines.h"
 
 ! -----------------------------------------------------------------------------
 
@@ -33,7 +33,7 @@ contains
   procedure, public :: copy   => RefObj__copy
   procedure :: id
 
-#if  EC_HAVE_Fortran_FINALIZATION
+#if  FCKIT_HAVE_FINAL
   final :: RefObj__final_auto
 #endif
 
@@ -85,7 +85,7 @@ subroutine RefObj__final_auto(this)
   else
     write(0,*) "final obj",this%id(), " (uninitialized) "
   endif
-#if Fortran_FINAL_NOT_PROPAGATING
+#if FCKIT_FINAL_NOT_PROPAGATING
   call this%final()
 #endif
 end subroutine
@@ -144,7 +144,7 @@ TEST( test_ref )
   use fckit_c_interop_module
   type(RefObj) :: obj1, bjo, obj2
 
-#if EC_HAVE_Fortran_FINALIZATION
+#if FCKIT_HAVE_FINAL
   write(0,*) "Fortran supports automatic finalization!"
 #endif
 
@@ -181,18 +181,18 @@ write(0,*) " <<< bjo=obj2"
 
   FCTEST_CHECK_EQUAL( obj1%owners(), 1 )
 
-#if ! EC_HAVE_Fortran_FINALIZATION
+#if ! FCKIT_HAVE_FINAL
   call obj1%final()
 #else
   write(0,*) "Trust automatic finalisation to delete obj1 when scope ends"
 #endif
   call consume_obj(bjo)
-#if ! EC_HAVE_Fortran_FINALIZATION
+#if ! FCKIT_HAVE_FINAL
   call bjo%final()
 #else
   write(0,*) "Trust automatic finalisation to delete bjo when scope ends"
 #endif
-#if ! EC_HAVE_Fortran_FINALIZATION
+#if ! FCKIT_HAVE_FINAL
   call obj2%final()
 #else
   write(0,*) "Trust automatic finalisation to delete obj2 when scope ends"
@@ -202,7 +202,7 @@ write(0,*) " <<< bjo=obj2"
 END_TEST
 
 TEST( test_deleted )
-#if ! EC_HAVE_Fortran_FINALIZATION
+#if ! FCKIT_HAVE_FINAL
   FCTEST_CHECK_EQUAL( deleted , 2 )
 #else
   write(0,*) "WARNING: baseclass fckit_refcounted%delete() is called instead of RefObj%delete()"

@@ -1,0 +1,33 @@
+#if 0
+(C) Copyright 2013-2017 ECMWF.
+
+This software is licensed under the terms of the Apache Licence Version 2.0
+which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+In applying this licence, ECMWF does not waive the privileges and immunities
+granted to it by virtue of its status as an intergovernmental organisation nor
+does it submit to any jurisdiction.
+#endif
+
+#ifndef FCKIT_DEFINES_H
+#define FCKIT_DEFINES_H
+
+#define FCKIT_GIT_SHA1      "@FCKIT_GIT_SHA1@"
+#define FCKIT_VERSION       "@FCKIT_VERSION@"
+
+#define FCKIT_HAVE_FINAL                           @FCKIT_HAVE_FINAL@
+#define FCKIT_FINAL_FUNCTION_RESULT                @FCKIT_FINAL_FUNCTION_RESULT@
+#define FCKIT_FINAL_UNINITIALIZED_LOCAL            @FCKIT_FINAL_UNINITIALIZED_LOCAL@
+#define FCKIT_FINAL_UNINITIALIZED_INTENT_OUT       @FCKIT_FINAL_UNINITIALIZED_INTENT_OUT@
+#define FCKIT_FINAL_UNINITIALIZED_INTENT_INOUT     @FCKIT_FINAL_UNINITIALIZED_INTENT_INOUT@
+#define FCKIT_FINAL_NOT_PROPAGATING                @FCKIT_FINAL_NOT_PROPAGATING@
+#define FCKIT_FINAL_NOT_INHERITING                 @FCKIT_FINAL_NOT_INHERITING@
+#define FCKIT_FINAL_BROKEN_FOR_ALLOCATABLE_ARRAY   @FCKIT_FINAL_BROKEN_FOR_ALLOCATABLE_ARRAY@
+#define FCKIT_FINAL_BROKEN_FOR_AUTOMATIC_ARRAY     @FCKIT_FINAL_BROKEN_FOR_AUTOMATIC_ARRAY@
+
+#define FCKIT_FINAL_DEBUGGING  0
+
+#define FCKIT_SUPPRESS_UNUSED( X ) \
+associate( unused_ => X ); \
+end associate
+
+#endif

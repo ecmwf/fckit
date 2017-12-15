@@ -6,7 +6,7 @@
 ! granted to it by virtue of its status as an intergovernmental organisation nor
 ! does it submit to any jurisdiction.
 
-#include "fckit/fckit_defines.h"
+#include "fckit/defines.h"
 
 module fckit_configuration_module
   !! author: Willem Deconinck
@@ -66,7 +66,7 @@ TYPE, extends(fckit_shared_object) :: fckit_configuration
 
 contains
 
-#if Fortran_FINAL_NOT_INHERITING
+#if FCKIT_FINAL_NOT_INHERITING
   final :: fckit_configuration__final_auto
 #endif
 
@@ -314,7 +314,7 @@ subroutine fckit_configuration__final_auto(this)
 #if FCKIT_FINAL_DEBUGGING
   write(0,*) "fckit_configuration__final_auto"
 #endif
-#if Fortran_FINAL_NOT_PROPAGATING
+#if FCKIT_FINAL_NOT_PROPAGATING
   call this%final()
 #endif
   FCKIT_SUPPRESS_UNUSED( this )

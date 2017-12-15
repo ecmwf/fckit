@@ -6,7 +6,7 @@
 ! granted to it by virtue of its status as an intergovernmental organisation nor
 ! does it submit to any jurisdiction.
 #ifndef FORD
-#include "fckit_defines.h"
+#include "defines.h"
 #endif
 
 module fckit_module

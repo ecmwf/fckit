@@ -6,7 +6,7 @@
 ! granted to it by virtue of its status as an intergovernmental organisation nor
 ! does it submit to any jurisdiction.
 
-#include "fckit/fckit_defines.h"
+#include "fckit/defines.h"
 
 module fckit_mpi_module
   !! Wrap eckit MPI capabilities.
@@ -412,7 +412,7 @@ contains
   !> MPI wait for this communicator
   procedure, public :: wait
 
-#if EC_HAVE_Fortran_FINALIZATION
+#if FCKIT_HAVE_FINAL
   final :: fckit_mpi_comm__final_auto
 #endif
 
