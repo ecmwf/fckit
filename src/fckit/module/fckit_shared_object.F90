@@ -11,7 +11,8 @@
 module fckit_shared_object_module
 use fckit_object_module, only : fckit_object
 use fckit_c_interop_module, only : fckit_c_deleter, fckit_c_nodeleter
-use fckit_shared_ptr_module, only : fckit_shared_ptr
+use fckit_shared_ptr_module, only : fckit_shared_ptr, fckit_refcount_interface
+use fckit_shared_ptr_module, only : fckit_external, fckit_owned
 implicit none
 private
 
@@ -51,6 +52,7 @@ end type
 
 private :: fckit_object
 private :: fckit_shared_ptr
+private :: fckit_refcount_interface
 
 !========================================================================
 CONTAINS
@@ -82,11 +84,13 @@ function shared_ptr_cast(this) result(success)
   end select
 end function
 
-subroutine reset_c_ptr(this, cptr, deleter)
+subroutine reset_c_ptr(this, cptr, deleter, refcount )
   use, intrinsic :: iso_c_binding, only : c_ptr, c_funptr
+  implicit none
   class(fckit_shared_object) :: this
   type(c_ptr), optional :: cptr
   type(c_funptr), optional :: deleter
+  procedure(fckit_refcount_interface), optional :: refcount
   allocate( fckit_object::this%shared_object_ )
   if( present( cptr ) ) then
     if( present( deleter) ) then
@@ -97,7 +101,11 @@ subroutine reset_c_ptr(this, cptr, deleter)
   else
     call this%shared_object_%reset_c_ptr()
   endif
-  call this%share( this%shared_object_ )
+  if( present(refcount) ) then
+    call this%share( this%shared_object_, refcount )
+  else
+    call this%share( this%shared_object_ )
+  endif
 end subroutine
 
 function fckit_shared_object_c_ptr(this) result(cptr)
