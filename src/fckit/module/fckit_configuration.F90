@@ -322,7 +322,7 @@ end subroutine
 
 function ctor() result(this)
   type(fckit_Configuration) :: this
-  call this%share_c_ptr( c_fckit_configuration_new(), &
+  call this%reset_c_ptr( c_fckit_configuration_new(), &
     & fckit_c_deleter(c_fckit_configuration_delete) )
   call this%return()
 end function
@@ -331,7 +331,7 @@ function ctor_from_cptr(cptr) result(this)
   use, intrinsic :: iso_c_binding, only : c_ptr
   type(c_ptr), value :: cptr
   type(fckit_Configuration) :: this
-  call this%share_c_ptr( cptr, fckit_c_nodeleter() )
+  call this%reset_c_ptr( cptr, fckit_c_nodeleter() )
   call this%return()
 end function
 
@@ -340,7 +340,7 @@ function ctor_from_jsonstr(json) result(this)
   use fckit_c_interop_module, only : c_str
   type(fckit_Configuration) :: this
   character(len=*), intent(in) :: json
-  call this%share_c_ptr( c_fckit_configuration_new_from_json(c_str(json)), &
+  call this%reset_c_ptr( c_fckit_configuration_new_from_json(c_str(json)), &
     & fckit_c_deleter(c_fckit_configuration_delete) )
   call this%return()
 end function
@@ -350,7 +350,7 @@ function ctor_from_jsonfile(path) result(this)
   use fckit_pathname_module, only : fckit_pathname
   type(fckit_Configuration) :: this
   type(fckit_pathname), intent(in) :: path
-  call this%share_c_ptr( c_fckit_configuration_new_from_file(c_str(path%str())), &
+  call this%reset_c_ptr( c_fckit_configuration_new_from_file(c_str(path%str())), &
     & fckit_c_deleter(c_fckit_configuration_delete) )
   call this%return()
 end function
@@ -360,7 +360,7 @@ function ctor_from_buffer(buffer) result(this)
   use fckit_buffer_module, only : fckit_buffer
   type(fckit_Configuration) :: this
   type(fckit_buffer), intent(in) :: buffer
-  call this%share_c_ptr( c_fckit_configuration_new_from_buffer(buffer%c_ptr()), &
+  call this%reset_c_ptr( c_fckit_configuration_new_from_buffer(buffer%c_ptr()), &
     & fckit_c_deleter(c_fckit_configuration_delete) )
   call buffer%consumed() ! If buffer was constructed inline, this will delete the buffer
   call this%return()

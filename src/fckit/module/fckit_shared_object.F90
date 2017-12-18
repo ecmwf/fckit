@@ -30,7 +30,7 @@ contains
 
   procedure, public :: shared_ptr_cast
 
-  procedure, public :: share_c_ptr
+  procedure, public :: reset_c_ptr
 
   procedure, public  :: c_ptr => fckit_shared_object_c_ptr
   procedure, private :: fckit_shared_object_c_ptr
@@ -70,19 +70,19 @@ end subroutine
 function shared_ptr_cast(this) result(success)
   class(fckit_shared_object) :: this
   logical :: success
+  class(*), pointer :: shared_object
   success = .false.
   nullify( this%shared_object_ )
-  associate( shared_object => this%shared_ptr() )
+  shared_object => this%shared_ptr()
   select type( shared_object )
     class is( fckit_object )
       this%shared_object_ => shared_object
       success = .true.
       return
   end select
-  end associate
 end function
 
-subroutine share_c_ptr(this, cptr, deleter)
+subroutine reset_c_ptr(this, cptr, deleter)
   use, intrinsic :: iso_c_binding, only : c_ptr, c_funptr
   class(fckit_shared_object) :: this
   type(c_ptr), optional :: cptr

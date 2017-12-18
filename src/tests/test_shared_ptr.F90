@@ -31,7 +31,7 @@ logical, SAVE :: deallocate_called = .false.
 ! -----------------------------------------------------------------------------
 
 ! Unsafe because final is not guaranteed
-type :: ObjectFortranUnsafe 
+type :: ObjectFortranUnsafe
   integer :: id = -1
     !! Data of Object (could be anything, like allocatable pointers)
 contains
@@ -62,13 +62,13 @@ interface
      use, intrinsic :: iso_c_binding, only : c_ptr
      type(c_ptr), value :: cptr
    end subroutine
-   
+
    function Object__id(this) bind(c,name="Object__id")
      use, intrinsic :: iso_c_binding, only : c_ptr, c_int
      type(c_ptr), value :: this
      integer(c_int) :: Object__id
    end function
-   
+
    function cxx_destructor_called() bind(c,name="cxx_destructor_called")
      use, intrinsic :: iso_c_binding, only : c_int
      integer(c_int) :: cxx_destructor_called
@@ -84,7 +84,7 @@ interface
 
    subroutine cxx_end_scope() bind(c,name="cxx_end_scope")
    end subroutine
-   
+
 end interface
 
 type, extends(fckit_shared_object) :: ObjectCXX
@@ -121,7 +121,7 @@ end subroutine
 function ObjectCXX_constructor(id) result(this)
   type(ObjectCXX) :: this
   integer :: id
-  call this%share_c_ptr( new_Object(id) , fckit_c_deleter(delete_Object) )
+  call this%reset_c_ptr( new_Object(id) , fckit_c_deleter(delete_Object) )
   FCTEST_CHECK_EQUAL( this%owners(), 0 )
   call this%return()
 end function
@@ -199,6 +199,7 @@ subroutine test_shared_ptr_safer( final_auto )
   class(ObjectFortranSafer), pointer :: obj2_ptr => null()
   type(fckit_shared_ptr) :: obj2
   type(fckit_shared_ptr) :: obj3
+  class(*), pointer :: shared_ptr
 
   write(0,'(A)') "~~~~~~~~~~~~~~ BEGIN SCOPE ~~~~~~~~~~~~~~"
 
@@ -207,12 +208,11 @@ subroutine test_shared_ptr_safer( final_auto )
 
   obj2 = obj1
   FCTEST_CHECK_EQUAL( obj1%owners(), 2 )
-  associate( shared_ptr => obj2%shared_ptr() )
+  shared_ptr => obj2%shared_ptr()
   select type(shared_ptr)
     class is(ObjectFortranSafer)
       obj2_ptr=>shared_ptr
   end select
-  end associate
   FCTEST_CHECK( associated(obj2_ptr) )
   FCTEST_CHECK_EQUAL( obj2_ptr%id, 5 )
   obj3 = obj2
@@ -281,20 +281,20 @@ subroutine test_shared_ptr_unsafe( final_auto )
   type(fckit_shared_ptr) :: obj1
   class(ObjectFortranUnSafe), pointer :: obj2_ptr => null()
   type(fckit_shared_ptr) :: obj2
+  class(*), pointer :: shared_ptr
 
   write(0,'(A)') "~~~~~~~~~~~~~~ BEGIN SCOPE ~~~~~~~~~~~~~~"
 
   obj1 = create_ObjectFortranUnSafe(5)
   obj2 = obj1
-  associate( shared_ptr => obj2%shared_ptr() )
+  shared_ptr => obj2%shared_ptr()
   select type(shared_ptr)
     class is(ObjectFortranUnSafe)
       obj2_ptr=>shared_ptr
   end select
-  end associate
   FCTEST_CHECK( associated(obj2_ptr) )
   FCTEST_CHECK_EQUAL( obj2_ptr%id, 5 )
-  
+
   if( .not. final_auto ) then
     call obj1%final()
     call obj2%final()
@@ -398,7 +398,7 @@ TEST( test_shared_object_manual )
   call test_shared_object( final_auto = .false. )
   FCTEST_CHECK_EQUAL( cxx_destructor_called(), 2 )
   write(0,'(A)') "-------------------------------------------------------------"
-  write(0,'(A)')  
+  write(0,'(A)')
 #endif
 END_TEST
 
@@ -554,7 +554,7 @@ TEST( test_shared_object_allocatable_list_auto_auto )
   write(0,'(A)') "TEST     test_shared_object_allocatable_list_auto_auto"
   call reset_counters()
   call test_shared_object_allocatable_list( final_auto = .true., deallocate_auto = .true. )
-#if FCKIT_HAVE_FINAL 
+#if FCKIT_HAVE_FINAL
 #if ! FCKIT_FINAL_BROKEN_FOR_ALLOCATABLE_ARRAY
   FCTEST_CHECK_EQUAL( cxx_destructor_called(), 2 )
   FCTEST_CHECK_EQUAL( cxx_destructor_called_after_scope(), 2 )

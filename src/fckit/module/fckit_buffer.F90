@@ -83,9 +83,9 @@ function ctor_from_cptr(cptr, share) result(this)
   opt_share = .false.
   if( present(share) ) opt_share = share
   if( opt_share ) then
-    call this%share_c_ptr( cptr , fckit_c_deleter(c_fckit_buffer_delete) )
+    call this%reset_c_ptr( cptr , fckit_c_deleter(c_fckit_buffer_delete) )
   else
-    call this%share_c_ptr( cptr , fckit_c_nodeleter() )
+    call this%reset_c_ptr( cptr , fckit_c_nodeleter() )
   endif
   call this%return()
 end function
