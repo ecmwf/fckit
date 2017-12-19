@@ -122,7 +122,7 @@ function ObjectCXX_constructor(id) result(this)
   type(ObjectCXX) :: this
   integer :: id
   call this%reset_c_ptr( new_Object(id) , fckit_c_deleter(delete_Object) )
-  FCTEST_CHECK_EQUAL( this%owners(), 0 )
+  FCTEST_CHECK_EQUAL( this%owners(), 1 )
   call this%return()
 end function
 
@@ -189,7 +189,7 @@ function create_ObjectFortranSafer(id) result(this)
   !this = fckit_make_shared( ptr )
   call this%share( ptr )
   write(0,'(A)') "<---- this = fckit_make_shared( obj_ptr )"
-  FCTEST_CHECK_EQUAL( this%owners(), 0 )
+  FCTEST_CHECK_EQUAL( this%owners(), 1 )
   call this%return()
 end function
 

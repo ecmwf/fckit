@@ -9,7 +9,11 @@
 #include "fckit/defines.h"
 
 module fckit_shared_ptr_module
-use, intrinsic :: iso_c_binding, only : c_ptr, c_null_ptr
+use fckit_refcount_module, only : &
+  & fckit_refcount, &
+  & fckit_refcount_interface, &
+  & fckit_external, &
+  & fckit_owned
 implicit none
 private
 
@@ -19,90 +23,11 @@ private
 public fckit_shared_ptr
 public fckit_make_shared
 public fckit_refcount
-public fckit_refcount_interface, fckit_external, fckit_owned
+public fckit_refcount_interface
+public fckit_external
+public fckit_owned
 
 !========================================================================
-
-type, abstract :: fckit_refcount
-contains
-procedure(fckit_refcount_owners), public, deferred :: owners
-procedure(fckit_refcount_attach), public, deferred :: attach
-procedure(fckit_refcount_detach), public, deferred :: detach
-end type
-
-interface
-  function fckit_refcount_owners(this)
-    import fckit_refcount
-    integer :: fckit_refcount_owners
-    class(fckit_refcount), intent(in) :: this
-  end function
-  subroutine fckit_refcount_attach(this)
-    import fckit_refcount
-    class(fckit_refcount), intent(inout) :: this
-  end subroutine
-  subroutine fckit_refcount_detach(this)
-    import fckit_refcount
-    class(fckit_refcount), intent(inout) :: this
-  end subroutine
-end interface
-
-abstract interface
-  subroutine fckit_refcount_interface(refcount,shared_ptr)
-    import fckit_refcount
-    class(fckit_refcount), pointer, intent(inout) :: refcount
-    class(*), target, intent(in) :: shared_ptr
-  end subroutine
-end interface
-
-
-
-type, extends(fckit_refcount) :: fckit_refcount_external
-  integer, private :: refcount_ = 0
-  contains
-  procedure, public :: owners => fckit_refcount_external_owners
-  procedure, public :: attach => fckit_refcount_external_attach
-  procedure, public :: detach => fckit_refcount_external_detach
-end type
-
-interface
-
-  function fckit__Owned__owners(this) bind(c,name="fckit__Owned__owners")
-    use, intrinsic :: iso_c_binding, only: c_int, c_ptr
-    integer(c_int) :: fckit__Owned__owners
-    type(c_ptr), value :: this
-  end function
-
-  subroutine fckit__Owned__attach(this) bind(c,name="fckit__Owned__attach")
-    use, intrinsic :: iso_c_binding, only: c_ptr
-    type(c_ptr), value :: this
-  end subroutine
-
-  subroutine fckit__Owned__detach(this) bind(c,name="fckit__Owned__detach")
-    use, intrinsic :: iso_c_binding, only: c_ptr
-    type(c_ptr), value :: this
-  end subroutine
-
-  function fckit__new_Owned() bind(c,name="fckit__new_Owned")
-    use, intrinsic :: iso_c_binding, only: c_ptr
-    type(c_ptr) :: fckit__new_Owned
-  end function
-
-  subroutine fckit__delete_Owned(this) bind(c,name="fckit__delete_Owned")
-    use, intrinsic :: iso_c_binding, only: c_ptr
-    type(c_ptr), value :: this
-  end subroutine
-
-end interface
-
-type, extends(fckit_refcount) :: fckit_eckit_Owned
-  type(c_ptr), private :: eckit_Owned_ = c_null_ptr
-  contains
-  procedure, public :: owners => fckit_eckit_Owned_owners
-  procedure, public :: attach => fckit_eckit_Owned_attach
-  procedure, public :: detach => fckit_eckit_Owned_detach
-end type
-
-
 
 type :: fckit_shared_ptr
   class(*), pointer, private :: shared_ptr_ => null()
@@ -139,52 +64,7 @@ end type
 
 !========================================================================
 CONTAINS
-! =============================================================================
-
-function new_fckit_refcount_external() result(ptr)
-  class(fckit_refcount), pointer :: ptr
-  allocate( fckit_refcount_external::ptr )
-end function
-
-function new_fckit_refcount_Owned(cptr) result(ptr)
-  class(fckit_eckit_Owned), pointer :: ptr
-  type(c_ptr) :: cptr
-  allocate( ptr )
-  ptr%eckit_Owned_ = cptr
-end function
-
-subroutine allocate_fckit_external(refcount,shared_ptr)
-  class(fckit_refcount), pointer, intent(inout) :: refcount
-  class(*), target, intent(in) :: shared_ptr
-  allocate( fckit_refcount_external::refcount )
-end subroutine
-
-function fckit_external() result(funptr)
-  procedure(fckit_refcount_interface), pointer :: funptr
-  funptr => allocate_fckit_external
-end function
-
-subroutine allocate_fckit_refcount_owned(refcount,shared_ptr)
-  use fckit_object_module, only : fckit_object
-  use, intrinsic :: iso_c_binding, only : c_ptr
-  class(fckit_refcount), pointer, intent(inout) :: refcount
-  class(*), target, intent(in) :: shared_ptr
-  type(c_ptr) :: cptr
-  allocate( fckit_eckit_Owned::refcount )
-  select type( shared_ptr )
-    class is( fckit_object )
-      cptr = shared_ptr%c_ptr()
-  end select
-  select type( refcount )
-    class is( fckit_eckit_Owned )
-      refcount%eckit_Owned_ = cptr
-  end select
-end subroutine
-
-function fckit_owned() result(funptr)
-  procedure(fckit_refcount_interface), pointer :: funptr
-  funptr => allocate_fckit_refcount_owned
-end function
+!========================================================================
 
 subroutine fckit_finalise( shared_ptr )
   use fckit_final_module, only: fckit_final
@@ -199,6 +79,9 @@ subroutine fckit_finalise( shared_ptr )
 end subroutine
 
 subroutine fckit_shared_ptr__final_auto(this)
+#ifdef _CRAYFTN
+  use, intrinsic :: iso_c_binding, only : c_loc, c_null_ptr
+#endif
   type(fckit_shared_ptr), intent(inout) :: this
 #if FCKIT_FINAL_DEBUGGING
   write(0,*) "fckit_shared_ptr__final_auto"
@@ -216,7 +99,6 @@ subroutine fckit_shared_ptr__final_auto(this)
 end subroutine
 
 subroutine fckit_shared_ptr__final(this)
-  use, intrinsic :: iso_c_binding, only : c_loc, c_associated, c_null_ptr
   class(fckit_shared_ptr), intent(inout) :: this
 
   if( .not. associated(this%shared_ptr_) ) then
@@ -249,7 +131,6 @@ subroutine fckit_shared_ptr__final(this)
 end subroutine
 
 subroutine clear_shared_ptr(obj_out)
-  use, intrinsic :: iso_c_binding, only : c_loc, c_associated
   class(fckit_shared_ptr), intent(inout) :: obj_out
   if( associated( obj_out%shared_ptr_ ) ) then
     nullify(obj_out%shared_ptr_)
@@ -258,14 +139,12 @@ subroutine clear_shared_ptr(obj_out)
 end subroutine
 
 subroutine clear(obj_out)
-  use, intrinsic :: iso_c_binding, only : c_loc, c_associated
   class(fckit_shared_ptr), intent(inout) :: obj_out
   call obj_out%clear_shared_ptr()
 end subroutine
 
 
 subroutine reset_shared_ptr(obj_out,obj_in)
-  use, intrinsic :: iso_c_binding, only : c_loc, c_associated
   class(fckit_shared_ptr), intent(inout) :: obj_out
   class(fckit_shared_ptr), intent(in)    :: obj_in
   if( .not. associated( obj_in%shared_ptr_) ) then
@@ -276,7 +155,7 @@ subroutine reset_shared_ptr(obj_out,obj_in)
     write(0,*) "obj_in is a return value"
   endif
 #endif
-!  if( .not. associated( obj_out%shared_ptr_, obj_in%shared_ptr_ ) ) then
+  if( .not. associated( obj_out%shared_ptr_, obj_in%shared_ptr_ ) ) then
 #if FCKIT_FINAL_DEBUGGING
     if( .not. associated( obj_out%shared_ptr_ ) ) then
       write(0,*) "reset_shared_ptr of uninitialised"
@@ -293,12 +172,12 @@ subroutine reset_shared_ptr(obj_out,obj_in)
       call obj_out%clear()
       call bad_cast()
     endif
-!  else
-!#if FCKIT_FINAL_DEBUGGING
-!    write(0,*) "reset_shared_ptr ( identity )"
-!#endif
-!    if( obj_out%shared_ptr_cast() ) then ; endif
-!  endif
+  else
+#if FCKIT_FINAL_DEBUGGING
+    write(0,*) "reset_shared_ptr ( obj_out = obj_in )"
+#endif
+    if( obj_out%shared_ptr_cast() ) then ; endif
+  endif
 end subroutine
 
 subroutine attach(this)
@@ -325,41 +204,6 @@ function owners(this)
   endif
 end function
 
-
-subroutine fckit_refcount_external_attach(this)
-  class(fckit_refcount_external), intent(inout) :: this
-  this%refcount_ = this%refcount_ + 1
-end subroutine
-
-subroutine fckit_refcount_external_detach(this)
-  class(fckit_refcount_external), intent(inout) :: this
-  this%refcount_ = max(0, this%refcount_ - 1)
-end subroutine
-
-function fckit_refcount_external_owners(this) result(owners)
-  integer :: owners
-  class(fckit_refcount_external), intent(in) :: this
-  owners = this%refcount_
-end function
-
-
-subroutine fckit_eckit_Owned_attach(this)
-  class(fckit_eckit_Owned), intent(inout) :: this
-  call fckit__Owned__attach(this%eckit_Owned_)
-end subroutine
-
-subroutine fckit_eckit_Owned_detach(this)
-  class(fckit_eckit_Owned), intent(inout) :: this
-  call fckit__Owned__detach(this%eckit_Owned_)
-end subroutine
-
-function fckit_eckit_Owned_owners(this) result(owners)
-  integer :: owners
-  class(fckit_eckit_Owned), intent(in) :: this
-  owners = fckit__Owned__owners(this%eckit_Owned_)
-end function
-
-
 subroutine return(this)
   !! Transfer ownership to left hand side of "assignment(=)"
   class(fckit_shared_ptr), intent(inout) :: this
@@ -368,7 +212,7 @@ subroutine return(this)
   ! final will be called, which will detach, so attach first
   if( this%owners() == 0 ) then
 #if FCKIT_FINAL_DEBUGGING
-        write(0,*) "return --> detach"
+        write(0,*) "return --> attach"
 #endif
     call this%attach()
   endif
@@ -418,12 +262,16 @@ subroutine share( this, ptr, refcount )
   class(fckit_shared_ptr) :: this
   class(*), target :: ptr
   procedure(fckit_refcount_interface), optional :: refcount
-  this%shared_ptr_ => ptr
+  procedure(fckit_refcount_interface), pointer :: opt_refcount
   if( present(refcount) ) then
-    call refcount(this%refcount_, this%shared_ptr_)
+    opt_refcount => refcount
   else
-    call allocate_fckit_external( this%refcount_, this%shared_ptr_ )
+    opt_refcount => fckit_external()
   endif
+  this%shared_ptr_ => ptr
+  call opt_refcount(this%refcount_, this%shared_ptr_)
+  call this%refcount_%attach()
+  write(0,*) "share --> attach"
 end subroutine
 
 

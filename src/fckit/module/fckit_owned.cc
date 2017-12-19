@@ -7,8 +7,11 @@
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
+#include "fckit/defines.h"
 
+#if FCKIT_HAVE_ECKIT
 #include "eckit/memory/Owned.h"
+
 extern "C" {
 
   int fckit__Owned__owners(const eckit::Owned* owned)
@@ -26,12 +29,6 @@ extern "C" {
     owned->detach();
   }
 
-  eckit::Owned* fckit__new_Owned()
-  {
-    eckit::Owned* owned = new eckit::Owned();
-    return owned;
-  }
-
   void fckit__delete_Owned(eckit::Owned* owned)
   {
     delete owned;
@@ -40,5 +37,14 @@ extern "C" {
 
 }
 
+#else
 
+extern "C" {
+  int  fckit__Owned__owners(const eckit::Owned* owned) { return 0; }
+  void fckit__Owned__attach(const void*) {}
+  void fckit__Owned__detach(const void*) {}
+  void fckit__delete_Owned(void*) {}
+}
+
+#endif
 

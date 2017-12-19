@@ -11,8 +11,8 @@
 module fckit_shared_object_module
 use fckit_object_module, only : fckit_object
 use fckit_c_interop_module, only : fckit_c_deleter, fckit_c_nodeleter
-use fckit_shared_ptr_module, only : fckit_shared_ptr, fckit_refcount_interface
-use fckit_shared_ptr_module, only : fckit_external, fckit_owned
+use fckit_shared_ptr_module, only : fckit_shared_ptr, fckit_refcount_interface, &
+ & fckit_owned
 implicit none
 private
 
@@ -22,6 +22,7 @@ private
 public :: fckit_shared_object
 public :: fckit_c_deleter
 public :: fckit_c_nodeleter
+public :: fckit_owned
 
 !========================================================================
 
@@ -35,6 +36,8 @@ contains
 
   procedure, public  :: c_ptr => fckit_shared_object_c_ptr
   procedure, private :: fckit_shared_object_c_ptr
+  
+  procedure, public :: is_null
 
 ! WARNING: Not strictly necessary, as base class (fckit_shared_ptr) has the
 !          destructor defined.
@@ -45,6 +48,9 @@ contains
 #if FCKIT_FINAL_NOT_INHERITING
   final :: fckit_shared_object__final_auto
 #endif
+
+  procedure, public :: fckit_shared_object__reset_c_ptr => reset_c_ptr
+  procedure, public :: fckit_shared_object__shared_ptr_cast => shared_ptr_cast
 
 end type
 
@@ -107,6 +113,17 @@ subroutine reset_c_ptr(this, cptr, deleter, refcount )
     call this%share( this%shared_object_ )
   endif
 end subroutine
+
+function is_null(this)
+  use, intrinsic :: iso_c_binding, only: c_associated
+  logical :: is_null
+  class(fckit_shared_object) :: this
+  if( c_associated( this%c_ptr() ) ) then
+    is_null = .False.
+  else
+    is_null = .True.
+  endif
+end function
 
 function fckit_shared_object_c_ptr(this) result(cptr)
   use, intrinsic :: iso_c_binding, only : c_ptr

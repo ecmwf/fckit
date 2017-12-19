@@ -15,36 +15,34 @@ install( FILES ../../tools/fctest_generate_runner.py DESTINATION libexec )
 configure_file(defines.h.in  defines.h)
 install( FILES ${CMAKE_CURRENT_BINARY_DIR}/defines.h DESTINATION ${INSTALL_INCLUDE_DIR}/fckit )
 
+set( FCKIT_HAVE_ECKIT 0 )
 if( HAVE_ECKIT )
-list( APPEND eckit_required_src
-    module/fckit.F90
-    module/fckit_pathname.F90
-    module/fckit_configuration.F90
-    module/fckit_configuration.cc
-    module/fckit_refcounted.cc
-    module/fckit_refcounted.F90
-    module/fckit_refcounted_fortran.F90
-    module/fckit_mpi.cc
-    module/fckit_mpi.F90
-    module/fckit_main.cc
-    module/fckit_main.F90
-    module/fckit_exception.F90
-    module/fckit_signal.F90
-    module/fckit_resource.cc
-    module/fckit_resource.F90
-    module/fckit_log.cc
-    module/fckit_log.F90
-    module/fckit_buffer.cc
-    module/fckit_buffer.F90
-    Libfckit.h
-    Libfckit.cc
-    Main.h
-    Main.cc
-    Log.h
-    Log.cc
-    Log.F90
-)
-
+  set( FCKIT_HAVE_ECKIT 1 )
+  list( APPEND eckit_required_src
+      module/fckit.F90
+      module/fckit_pathname.F90
+      module/fckit_configuration.F90
+      module/fckit_configuration.cc
+      module/fckit_mpi.cc
+      module/fckit_mpi.F90
+      module/fckit_main.cc
+      module/fckit_main.F90
+      module/fckit_exception.F90
+      module/fckit_signal.F90
+      module/fckit_resource.cc
+      module/fckit_resource.F90
+      module/fckit_log.cc
+      module/fckit_log.F90
+      module/fckit_buffer.cc
+      module/fckit_buffer.F90
+      Libfckit.h
+      Libfckit.cc
+      Main.h
+      Main.cc
+      Log.h
+      Log.cc
+      Log.F90
+  )
 endif()
 
 if( BUILD_SHARED_LIBS )
@@ -70,8 +68,11 @@ ecbuild_add_library( TARGET     fckit
                                 module/fckit_C_interop.F90
                                 module/fckit_object.F90
                                 module/fckit_final.F90
+                                module/fckit_owned.cc
+                                module/fckit_refcount.F90
                                 module/fckit_shared_ptr.F90
                                 module/fckit_shared_object.F90
+                                module/fckit_owned_object.F90
                                 ${eckit_required_src}
                      PRIVATE_INCLUDES
                                 ${ECKIT_INCLUDE_DIRS}

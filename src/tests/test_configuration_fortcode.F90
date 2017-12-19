@@ -14,7 +14,7 @@ function c_get_a( conf_cptr ) result(a) bind(c)
     integer,external :: get_a
     type(c_ptr), value :: conf_cptr
     write(0,*) "c_get_a ..."
-    a = get_a( fckit_configuration(conf_cptr) )
+    a = get_a( fckit_configuration(conf_cptr, delete=.false.) )
     write(0,*) "c_get_a ... done"
 end function
 

@@ -29,18 +29,6 @@ add_fctest( TARGET  fckit_test_log
             CONDITION HAVE_ECKIT
             LIBS    fckit)
 
-add_fctest( TARGET  fckit_test_refcounting
-            LINKER_LANGUAGE Fortran
-            SOURCES test_refcounting.F90
-            CONDITION HAVE_ECKIT
-            LIBS    fckit)
-
-add_fctest( TARGET  fckit_test_refcounting_fortran
-            LINKER_LANGUAGE Fortran
-            SOURCES test_refcounting_fortran.F90
-            CONDITION HAVE_ECKIT
-            LIBS    fckit)
-
 add_fctest( TARGET  fckit_test_shared_ptr
             LINKER_LANGUAGE Fortran
             SOURCES 

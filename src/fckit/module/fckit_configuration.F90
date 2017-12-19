@@ -327,11 +327,19 @@ function ctor() result(this)
   call this%return()
 end function
 
-function ctor_from_cptr(cptr) result(this)
+function ctor_from_cptr(cptr,delete) result(this)
   use, intrinsic :: iso_c_binding, only : c_ptr
   type(c_ptr), value :: cptr
   type(fckit_Configuration) :: this
-  call this%reset_c_ptr( cptr, fckit_c_nodeleter() )
+  logical, optional :: delete
+  logical :: opt_delete
+  opt_delete = .true.
+  if( present(delete) ) opt_delete = delete
+  if( opt_delete ) then
+    call this%reset_c_ptr( cptr, fckit_c_deleter(c_fckit_configuration_delete) )
+  else
+    call this%reset_c_ptr( cptr, fckit_c_nodeleter() )
+  endif
   call this%return()
 end function
 
@@ -545,7 +553,7 @@ function get_config_list(this, name, value) result(found)
     if( allocated(value) ) deallocate(value)
     allocate(value(value_list_size))
     do j=1,value_list_size
-      value(j) = fckit_Configuration( value_cptrs(j) )
+      value(j) = fckit_configuration( value_cptrs(j) )
     enddo
   endif
 end function
