@@ -96,7 +96,7 @@ subroutine reset_c_ptr(this, cptr, deleter, refcount )
   class(fckit_shared_object) :: this
   type(c_ptr), optional :: cptr
   type(c_funptr), optional :: deleter
-  procedure(fckit_refcount_interface), optional :: refcount
+  type(c_funptr), optional :: refcount
   allocate( fckit_object::this%shared_object_ )
   if( present( cptr ) ) then
     if( present( deleter) ) then

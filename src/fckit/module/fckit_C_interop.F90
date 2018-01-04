@@ -104,7 +104,7 @@ end function
 subroutine get_c_commandline_arguments(argc,argv)
   use, intrinsic :: iso_c_binding
   integer(c_int), intent(out) :: argc
-  type(c_ptr), intent(out) :: argv(:)
+  type(c_ptr), intent(inout) :: argv(:)
   character(kind=c_char,len=1), save, target :: args(255)
   character(kind=c_char,len=255), save, target :: cmd
   character(kind=c_char,len=255) :: arg

@@ -258,13 +258,13 @@ function fckit_make_shared( ptr ) result(this)
 end function
 
 subroutine share( this, ptr, refcount )
-  use, intrinsic :: iso_c_binding, only : c_funptr
+  use, intrinsic :: iso_c_binding, only : c_funptr, c_f_procpointer
   class(fckit_shared_ptr) :: this
   class(*), target :: ptr
-  procedure(fckit_refcount_interface), optional :: refcount
+  type(c_funptr), optional :: refcount
   procedure(fckit_refcount_interface), pointer :: opt_refcount
   if( present(refcount) ) then
-    opt_refcount => refcount
+    call c_f_procpointer( refcount, opt_refcount )
   else
     opt_refcount => fckit_external()
   endif

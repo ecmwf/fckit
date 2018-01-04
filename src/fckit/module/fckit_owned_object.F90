@@ -67,18 +67,19 @@ subroutine fckit_owned__final_auto(this)
 end subroutine
 
 subroutine reset_c_ptr(this, cptr, deleter, refcount )
-  use, intrinsic :: iso_c_binding, only : c_ptr, c_funptr
+  use, intrinsic :: iso_c_binding, only : c_ptr, c_funptr, c_funloc
   implicit none
   class(fckit_owned_object) :: this
   type(c_ptr), optional :: cptr
   type(c_funptr), optional :: deleter
-  procedure(fckit_refcount_interface), optional :: refcount ! dummy
-
+  type(c_funptr), optional :: refcount ! dummy
+  procedure(fckit_refcount_interface), pointer :: owned
+  owned => fckit_owned()
   if( present( cptr ) ) then
     if( present( deleter) ) then
-      call this%fckit_shared_object__reset_c_ptr(cptr, deleter, fckit_owned() )
+      call this%fckit_shared_object__reset_c_ptr(cptr, deleter, c_funloc(owned) )
     else
-      call this%fckit_shared_object__reset_c_ptr(cptr, fckit_c_deleter(fckit__delete_Owned), fckit_owned() )
+      call this%fckit_shared_object__reset_c_ptr(cptr, fckit_c_deleter(fckit__delete_Owned), c_funloc(owned) )
     endif
   else
     call this%fckit_shared_object__reset_c_ptr()
