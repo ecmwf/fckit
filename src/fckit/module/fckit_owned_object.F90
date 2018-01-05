@@ -8,9 +8,11 @@
 
 #include "fckit/defines.h"
 
-#ifdef FCKIT_FINAL_DEBUGGING
-#define FCKIT_WRITE_DEBUG write(0,'(A,I0,A)',advance='NO') "fckit_owned_object.F90 @ ",__LINE__,'  : '; write(0,*) 
+#if FCKIT_FINAL_DEBUGGING
+#define FCKIT_WRITE_LOC write(0,'(A,I0,A)',advance='NO') "fckit_owned_object.F90 @ ",__LINE__,'  : '
+#define FCKIT_WRITE_DEBUG write(0,*)
 #else
+#define FCKIT_WRITE_LOC
 #define FCKIT_WRITE_DEBUG !
 #endif
 
@@ -125,6 +127,7 @@ subroutine fckit_owned_object__final_auto(this)
   use, intrinsic :: iso_c_binding, only : c_loc, c_null_ptr
 #endif
   type(fckit_owned_object), intent(inout) :: this
+  FCKIT_WRITE_LOC
   FCKIT_WRITE_DEBUG "fckit_owned_object__final_auto"
   ! Guard necessary for Cray compiler...
   ! ... when "this" has already been deallocated, and then
@@ -143,6 +146,7 @@ subroutine fckit_owned_object__delete( this )
   use fckit_c_interop_module, only : fckit_c_deleter_interface
   class(fckit_owned_object), intent(inout) :: this
   procedure(fckit_c_deleter_interface), pointer :: deleter
+  FCKIT_WRITE_LOC
   FCKIT_WRITE_DEBUG "fckit_owned_object__delete"
   if( c_associated( this%cpp_object_ptr ) ) then
     if( c_associated( this%deleter ) ) then
@@ -158,17 +162,20 @@ subroutine fckit_owned_object__final(this)
   class(fckit_owned_object), intent(inout) :: this
 
   if( this%is_null() ) then
+    FCKIT_WRITE_LOC
     FCKIT_WRITE_DEBUG "fckit_owned_object__final  (uninitialised --> no-op)"
     return
   endif
 
 #if FCKIT_FINAL_DEBUGGING
   if( this%return_value ) then
+    FCKIT_WRITE_LOC
     FCKIT_WRITE_DEBUG "fckit_owned_object__final on return value, owners = ", this%owners()
   endif
 #endif
 
   if( this%owners() > 0 ) then
+    FCKIT_WRITE_LOC
     FCKIT_WRITE_DEBUG "fckit_owned_object__final  , owners = ", this%owners()
     call this%detach()
     if( this%owners() == 0 ) then
@@ -189,20 +196,24 @@ subroutine assignment_operator(this,other)
   endif
 #if FCKIT_FINAL_DEBUGGING
   if( other%return_value ) then
+    FCKIT_WRITE_LOC
     FCKIT_WRITE_DEBUG "other is a return value"
   endif
 #endif
   if( this /= other ) then
 #if FCKIT_FINAL_DEBUGGING
     if( this%is_null() ) then
+      FCKIT_WRITE_LOC
       FCKIT_WRITE_DEBUG "assignment_operator of uninitialised"
     else
+      FCKIT_WRITE_LOC
       FCKIT_WRITE_DEBUG "assignment_operator of initialised"
     endif
 #endif
     call this%final()
     call this%reset_c_ptr( other%c_ptr(), other%deleter )
   else
+    FCKIT_WRITE_LOC
     FCKIT_WRITE_DEBUG "assignment_operator ( obj_out = obj_in )"
   endif
   call this%assignment_operator_hook(other)
@@ -239,12 +250,14 @@ subroutine return(this)
   ! Cray example
   ! final will be called, which will detach, so attach first
   if( this%owners() == 0 ) then
+    FCKIT_WRITE_LOC
     FCKIT_WRITE_DEBUG "return --> attach"
     call this%attach()
   endif
 #else
   ! final will not be called, so detach manually
   if( this%owners() > 0 ) then
+    FCKIT_WRITE_LOC
     FCKIT_WRITE_DEBUG "return --> detach"
     call this%detach()
   endif

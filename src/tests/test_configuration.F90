@@ -14,6 +14,14 @@
 #include "fckit/fctest.h"
 #include "fckit/defines.h"
 
+#define NO_COMPILER_BUGS 1
+
+#if (defined(__GFORTRAN__) && __GNUC__ == 7 && __GNUC_MINOR__ <=2 )
+#undef NO_COMPILER_BUGS
+#define NO_COMPILER_BUGS 0
+#warning Some tests disabled due to gfortran 7 compiler bug. Only one TEST at a time may be compiled.
+#endif
+
 ! -----------------------------------------------------------------------------
 
 TESTSUITE(fctest_fckit_configuration)
@@ -95,7 +103,7 @@ enddo
 #if ! FCKIT_HAVE_FINAL
   call nested%final()
 #endif
-  
+
   ! --------------------- JSON ------------------
 
   call fckit_log%info("config = "//config%json())
@@ -158,7 +166,7 @@ enddo
   write(0,*) "~~~~~~~~~~~~~~~ SCOPE END ~~~~~~~~~~~~~~~~"
 
 #else
-#warning disabled
+#warning Test "test_configuration" disabled
 #endif
 END_TEST
 
@@ -166,6 +174,7 @@ END_TEST
 
 TEST(test_configuration_json_string)
 #if 1
+#if NO_COMPILER_BUGS
   use fckit_configuration_module
   use fckit_log_module
 
@@ -209,13 +218,15 @@ TEST(test_configuration_json_string)
 #endif
 
   write(0,*) "~~~~~~~~~~~~~~~ SCOPE END ~~~~~~~~~~~~~~~~"
+#endif
 #else
-#warning disabled
+#warning Test "test_configuration_json_string" disabled
 #endif
 END_TEST
 
 TEST(test_configuration_json_file)
 #if 1
+#if NO_COMPILER_BUGS
   use fckit_configuration_module
   use fckit_pathname_module
   use fckit_log_module
@@ -276,8 +287,9 @@ TEST(test_configuration_json_file)
   call config%final()
 #endif
   write(0,*) "~~~~~~~~~~~~~~~ SCOPE END ~~~~~~~~~~~~~~~~"
+#endif
 #else
-#warning disabled
+#warning Test "test_configuration_json_file" disabled
 #endif
 END_TEST
 
