@@ -36,8 +36,9 @@ END_TESTSUITE_FINALIZE
 
 TEST( test_configuration )
 #if 1
-  use fckit_module
   use fckit_configuration_module
+  use fckit_log_module
+
   type(fckit_Configuration) :: config
   type(fckit_Configuration) :: nested
   type(fckit_Configuration) :: list(2)
@@ -69,6 +70,8 @@ TEST( test_configuration )
   ! }
 
   config = fckit_Configuration()
+
+
   call config%set("p1",1)
   call config%set("p2",2)
 
@@ -153,6 +156,7 @@ enddo
 #endif
 
   write(0,*) "~~~~~~~~~~~~~~~ SCOPE END ~~~~~~~~~~~~~~~~"
+
 #else
 #warning disabled
 #endif
@@ -162,8 +166,8 @@ END_TEST
 
 TEST(test_configuration_json_string)
 #if 1
-  use fckit_module
   use fckit_configuration_module
+  use fckit_log_module
 
   type(fckit_Configuration) :: config
   type(fckit_Configuration), allocatable :: records(:)
@@ -181,6 +185,7 @@ TEST(test_configuration_json_string)
    &    ']}'
 
   config = fckit_YAMLConfiguration(json)
+
   call fckit_log%info(config%json())
   if( config%get("records",records) ) then
     do jrec=1,size(records)
@@ -202,6 +207,7 @@ TEST(test_configuration_json_string)
 #if ! FCKIT_HAVE_FINAL
   call config%final()
 #endif
+
   write(0,*) "~~~~~~~~~~~~~~~ SCOPE END ~~~~~~~~~~~~~~~~"
 #else
 #warning disabled
@@ -210,9 +216,9 @@ END_TEST
 
 TEST(test_configuration_json_file)
 #if 1
-  use fckit_module
   use fckit_configuration_module
   use fckit_pathname_module
+  use fckit_log_module
 
   type(fckit_Configuration) :: config
   type(fckit_Configuration), allocatable :: records(:)
@@ -277,6 +283,7 @@ END_TEST
 
 TEST(test_throw)
 !! ENABLE TO TEST IF THROW WILL WORK
+
 #if 0
   use fckit_configuration_module
   type(fckit_Configuration) :: config

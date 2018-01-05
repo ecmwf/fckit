@@ -20,13 +20,12 @@ module fckit_configuration_module
   !! for [[fckit_configuration_module:fckit_configuration(type)]] can create the
   !! configuration from a JSON file
 
+use, intrinsic :: iso_c_binding, only : c_ptr, c_int, c_long, c_float, c_double
 use fckit_shared_object_module, only : fckit_shared_object, fckit_c_deleter, fckit_c_nodeleter
+use fckit_pathname_module, only : fckit_pathname
+use fckit_buffer_module, only : fckit_buffer
 
 implicit none
-
-private :: fckit_shared_object
-private :: fckit_c_deleter
-private :: fckit_c_nodeleter
 
 public  :: fckit_configuration
 public  :: fckit_YAMLConfiguration
@@ -287,6 +286,13 @@ end interface
 
 !------------------------------------------------------------------------------
 
+private :: c_ptr, c_int, c_long, c_float, c_double
+private :: fckit_shared_object
+private :: fckit_c_deleter
+private :: fckit_c_nodeleter
+private :: fckit_pathname
+private :: fckit_buffer
+
 !========================================================
 contains
 !========================================================
@@ -328,7 +334,6 @@ function ctor() result(this)
 end function
 
 function ctor_from_cptr(cptr,delete) result(this)
-  use, intrinsic :: iso_c_binding, only : c_ptr
   type(c_ptr), value :: cptr
   type(fckit_Configuration) :: this
   logical, optional :: delete
@@ -355,7 +360,6 @@ end function
 
 function ctor_from_jsonfile(path) result(this)
   use fckit_c_interop_module, only : c_str
-  use fckit_pathname_module, only : fckit_pathname
   type(fckit_Configuration) :: this
   type(fckit_pathname), intent(in) :: path
   call this%reset_c_ptr( c_fckit_configuration_new_from_file(c_str(path%str())), &
@@ -365,7 +369,6 @@ end function
 
 function ctor_from_buffer(buffer) result(this)
   use fckit_c_interop_module, only : c_str
-  use fckit_buffer_module, only : fckit_buffer
   type(fckit_Configuration) :: this
   type(fckit_buffer), intent(in) :: buffer
   call this%reset_c_ptr( c_fckit_configuration_new_from_buffer(buffer%c_ptr()), &
@@ -398,7 +401,7 @@ subroutine set_config(this, name, value)
 end subroutine
 
 subroutine set_config_list(this, name, value)
-  use, intrinsic :: iso_c_binding, only : c_ptr, c_loc
+  use, intrinsic :: iso_c_binding, only : c_loc
   use fckit_c_interop_module, only : c_str
   class(fckit_Configuration), intent(inout) :: this
   character(len=*), intent(in) :: name
@@ -429,7 +432,6 @@ subroutine set_logical(this, name, value)
 end subroutine
 
 subroutine set_int32(this, name, value)
-  use, intrinsic :: iso_c_binding, only : c_int
   use fckit_c_interop_module, only : c_str
   class(fckit_Configuration), intent(inout) :: this
   character(len=*), intent(in) :: name
@@ -438,7 +440,6 @@ subroutine set_int32(this, name, value)
 end subroutine
 
 subroutine set_int64(this, name, value)
-  use, intrinsic :: iso_c_binding, only : c_long
   use fckit_c_interop_module, only : c_str
   class(fckit_Configuration), intent(inout) :: this
   character(len=*), intent(in) :: name
@@ -447,7 +448,6 @@ subroutine set_int64(this, name, value)
 end subroutine
 
 subroutine set_real32(this, name, value)
-  use, intrinsic :: iso_c_binding, only : c_float
   use fckit_c_interop_module, only : c_str
   class(fckit_Configuration), intent(inout) :: this
   character(len=*), intent(in) :: name
@@ -456,7 +456,6 @@ subroutine set_real32(this, name, value)
 end subroutine
 
 subroutine set_real64(this, name, value)
-  use, intrinsic :: iso_c_binding, only : c_double
   use fckit_c_interop_module, only : c_str
   class(fckit_Configuration), intent(inout) :: this
   character(len=*), intent(in) :: name
@@ -473,7 +472,6 @@ subroutine set_string(this, name, value)
 end subroutine
 
 subroutine set_array_int32(this, name, value)
-  use, intrinsic :: iso_c_binding, only : c_int
   use fckit_c_interop_module, only : c_str
   class(fckit_Configuration), intent(in) :: this
   character(len=*), intent(in) :: name
@@ -482,7 +480,6 @@ subroutine set_array_int32(this, name, value)
 end subroutine
 
 subroutine set_array_int64(this, name, value)
-  use, intrinsic :: iso_c_binding, only : c_long
   use fckit_c_interop_module, only : c_str
   class(fckit_Configuration), intent(in) :: this
   character(len=*), intent(in) :: name
@@ -491,7 +488,6 @@ subroutine set_array_int64(this, name, value)
 end subroutine
 
 subroutine set_array_real32(this, name, value)
-  use, intrinsic :: iso_c_binding, only : c_float
   use fckit_c_interop_module, only : c_str
   class(fckit_Configuration), intent(in) :: this
   character(len=*), intent(in) :: name
@@ -500,7 +496,6 @@ subroutine set_array_real32(this, name, value)
 end subroutine
 
 subroutine set_array_real64(this, name, value)
-  use, intrinsic :: iso_c_binding, only : c_double
   use fckit_c_interop_module, only : c_str
   class(fckit_Configuration), intent(in) :: this
   character(len=*), intent(in) :: name
@@ -509,7 +504,6 @@ subroutine set_array_real64(this, name, value)
 end subroutine
 
 function get_config(this, name, value) result(found)
-  use, intrinsic :: iso_c_binding, only : c_ptr
   use fckit_c_interop_module, only : c_str
   logical :: found
   class(fckit_Configuration), intent(in) :: this
@@ -532,7 +526,7 @@ subroutine get_config_or_die(this,name,value)
 end subroutine
 
 function get_config_list(this, name, value) result(found)
-  use, intrinsic :: iso_c_binding, only : c_ptr, c_f_pointer, c_null_ptr
+  use, intrinsic :: iso_c_binding, only : c_f_pointer, c_null_ptr
   use fckit_c_interop_module, only : c_str, c_ptr_free
   logical :: found
   class(fckit_Configuration), intent(in) :: this
@@ -594,7 +588,6 @@ end subroutine
 
 function get_int32(this, name, value) result(found)
   use fckit_c_interop_module, only : c_str
-  use, intrinsic :: iso_c_binding, only : c_int
   logical :: found
   class(fckit_Configuration), intent(in) :: this
   character(len=*), intent(in) :: name
@@ -606,7 +599,6 @@ function get_int32(this, name, value) result(found)
 end function
 
 subroutine get_int32_or_die(this,name,value)
-  use, intrinsic :: iso_c_binding, only : c_int
   class(fckit_Configuration), intent(in) :: this
   character(len=*), intent(in) :: name
   integer(c_int), intent(inout) :: value
@@ -615,7 +607,6 @@ end subroutine
 
 function get_int64(this, name, value) result(found)
   use fckit_c_interop_module, only : c_str
-  use, intrinsic :: iso_c_binding, only : c_long
   logical :: found
   class(fckit_Configuration), intent(in) :: this
   character(len=*), intent(in) :: name
@@ -627,7 +618,6 @@ function get_int64(this, name, value) result(found)
 end function
 
 subroutine get_int64_or_die(this,name,value)
-  use, intrinsic :: iso_c_binding, only : c_long
   class(fckit_Configuration), intent(in) :: this
   character(len=*), intent(in) :: name
   integer(c_long), intent(inout) :: value
@@ -635,7 +625,6 @@ subroutine get_int64_or_die(this,name,value)
 end subroutine
 
 function get_real32(this, name, value) result(found)
-  use, intrinsic :: iso_c_binding, only : c_float
   use fckit_c_interop_module, only : c_str
   logical :: found
   class(fckit_Configuration), intent(in) :: this
@@ -648,7 +637,6 @@ function get_real32(this, name, value) result(found)
 end function
 
 subroutine get_real32_or_die(this,name,value)
-  use, intrinsic :: iso_c_binding, only : c_float
   class(fckit_Configuration), intent(in) :: this
   character(len=*), intent(in) :: name
   real(c_float), intent(inout) :: value
@@ -656,7 +644,6 @@ subroutine get_real32_or_die(this,name,value)
 end subroutine
 
 function get_real64(this, name, value) result(found)
-  use, intrinsic :: iso_c_binding, only : c_double
   use fckit_c_interop_module, only : c_str
   logical :: found
   class(fckit_Configuration), intent(in) :: this
@@ -669,7 +656,6 @@ function get_real64(this, name, value) result(found)
 end function
 
 subroutine get_real64_or_die(this,name,value)
-  use, intrinsic :: iso_c_binding, only : c_double
   class(fckit_Configuration), intent(in) :: this
   character(len=*), intent(in) :: name
   real(c_double), intent(inout) :: value
@@ -677,7 +663,6 @@ subroutine get_real64_or_die(this,name,value)
 end subroutine
 
 function get_string(this, name, value) result(found)
-  use, intrinsic :: iso_c_binding, only : c_ptr, c_int
   use fckit_c_interop_module, only : c_str, c_ptr_to_string, c_ptr_free
   logical :: found
   class(fckit_Configuration), intent(in) :: this
@@ -705,7 +690,7 @@ subroutine get_string_or_die(this,name,value)
 end subroutine
 
 function get_array_int32(this, name, value) result(found)
-  use, intrinsic :: iso_c_binding, only : c_ptr, c_int, c_f_pointer
+  use, intrinsic :: iso_c_binding, only : c_f_pointer
   use fckit_c_interop_module, only : c_str, c_ptr_free
   logical :: found
   class(fckit_Configuration), intent(in) :: this
@@ -729,7 +714,6 @@ function get_array_int32(this, name, value) result(found)
 end function
 
 subroutine get_array_int32_or_die(this,name,value)
-  use, intrinsic :: iso_c_binding, only : c_int
   class(fckit_Configuration), intent(in) :: this
   character(len=*), intent(in) :: name
   integer(c_int), allocatable, intent(inout) :: value(:)
@@ -737,7 +721,7 @@ subroutine get_array_int32_or_die(this,name,value)
 end subroutine
 
 function get_array_int64(this, name, value) result(found)
-  use, intrinsic :: iso_c_binding, only : c_long, c_ptr, c_f_pointer
+  use, intrinsic :: iso_c_binding, only : c_f_pointer
   use fckit_c_interop_module, only : c_str, c_ptr_free
   logical :: found
   class(fckit_Configuration), intent(in) :: this
@@ -761,7 +745,6 @@ function get_array_int64(this, name, value) result(found)
 end function
 
 subroutine get_array_int64_or_die(this,name,value)
-  use, intrinsic :: iso_c_binding, only : c_long
   class(fckit_Configuration), intent(in) :: this
   character(len=*), intent(in) :: name
   integer(c_long), allocatable, intent(inout) :: value(:)
@@ -769,7 +752,7 @@ subroutine get_array_int64_or_die(this,name,value)
 end subroutine
 
 function get_array_real32(this, name, value) result(found)
-  use, intrinsic :: iso_c_binding, only : c_float, c_ptr, c_f_pointer
+  use, intrinsic :: iso_c_binding, only : c_f_pointer
   use fckit_c_interop_module, only : c_str, c_ptr_free
   logical :: found
   class(fckit_Configuration), intent(in) :: this
@@ -793,7 +776,6 @@ function get_array_real32(this, name, value) result(found)
 end function
 
 subroutine get_array_real32_or_die(this,name,value)
-  use, intrinsic :: iso_c_binding, only : c_float
   class(fckit_Configuration), intent(in) :: this
   character(len=*), intent(in) :: name
   real(c_float), allocatable, intent(inout) :: value(:)
@@ -801,7 +783,7 @@ subroutine get_array_real32_or_die(this,name,value)
 end subroutine
 
 function get_array_real64(this, name, value) result(found)
-  use, intrinsic :: iso_c_binding, only : c_double, c_ptr, c_f_pointer
+  use, intrinsic :: iso_c_binding, only : c_f_pointer
   use fckit_c_interop_module, only : c_str, c_ptr_free
   logical :: found
   class(fckit_Configuration), intent(in) :: this
@@ -825,7 +807,6 @@ function get_array_real64(this, name, value) result(found)
 end function
 
 subroutine get_array_real64_or_die(this,name,value)
-  use, intrinsic :: iso_c_binding, only : c_double
   class(fckit_Configuration), intent(in) :: this
   character(len=*), intent(in) :: name
   real(c_double), allocatable, intent(inout) :: value(:)
@@ -833,7 +814,6 @@ subroutine get_array_real64_or_die(this,name,value)
 end subroutine
 
 function json(this) result(jsonstr)
-  use, intrinsic :: iso_c_binding, only : c_ptr, c_int
   use fckit_c_interop_module, only : c_str, c_ptr_to_string, c_ptr_free
   character(len=:), allocatable :: jsonstr
   class(fckit_Configuration), intent(in) :: this

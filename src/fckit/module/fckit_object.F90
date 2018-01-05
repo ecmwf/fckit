@@ -57,7 +57,7 @@ contains
   procedure, private :: fckit_object__c_ptr
 
   procedure, public :: final
-
+  procedure, public :: fckit_object__final => final
 #if FCKIT_HAVE_FINAL
   final :: fckit_object_final_auto
 #endif
