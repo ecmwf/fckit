@@ -70,19 +70,24 @@ add_fctest( TARGET  fckit_test_broadcast_file
 endif()
 
 ecbuild_add_test( TARGET  fckit_test_configuration_cpp
-            LINKER_LANGUAGE CXX
+            LINKER_LANGUAGE Fortran
             SOURCES
             test_configuration.cc
             test_configuration_fortcode.F90
             DEFINITIONS ${FCKIT_DEFINITIONS}
             INCLUDES ${ECKIT_INCLUDE_DIRS}
             CONDITION HAVE_ECKIT
-            LIBS    fckit ${FCKIT_EXTRA_LINK_LIBRARIES})
+            LIBS    fckit )
 
 ecbuild_add_test( TARGET fckit_test_cpp
-  LINKER_LANGUAGE CXX
+  LINKER_LANGUAGE Fortran
   SOURCES test_cpp.cc test_cpp_fortcode.F90
   INCLUDES ${ECKIT_INCLUDE_DIRS}
   ENVIRONMENT "DEBUG=1"
   CONDITION HAVE_ECKIT
   LIBS fckit )
+
+if( CMAKE_Fortran_COMPILER_ID MATCHES "PGI" )
+  set_target_properties(fckit_test_configuration_cpp PROPERTIES LINK_FLAGS "-Mnomain")
+  set_target_properties(fckit_test_cpp PROPERTIES LINK_FLAGS "-Mnomain")
+endif()

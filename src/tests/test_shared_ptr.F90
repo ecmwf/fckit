@@ -337,6 +337,7 @@ TEST( test_shared_ptr_unsafe_auto )
 #else
   FCTEST_CHECK_EQUAL( final_called, 0 )
   FCTEST_CHECK_EQUAL( final_called_after_scope, 0 )
+  write(0,'(A)') "WARNING    memory leaked"
 #endif
   write(0,'(A)') "-------------------------------------------------------------"
   write(0,'(A)')

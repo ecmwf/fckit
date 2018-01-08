@@ -68,7 +68,7 @@ contains
   procedure, public :: final => fckit_owned_object__final
 
 #if FCKIT_HAVE_FINAL
-  final :: fckit_object_final_auto
+  final :: fckit_owned_object__final_auto
 #endif
 
   procedure, private :: assignment_operator

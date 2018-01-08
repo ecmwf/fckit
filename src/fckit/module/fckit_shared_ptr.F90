@@ -39,6 +39,7 @@ type :: fckit_shared_ptr
 
 contains
   procedure, public :: final => fckit_shared_ptr__final
+  procedure, public :: fckit_shared_ptr__final
 
 #if FCKIT_HAVE_FINAL
   final :: fckit_shared_ptr__final_auto
@@ -111,16 +112,19 @@ subroutine fckit_shared_ptr__final(this)
 
 #if FCKIT_FINAL_DEBUGGING
   if( this%return_value ) then
-    write(0,*) "fckit_shared_ptr__final on return value, owners = ", this%owners()
+    write(0,'(A,I0)') " fckit_shared_ptr__final on return value, owners = ", this%owners()
   endif
 #endif
 
   if( this%owners() > 0 ) then
 #if FCKIT_FINAL_DEBUGGING
-    write(0,*) "fckit_shared_ptr__final  , owners = ", this%owners()
+    write(0,'(A,I0)') " fckit_shared_ptr__final  , owners = ", this%owners()
 #endif
     call this%detach()
     if( this%owners() == 0 ) then
+#if FCKIT_FINAL_DEBUGGING
+      write(0,*) " + call fckit_finalise(this%shared_ptr_)"
+#endif
       call fckit_finalise(this%shared_ptr_)
       deallocate(this%shared_ptr_)
       deallocate(this%refcount_)
@@ -271,7 +275,9 @@ subroutine share( this, ptr, refcount )
   this%shared_ptr_ => ptr
   call opt_refcount(this%refcount_, this%shared_ptr_)
   call this%refcount_%attach()
+#if FCKIT_FINAL_DEBUGGING
   write(0,*) "share --> attach"
+#endif
 end subroutine
 
 

@@ -35,6 +35,7 @@ if( HAVE_ECKIT )
       module/fckit_log.F90
       module/fckit_buffer.cc
       module/fckit_buffer.F90
+      module/fckit_owned_object.F90
       Libfckit.h
       Libfckit.cc
       Main.h
@@ -51,7 +52,7 @@ else()
     set( fckit_type STATIC )
 endif()
 
-set( FCKIT_LINKER_LANGUAGE Fortran )
+set( FCKIT_LINKER_LANGUAGE CXX )
 if( HAVE_ECKIT )
   # We need the C++ linker for the error handling to work
   # Otherwise death by recursion in function "fckit_terminate"
@@ -60,7 +61,7 @@ if( HAVE_ECKIT )
 endif()
 
 ecbuild_add_library( TARGET     fckit
-                     LINKER_LANGUAGE CXX
+                     LINKER_LANGUAGE ${FCKIT_LINKER_LANGUAGE}
                      SOURCES
                                 fctest.F90
                                 module/fckit_array.F90
@@ -72,14 +73,12 @@ ecbuild_add_library( TARGET     fckit
                                 module/fckit_refcount.F90
                                 module/fckit_shared_ptr.F90
                                 module/fckit_shared_object.F90
-                                module/fckit_owned_object.F90
                                 ${eckit_required_src}
                      PRIVATE_INCLUDES
                                 ${ECKIT_INCLUDE_DIRS}
                                 ${CMAKE_CURRENT_BINARY_DIR}
                      LIBS
                                 ${ECKIT_LIBRARIES}
-                                ${FCKIT_EXTRA_LINK_LIBRARIES}
 
                      DEFINITIONS
                                 ${FCKIT_DEFINITIONS}

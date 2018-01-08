@@ -309,10 +309,18 @@ end subroutine
 subroutine deallocate_fckit_configuration( array )
   type(fckit_configuration), allocatable, intent(inout) :: array(:)
   integer :: j
-  do j=1,size(array)
-    call array(j)%final()
-  enddo
-  deallocate(array)
+  if( allocated(array) ) then
+    do j=1,size(array)
+#if FCKIT_FINAL_DEBUGGING
+    write(0,'(A,I0,A)') "     + call array(",j,")%final()"
+#endif
+      call array(j)%final()
+    enddo
+#if FCKIT_FINAL_DEBUGGING
+    write(0,*) "    + deallocate(array)"
+#endif
+    deallocate(array)
+  endif
 end subroutine
 
 subroutine fckit_configuration__final_auto(this)
@@ -537,6 +545,7 @@ function get_config_list(this, name, value) result(found)
   integer :: value_list_size
   integer :: found_int
   integer :: j
+  call deallocate_fckit_configuration(value)
   value_list_cptr = c_null_ptr
   found_int = c_fckit_configuration_get_config_list(this%c_ptr(), c_str(name), &
     & value_list_cptr, value_list_size)
@@ -544,10 +553,9 @@ function get_config_list(this, name, value) result(found)
   if( found_int == 1 ) then
     found = .true.
     call c_f_pointer(value_list_cptr,value_cptrs,(/value_list_size/))
-    if( allocated(value) ) deallocate(value)
     allocate(value(value_list_size))
     do j=1,value_list_size
-      value(j) = fckit_configuration( value_cptrs(j) )
+      call value(j)%reset_c_ptr( value_cptrs(j), fckit_c_deleter(c_fckit_configuration_delete) )
     enddo
   endif
 end function

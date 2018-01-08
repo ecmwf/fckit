@@ -134,6 +134,11 @@ enddo
   FCTEST_CHECK( found )
   FCTEST_CHECK_EQUAL(intval, 22)
 
+
+
+
+
+
   found = alist(2)%get("l1",intval)
   FCTEST_CHECK( found )
   FCTEST_CHECK_EQUAL(intval, 21)
@@ -143,11 +148,13 @@ enddo
 
   write(0,*) "deallocate alist..."
 #if ! FCKIT_HAVE_FINAL || FCKIT_FINAL_BROKEN_FOR_ALLOCATABLE_ARRAY
-    call deallocate_fckit_configuration(alist)
+  write(0,*) "  + deallocate_fckit_configuration(alist)"
+  !call deallocate_fckit_configuration(alist)
 #else
-    deallocate(alist)
+  write(0,*) "  + deallocate(alist)"
+  deallocate(alist)
 #endif
-    write(0,*) "deallocate alist... done"
+  write(0,*) "deallocate alist... done"
 
   call anested%final()
 
@@ -160,7 +167,6 @@ enddo
 
 #if ! FCKIT_HAVE_FINAL
   call config%final()
-  write(0,*) "config%owners() = ", config%owners()
 #endif
 
   write(0,*) "~~~~~~~~~~~~~~~ SCOPE END ~~~~~~~~~~~~~~~~"
@@ -207,7 +213,7 @@ TEST(test_configuration_json_string)
 #if ! FCKIT_HAVE_FINAL || FCKIT_FINAL_BROKEN_FOR_ALLOCATABLE_ARRAY
     call deallocate_fckit_configuration(records)
 #else
-    deallocate(records)
+    if( allocated(records) ) deallocate(records)
 #endif
     write(0,*) "deallocate records... done"
   endif

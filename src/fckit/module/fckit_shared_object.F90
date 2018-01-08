@@ -115,13 +115,12 @@ subroutine reset_c_ptr(this, cptr, deleter, refcount )
 end subroutine
 
 function is_null(this)
-  use, intrinsic :: iso_c_binding, only: c_associated
   logical :: is_null
   class(fckit_shared_object) :: this
-  if( c_associated( this%c_ptr() ) ) then
-    is_null = .False.
+  if( .not. associated(this%shared_object_) ) then
+    is_null = .true.
   else
-    is_null = .True.
+    is_null = this%shared_object_%is_null()
   endif
 end function
 

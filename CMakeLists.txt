@@ -73,9 +73,11 @@ endif()
 ecbuild_add_option( FEATURE ECKIT
                     DESCRIPTION "Wrap ecKit functionality"
                     REQUIRED_PACKAGES "PROJECT eckit VERSION 0.18" )
+
+ecbuild_add_cxx11_flags()
+
 if( HAVE_ECKIT )
   set( ECKIT_LIBRARIES eckit eckit_mpi )
-  ecbuild_add_cxx11_flags()
 
   if( NOT ECKIT_HAVE_MPI )
     ecbuild_warn("ecKit has been compiled without MPI. This causes fckit to not be able to run parallel executables.")
