@@ -31,7 +31,7 @@ add_fctest( TARGET  fckit_test_log
 
 add_fctest( TARGET  fckit_test_shared_ptr
             LINKER_LANGUAGE Fortran
-            SOURCES 
+            SOURCES
               test_shared_ptr.F90
               test_shared_ptr.cc
             LIBS    fckit)
@@ -88,6 +88,11 @@ ecbuild_add_test( TARGET fckit_test_cpp
   LIBS fckit )
 
 if( CMAKE_Fortran_COMPILER_ID MATCHES "PGI" )
-  set_target_properties(fckit_test_configuration_cpp PROPERTIES LINK_FLAGS "-Mnomain")
-  set_target_properties(fckit_test_cpp PROPERTIES LINK_FLAGS "-Mnomain")
+  set( NO_MAIN "-Mnomain" )
+elseif( CMAKE_Fortran_COMPILER_ID MATCHES "Intel" )
+  set( NO_MAIN "-nofor-main" )
+endif()
+if( NO_MAIN )
+  set_target_properties(fckit_test_configuration_cpp PROPERTIES LINK_FLAGS ${NO_MAIN} )
+  set_target_properties(fckit_test_cpp               PROPERTIES LINK_FLAGS ${NO_MAIN} )
 endif()
