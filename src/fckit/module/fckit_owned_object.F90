@@ -182,7 +182,8 @@ subroutine fckit_owned_object__final(this)
       call fckit_owned_object__delete(this)
     endif
   endif
-
+  FCKIT_WRITE_LOC
+  FCKIT_WRITE_DEBUG "fckit_owned_object__final  , owners = ", this%owners()
   call this%reset_c_ptr()
 end subroutine
 
@@ -212,6 +213,8 @@ subroutine assignment_operator(this,other)
 #endif
     call this%final()
     call this%reset_c_ptr( other%c_ptr(), other%deleter )
+    FCKIT_WRITE_LOC
+    FCKIT_WRITE_DEBUG "  \-> owners ", this%owners()
   else
     FCKIT_WRITE_LOC
     FCKIT_WRITE_DEBUG "assignment_operator ( obj_out = obj_in )"
@@ -223,6 +226,8 @@ subroutine attach(this)
   class(fckit_owned_object), intent(inout) :: this
   if( .not. this%is_null() ) then
     call fckit__Owned__attach(this%c_ptr())
+    FCKIT_WRITE_LOC
+    FCKIT_WRITE_DEBUG "attach"
   endif
 end subroutine
 
@@ -230,6 +235,8 @@ subroutine detach(this)
   class(fckit_owned_object), intent(inout) :: this
   if( .not. this%is_null() ) then
     call fckit__Owned__detach(this%c_ptr())
+    FCKIT_WRITE_LOC
+    FCKIT_WRITE_DEBUG "detach"
   endif
 end subroutine
 
