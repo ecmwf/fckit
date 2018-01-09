@@ -6,7 +6,7 @@
 ! granted to it by virtue of its status as an intergovernmental organisation nor
 ! does it submit to any jurisdiction.
 
-#include "fckit/defines.h"
+#include "fckit/fckit.h"
 
 module fckit_object_module
   !! Provides abstract base class [[fckit_object_module:fckit_object(type)]]

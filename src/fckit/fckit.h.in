@@ -8,8 +8,8 @@ granted to it by virtue of its status as an intergovernmental organisation nor
 does it submit to any jurisdiction.
 #endif
 
-#ifndef FCKIT_DEFINES_H
-#define FCKIT_DEFINES_H
+#ifndef FCKIT_H
+#define FCKIT_H
 
 #define FCKIT_GIT_SHA1      "@FCKIT_GIT_SHA1@"
 #define FCKIT_VERSION       "@FCKIT_VERSION@"

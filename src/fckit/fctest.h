@@ -11,6 +11,7 @@
 #ifndef FCTEST_H
 #define FCTEST_H
 
+#include "fckit/fckit.h"
 
 ! TESTSUITE macro: defines a new testsuite
 !    To be closed with the END_TESTSUITE macro

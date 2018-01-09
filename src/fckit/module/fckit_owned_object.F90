@@ -6,7 +6,7 @@
 ! granted to it by virtue of its status as an intergovernmental organisation nor
 ! does it submit to any jurisdiction.
 
-#include "fckit/defines.h"
+#include "fckit/fckit.h"
 
 #if FCKIT_FINAL_DEBUGGING
 #define FCKIT_WRITE_LOC write(0,'(A,I0,A)',advance='NO') "fckit_owned_object.F90 @ ",__LINE__,'  : '

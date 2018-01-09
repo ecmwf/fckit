@@ -6,7 +6,7 @@
 ! granted to it by virtue of its status as an intergovernmental organisation nor
 ! does it submit to any jurisdiction.
 
-#include "fckit/defines.h"
+#include "fckit/fckit.h"
 
 module fckit_refcount_module
 use, intrinsic :: iso_c_binding, only : c_ptr, c_null_ptr

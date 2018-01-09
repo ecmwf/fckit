@@ -7,7 +7,7 @@
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
-#include "fckit/defines.h"
+#include "fckit/fckit.h"
 
 #if FCKIT_HAVE_ECKIT
 #include "eckit/memory/Owned.h"

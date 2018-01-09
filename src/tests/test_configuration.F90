@@ -12,7 +12,6 @@
 ! @author Willem Deconinck
 
 #include "fckit/fctest.h"
-#include "fckit/defines.h"
 
 #define NO_COMPILER_BUGS 1
 
