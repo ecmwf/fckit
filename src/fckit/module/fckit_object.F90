@@ -102,6 +102,13 @@ subroutine reset_c_ptr(this,cptr,deleter)
   class(fckit_object) :: this
   type(c_ptr), optional :: cptr
   type(c_funptr), optional :: deleter
+#if FCKIT_FINAL_DEBUGGING
+  if( present(cptr) ) then
+     write(0,*) "fckit_object::reset_c_ptr( ",c_ptr_to_loc(cptr), ")"
+  else
+     write(0,*) "fckit_object::reset_c_ptr( )"
+  endif
+#endif
   if( present(cptr) ) then
     this%cpp_object_ptr = cptr
   else

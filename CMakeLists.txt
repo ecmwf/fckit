@@ -36,9 +36,15 @@ ecbuild_find_python( REQUIRED NO_LIBS )
 ### Fortran ...
 ecbuild_enable_fortran( REQUIRED MODULE_DIRECTORY ${CMAKE_BINARY_DIR}/module )
 
-# Experimental... (read: not working!)
+set( FEATURE_FINAL_DEFAULT ON )
+if( CMAKE_Fortran_COMPILER_ID MATCHES "PGI" )
+  # Compilation works, but runtime segmentation faults occur (tested with pgi/17.7)
+  set( FEATURE_FINAL_DEFAULT OFF )
+endif()
+
 ecbuild_add_option( FEATURE FINAL
-                    DEFAULT OFF )
+                    DESCRIPTION "Enable automatic finalisation for derived types (destructors)"
+                    DEFAULT ${FEATURE_FINAL_DEFAULT} )
 
 if( ENABLE_FINAL )
   ecbuild_check_fortran( FEATURES finalization )

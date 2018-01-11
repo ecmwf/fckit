@@ -90,3 +90,10 @@ ecbuild_add_library( TARGET     fckit
 
                      HEADER_DESTINATION  ${INSTALL_INCLUDE_DIR}/fckit
                     )
+
+if( CMAKE_Fortran_COMPILER_ID MATCHES "PGI" )
+  # Turn off all compiler warnings for reason :
+  #   PGF90-W-0435-Array declared with zero size
+  #      (/tmp/nawd/atlas-bundle/source/fckit/src/fckit/module/fckit_array.F90: 25)
+  set_source_files_properties( module/fckit_array.F90  PROPERTIES COMPILE_FLAGS "-w" )
+endif()
