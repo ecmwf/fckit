@@ -148,7 +148,7 @@ enddo
   write(0,*) "deallocate alist..."
 #if ! FCKIT_HAVE_FINAL || FCKIT_FINAL_BROKEN_FOR_ALLOCATABLE_ARRAY
   write(0,*) "  + deallocate_fckit_configuration(alist)"
-  !call deallocate_fckit_configuration(alist)
+  call deallocate_fckit_configuration(alist)
 #else
   write(0,*) "  + deallocate(alist)"
   deallocate(alist)
