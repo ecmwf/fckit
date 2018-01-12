@@ -413,7 +413,7 @@ subroutine set_config_list(this, name, value)
   use fckit_c_interop_module, only : c_str
   class(fckit_Configuration), intent(inout) :: this
   character(len=*), intent(in) :: name
-  class(fckit_Configuration), intent(in) :: value(:)
+  type(fckit_Configuration), intent(in) :: value(:) !PGI (17.7) compiler bug when "type" replaced with "class"
   type(c_ptr), target :: value_cptrs(size(value))
   integer :: j
   if( size(value) > 0 ) then

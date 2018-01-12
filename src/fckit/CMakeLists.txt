@@ -52,7 +52,16 @@ else()
     set( fckit_type STATIC )
 endif()
 
-set( FCKIT_LINKER_LANGUAGE CXX )
+if( CMAKE_Fortran_COMPILER_ID MATCHES "PGI" )
+  # Bug tested with pgi/17.7 and pgi/17.10 requires fckit to be compiled statically
+  set( fckit_type STATIC )
+
+  # Turn off all compiler warnings for reason :
+  #   PGF90-W-0435-Array declared with zero size
+  #      (/tmp/nawd/atlas-bundle/source/fckit/src/fckit/module/fckit_array.F90: 25)
+  set_source_files_properties( module/fckit_array.F90  PROPERTIES COMPILE_FLAGS "-w" )
+endif()
+
 if( HAVE_ECKIT )
   # We need the C++ linker for the error handling to work
   # Otherwise death by recursion in function "fckit_terminate"
@@ -89,11 +98,6 @@ ecbuild_add_library( TARGET     fckit
                                 Main.h
 
                      HEADER_DESTINATION  ${INSTALL_INCLUDE_DIR}/fckit
-                    )
 
-if( CMAKE_Fortran_COMPILER_ID MATCHES "PGI" )
-  # Turn off all compiler warnings for reason :
-  #   PGF90-W-0435-Array declared with zero size
-  #      (/tmp/nawd/atlas-bundle/source/fckit/src/fckit/module/fckit_array.F90: 25)
-  set_source_files_properties( module/fckit_array.F90  PROPERTIES COMPILE_FLAGS "-w" )
-endif()
+                     TYPE ${fckit_type}
+                    )
