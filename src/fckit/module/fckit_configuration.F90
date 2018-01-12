@@ -341,14 +341,14 @@ function ctor() result(this)
   call this%return()
 end function
 
-function ctor_from_cptr(cptr,delete) result(this)
+function ctor_from_cptr(cptr,own) result(this)
   type(c_ptr), value :: cptr
   type(fckit_Configuration) :: this
-  logical, optional :: delete
-  logical :: opt_delete
-  opt_delete = .true.
-  if( present(delete) ) opt_delete = delete
-  if( opt_delete ) then
+  logical, optional :: own
+  logical :: opt_own
+  opt_own = .false.
+  if( present(own) ) opt_own = own
+  if( opt_own ) then
     call this%reset_c_ptr( cptr, fckit_c_deleter(c_fckit_configuration_delete) )
   else
     call this%reset_c_ptr( cptr, fckit_c_nodeleter() )

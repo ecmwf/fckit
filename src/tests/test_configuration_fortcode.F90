@@ -11,12 +11,16 @@ function c_get_a( conf_cptr ) result(a) bind(c)
     use fckit_configuration_module
     implicit none
     integer :: a
-    integer,external :: get_a
     type(c_ptr), value :: conf_cptr
+    type(fckit_configuration) :: conf
     write(0,*) "c_get_a ..."
-    a = get_a( fckit_configuration(conf_cptr, delete=.false.) )
+    conf = fckit_configuration( conf_cptr )
+    if( .not. conf%get("a",a) ) a = 0
     write(0,*) "c_get_a ... done"
 end function
+
+!! Following function could be called instead in above function "c_get_a" as:
+!!   a = get_a( fckit_configuration( conf_c_ptr ) )
 
 function get_a( conf ) result(a)
     use fckit_configuration_module
