@@ -175,7 +175,6 @@ end function
 function taskID()
   use, intrinsic :: iso_c_binding, only : c_int
   use fckit_c_interop_module
-  logical :: ready
   integer(c_int) :: taskID
   integer:: error_code
   error_code = fckit__main_taskID(taskID)

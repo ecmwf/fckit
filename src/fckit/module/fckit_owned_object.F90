@@ -13,7 +13,7 @@
 #define FCKIT_WRITE_DEBUG write(0,*)
 #else
 #define FCKIT_WRITE_LOC
-#define FCKIT_WRITE_DEBUG !
+#define FCKIT_WRITE_DEBUG if(.false.)write(0,*)
 #endif
 
 module fckit_owned_object_module

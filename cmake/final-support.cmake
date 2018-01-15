@@ -173,6 +173,8 @@ subroutine destructor_ObjectDerivedWithFinal(this)
   type(ObjectDerivedWithFinal) :: this
   call write_indented( 'final( derived )' )
   final_derived = final_derived + 1
+  associate( unused => this )
+  end associate
 end subroutine
 
 subroutine copy_f(this,obj_in)

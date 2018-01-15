@@ -6,6 +6,8 @@
 ! granted to it by virtue of its status as an intergovernmental organisation nor
 ! does it submit to any jurisdiction.
 
+#include "fckit/fckit.h"
+
 module fckit_final_module
 
 implicit none
@@ -30,6 +32,7 @@ CONTAINS
 
 subroutine final_interface(this)
   class(fckit_final), intent(inout) :: this
+  FCKIT_SUPPRESS_UNUSED(this)
 end subroutine
 
 end module

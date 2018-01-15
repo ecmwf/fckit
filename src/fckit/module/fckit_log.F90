@@ -6,6 +6,8 @@
 ! granted to it by virtue of its status as an intergovernmental organisation nor
 ! does it submit to any jurisdiction.
 
+#include "fckit/fckit.h"
+
 module fckit_log_module
   !! Provides [[fckit_log_module:fckit_log(variable)]] for logging and to configure logging
 
@@ -341,6 +343,7 @@ end function
 subroutine delete(this)
   class(fckit_logchannel), intent(inout) :: this
   ! do nothing
+  FCKIT_SUPPRESS_UNUSED(this)
 end subroutine
 
 end module fckit_log_module

@@ -6,6 +6,8 @@
 ! granted to it by virtue of its status as an intergovernmental organisation nor
 ! does it submit to any jurisdiction.
 
+#include "fckit/fckit.h"
+
 module fckit_C_interop_module
 implicit none
 private
@@ -73,6 +75,7 @@ end function
 subroutine fckit_c_nodelete(cptr) bind(c)
   use, intrinsic :: iso_c_binding
   type(c_ptr), value :: cptr
+  FCKIT_SUPPRESS_UNUSED(cptr)
 end subroutine
 
 function fckit_c_nodeleter()
