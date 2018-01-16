@@ -36,6 +36,8 @@ ecbuild_find_python( REQUIRED NO_LIBS )
 ### Fortran ...
 ecbuild_enable_fortran( REQUIRED MODULE_DIRECTORY ${CMAKE_BINARY_DIR}/module )
 
+ecbuild_check_fortran( FEATURES finalization )
+
 set( FEATURE_FINAL_DEFAULT ON )
 if( CMAKE_Fortran_COMPILER_ID MATCHES "PGI" )
   # Compilation works, but runtime segmentation faults occur (tested with pgi/17.7)
@@ -44,11 +46,11 @@ endif()
 
 ecbuild_add_option( FEATURE FINAL
                     DESCRIPTION "Enable automatic finalisation for derived types (destructors)"
-                    DEFAULT ${FEATURE_FINAL_DEFAULT} )
+                    DEFAULT ${FEATURE_FINAL_DEFAULT}
+                    CONDITION EC_HAVE_Fortran_FINALIZATION )
 
+set( FCKIT_HAVE_FINAL 0 )
 if( ENABLE_FINAL )
-  ecbuild_check_fortran( FEATURES finalization )
-  if( EC_HAVE_Fortran_FINALIZATION )
     set( FCKIT_HAVE_FINAL 1 )
     include( final-support )
     check_final_support()
@@ -61,10 +63,9 @@ if( ENABLE_FINAL )
     ecbuild_info( "  FCKIT_FINAL_NOT_INHERITING               = ${FCKIT_FINAL_NOT_INHERITING}")
     ecbuild_info( "  FCKIT_FINAL_BROKEN_FOR_ALLOCATABLE_ARRAY = ${FCKIT_FINAL_BROKEN_FOR_ALLOCATABLE_ARRAY}")
     ecbuild_info( "  FCKIT_FINAL_BROKEN_FOR_AUTOMATIC_ARRAY   = ${FCKIT_FINAL_BROKEN_FOR_AUTOMATIC_ARRAY}")
-  endif()
-else()
+endif()
+if( NOT FCKIT_HAVE_FINAL )
     ecbuild_info( "FCKIT_HAVE_FINAL [0]")
-    set( FCKIT_HAVE_FINAL                         0 )
     set( FCKIT_FINAL_FUNCTION_RESULT              0 )
     set( FCKIT_FINAL_UNINITIALIZED_LOCAL          0 )
     set( FCKIT_FINAL_UNINITIALIZED_INTENT_OUT     0 )
@@ -74,7 +75,6 @@ else()
     set( FCKIT_FINAL_BROKEN_FOR_ALLOCATABLE_ARRAY 0 )
     set( FCKIT_FINAL_BROKEN_FOR_AUTOMATIC_ARRAY   0 )
 endif()
-
 
 ecbuild_add_option( FEATURE ECKIT
                     DESCRIPTION "Wrap ecKit functionality"
