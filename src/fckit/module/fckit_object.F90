@@ -111,12 +111,13 @@ subroutine reset_c_ptr(this,cptr,deleter)
 #endif
   if( present(cptr) ) then
     this%cpp_object_ptr = cptr
+    if( present(deleter) ) then
+      this%deleter = deleter
+    else
+      this%deleter = c_null_funptr
+    endif
   else
     this%cpp_object_ptr = c_null_ptr
-  endif
-  if( present(deleter) ) then
-    this%deleter = deleter
-  else
     this%deleter = c_null_funptr
   endif
 end subroutine

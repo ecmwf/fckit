@@ -360,14 +360,18 @@ subroutine reset_c_ptr(this,cptr,deleter)
   if( present(cptr) ) then
     this%cpp_object_ptr = cptr
     call this%attach()
+
+    if( present(deleter) ) then
+      this%deleter = deleter
+    else
+      this%deleter = fckit_c_deleter(fckit__delete_Owned)
+    endif
+
   else
     this%cpp_object_ptr = c_null_ptr
+    this%deleter = c_null_funptr
   endif
-  if( present(deleter) ) then
-    this%deleter = deleter
-  else
-    this%deleter = fckit_c_deleter(fckit__delete_Owned)
-  endif
+
 end subroutine
 
 end module
