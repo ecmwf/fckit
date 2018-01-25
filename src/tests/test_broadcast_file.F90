@@ -54,7 +54,8 @@ TEST( broadcast_file_inline )
 #endif
   write(0,*) "~~~~~~~~~~~~~~~ SCOPE END ~~~~~~~~~~~~~~~~"
 #endif
-#warning disabled
+#else
+#warning test broadcast_file_inline disabled
 #endif
 END_TEST
 
@@ -76,7 +77,7 @@ TEST( broadcast_file_arg )
 #endif
   write(0,*) "~~~~~~~~~~~~~~~ SCOPE END ~~~~~~~~~~~~~~~~"
 #else
-#warning disabled
+#warning test broadcast_file_arg disabled
 #endif
 END_TEST
 
