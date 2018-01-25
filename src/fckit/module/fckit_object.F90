@@ -11,7 +11,7 @@
 module fckit_object_module
   !! Provides abstract base class [[fckit_object_module:fckit_object(type)]]
 
-use, intrinsic :: iso_c_binding, only: c_ptr, c_funptr, c_null_ptr
+use, intrinsic :: iso_c_binding, only: c_ptr, c_funptr, c_null_ptr, c_null_funptr
 use fckit_final_module, only: fckit_final
 implicit none
 private
@@ -27,8 +27,12 @@ type, extends(fckit_final) :: fckit_object
   !! Abstract base class for objects that wrap a C++ object
 
   type(c_ptr), private :: cpp_object_ptr = c_null_ptr
-  type(c_funptr), private :: deleter
+  type(c_funptr), private :: deleter = c_null_funptr
     !! Internal C pointer
+
+  logical, private :: dummy = .false.
+    ! This variable should not be necessary,
+    ! but seems to overcome compiler issues (gfortran 5.3, 6.3)
 
 contains
 
@@ -70,8 +74,11 @@ end interface
 
 !========================================================================
 
+private :: fckit_final
 private :: c_ptr
 private :: c_null_ptr
+private :: c_funptr
+private :: c_null_funptr
 
 ! =============================================================================
 CONTAINS
