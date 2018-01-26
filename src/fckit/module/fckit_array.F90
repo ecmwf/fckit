@@ -127,6 +127,7 @@ function array_view1d_int32_r0(scalar) result( view )
   integer(c_int), intent(in), target :: scalar
   type(c_ptr) :: array_c_ptr
   integer(c_int), pointer :: view(:)
+  nullify(view)
   array_c_ptr = c_loc_int32(scalar)
   call c_f_pointer ( array_c_ptr , view , (/1/) )
 end function
@@ -138,6 +139,7 @@ function array_view1d_int32_r1(array) result( view )
   integer, intent(in), target :: array(:)
   type(c_ptr) :: array_c_ptr
   integer(c_int), pointer :: view(:)
+  nullify(view)
   if( size(array) > 0 ) then
     array_c_ptr = c_loc_int32(array(1))
     call c_f_pointer ( array_c_ptr , view , (/size(array)/) )
@@ -153,6 +155,7 @@ function array_view1d_int32_r2(array) result( view )
   integer, intent(in), target :: array(:,:)
   type(c_ptr) :: array_c_ptr
   integer, pointer :: view(:)
+  nullify(view)
   if( size(array) > 0 ) then
     array_c_ptr = c_loc_int32(array(1,1))
     call c_f_pointer ( array_c_ptr , view , (/size(array)/) )
@@ -168,6 +171,7 @@ function array_view1d_int32_r3(array) result( view )
   integer, intent(in), target :: array(:,:,:)
   type(c_ptr) :: array_c_ptr
   integer, pointer :: view(:)
+  nullify(view)
   if( size(array) > 0 ) then
     array_c_ptr = c_loc_int32(array(1,1,1))
     call c_f_pointer ( array_c_ptr , view , (/size(array)/) )
@@ -183,6 +187,7 @@ function array_view1d_int32_r4(array) result( view )
   integer(c_int), intent(in), target :: array(:,:,:,:)
   type(c_ptr) :: array_c_ptr
   integer(c_int), pointer :: view(:)
+  nullify(view)
   if( size(array) > 0 ) then
     array_c_ptr = c_loc_int32(array(1,1,1,1))
     call c_f_pointer ( array_c_ptr , view , (/size(array)/) )
@@ -198,6 +203,7 @@ function array_view1d_int64_r0(scalar) result( view )
   integer(c_long), intent(in), target :: scalar
   type(c_ptr) :: array_c_ptr
   integer(c_long), pointer :: view(:)
+  nullify(view)
   array_c_ptr = c_loc_int64(scalar)
   call c_f_pointer ( array_c_ptr , view , (/1/) )
 end function
@@ -209,6 +215,7 @@ function array_view1d_int64_r1(array) result( view )
   integer(c_long), intent(in), target :: array(:)
   type(c_ptr) :: array_c_ptr
   integer(c_long), pointer :: view(:)
+  nullify(view)
   if( size(array) > 0 ) then
     array_c_ptr = c_loc_int64(array(1))
     call c_f_pointer ( array_c_ptr , view , (/size(array)/) )
@@ -224,6 +231,7 @@ function array_view1d_int64_r2(array) result( view )
   integer(c_long), intent(in), target :: array(:,:)
   type(c_ptr) :: array_c_ptr
   integer(c_long), pointer :: view(:)
+  nullify(view)
   if( size(array) > 0 ) then
     array_c_ptr = c_loc_int64(array(1,1))
     call c_f_pointer ( array_c_ptr , view , (/size(array)/) )
@@ -239,6 +247,7 @@ function array_view1d_int64_r3(array) result( view )
   integer(c_long), intent(in), target :: array(:,:,:)
   type(c_ptr) :: array_c_ptr
   integer(c_long), pointer :: view(:)
+  nullify(view)
   if( size(array) > 0 ) then
     array_c_ptr = c_loc_int64(array(1,1,1))
     call c_f_pointer ( array_c_ptr , view , (/size(array)/) )
@@ -254,6 +263,7 @@ function array_view1d_int64_r4(array) result( view )
   integer(c_long), intent(in), target :: array(:,:,:,:)
   type(c_ptr) :: array_c_ptr
   integer(c_long), pointer :: view(:)
+  nullify(view)
   if( size(array) > 0 ) then
     array_c_ptr = c_loc_int64(array(1,1,1,1))
     call c_f_pointer ( array_c_ptr , view , (/size(array)/) )
@@ -269,6 +279,7 @@ function array_view1d_real32_r0(scalar) result( view )
   real(c_float), intent(in), target :: scalar
   type(c_ptr) :: array_c_ptr
   real(c_float), pointer :: view(:)
+  nullify(view)
   array_c_ptr = c_loc_real32(scalar)
   call c_f_pointer ( array_c_ptr , view , (/1/) )
 end function
@@ -280,6 +291,7 @@ function array_view1d_real32_r1(array) result( view )
   real(c_float), intent(in), target :: array(:)
   type(c_ptr) :: array_c_ptr
   real(c_float), pointer :: view(:)
+  nullify(view)
   if( size(array) > 0 ) then
     array_c_ptr = c_loc_real32(array(1))
     call c_f_pointer ( array_c_ptr , view , (/size(array)/) )
@@ -295,6 +307,7 @@ function array_view1d_real32_r2(array) result( view )
   real(c_float), intent(in), target :: array(:,:)
   type(c_ptr) :: array_c_ptr
   real(c_float), pointer :: view(:)
+  nullify(view)
   if( size(array) > 0 ) then
     array_c_ptr = c_loc_real32(array(1,1))
     call c_f_pointer ( array_c_ptr , view , (/size(array)/) )
@@ -310,6 +323,7 @@ function array_view1d_real32_r3(array) result( view )
   real(c_float), intent(in), target :: array(:,:,:)
   type(c_ptr) :: array_c_ptr
   real(c_float), pointer :: view(:)
+  nullify(view)
   if( size(array) > 0 ) then
     array_c_ptr = c_loc_real32(array(1,1,1))
     call c_f_pointer ( array_c_ptr , view , (/size(array)/) )
@@ -325,6 +339,7 @@ function array_view1d_real32_r4(array) result( view )
   real(c_float), intent(in), target :: array(:,:,:,:)
   type(c_ptr) :: array_c_ptr
   real(c_float), pointer :: view(:)
+  nullify(view)
   if( size(array) > 0 ) then
     array_c_ptr = c_loc_real32(array(1,1,1,1))
     call c_f_pointer ( array_c_ptr , view , (/size(array)/) )
@@ -340,6 +355,7 @@ function array_view1d_real64_r0(scalar) result( view )
   real(c_double), intent(in), target :: scalar
   type(c_ptr) :: array_c_ptr
   real(c_double), pointer :: view(:)
+  nullify(view)
   array_c_ptr = c_loc_real64(scalar)
   call c_f_pointer ( array_c_ptr , view , (/1/) )
 end function
@@ -351,6 +367,7 @@ function array_view1d_real64_r1(array) result( view )
   real(c_double), intent(in), target :: array(:)
   type(c_ptr) :: array_c_ptr
   real(c_double), pointer :: view(:)
+  nullify(view)
   if( size(array) > 0 ) then
     array_c_ptr = c_loc_real64(array(1))
     call c_f_pointer ( array_c_ptr , view , (/size(array)/) )
@@ -366,6 +383,7 @@ function array_view1d_real64_r2(array) result( view )
   real(c_double), intent(in), target :: array(:,:)
   type(c_ptr) :: array_c_ptr
   real(c_double), pointer :: view(:)
+  nullify(view)
   if( size(array) > 0 ) then
     array_c_ptr = c_loc_real64(array(1,1))
     call c_f_pointer ( array_c_ptr , view , (/size(array)/) )
@@ -381,6 +399,7 @@ function array_view1d_real64_r3(array) result( view )
   real(c_double), intent(in), target :: array(:,:,:)
   type(c_ptr) :: array_c_ptr
   real(c_double), pointer :: view(:)
+  nullify(view)
   if( size(array) > 0 ) then
     array_c_ptr = c_loc_real64(array(1,1,1))
     call c_f_pointer ( array_c_ptr , view , (/size(array)/) )
@@ -396,6 +415,7 @@ function array_view1d_real64_r4(array) result( view )
   real(c_double), intent(in), target :: array(:,:,:,:)
   type(c_ptr) :: array_c_ptr
   real(c_double), pointer :: view(:)
+  nullify(view)
   if( size(array) > 0 ) then
     array_c_ptr = c_loc_real64(array(1,1,1,1))
     call c_f_pointer ( array_c_ptr , view , (/size(array)/) )
