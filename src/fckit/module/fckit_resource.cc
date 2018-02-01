@@ -8,8 +8,6 @@
  * does it submit to any jurisdiction.
  */
 
-#pragma once
-
 #include <string.h>
 #include "eckit/config/Resource.h"
 
