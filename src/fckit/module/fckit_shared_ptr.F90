@@ -1,4 +1,4 @@
-! (C) Copyright 2013-2017 ECMWF.
+! (C) Copyright 2013 ECMWF.
 !
 ! This software is licensed under the terms of the Apache Licence Version 2.0
 ! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -33,9 +33,9 @@ type :: fckit_shared_ptr
   class(*), pointer, private :: shared_ptr_ => null()
   class(fckit_refcount), pointer , private :: refcount_ => null()
 
-#if FCKIT_FINAL_DEBUGGING
-    logical :: return_value = .false.
-#endif
+  logical, private :: return_value = .false.
+    ! This variable should not be necessary,
+    ! but seems to overcome compiler issues ( gfortran 5.3, 6.3 )
 
 contains
   procedure, public :: final => fckit_shared_ptr__final

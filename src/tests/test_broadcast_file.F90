@@ -1,4 +1,4 @@
-! (C) Copyright 2013-2017 ECMWF.
+! (C) Copyright 2013 ECMWF.
 !
 ! This software is licensed under the terms of the Apache Licence Version 2.0
 ! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -54,7 +54,8 @@ TEST( broadcast_file_inline )
 #endif
   write(0,*) "~~~~~~~~~~~~~~~ SCOPE END ~~~~~~~~~~~~~~~~"
 #endif
-#warning disabled
+#else
+#warning test broadcast_file_inline disabled
 #endif
 END_TEST
 
@@ -76,7 +77,7 @@ TEST( broadcast_file_arg )
 #endif
   write(0,*) "~~~~~~~~~~~~~~~ SCOPE END ~~~~~~~~~~~~~~~~"
 #else
-#warning disabled
+#warning test broadcast_file_arg disabled
 #endif
 END_TEST
 

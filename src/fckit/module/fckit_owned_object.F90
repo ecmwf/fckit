@@ -1,4 +1,4 @@
-! (C) Copyright 2013-2017 ECMWF.
+! (C) Copyright 2013 ECMWF.
 !
 ! This software is licensed under the terms of the Apache Licence Version 2.0
 ! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -17,7 +17,7 @@
 #endif
 
 module fckit_owned_object_module
-use, intrinsic :: iso_c_binding, only: c_ptr, c_funptr, c_null_ptr
+use, intrinsic :: iso_c_binding, only: c_ptr, c_funptr, c_null_ptr, c_null_funptr
 implicit none
 private
 
@@ -32,12 +32,12 @@ type :: fckit_owned_object
   !! Abstract base class for objects that wrap a C++ object
 
   type(c_ptr), private :: cpp_object_ptr = c_null_ptr
-  type(c_funptr), private :: deleter
+  type(c_funptr), private :: deleter = c_null_funptr
     !! Internal C pointer
 
-#if FCKIT_FINAL_DEBUGGING
-    logical :: return_value = .false.
-#endif
+  logical, private :: return_value = .false.
+    ! This variable should not be necessary,
+    ! but seems to overcome compiler issues (gfortran 5.3, 6.3)
 
 contains
 
@@ -90,6 +90,8 @@ end interface
 
 private :: c_ptr
 private :: c_null_ptr
+private :: c_funptr
+private :: c_null_funptr
 
 !========================================================================
 

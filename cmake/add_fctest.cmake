@@ -1,3 +1,11 @@
+# (C) Copyright 2013 ECMWF.
+#
+# This software is licensed under the terms of the Apache Licence Version 2.0
+# which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+# In applying this licence, ECMWF does not waive the privileges and immunities
+# granted to it by virtue of its status as an intergovernmental organisation nor
+# does it submit to any jurisdiction.
+
 function( fctest_generate_runner )
 
   set( options           )
@@ -63,7 +71,7 @@ if( NOT (CMAKE_VERSION VERSION_LESS 3.1) )
       endif()
       target_sources( ${_PAR_TARGET} PUBLIC ${TESTRUNNER} )
       add_custom_target( ${_PAR_TARGET}_testsuite SOURCES ${TESTSUITE} )
-      
+
   endif()
 
 else()

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2013-2017 ECMWF.
+ * (C) Copyright 2013 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -7,9 +7,6 @@
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
-
-#ifndef fckit_resource_h
-#define fckit_resource_h
 
 #include <string.h>
 #include "eckit/config/Resource.h"
@@ -52,6 +49,3 @@ extern "C"
     return SUCCESS;
   }
 }
-
-#endif
-

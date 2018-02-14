@@ -1,4 +1,4 @@
-# (C) Copyright 2013-2017 ECMWF.
+# (C) Copyright 2013 ECMWF.
 #
 # This software is licensed under the terms of the Apache Licence Version 2.0
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -23,7 +23,7 @@ include( ecbuild_system NO_POLICY_SCOPE )
 
 ecbuild_requires_macro_version( 2.5 )
 
-###############################################################################
+################################################################################################
 # project
 
 ecbuild_declare_project()
@@ -90,7 +90,7 @@ if( HAVE_ECKIT )
   endif()
 endif()
 
-############################################################################################
+################################################################################################
 # export package info
 
 list( APPEND FCKIT_INCLUDE_DIRS
@@ -99,7 +99,7 @@ list( APPEND FCKIT_INCLUDE_DIRS
     ${CMAKE_Fortran_MODULE_DIRECTORY})
 set( FCKIT_LIBRARIES  fckit )
 
-############################################################################################
+################################################################################################
 # sources
 
 set( FCTEST_GENERATOR ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/tools/fctest_generate_runner.py )
@@ -111,11 +111,11 @@ set( HAVE_FCTEST 1)
 add_subdirectory( src )
 add_subdirectory( doc )
 
-############################################################################################
+################################################################################################
 # finalize
 
 ecbuild_print_summary()
-#####################################################################################
+################################################################################################
 
 if(ECBUILD_INSTALL_FORTRAN_MODULES)
   install(DIRECTORY ${CMAKE_Fortran_MODULE_DIRECTORY}/${CMAKE_CFG_INTDIR} DESTINATION ${INSTALL_INCLUDE_DIR} )
