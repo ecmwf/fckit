@@ -15,7 +15,7 @@
 
 #define NO_COMPILER_BUGS 1
 
-#if (defined(__GFORTRAN__) && __GNUC__ == 7 && __GNUC_MINOR__ <=2 )
+#if (defined(__GFORTRAN__) && __GNUC__ == 7 && __GNUC_MINOR__ <=3 )
 #undef NO_COMPILER_BUGS
 #define NO_COMPILER_BUGS 0
 #warning Some tests disabled due to gfortran 7 compiler bug. Only one TEST at a time may be compiled.
