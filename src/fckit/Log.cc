@@ -120,6 +120,15 @@ void Log::setFile(const char* path, Style style, const char*) {
   libs_debug_setTarget( file );
 }
 
+void Log::addFile(const std::string& path, Style style, const std::string& prefix) {
+  return addFile(path.c_str(),style,prefix.c_str());
+}
+
+void Log::setFile(const std::string& path, Style style, const std::string& prefix) {
+  return setFile(path.c_str(),style,prefix.c_str());
+}
+
+
 void Log::addStdOut(Style style, const char*) {
   LogTarget* stdout = new eckit::OStreamTarget(std::cout);
   info().    addTarget( createStyleTarget(stdout,style,"(I)") );

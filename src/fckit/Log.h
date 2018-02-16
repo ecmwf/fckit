@@ -23,6 +23,9 @@ public:
   static void addFortranUnit(int unit, Style=PREFIX, const char* prefix="");
   static void setFortranUnit(int unit, Style=PREFIX, const char* prefix="");
 
+  static void addFile(const std::string& path, Style=PREFIX, const std::string& prefix = "");
+  static void setFile(const std::string& path, Style=PREFIX, const std::string& prefix = "");
+
   static void addFile(const char* path, Style=PREFIX, const char* prefix="");
   static void setFile(const char* path, Style=PREFIX, const char* prefix="");
 
