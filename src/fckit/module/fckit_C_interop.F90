@@ -1,3 +1,13 @@
+! (C) Copyright 2013 ECMWF.
+!
+! This software is licensed under the terms of the Apache Licence Version 2.0
+! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+! In applying this licence, ECMWF does not waive the privileges and immunities
+! granted to it by virtue of its status as an intergovernmental organisation nor
+! does it submit to any jurisdiction.
+
+#include "fckit/fckit.h"
+
 module fckit_C_interop_module
 implicit none
 private
@@ -14,6 +24,9 @@ public :: c_ptr_to_string
 public :: c_str
 public :: c_str_no_trim
 public :: c_str_right_trim
+public :: fckit_c_deleter_interface
+public :: fckit_c_deleter
+public :: fckit_c_nodeleter
 
 ! =============================================================================
 ! External functions
@@ -40,9 +53,36 @@ interface
   end function
 end interface
 
+abstract interface
+  subroutine fckit_c_deleter_interface(cptr) bind(c)
+    use, intrinsic :: iso_c_binding
+    type(c_ptr), value :: cptr
+  end subroutine
+end interface
+
+
 ! =============================================================================
 CONTAINS
 ! =============================================================================
+
+function fckit_c_deleter( deleter )
+  use, intrinsic :: iso_c_binding, only : c_funloc, c_funptr
+  type(c_funptr) :: fckit_c_deleter
+  procedure(fckit_c_deleter_interface) :: deleter
+  fckit_c_deleter = c_funloc(deleter)
+end function
+
+subroutine fckit_c_nodelete(cptr) bind(c)
+  use, intrinsic :: iso_c_binding
+  type(c_ptr), value :: cptr
+  FCKIT_SUPPRESS_UNUSED(cptr)
+end subroutine
+
+function fckit_c_nodeleter()
+  use, intrinsic :: iso_c_binding, only : c_funloc, c_funptr
+  type(c_funptr) :: fckit_c_nodeleter
+  fckit_c_nodeleter = c_funloc(fckit_c_nodelete)
+end function
 
 function c_ptr_compare_equal(p1,p2) result(equal)
   use, intrinsic :: iso_c_binding, only: c_ptr
@@ -67,7 +107,7 @@ end function
 subroutine get_c_commandline_arguments(argc,argv)
   use, intrinsic :: iso_c_binding
   integer(c_int), intent(out) :: argc
-  type(c_ptr), intent(out) :: argv(:)
+  type(c_ptr), intent(inout) :: argv(:)
   character(kind=c_char,len=1), save, target :: args(255)
   character(kind=c_char,len=255), save, target :: cmd
   character(kind=c_char,len=255) :: arg

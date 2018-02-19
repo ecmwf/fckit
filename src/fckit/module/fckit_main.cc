@@ -1,3 +1,13 @@
+/*
+ * (C) Copyright 2013 ECMWF.
+ *
+ * This software is licensed under the terms of the Apache Licence Version 2.0
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
+ * granted to it by virtue of its status as an intergovernmental organisation nor
+ * does it submit to any jurisdiction.
+ */
+
 #include <string.h>
 #include "eckit/config/LibEcKit.h"
 #include "eckit/config/LibEcKit.h"
@@ -90,7 +100,7 @@ extern "C"
 
   void fckit__set_abort_handler( eckit::abort_handler_t h )
   {
-    eckit::LibEcKit::instance().setAbortHandler(h);  
+    eckit::LibEcKit::instance().setAbortHandler(h);
   }
 
   void fckit__abort( const char* what, const char* file, int line, const char* function )
@@ -102,13 +112,13 @@ extern "C"
   {
     fckit_throw( what, eckit::CodeLocation(file,line,function) );
   }
-  
-  
+
+
   void fckit__set_signal_handler( int signum, fckit::signal_handler_t signal_handler )
   {
     fckit::Signals::instance().setSignalHandler( fckit::Signal(signum, signal_handler) );
   }
-  
+
   void fckit__set_fckit_signal_handler( int signum )
   {
     fckit::Signals::instance().setSignalHandler( fckit::Signal(signum) );

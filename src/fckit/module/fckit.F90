@@ -1,5 +1,12 @@
+! (C) Copyright 2013 ECMWF.
+!
+! This software is licensed under the terms of the Apache Licence Version 2.0
+! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+! In applying this licence, ECMWF does not waive the privileges and immunities
+! granted to it by virtue of its status as an intergovernmental organisation nor
+! does it submit to any jurisdiction.
 #ifndef FORD
-#include "fckit_defines.h"
+#include "fckit/fckit.h"
 #endif
 
 module fckit_module
@@ -34,7 +41,8 @@ use fckit_pathname_module, only: &
 
 use fckit_configuration_module, only: &
   fckit_configuration, &
-  fckit_YAMLConfiguration
+  fckit_YAMLConfiguration, &
+  deallocate_fckit_configuration
 
 use fckit_buffer_module, only: &
   fckit_buffer
@@ -56,16 +64,13 @@ public :: fckit_YAMLConfiguration    !! - [[fckit_configuration_module:fckit_YAM
 public :: fckit_buffer               !! - [[fckit_buffer_module:fckit_buffer(type)]]
 public :: fckit_version              !! - [[fckit_module:fckit_version(function)]]
 public :: fckit_git_sha1             !! - [[fckit_module:fckit_git_sha1(function)]]
+public :: deallocate_fckit_configuration  !! - [[fckit_configuration_module:deallocate_fckit_configuration(function)]]
 
 public :: log ! DEPRECATED. Use fckit_log instead.
 
 ! =============================================================================
 CONTAINS
 ! =============================================================================
-
-#ifndef FORD
-#include "fckit_defines.h"
-#endif
 
 ! -----------------------------------------------------------------------------
 

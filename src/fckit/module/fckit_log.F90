@@ -1,3 +1,13 @@
+! (C) Copyright 2013 ECMWF.
+!
+! This software is licensed under the terms of the Apache Licence Version 2.0
+! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+! In applying this licence, ECMWF does not waive the privileges and immunities
+! granted to it by virtue of its status as an intergovernmental organisation nor
+! does it submit to any jurisdiction.
+
+#include "fckit/fckit.h"
+
 module fckit_log_module
   !! Provides [[fckit_log_module:fckit_log(variable)]] for logging and to configure logging
 
@@ -16,7 +26,7 @@ type, FORD_PRIVATE :: fckit_log_type
   !!
   !! It wraps ```eckit::Log```, allowing Fortran and C++ code to log to the
   !! same output channels
-  
+
   integer :: SIMPLE = 0
     !! Style for logging without any prefix
   integer :: PREFIX = 1
@@ -54,19 +64,19 @@ contains
 
   procedure, nopass, public :: reset
     !! Reset all log channels (No more logging)
-  
+
   procedure, nopass, public :: flush
     !! Flush all log channels (empty buffers)
 
   procedure, nopass, public :: add_stdout
-    !! Add the C++ ```std::cout``` output stream to each logchannel 
+    !! Add the C++ ```std::cout``` output stream to each logchannel
 
   procedure, nopass, public :: set_stdout
     !! Replace each logchannels streams with the C++ ```std::cout``` output stream
 
   procedure, nopass, public :: add_fortran_unit
-    !! Add a given fortran unit as output stream to each logchannel 
-  
+    !! Add a given fortran unit as output stream to each logchannel
+
   procedure, nopass, public :: set_fortran_unit
     !! Replace each logchannel streams with a given fortran unit
 
@@ -128,10 +138,10 @@ subroutine debug(msg,newl,flush)
     !! Default ```.true.```
   logical, intent(in), optional :: flush
     !! Flush channel after message.
-    !! Default ```.false.```
+    !! Default ```.true.```
   integer :: opt_newl, opt_flush
-  opt_newl  = 1 ; if( present(newl) ) then; if( .not. newl ) opt_newl  = 0; endif
-  opt_flush = 0 ; if( present(flush)) then; if(      flush ) opt_flush = 1; endif
+  opt_newl  = 1 ; if( present(newl) ) then; if( .not.  newl ) opt_newl  = 0; endif
+  opt_flush = 1 ; if( present(flush)) then; if( .not. flush ) opt_flush = 0; endif
   call fckit__log_debug(c_str_right_trim(msg),opt_newl,opt_flush)
 end subroutine
 
@@ -146,10 +156,10 @@ subroutine info(msg,newl,flush)
     !! Default ```.true.```
   logical, intent(in), optional :: flush
     !! Flush channel after message.
-    !! Default ```.false.```
+    !! Default ```.true.```
   integer :: opt_newl, opt_flush
-  opt_newl  = 1 ; if( present(newl) ) then; if( .not. newl ) opt_newl  = 0; endif
-  opt_flush = 0 ; if( present(flush)) then; if(      flush ) opt_flush = 1; endif
+  opt_newl  = 1 ; if( present(newl) ) then; if( .not.  newl ) opt_newl  = 0; endif
+  opt_flush = 1 ; if( present(flush)) then; if( .not. flush ) opt_flush = 0; endif
   call fckit__log_info(c_str_right_trim(msg),opt_newl,opt_flush)
 end subroutine
 
@@ -164,10 +174,10 @@ subroutine warning(msg,newl,flush)
     !! Default ```.true.```
   logical, intent(in), optional :: flush
     !! Flush channel after message.
-    !! Default ```.false.```
+    !! Default ```.true.```
   integer :: opt_newl, opt_flush
-  opt_newl  = 1 ; if( present(newl) ) then; if( .not. newl ) opt_newl  = 0; endif
-  opt_flush = 0 ; if( present(flush)) then; if(      flush ) opt_flush = 1; endif
+  opt_newl  = 1 ; if( present(newl) ) then; if( .not.  newl ) opt_newl  = 0; endif
+  opt_flush = 1 ; if( present(flush)) then; if( .not. flush ) opt_flush = 0; endif
   call fckit__log_warning(c_str_right_trim(msg),opt_newl,opt_flush)
 end subroutine
 
@@ -182,10 +192,10 @@ subroutine error(msg,newl,flush)
     !! Default ```.true.```
   logical, intent(in), optional :: flush
     !! Flush channel after message.
-    !! Default ```.false.```
+    !! Default ```.true.```
   integer :: opt_newl, opt_flush
-  opt_newl  = 1 ; if( present(newl) ) then; if( .not. newl ) opt_newl  = 0; endif
-  opt_flush = 0 ; if( present(flush)) then; if(      flush ) opt_flush = 1; endif
+  opt_newl  = 1 ; if( present(newl) ) then; if( .not.  newl ) opt_newl  = 0; endif
+  opt_flush = 1 ; if( present(flush)) then; if( .not. flush ) opt_flush = 0; endif
   call fckit__log_error(c_str_right_trim(msg),opt_newl,opt_flush)
 end subroutine
 
@@ -333,6 +343,7 @@ end function
 subroutine delete(this)
   class(fckit_logchannel), intent(inout) :: this
   ! do nothing
+  FCKIT_SUPPRESS_UNUSED(this)
 end subroutine
 
 end module fckit_log_module

@@ -1,14 +1,14 @@
+/*
+ * (C) Copyright 2013 ECMWF.
+ *
+ * This software is licensed under the terms of the Apache Licence Version 2.0
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
+ * granted to it by virtue of its status as an intergovernmental organisation nor
+ * does it submit to any jurisdiction.
+ */
+
 #include <string>
-
-#include "eckit/eckit_version.h"
-
-#ifdef ECKIT_VERSION_INT
-#undef ECKIT_VERSION_INT
-#endif
-#define ECKIT_VERSION_INT (ECKIT_MAJOR_VERSION * 10000 \
-                         + ECKIT_MINOR_VERSION * 100 )
-
-#if ECKIT_VERSION_INT > 1700
 
 #include "eckit/io/SharedBuffer.h"
 
@@ -27,27 +27,3 @@ extern "C" {
   }
 
 }
-
-#else
-
-// Legacy
-#include "eckit/io/Buffer.h"
-
-extern "C" {
-
-  int c_fckit_buffer_str(const eckit::Buffer* This, char* &str, size_t &size) {
-    std::string s(*This, This->size());
-    size = s.size()+1;
-    str = new char[size];
-    strcpy(str,s.c_str());
-    return true;
-  }
-
-  void c_fckit_buffer_delete( eckit::Buffer* This ) {
-    delete This;
-  }
-
-}
-
-#endif
-

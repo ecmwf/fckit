@@ -1,61 +1,17 @@
+# (C) Copyright 2013 ECMWF.
+#
+# This software is licensed under the terms of the Apache Licence Version 2.0
+# which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+# In applying this licence, ECMWF does not waive the privileges and immunities
+# granted to it by virtue of its status as an intergovernmental organisation nor
+# does it submit to any jurisdiction.
+
 if( @PNAME@_IS_BUILD_DIR_EXPORT )
   set( FCTEST_GENERATOR @PYTHON_EXECUTABLE@ @CMAKE_CURRENT_SOURCE_DIR@/tools/fctest_generate_runner.py )
 else()
-  set( FCTEST_GENERATOR @PYTHON_EXECUTABLE@ @CMAKE_INSTALL_PREFIX@/@INSTALL_LIBEXEC_DIR@/fctest_generate_runner.py )
+  set( FCKIT_INSTALL_PREFIX ${CMAKE_CURRENT_LIST_DIR}/../../.. )
+  set( FCTEST_GENERATOR @PYTHON_EXECUTABLE@ ${FCKIT_INSTALL_PREFIX}/libexec/fctest_generate_runner.py )
 endif()
 
-function( fctest_generate_runner )
+@FCKIT_IMPORT@
 
-  set( options           )
-  set( single_value_args OUTPUT FILENAME )
-  set( multi_value_args DEPENDS )
-
-  cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
-
-  get_filename_component(base ${_PAR_FILENAME} NAME_WE)
-  set(base_abs ${CMAKE_CURRENT_SOURCE_DIR}/${base})
-  set(outfile ${CMAKE_CURRENT_BINARY_DIR}/${base}_main.F90)
-  set(${_PAR_OUTPUT} ${outfile} PARENT_SCOPE)
-
-  list( APPEND _depends
-    ${_PAR_FILENAME}
-    ${_PAR_DEPENDS}
-  )
-
-  add_custom_command(
-    OUTPUT ${outfile}
-    COMMAND ${FCTEST_GENERATOR} -i ${CMAKE_CURRENT_SOURCE_DIR}/${_PAR_FILENAME} -o ${outfile}
-    DEPENDS ${_depends} )
-
-  set_source_files_properties(${outfile} PROPERTIES GENERATED TRUE)
-
-endfunction()
-
-
-
-macro( add_fctest )
-
-  set( options           )
-  set( single_value_args TARGET )
-  set( multi_value_args SOURCES LIBS LABELS )
-
-  cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
-
-  include_directories( ${FCKIT_INCLUDE_DIRS} )
-
-  list( GET _PAR_SOURCES 0 TESTSUITE )
-  list( REMOVE_ITEM _PAR_SOURCES ${TESTSUITE})
-
-  list( APPEND _PAR_LIBS fckit )
-
-  fctest_generate_runner( OUTPUT TESTRUNNER 
-                          FILENAME ${TESTSUITE} 
-                          DEPENDS ${_PAR_LIBS} )
-
-  set( _PAR_LABELS fortran ${_PAR_LABELS} )
-  ecbuild_add_test( TARGET ${_PAR_TARGET} ${_PAR_UNPARSED_ARGUMENTS}
-                    SOURCES ${TESTRUNNER} ${_PAR_SOURCES}
-                    LIBS ${_PAR_LIBS}
-                    LABELS ${_PAR_LABELS} )
-
-endmacro()

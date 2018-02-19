@@ -1,3 +1,13 @@
+/*
+ * (C) Copyright 2013 ECMWF.
+ *
+ * This software is licensed under the terms of the Apache Licence Version 2.0
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
+ * granted to it by virtue of its status as an intergovernmental organisation nor
+ * does it submit to any jurisdiction.
+ */
+
 #include <csignal>
 #include <exception>
 #include <iomanip>
@@ -104,7 +114,7 @@ void fckit_terminate() {
             exception_callstack = eckit::BackTrace::dump();
         }
     }
-    
+
     eckit::LibEcKit::instance().abort();
 
     // Just in case we end up here, as last resort, exit immediately without cleanup.
@@ -137,7 +147,7 @@ void fckit_signal_handler(int signum) {
     exception_location = eckit::CodeLocation();
     exception_callstack = eckit::BackTrace::dump();
     eckit::LibEcKit::instance().abort();
-  
+
     // Just in case we end up here, which normally we shouldn't.
     std::_Exit(EXIT_FAILURE );
 }
@@ -187,7 +197,7 @@ void Signals::setSignalHandlers() {
 }
 
 void Signals::setSignalHandler( const Signal& signal ) {
-  if( Main::instance().taskID() == 0 ) 
+  if( Main::instance().taskID() == 0 )
     eckit::Log::debug() << "Registering signal handler for signal " << std::setw(2) << int(signal) << " [" << signal << "]" << std::endl;
   registered_signals_[signal] = signal;
   std::signal( signal, signal.handler() );
@@ -248,11 +258,6 @@ void Main::initialise(
 
 void Main::finalise()
 {
-    // Temporary until ECKIT-166 is fixed, only included for MacOSX
-#ifdef BUG_ECKIT_166
-    eckit::mpi::finaliseAllComms();
-#endif
-
     eckit::Log::flush();
 }
 
@@ -264,11 +269,11 @@ extern "C" {
     ::strcpy(what,exception_what.c_str());
     return SUCCESS;
   }
-  
+
   int fckit__exception_location () {
     return bool(exception_location);
   }
-  
+
   int fckit__exception_file (char* &file, int &file_size) {
     std::string f = exception_location ? exception_location.file() : "";
     file_size = f.size();

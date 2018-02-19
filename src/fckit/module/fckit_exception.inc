@@ -1,3 +1,11 @@
+! (C) Copyright 2013 ECMWF.
+!
+! This software is licensed under the terms of the Apache Licence Version 2.0
+! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+! In applying this licence, ECMWF does not waive the privileges and immunities
+! granted to it by virtue of its status as an intergovernmental organisation nor
+! does it submit to any jurisdiction.
+
 #ifdef FORD
 #define FORD_PRIVATE public
 #else
@@ -27,7 +35,7 @@ interface
     integer(c_int), value :: line
     character(kind=c_char), dimension(*) :: function
   end subroutine
-  
+
   !int fckit__exception_what (char* &what, int &what_size)
   function fckit__exception_what(what,what_size) result(error_code) bind(c)
     use iso_c_binding, only: c_int, c_ptr
@@ -35,13 +43,13 @@ interface
     type(c_ptr) :: what
     integer(c_int) :: what_size
   end function
-  
+
   !int fckit__exception_location ()
   function fckit__exception_location() result(location) bind(c)
     use iso_c_binding, only: c_int
     integer(c_int) :: location
   end function
-  
+
   !int fckit__exception_file (char* &file, int &file_size)
   function fckit__exception_file(file,file_size) result(error_code) bind(c)
     use iso_c_binding, only: c_int, c_ptr
@@ -49,7 +57,7 @@ interface
     type(c_ptr) :: file
     integer(c_int) :: file_size
   end function
-  
+
   !int fckit__exception_line ()
   function fckit__exception_line() result(line) bind(c)
     use iso_c_binding, only: c_int

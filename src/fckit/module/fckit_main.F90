@@ -1,14 +1,22 @@
+! (C) Copyright 2013 ECMWF.
+!
+! This software is licensed under the terms of the Apache Licence Version 2.0
+! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+! In applying this licence, ECMWF does not waive the privileges and immunities
+! granted to it by virtue of its status as an intergovernmental organisation nor
+! does it submit to any jurisdiction.
+
 module fckit_main_module
   !! author: Willem Deconinck
   !!
   !! Module providing [[fckit_main_module:fckit_main(variable)]] global variable
   !! to set up the ```eckit::Main``` object required by all libraries relying on eckit
   !!
-  !!@Note 
+  !!@Note
   !! ```fckit_main%initialize()``` will set up default log channels to be used by ```eckit::Log``` and ```fckit_log```.
   !! Refer to [[fckit_log_module:fckit_log(variable)]] to adapt the log channels to suit your needs
   !!@Endnote
-  !! 
+  !!
 
 implicit none
 private
@@ -39,7 +47,7 @@ contains
   procedure, nopass, public :: initialise
     !! display: none
     !! Initialise Main if not initialised
-    !! 
+    !!
     !! Internally calls eckit::Main::initialise(argc,argv)
     !! with the command-line arguments acquired from the Fortran runtime.
     !!
@@ -54,7 +62,7 @@ contains
 
   procedure, nopass, public :: finalise
     !! Finalise Main if not finalised
-    !! 
+    !!
     !! This function is to be called at the end of the main program.
     !! Calling this function is optional as the program should be capable to clean up
     !! itself. It may however provide a hook to clean up and print in future
@@ -94,7 +102,7 @@ contains
 
   procedure, nopass, public :: debug
     !! Check if debug flag is set (environment or command-line)
-  
+
   procedure, nopass, public :: name => main_name
     !! Get the name of the program (command-line name)
     !!
@@ -104,7 +112,7 @@ contains
     !! character(len=:), allocatable :: name
     !! call fckit_main%name( name )
     !!```
-  
+
   procedure, nopass, public :: displayname
     !! Get the displayname of the program.
     !!
@@ -121,12 +129,12 @@ contains
   procedure, nopass, public :: init => initialise
     !! deprecated: true
     !! Deprecated. Use [[fckit_main_type:initialise(bound)]] instead
-  
+
   procedure, nopass, public :: final => finalise
     !! deprecated: true
     !! Finalise Main if not finalised
     !! Deprecated. Use [[fckit_main_type:finalise(bound)]] instead
-  
+
 end type fckit_main_type
 
 type(fckit_main_type), save :: fckit_main
@@ -167,7 +175,6 @@ end function
 function taskID()
   use, intrinsic :: iso_c_binding, only : c_int
   use fckit_c_interop_module
-  logical :: ready
   integer(c_int) :: taskID
   integer:: error_code
   error_code = fckit__main_taskID(taskID)

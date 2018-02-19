@@ -1,3 +1,11 @@
+! (C) Copyright 2013 ECMWF.
+!
+! This software is licensed under the terms of the Apache Licence Version 2.0
+! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+! In applying this licence, ECMWF does not waive the privileges and immunities
+! granted to it by virtue of its status as an intergovernmental organisation nor
+! does it submit to any jurisdiction.
+
 module fckit_signal_module
   !! author: Willem Deconinck
   !!
@@ -25,7 +33,7 @@ contains
     !!```fortran
     !! call fckit_signal%raise(fckit_signal%SIGABRT())
     !!```
-  
+
   procedure, nopass, public :: set_handler
     !! Set custom signal handler
     !!
@@ -43,13 +51,13 @@ contains
     !!   call fckit_signal%set_handler( fckit_signal%SIGABRT(), signal_handler )
     !! end subroutine
     !!```
-  
+
   procedure, nopass, public :: set_handlers
     !! Set signal handlers to a fckit-internal signal handler
     !!
     !! This fckit-internal signal handler will print a message containing the
     !! backtrace, and will then call the abort-handler to terminate. The
-    !! abort-handler can be modified with the subroutine 
+    !! abort-handler can be modified with the subroutine
     !! [[fckit_exception_module:fckit_exception(type):set_handler(subroutine)]]
     !!
     !!####Example usage
@@ -67,7 +75,7 @@ contains
     !!```fortran
     !! call fckit_signal%restore_handler( fckit_signal%SIGABRT() )
     !!```
-  
+
   procedure, nopass, public :: restore_handlers
     !! Restore all the signal handlers to the default.
 
@@ -91,15 +99,15 @@ contains
 
 subroutine set_handler( signum, signal_handler )
   use, intrinsic :: iso_c_binding, only : c_funloc
-  
+
   integer :: signum
     !! signal code
 
   procedure(fckit_signal_handler), optional :: signal_handler
-    !! procedure with signature 
-  
+    !! procedure with signature
+
   ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  
+
   if( present( signal_handler) ) then
     call fckit__set_signal_handler( signum, c_funloc(signal_handler) )
   else

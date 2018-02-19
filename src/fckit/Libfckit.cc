@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2016 ECMWF.
+ * (C) Copyright 2013 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -12,29 +12,21 @@
 #include <algorithm>
 
 #include "fckit/Libfckit.h"
-#include "fckit/fckit_defines.h"
+#include "fckit/fckit.h"
 #include "eckit/eckit_version.h"
 
 namespace fckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-// Support for eckit 0.16.5 improved library registration using REGISTER_LIBRARY macro
-// See issue ECKIT-244
-#ifdef REGISTER_LIBRARY
-#define DECLARE_STATIC(Library,lib) static Library lib
-#else
-#define REGISTER_LIBRARY(Library) static Library library
-#define DECLARE_STATIC(Library,lib)
-#endif
-
+// eckit 0.16.5 improved library registration using REGISTER_LIBRARY macro
 REGISTER_LIBRARY(Libfckit);
 
 Libfckit::Libfckit() : eckit::system::Library("fckit") {}
 
 const Libfckit& Libfckit::instance()
 {
-    DECLARE_STATIC(Libfckit,library);
+    static Libfckit library;
     return library;
 }
 
