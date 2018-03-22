@@ -51,10 +51,10 @@ contains
     !! Nullify internal C pointer
 
   procedure, private :: equal
-    !! Compare two object's C pointers
+    !! Compare two object C pointers
 
   procedure, private :: not_equal
-    !! Compare two object's C pointers
+    !! Compare two object C pointers
 
   generic, public :: operator(==) => equal
     !! Compare two objects internal C pointer

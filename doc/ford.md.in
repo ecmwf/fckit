@@ -1,6 +1,6 @@
 project: fcKit
 project_website: https://software.ecmwf.int/wiki/display/FCKIT
-project_bitbucket: https://software.ecmwf.int/stash/projects/ECSDK/repos/fckit
+project_github: https://github.com/ecmwf/fckit
 version: @FCKIT_VERSION@
 summary: Fortran support library, compatible with ecKit C++ support library.
 author: ECMWF
@@ -18,6 +18,7 @@ search: false
 macro: FORD
 extra_filetypes: sh #
 exclude: Log.F90
+include: @CMAKE_CURRENT_BINARY_DIR@/../src
 
 
 ## Capabilities:
