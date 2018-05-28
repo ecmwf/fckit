@@ -14,7 +14,7 @@ cmake_minimum_required( VERSION 3.1 FATAL_ERROR )
 set( ENABLE_OS_TESTS            OFF   CACHE BOOL " " )
 set( ENABLE_LARGE_FILE_SUPPORT  OFF   CACHE BOOL " " )
 
-project( fckit CXX Fortran )
+project( fckit C CXX Fortran )
 
 set( CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/../ecbuild/cmake")
 set( ECBUILD_DEFAULT_BUILD_TYPE Release )

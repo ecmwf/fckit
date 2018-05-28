@@ -20,7 +20,7 @@ module fckit_configuration_module
   !! for [[fckit_configuration_module:fckit_configuration(type)]] can create the
   !! configuration from a JSON file
 
-use, intrinsic :: iso_c_binding, only : c_ptr, c_int, c_long, c_float, c_double
+use, intrinsic :: iso_c_binding, only : c_ptr, c_int, c_long_long, c_float, c_double
 use fckit_shared_object_module, only : fckit_shared_object, fckit_c_deleter, fckit_c_nodeleter
 use fckit_pathname_module, only : fckit_pathname
 use fckit_buffer_module, only : fckit_buffer
@@ -286,7 +286,7 @@ end interface
 
 !------------------------------------------------------------------------------
 
-private :: c_ptr, c_int, c_long, c_float, c_double
+private :: c_ptr, c_int, c_long_long, c_float, c_double
 private :: fckit_shared_object
 private :: fckit_c_deleter
 private :: fckit_c_nodeleter
@@ -451,7 +451,7 @@ subroutine set_int64(this, name, value)
   use fckit_c_interop_module, only : c_str
   class(fckit_Configuration), intent(inout) :: this
   character(len=*), intent(in) :: name
-  integer(c_long), intent(in) :: value
+  integer(c_long_long), intent(in) :: value
   call c_fckit_configuration_set_long(this%c_ptr(), c_str(name), value)
 end subroutine
 
@@ -491,7 +491,7 @@ subroutine set_array_int64(this, name, value)
   use fckit_c_interop_module, only : c_str
   class(fckit_Configuration), intent(in) :: this
   character(len=*), intent(in) :: name
-  integer(c_long), intent(in) :: value(:)
+  integer(c_long_long), intent(in) :: value(:)
   call c_fckit_configuration_set_array_long(this%c_ptr(), c_str(name), value, size(value) )
 end subroutine
 
@@ -618,7 +618,7 @@ function get_int64(this, name, value) result(found)
   logical :: found
   class(fckit_Configuration), intent(in) :: this
   character(len=*), intent(in) :: name
-  integer(c_long), intent(inout) :: value
+  integer(c_long_long), intent(inout) :: value
   integer :: found_int
   found_int = c_fckit_configuration_get_long(this%c_ptr(), c_str(name), value )
   found = .False.
@@ -628,7 +628,7 @@ end function
 subroutine get_int64_or_die(this,name,value)
   class(fckit_Configuration), intent(in) :: this
   character(len=*), intent(in) :: name
-  integer(c_long), intent(inout) :: value
+  integer(c_long_long), intent(inout) :: value
   if( .not. this%get(name,value) ) call throw_configuration_not_found(name)
 end subroutine
 
@@ -734,9 +734,9 @@ function get_array_int64(this, name, value) result(found)
   logical :: found
   class(fckit_Configuration), intent(in) :: this
   character(len=*), intent(in) :: name
-  integer(c_long), allocatable, intent(inout) :: value(:)
+  integer(c_long_long), allocatable, intent(inout) :: value(:)
   type(c_ptr) :: value_cptr
-  integer(c_long), pointer :: value_fptr(:)
+  integer(c_long_long), pointer :: value_fptr(:)
   integer :: value_size
   integer :: found_int
   found_int = c_fckit_configuration_get_array_long(this%c_ptr(), c_str(name), &
@@ -755,7 +755,7 @@ end function
 subroutine get_array_int64_or_die(this,name,value)
   class(fckit_Configuration), intent(in) :: this
   character(len=*), intent(in) :: name
-  integer(c_long), allocatable, intent(inout) :: value(:)
+  integer(c_long_long), allocatable, intent(inout) :: value(:)
   if( .not. this%get(name,value) ) call throw_configuration_not_found(name)
 end subroutine
 

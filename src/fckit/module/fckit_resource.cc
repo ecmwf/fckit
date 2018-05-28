@@ -22,9 +22,9 @@ extern "C"
     return SUCCESS;
   }
 
-  int fckit__resource_long (const char* resource, long default_value, long &value)
+  int fckit__resource_long (const char* resource, long long default_value, long long &value)
   {
-    value = eckit::Resource<long>( std::string(resource), default_value );
+    value = eckit::Resource<long long>( std::string(resource), default_value );
     return SUCCESS;
   }
 

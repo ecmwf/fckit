@@ -26,11 +26,11 @@ interface
   end function
   !int fckit__resource_long (const char* resource, int default_value, int &value)
   function fckit__resource_long(resource,default_value,value) result(error_code) bind(c)
-    use iso_c_binding, only: c_int, c_long, c_char
+    use iso_c_binding, only: c_int, c_long_long, c_char
     integer(c_int) :: error_code
     character(kind=c_char), dimension(*) :: resource
-    integer(c_long), value :: default_value
-    integer(c_long) :: value
+    integer(c_long_long), value :: default_value
+    integer(c_long_long) :: value
   end function
   !int fckit__resource_float (const char* resource, int default_value, int &value)
   function fckit__resource_float(resource,default_value,value) result(error_code) bind(c)
@@ -97,8 +97,8 @@ subroutine resource_get_int64(resource_str,default_value,value)
   use fckit_c_interop_module
   use, intrinsic :: iso_c_binding
   character(len=*), intent(in) :: resource_str
-  integer(c_long), intent(in) :: default_value
-  integer(c_long), intent(out) :: value
+  integer(c_long_long), intent(in) :: default_value
+  integer(c_long_long), intent(out) :: value
   integer(c_int) :: error_code
   error_code = fckit__resource_long(c_str(resource_str),default_value,value)
 end subroutine
