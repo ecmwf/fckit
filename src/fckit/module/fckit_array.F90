@@ -7,7 +7,7 @@
 ! does it submit to any jurisdiction.
 
 module fckit_array_module
-use, intrinsic :: iso_c_binding, only: c_int, c_long, c_float, c_double
+use, intrinsic :: iso_c_binding, only: c_int, c_long_long, c_float, c_double
 implicit none
 private
 
@@ -20,10 +20,10 @@ public :: array_strides
 
 !========================================================================
 
-private :: c_int, c_long, c_float, c_double
+private :: c_int, c_long_long, c_float, c_double
 
 integer(c_int), target :: zero_length_array_int32(0)
-integer(c_long),target :: zero_length_array_int64(0)
+integer(c_long_long),target :: zero_length_array_int64(0)
 real(c_float),  target :: zero_length_array_real32(0)
 real(c_double), target :: zero_length_array_real64(0)
 
@@ -103,7 +103,7 @@ end function
 
 function c_loc_int64(x)
   use, intrinsic :: iso_c_binding
-  integer(c_long), target :: x
+  integer(c_long_long), target :: x
   type(c_ptr) :: c_loc_int64
   c_loc_int64 = c_loc(x)
 end function
@@ -208,9 +208,9 @@ end function
 
 function array_view1d_int64_r0(scalar) result( view )
   use, intrinsic :: iso_c_binding
-  integer(c_long), intent(in), target :: scalar
+  integer(c_long_long), intent(in), target :: scalar
   type(c_ptr) :: array_c_ptr
-  integer(c_long), pointer :: view(:)
+  integer(c_long_long), pointer :: view(:)
   nullify(view)
   array_c_ptr = c_loc_int64(scalar)
   call c_f_pointer ( array_c_ptr , view , (/1/) )
@@ -220,9 +220,9 @@ end function
 
 function array_view1d_int64_r1(array) result( view )
   use, intrinsic :: iso_c_binding
-  integer(c_long), intent(in), target :: array(:)
+  integer(c_long_long), intent(in), target :: array(:)
   type(c_ptr) :: array_c_ptr
-  integer(c_long), pointer :: view(:)
+  integer(c_long_long), pointer :: view(:)
   nullify(view)
   if( size(array) > 0 ) then
     array_c_ptr = c_loc_int64(array(1))
@@ -236,9 +236,9 @@ end function
 
 function array_view1d_int64_r2(array) result( view )
   use, intrinsic :: iso_c_binding
-  integer(c_long), intent(in), target :: array(:,:)
+  integer(c_long_long), intent(in), target :: array(:,:)
   type(c_ptr) :: array_c_ptr
-  integer(c_long), pointer :: view(:)
+  integer(c_long_long), pointer :: view(:)
   nullify(view)
   if( size(array) > 0 ) then
     array_c_ptr = c_loc_int64(array(1,1))
@@ -252,9 +252,9 @@ end function
 
 function array_view1d_int64_r3(array) result( view )
   use, intrinsic :: iso_c_binding
-  integer(c_long), intent(in), target :: array(:,:,:)
+  integer(c_long_long), intent(in), target :: array(:,:,:)
   type(c_ptr) :: array_c_ptr
-  integer(c_long), pointer :: view(:)
+  integer(c_long_long), pointer :: view(:)
   nullify(view)
   if( size(array) > 0 ) then
     array_c_ptr = c_loc_int64(array(1,1,1))
@@ -268,9 +268,9 @@ end function
 
 function array_view1d_int64_r4(array) result( view )
   use, intrinsic :: iso_c_binding
-  integer(c_long), intent(in), target :: array(:,:,:,:)
+  integer(c_long_long), intent(in), target :: array(:,:,:,:)
   type(c_ptr) :: array_c_ptr
-  integer(c_long), pointer :: view(:)
+  integer(c_long_long), pointer :: view(:)
   nullify(view)
   if( size(array) > 0 ) then
     array_c_ptr = c_loc_int64(array(1,1,1,1))
@@ -499,7 +499,7 @@ end function
 
 function array_stride_int64_r1_dim(arr,dim) result( stride )
   use, intrinsic :: iso_c_binding
-  integer(c_long) :: arr(:)
+  integer(c_long_long) :: arr(:)
   integer(c_int) :: dim
   integer(c_int) :: stride
   stride = 1
@@ -510,7 +510,7 @@ end function
 
 function array_stride_int64_r2_dim(arr,dim) result( stride )
   use, intrinsic :: iso_c_binding
-  integer(c_long) :: arr(:,:)
+  integer(c_long_long) :: arr(:,:)
   integer(c_int) :: dim
   integer(c_int) :: stride
   stride = 1
@@ -526,7 +526,7 @@ end function
 
 function array_stride_int64_r3_dim(arr,dim) result( stride )
   use, intrinsic :: iso_c_binding
-  integer(c_long) :: arr(:,:,:)
+  integer(c_long_long) :: arr(:,:,:)
   integer(c_int) :: dim
   integer(c_int) :: stride
   stride = 1
@@ -543,7 +543,7 @@ end function
 
 function array_stride_int64_r4_dim(arr,dim) result( stride )
   use, intrinsic :: iso_c_binding
-  integer(c_long) :: arr(:,:,:,:)
+  integer(c_long_long) :: arr(:,:,:,:)
   integer(c_int) :: dim
   integer(c_int) :: stride
   stride = 1
@@ -736,7 +736,7 @@ end function
 
 function array_stride_int64_r1(arr) result( stride_ )
   use, intrinsic :: iso_c_binding
-  integer(c_long) :: arr(:)
+  integer(c_long_long) :: arr(:)
   integer(c_int) :: stride_(1)
   stride_(1) = array_stride_int64_r1_dim(arr,1)
 end function
@@ -745,7 +745,7 @@ end function
 
 function array_stride_int64_r2(arr) result( stride_ )
   use, intrinsic :: iso_c_binding
-  integer(c_long) :: arr(:,:)
+  integer(c_long_long) :: arr(:,:)
   integer(c_int) :: stride_(2)
   stride_(1) = array_stride_int64_r2_dim(arr,1)
   stride_(2) = array_stride_int64_r2_dim(arr,2)
@@ -755,7 +755,7 @@ end function
 
 function array_stride_int64_r3(arr) result( stride_ )
   use, intrinsic :: iso_c_binding
-  integer(c_long) :: arr(:,:,:)
+  integer(c_long_long) :: arr(:,:,:)
   integer(c_int) :: stride_(3)
   stride_(1) = array_stride_int64_r3_dim(arr,1)
   stride_(2) = array_stride_int64_r3_dim(arr,2)
@@ -766,7 +766,7 @@ end function
 
 function array_stride_int64_r4(arr) result( stride_ )
   use, intrinsic :: iso_c_binding
-  integer(c_long) :: arr(:,:,:,:)
+  integer(c_long_long) :: arr(:,:,:,:)
   integer(c_int) :: stride_(4)
   stride_(1) = array_stride_int64_r4_dim(arr,1)
   stride_(2) = array_stride_int64_r4_dim(arr,2)

@@ -7,7 +7,7 @@
 ! does it submit to any jurisdiction.
 
 module fctest
-  use, intrinsic :: iso_c_binding, only: c_float, c_double, c_int, c_long
+  use, intrinsic :: iso_c_binding, only: c_float, c_double, c_int, c_long_long
   implicit none
   integer, parameter :: sp=c_float
   integer, parameter :: dp=c_double
@@ -69,7 +69,7 @@ subroutine fctest_check_equal_int32(V1,V2,line)
 end subroutine
 
 subroutine fctest_check_equal_int64(V1,V2,line)
-  integer(c_long), intent(in) :: V1, V2
+  integer(c_long_long), intent(in) :: V1, V2
   integer, intent(in) :: line
   if(V1/=V2) then
     write(0,'(2A,I0,2A)') trim(source_file),":",line,": warning: ",trim(sweep_leading_blanks(get_source_line(line)))
@@ -129,7 +129,7 @@ subroutine fctest_check_equal_int32_r1(V1,V2,line)
 end subroutine
 
 subroutine fctest_check_equal_int64_r1(V1,V2,line)
-  integer(c_long), intent(in) :: V1(:), V2(:)
+  integer(c_long_long), intent(in) :: V1(:), V2(:)
   integer, intent(in) :: line
   logical :: compare = .True.
   integer :: j
