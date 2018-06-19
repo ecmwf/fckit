@@ -9,19 +9,22 @@
 ############################################################################################
 # FCKIT
 
-cmake_minimum_required( VERSION 2.8 FATAL_ERROR )
+cmake_minimum_required( VERSION 3.1 FATAL_ERROR )
 
 set( ENABLE_OS_TESTS            OFF   CACHE BOOL " " )
 set( ENABLE_LARGE_FILE_SUPPORT  OFF   CACHE BOOL " " )
 
-project( fckit CXX Fortran )
+project( fckit C CXX Fortran )
 
 set( CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/../ecbuild/cmake")
 set( ECBUILD_DEFAULT_BUILD_TYPE Release )
 
 include( ecbuild_system NO_POLICY_SCOPE )
 
-ecbuild_requires_macro_version( 2.5 )
+ecbuild_requires_macro_version( 2.7 )
+
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 ################################################################################################
 # project

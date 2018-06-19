@@ -4,9 +4,12 @@
 if [[ ! $(command -v module > /dev/null 2>&1) ]]; then
   . /usr/local/apps/module/init/bash
 fi
-module unload grib_api
+
 module unload eccodes
 module unload emos
 module unload fftw
 module unload libemos
+
 module switch gnu clang
+export FC=/usr/local/apps/gcc/6.3.0/bin/gfortran
+

@@ -117,10 +117,10 @@ end subroutine
 !-------------------------------------------------------------------------------
 subroutine c_fckit_configuration_set_long( This, name, value ) bind(C,name="c_f&
   &ckit_configuration_set_long")
-    use iso_c_binding, only: c_ptr, c_long, c_char
+    use iso_c_binding, only: c_ptr, c_long_long, c_char
     type(c_ptr), value :: This
     character(c_char), dimension(*) :: name
-    integer(c_long), value :: value
+    integer(c_long_long), value :: value
 end subroutine
 !-------------------------------------------------------------------------------
 
@@ -183,10 +183,10 @@ end subroutine
 !-------------------------------------------------------------------------------
 subroutine c_fckit_configuration_set_array_long( This, name, value, size ) bind&
   &(C,name="c_fckit_configuration_set_array_long")
-    use iso_c_binding, only: c_int, c_ptr, c_long, c_char
+    use iso_c_binding, only: c_int, c_ptr, c_long_long, c_char
     type(c_ptr), value :: This
     character(c_char), dimension(*) :: name
-    integer(c_long), dimension(*) :: value
+    integer(c_long_long), dimension(*) :: value
     integer(c_int), value :: size
 end subroutine
 !-------------------------------------------------------------------------------
@@ -268,11 +268,11 @@ end function
 !-------------------------------------------------------------------------------
 function c_fckit_configuration_get_long( This, name, value ) bind(C,name="c_fck&
   &it_configuration_get_long")
-    use iso_c_binding, only: c_char, c_ptr, c_long, c_int
+    use iso_c_binding, only: c_char, c_ptr, c_long_long, c_int
     integer(c_int) :: c_fckit_configuration_get_long
     type(c_ptr), value :: This
     character(c_char), dimension(*) :: name
-    integer(c_long) :: value
+    integer(c_long_long) :: value
 end function
 !-------------------------------------------------------------------------------
 

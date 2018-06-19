@@ -537,10 +537,10 @@ interface
   end subroutine
 
   subroutine fckit__mpi__allreduce_int64(comm,in,out,count,operation) bind(c)
-    use, intrinsic :: iso_c_binding, only : c_ptr, c_int, c_long, c_size_t
+    use, intrinsic :: iso_c_binding, only : c_ptr, c_int, c_long_long, c_size_t
     type(c_ptr), value :: comm
-    integer(c_long), dimension(*) :: in
-    integer(c_long), dimension(*) :: out
+    integer(c_long_long), dimension(*) :: in
+    integer(c_long_long), dimension(*) :: out
     integer(c_size_t), value :: count
     integer(c_int), value :: operation
   end subroutine
@@ -572,9 +572,9 @@ interface
   end subroutine
 
   subroutine fckit__mpi__allreduce_inplace_int64(comm,inout,count,operation) bind(c)
-    use, intrinsic :: iso_c_binding, only : c_ptr, c_int, c_long, c_size_t
+    use, intrinsic :: iso_c_binding, only : c_ptr, c_int, c_long_long, c_size_t
     type(c_ptr), value :: comm
-    integer(c_long), dimension(*) :: inout
+    integer(c_long_long), dimension(*) :: inout
     integer(c_size_t), value :: count
     integer(c_int), value :: operation
   end subroutine
@@ -604,9 +604,9 @@ interface
   end subroutine
 
   subroutine fckit__mpi__broadcast_int64(comm,buffer,count,root) bind(c)
-    use, intrinsic :: iso_c_binding, only : c_ptr, c_long, c_size_t
+    use, intrinsic :: iso_c_binding, only : c_ptr, c_long_long, c_size_t
     type(c_ptr), value :: comm
-    integer(c_long), dimension(*) :: buffer
+    integer(c_long_long), dimension(*) :: buffer
     integer(c_size_t), value :: count
     integer(c_size_t), value :: root
   end subroutine
@@ -657,9 +657,9 @@ interface
   end subroutine
 
   subroutine fckit__mpi__send_int64(comm,buffer,count,dest,tag) bind(c)
-    use, intrinsic :: iso_c_binding, only : c_ptr, c_long, c_size_t, c_int
+    use, intrinsic :: iso_c_binding, only : c_ptr, c_long_long, c_size_t, c_int
     type(c_ptr), value :: comm
-    integer(c_long), dimension(*) :: buffer
+    integer(c_long_long), dimension(*) :: buffer
     integer(c_size_t), value :: count
     integer(c_int), value :: dest
     integer(c_int), value :: tag
@@ -694,9 +694,9 @@ interface
   end subroutine
 
   subroutine fckit__mpi__receive_int64(comm,buffer,count,source,tag,status) bind(c)
-    use, intrinsic :: iso_c_binding, only : c_ptr, c_long, c_size_t, c_int
+    use, intrinsic :: iso_c_binding, only : c_ptr, c_long_long, c_size_t, c_int
     type(c_ptr), value :: comm
-    integer(c_long), dimension(*) :: buffer
+    integer(c_long_long), dimension(*) :: buffer
     integer(c_size_t), value :: count
     integer(c_int), value :: source
     integer(c_int), value :: tag
@@ -734,10 +734,10 @@ interface
   end function
 
   function fckit__mpi__isend_int64(comm,buffer,count,dest,tag) result(request) bind(c)
-    use, intrinsic :: iso_c_binding, only : c_ptr, c_long, c_size_t, c_int
+    use, intrinsic :: iso_c_binding, only : c_ptr, c_long_long, c_size_t, c_int
     integer(c_int) :: request
     type(c_ptr), value :: comm
-    integer(c_long), dimension(*) :: buffer
+    integer(c_long_long), dimension(*) :: buffer
     integer(c_size_t), value :: count
     integer(c_int), value :: dest
     integer(c_int), value :: tag
@@ -774,10 +774,10 @@ interface
   end function
 
   function fckit__mpi__ireceive_int64(comm,buffer,count,source,tag) result(request) bind(c)
-    use, intrinsic :: iso_c_binding, only : c_ptr, c_long, c_size_t, c_int
+    use, intrinsic :: iso_c_binding, only : c_ptr, c_long_long, c_size_t, c_int
     integer(c_int) :: request
     type(c_ptr), value :: comm
-    integer(c_long), dimension(*) :: buffer
+    integer(c_long_long), dimension(*) :: buffer
     integer(c_size_t), value :: count
     integer(c_int), value :: source
     integer(c_int), value :: tag
@@ -1061,65 +1061,65 @@ subroutine allreduce_int32_r4(this,in,out,operation)
 end subroutine
 
 subroutine allreduce_int64_r0(this,in,out,operation)
-  use, intrinsic :: iso_c_binding, only : c_int, c_long, c_size_t
+  use, intrinsic :: iso_c_binding, only : c_int, c_long_long, c_size_t
   use fckit_array_module, only: array_view1d
   class(fckit_mpi_comm), intent(in) :: this
-  integer(c_long), intent(in)    :: in
-  integer(c_long), intent(inout) :: out
+  integer(c_long_long), intent(in)    :: in
+  integer(c_long_long), intent(inout) :: out
   integer(c_int), intent(in) :: operation
-  integer(c_long), pointer :: view_in(:), view_out(:)
+  integer(c_long_long), pointer :: view_in(:), view_out(:)
   view_in  => array_view1d(in)
   view_out => array_view1d(out)
   call fckit__mpi__allreduce_int64(this%c_ptr(),view_in,view_out,1_c_size_t,operation)
 end subroutine
 
 subroutine allreduce_int64_r1(this,in,out,operation)
-  use, intrinsic :: iso_c_binding, only : c_int, c_long, c_size_t
+  use, intrinsic :: iso_c_binding, only : c_int, c_long_long, c_size_t
   use fckit_array_module, only: array_view1d
   class(fckit_mpi_comm), intent(in) :: this
-  integer(c_long), intent(in)    :: in(:)
-  integer(c_long), intent(inout) :: out(:)
+  integer(c_long_long), intent(in)    :: in(:)
+  integer(c_long_long), intent(inout) :: out(:)
   integer(c_int), intent(in) :: operation
-  integer(c_long), pointer :: view_in(:), view_out(:)
+  integer(c_long_long), pointer :: view_in(:), view_out(:)
   view_in  => array_view1d(in)
   view_out => array_view1d(out)
   call fckit__mpi__allreduce_int64(this%c_ptr(),view_in,view_out,int(ubound(view_in,1),c_size_t),operation)
 end subroutine
 
 subroutine allreduce_int64_r2(this,in,out,operation)
-  use, intrinsic :: iso_c_binding, only : c_int, c_long, c_size_t
+  use, intrinsic :: iso_c_binding, only : c_int, c_long_long, c_size_t
   use fckit_array_module, only: array_view1d
   class(fckit_mpi_comm), intent(in) :: this
-  integer(c_long), intent(in)    :: in(:,:)
-  integer(c_long), intent(inout) :: out(:,:)
+  integer(c_long_long), intent(in)    :: in(:,:)
+  integer(c_long_long), intent(inout) :: out(:,:)
   integer(c_int), intent(in) :: operation
-  integer(c_long), pointer :: view_in(:), view_out(:)
+  integer(c_long_long), pointer :: view_in(:), view_out(:)
   view_in  => array_view1d(in)
   view_out => array_view1d(out)
   call fckit__mpi__allreduce_int64(this%c_ptr(),view_in,view_out,int(ubound(view_in,1),c_size_t),operation)
 end subroutine
 
 subroutine allreduce_int64_r3(this,in,out,operation)
-  use, intrinsic :: iso_c_binding, only : c_int, c_long, c_size_t
+  use, intrinsic :: iso_c_binding, only : c_int, c_long_long, c_size_t
   use fckit_array_module, only: array_view1d
   class(fckit_mpi_comm), intent(in) :: this
-  integer(c_long), intent(in)    :: in(:,:,:)
-  integer(c_long), intent(inout) :: out(:,:,:)
+  integer(c_long_long), intent(in)    :: in(:,:,:)
+  integer(c_long_long), intent(inout) :: out(:,:,:)
   integer(c_int), intent(in) :: operation
-  integer(c_long), pointer :: view_in(:), view_out(:)
+  integer(c_long_long), pointer :: view_in(:), view_out(:)
   view_in  => array_view1d(in)
   view_out => array_view1d(out)
   call fckit__mpi__allreduce_int64(this%c_ptr(),view_in,view_out,int(ubound(view_in,1),c_size_t),operation)
 end subroutine
 
 subroutine allreduce_int64_r4(this,in,out,operation)
-  use, intrinsic :: iso_c_binding, only : c_int, c_long, c_size_t
+  use, intrinsic :: iso_c_binding, only : c_int, c_long_long, c_size_t
   use fckit_array_module, only: array_view1d
   class(fckit_mpi_comm), intent(in) :: this
-  integer(c_long), intent(in)    :: in(:,:,:,:)
-  integer(c_long), intent(inout) :: out(:,:,:,:)
+  integer(c_long_long), intent(in)    :: in(:,:,:,:)
+  integer(c_long_long), intent(inout) :: out(:,:,:,:)
   integer(c_int), intent(in) :: operation
-  integer(c_long), pointer :: view_in(:), view_out(:)
+  integer(c_long_long), pointer :: view_in(:), view_out(:)
   view_in  => array_view1d(in)
   view_out => array_view1d(out)
   call fckit__mpi__allreduce_int64(this%c_ptr(),view_in,view_out,int(ubound(view_in,1),c_size_t),operation)
@@ -1313,56 +1313,56 @@ subroutine allreduce_inplace_int32_r4(this,inout,operation)
 end subroutine
 
 subroutine allreduce_inplace_int64_r0(this,inout,operation)
-  use, intrinsic :: iso_c_binding, only : c_int, c_long, c_size_t
+  use, intrinsic :: iso_c_binding, only : c_int, c_long_long, c_size_t
   use fckit_array_module, only: array_view1d
   class(fckit_mpi_comm), intent(in) :: this
-  integer(c_long), intent(inout) :: inout
+  integer(c_long_long), intent(inout) :: inout
   integer(c_int), intent(in) :: operation
-  integer(c_long), pointer :: view_inout(:)
+  integer(c_long_long), pointer :: view_inout(:)
   view_inout => array_view1d(inout)
   call fckit__mpi__allreduce_inplace_int64(this%c_ptr(),view_inout,1_c_size_t,operation)
 end subroutine
 
 subroutine allreduce_inplace_int64_r1(this,inout,operation)
-  use, intrinsic :: iso_c_binding, only : c_int, c_long, c_size_t
+  use, intrinsic :: iso_c_binding, only : c_int, c_long_long, c_size_t
   use fckit_array_module, only: array_view1d
   class(fckit_mpi_comm), intent(in) :: this
-  integer(c_long), intent(inout) :: inout(:)
+  integer(c_long_long), intent(inout) :: inout(:)
   integer(c_int), intent(in) :: operation
-  integer(c_long), pointer :: view_inout(:)
+  integer(c_long_long), pointer :: view_inout(:)
   view_inout => array_view1d(inout)
   call fckit__mpi__allreduce_inplace_int64(this%c_ptr(),view_inout,int(ubound(view_inout,1),c_size_t),operation)
 end subroutine
 
 subroutine allreduce_inplace_int64_r2(this,inout,operation)
-  use, intrinsic :: iso_c_binding, only : c_int, c_long, c_size_t
+  use, intrinsic :: iso_c_binding, only : c_int, c_long_long, c_size_t
   use fckit_array_module, only: array_view1d
   class(fckit_mpi_comm), intent(in) :: this
-  integer(c_long), intent(inout) :: inout(:,:)
+  integer(c_long_long), intent(inout) :: inout(:,:)
   integer(c_int), intent(in) :: operation
-  integer(c_long), pointer :: view_inout(:)
+  integer(c_long_long), pointer :: view_inout(:)
   view_inout => array_view1d(inout)
   call fckit__mpi__allreduce_inplace_int64(this%c_ptr(),view_inout,int(ubound(view_inout,1),c_size_t),operation)
 end subroutine
 
 subroutine allreduce_inplace_int64_r3(this,inout,operation)
-  use, intrinsic :: iso_c_binding, only : c_int, c_long, c_size_t
+  use, intrinsic :: iso_c_binding, only : c_int, c_long_long, c_size_t
   use fckit_array_module, only: array_view1d
   class(fckit_mpi_comm), intent(in) :: this
-  integer(c_long), intent(inout) :: inout(:,:,:)
+  integer(c_long_long), intent(inout) :: inout(:,:,:)
   integer(c_int), intent(in) :: operation
-  integer(c_long), pointer :: view_inout(:)
+  integer(c_long_long), pointer :: view_inout(:)
   view_inout => array_view1d(inout)
   call fckit__mpi__allreduce_inplace_int64(this%c_ptr(),view_inout,int(ubound(view_inout,1),c_size_t),operation)
 end subroutine
 
 subroutine allreduce_inplace_int64_r4(this,inout,operation)
-  use, intrinsic :: iso_c_binding, only : c_int, c_long, c_size_t
+  use, intrinsic :: iso_c_binding, only : c_int, c_long_long, c_size_t
   use fckit_array_module, only: array_view1d
   class(fckit_mpi_comm), intent(in) :: this
-  integer(c_long), intent(inout) :: inout(:,:,:,:)
+  integer(c_long_long), intent(inout) :: inout(:,:,:,:)
   integer(c_int), intent(in) :: operation
-  integer(c_long), pointer :: view_inout(:)
+  integer(c_long_long), pointer :: view_inout(:)
   view_inout => array_view1d(inout)
   call fckit__mpi__allreduce_inplace_int64(this%c_ptr(),view_inout,int(ubound(view_inout,1),c_size_t),operation)
 end subroutine
@@ -1535,56 +1535,56 @@ subroutine broadcast_int32_r4(this,buffer,root)
 end subroutine
 
 subroutine broadcast_int64_r0(this,buffer,root)
-  use, intrinsic :: iso_c_binding, only : c_int, c_long, c_size_t
+  use, intrinsic :: iso_c_binding, only : c_int, c_long_long, c_size_t
   use fckit_array_module, only: array_view1d
   class(fckit_mpi_comm), intent(in) :: this
-  integer(c_long), intent(inout) :: buffer
+  integer(c_long_long), intent(inout) :: buffer
   integer(c_int), intent(in) :: root
-  integer(c_long), pointer :: view_buffer(:)
+  integer(c_long_long), pointer :: view_buffer(:)
   view_buffer  => array_view1d(buffer)
   call fckit__mpi__broadcast_int64(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),int(root,c_size_t))
 end subroutine
 
 subroutine broadcast_int64_r1(this,buffer,root)
-  use, intrinsic :: iso_c_binding, only : c_int, c_long, c_size_t
+  use, intrinsic :: iso_c_binding, only : c_int, c_long_long, c_size_t
   use fckit_array_module, only: array_view1d
   class(fckit_mpi_comm), intent(in) :: this
-  integer(c_long), intent(inout) :: buffer(:)
+  integer(c_long_long), intent(inout) :: buffer(:)
   integer(c_int), intent(in) :: root
-  integer(c_long), pointer :: view_buffer(:)
+  integer(c_long_long), pointer :: view_buffer(:)
   view_buffer  => array_view1d(buffer)
   call fckit__mpi__broadcast_int64(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),int(root,c_size_t))
 end subroutine
 
 subroutine broadcast_int64_r2(this,buffer,root)
-  use, intrinsic :: iso_c_binding, only : c_int, c_long, c_size_t
+  use, intrinsic :: iso_c_binding, only : c_int, c_long_long, c_size_t
   use fckit_array_module, only: array_view1d
   class(fckit_mpi_comm), intent(in) :: this
-  integer(c_long), intent(inout) :: buffer(:,:)
+  integer(c_long_long), intent(inout) :: buffer(:,:)
   integer(c_int), intent(in) :: root
-  integer(c_long), pointer :: view_buffer(:)
+  integer(c_long_long), pointer :: view_buffer(:)
   view_buffer  => array_view1d(buffer)
   call fckit__mpi__broadcast_int64(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),int(root,c_size_t))
 end subroutine
 
 subroutine broadcast_int64_r3(this,buffer,root)
-  use, intrinsic :: iso_c_binding, only : c_int, c_long, c_size_t
+  use, intrinsic :: iso_c_binding, only : c_int, c_long_long, c_size_t
   use fckit_array_module, only: array_view1d
   class(fckit_mpi_comm), intent(in) :: this
-  integer(c_long), intent(inout) :: buffer(:,:,:)
+  integer(c_long_long), intent(inout) :: buffer(:,:,:)
   integer(c_int), intent(in) :: root
-  integer(c_long), pointer :: view_buffer(:)
+  integer(c_long_long), pointer :: view_buffer(:)
   view_buffer  => array_view1d(buffer)
   call fckit__mpi__broadcast_int64(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),int(root,c_size_t))
 end subroutine
 
 subroutine broadcast_int64_r4(this,buffer,root)
-  use, intrinsic :: iso_c_binding, only : c_int, c_long, c_size_t
+  use, intrinsic :: iso_c_binding, only : c_int, c_long_long, c_size_t
   use fckit_array_module, only: array_view1d
   class(fckit_mpi_comm), intent(in) :: this
-  integer(c_long), intent(inout) :: buffer(:,:,:,:)
+  integer(c_long_long), intent(inout) :: buffer(:,:,:,:)
   integer(c_int), intent(in) :: root
-  integer(c_long), pointer :: view_buffer(:)
+  integer(c_long_long), pointer :: view_buffer(:)
   view_buffer  => array_view1d(buffer)
   call fckit__mpi__broadcast_int64(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),int(root,c_size_t))
 end subroutine
@@ -1775,61 +1775,61 @@ subroutine send_int32_r4(this,buffer,dest,tag)
 end subroutine
 
 subroutine send_int64_r0(this,buffer,dest,tag)
-  use, intrinsic :: iso_c_binding, only : c_int, c_long, c_size_t
+  use, intrinsic :: iso_c_binding, only : c_int, c_long_long, c_size_t
   use fckit_array_module, only: array_view1d
   class(fckit_mpi_comm), intent(in) :: this
-  integer(c_long), intent(inout) :: buffer
+  integer(c_long_long), intent(inout) :: buffer
   integer(c_int), intent(in) :: dest
   integer(c_int), intent(in) :: tag
-  integer(c_long), pointer :: view_buffer(:)
+  integer(c_long_long), pointer :: view_buffer(:)
   view_buffer  => array_view1d(buffer)
   call fckit__mpi__send_int64(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),dest,tag)
 end subroutine
 
 subroutine send_int64_r1(this,buffer,dest,tag)
-  use, intrinsic :: iso_c_binding, only : c_int, c_long, c_size_t
+  use, intrinsic :: iso_c_binding, only : c_int, c_long_long, c_size_t
   use fckit_array_module, only: array_view1d
   class(fckit_mpi_comm), intent(in) :: this
-  integer(c_long), intent(inout) :: buffer(:)
+  integer(c_long_long), intent(inout) :: buffer(:)
   integer(c_int), intent(in) :: dest
   integer(c_int), intent(in) :: tag
-  integer(c_long), pointer :: view_buffer(:)
+  integer(c_long_long), pointer :: view_buffer(:)
   view_buffer  => array_view1d(buffer)
   call fckit__mpi__send_int64(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),dest,tag)
 end subroutine
 
 subroutine send_int64_r2(this,buffer,dest,tag)
-  use, intrinsic :: iso_c_binding, only : c_int, c_long, c_size_t
+  use, intrinsic :: iso_c_binding, only : c_int, c_long_long, c_size_t
   use fckit_array_module, only: array_view1d
   class(fckit_mpi_comm), intent(in) :: this
-  integer(c_long), intent(inout) :: buffer(:,:)
+  integer(c_long_long), intent(inout) :: buffer(:,:)
   integer(c_int), intent(in) :: dest
   integer(c_int), intent(in) :: tag
-  integer(c_long), pointer :: view_buffer(:)
+  integer(c_long_long), pointer :: view_buffer(:)
   view_buffer  => array_view1d(buffer)
   call fckit__mpi__send_int64(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),dest,tag)
 end subroutine
 
 subroutine send_int64_r3(this,buffer,dest,tag)
-  use, intrinsic :: iso_c_binding, only : c_int, c_long, c_size_t
+  use, intrinsic :: iso_c_binding, only : c_int, c_long_long, c_size_t
   use fckit_array_module, only: array_view1d
   class(fckit_mpi_comm), intent(in) :: this
-  integer(c_long), intent(inout) :: buffer(:,:,:)
+  integer(c_long_long), intent(inout) :: buffer(:,:,:)
   integer(c_int), intent(in) :: dest
   integer(c_int), intent(in) :: tag
-  integer(c_long), pointer :: view_buffer(:)
+  integer(c_long_long), pointer :: view_buffer(:)
   view_buffer  => array_view1d(buffer)
   call fckit__mpi__send_int64(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),dest,tag)
 end subroutine
 
 subroutine send_int64_r4(this,buffer,dest,tag)
-  use, intrinsic :: iso_c_binding, only : c_int, c_long, c_size_t
+  use, intrinsic :: iso_c_binding, only : c_int, c_long_long, c_size_t
   use fckit_array_module, only: array_view1d
   class(fckit_mpi_comm), intent(in) :: this
-  integer(c_long), intent(inout) :: buffer(:,:,:,:)
+  integer(c_long_long), intent(inout) :: buffer(:,:,:,:)
   integer(c_int), intent(in) :: dest
   integer(c_int), intent(in) :: tag
-  integer(c_long), pointer :: view_buffer(:)
+  integer(c_long_long), pointer :: view_buffer(:)
   view_buffer  => array_view1d(buffer)
   call fckit__mpi__send_int64(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),dest,tag)
 end subroutine
@@ -2062,16 +2062,16 @@ subroutine receive_int32_r4(this,buffer,source,tag,status)
 end subroutine
 
 subroutine receive_int64_r0(this,buffer,source,tag,status)
-  use, intrinsic :: iso_c_binding, only : c_int, c_long, c_size_t
+  use, intrinsic :: iso_c_binding, only : c_int, c_long_long, c_size_t
   use fckit_array_module, only: array_view1d
   class(fckit_mpi_comm), intent(in) :: this
-  integer(c_long), intent(inout) :: buffer
+  integer(c_long_long), intent(inout) :: buffer
   integer(c_int), intent(in) :: source
   integer(c_int), intent(in), optional :: tag
   integer(c_int) :: tag_opt
   type(fckit_mpi_status), optional, intent(out) :: status
   type(fckit_mpi_status) :: status_out
-  integer(c_long), pointer :: view_buffer(:)
+  integer(c_long_long), pointer :: view_buffer(:)
   if( present(tag) ) then
     tag_opt = tag
   else
@@ -2083,16 +2083,16 @@ subroutine receive_int64_r0(this,buffer,source,tag,status)
 end subroutine
 
 subroutine receive_int64_r1(this,buffer,source,tag,status)
-  use, intrinsic :: iso_c_binding, only : c_int, c_long, c_size_t
+  use, intrinsic :: iso_c_binding, only : c_int, c_long_long, c_size_t
   use fckit_array_module, only: array_view1d
   class(fckit_mpi_comm), intent(in) :: this
-  integer(c_long), intent(inout) :: buffer(:)
+  integer(c_long_long), intent(inout) :: buffer(:)
   integer(c_int), intent(in) :: source
   integer(c_int), intent(in), optional :: tag
   integer(c_int) :: tag_opt
   type(fckit_mpi_status), optional, intent(out) :: status
   type(fckit_mpi_status) :: status_out
-  integer(c_long), pointer :: view_buffer(:)
+  integer(c_long_long), pointer :: view_buffer(:)
   if( present(tag) ) then
     tag_opt = tag
   else
@@ -2104,16 +2104,16 @@ subroutine receive_int64_r1(this,buffer,source,tag,status)
 end subroutine
 
 subroutine receive_int64_r2(this,buffer,source,tag,status)
-  use, intrinsic :: iso_c_binding, only : c_int, c_long, c_size_t
+  use, intrinsic :: iso_c_binding, only : c_int, c_long_long, c_size_t
   use fckit_array_module, only: array_view1d
   class(fckit_mpi_comm), intent(in) :: this
-  integer(c_long), intent(inout) :: buffer(:,:)
+  integer(c_long_long), intent(inout) :: buffer(:,:)
   integer(c_int), intent(in) :: source
   integer(c_int), intent(in), optional :: tag
   integer(c_int) :: tag_opt
   type(fckit_mpi_status), optional, intent(out) :: status
   type(fckit_mpi_status) :: status_out
-  integer(c_long), pointer :: view_buffer(:)
+  integer(c_long_long), pointer :: view_buffer(:)
   if( present(tag) ) then
     tag_opt = tag
   else
@@ -2125,16 +2125,16 @@ subroutine receive_int64_r2(this,buffer,source,tag,status)
 end subroutine
 
 subroutine receive_int64_r3(this,buffer,source,tag,status)
-  use, intrinsic :: iso_c_binding, only : c_int, c_long, c_size_t
+  use, intrinsic :: iso_c_binding, only : c_int, c_long_long, c_size_t
   use fckit_array_module, only: array_view1d
   class(fckit_mpi_comm), intent(in) :: this
-  integer(c_long), intent(inout) :: buffer(:,:,:)
+  integer(c_long_long), intent(inout) :: buffer(:,:,:)
   integer(c_int), intent(in) :: source
   integer(c_int), intent(in), optional :: tag
   integer(c_int) :: tag_opt
   type(fckit_mpi_status), optional, intent(out) :: status
   type(fckit_mpi_status) :: status_out
-  integer(c_long), pointer :: view_buffer(:)
+  integer(c_long_long), pointer :: view_buffer(:)
   if( present(tag) ) then
     tag_opt = tag
   else
@@ -2146,16 +2146,16 @@ subroutine receive_int64_r3(this,buffer,source,tag,status)
 end subroutine
 
 subroutine receive_int64_r4(this,buffer,source,tag,status)
-  use, intrinsic :: iso_c_binding, only : c_int, c_long, c_size_t
+  use, intrinsic :: iso_c_binding, only : c_int, c_long_long, c_size_t
   use fckit_array_module, only: array_view1d
   class(fckit_mpi_comm), intent(in) :: this
-  integer(c_long), intent(inout) :: buffer(:,:,:,:)
+  integer(c_long_long), intent(inout) :: buffer(:,:,:,:)
   integer(c_int), intent(in) :: source
   integer(c_int), intent(in), optional :: tag
   integer(c_int) :: tag_opt
   type(fckit_mpi_status), optional, intent(out) :: status
   type(fckit_mpi_status) :: status_out
-  integer(c_long), pointer :: view_buffer(:)
+  integer(c_long_long), pointer :: view_buffer(:)
   if( present(tag) ) then
     tag_opt = tag
   else
@@ -2444,66 +2444,66 @@ function isend_int32_r4(this,buffer,dest,tag) result(request)
 end function
 
 function isend_int64_r0(this,buffer,dest,tag) result(request)
-  use, intrinsic :: iso_c_binding, only : c_int, c_long, c_size_t
+  use, intrinsic :: iso_c_binding, only : c_int, c_long_long, c_size_t
   use fckit_array_module, only: array_view1d
   integer(c_int) :: request
   class(fckit_mpi_comm), intent(in) :: this
-  integer(c_long), intent(inout) :: buffer
+  integer(c_long_long), intent(inout) :: buffer
   integer(c_int), intent(in) :: dest
   integer(c_int), intent(in) :: tag
-  integer(c_long), pointer :: view_buffer(:)
+  integer(c_long_long), pointer :: view_buffer(:)
   view_buffer  => array_view1d(buffer)
   request = fckit__mpi__isend_int64(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),dest,tag)
 end function
 
 function isend_int64_r1(this,buffer,dest,tag) result(request)
-  use, intrinsic :: iso_c_binding, only : c_int, c_long, c_size_t
+  use, intrinsic :: iso_c_binding, only : c_int, c_long_long, c_size_t
   use fckit_array_module, only: array_view1d
   integer(c_int) :: request
   class(fckit_mpi_comm), intent(in) :: this
-  integer(c_long), intent(inout) :: buffer(:)
+  integer(c_long_long), intent(inout) :: buffer(:)
   integer(c_int), intent(in) :: dest
   integer(c_int), intent(in) :: tag
-  integer(c_long), pointer :: view_buffer(:)
+  integer(c_long_long), pointer :: view_buffer(:)
   view_buffer  => array_view1d(buffer)
   request = fckit__mpi__isend_int64(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),dest,tag)
 end function
 
 function isend_int64_r2(this,buffer,dest,tag) result(request)
-  use, intrinsic :: iso_c_binding, only : c_int, c_long, c_size_t
+  use, intrinsic :: iso_c_binding, only : c_int, c_long_long, c_size_t
   use fckit_array_module, only: array_view1d
   integer(c_int) :: request
   class(fckit_mpi_comm), intent(in) :: this
-  integer(c_long), intent(inout) :: buffer(:,:)
+  integer(c_long_long), intent(inout) :: buffer(:,:)
   integer(c_int), intent(in) :: dest
   integer(c_int), intent(in) :: tag
-  integer(c_long), pointer :: view_buffer(:)
+  integer(c_long_long), pointer :: view_buffer(:)
   view_buffer  => array_view1d(buffer)
   request = fckit__mpi__isend_int64(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),dest,tag)
 end function
 
 function isend_int64_r3(this,buffer,dest,tag) result(request)
-  use, intrinsic :: iso_c_binding, only : c_int, c_long, c_size_t
+  use, intrinsic :: iso_c_binding, only : c_int, c_long_long, c_size_t
   use fckit_array_module, only: array_view1d
   integer(c_int) :: request
   class(fckit_mpi_comm), intent(in) :: this
-  integer(c_long), intent(inout) :: buffer(:,:,:)
+  integer(c_long_long), intent(inout) :: buffer(:,:,:)
   integer(c_int), intent(in) :: dest
   integer(c_int), intent(in) :: tag
-  integer(c_long), pointer :: view_buffer(:)
+  integer(c_long_long), pointer :: view_buffer(:)
   view_buffer  => array_view1d(buffer)
   request = fckit__mpi__isend_int64(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),dest,tag)
 end function
 
 function isend_int64_r4(this,buffer,dest,tag) result(request)
-  use, intrinsic :: iso_c_binding, only : c_int, c_long, c_size_t
+  use, intrinsic :: iso_c_binding, only : c_int, c_long_long, c_size_t
   use fckit_array_module, only: array_view1d
   integer(c_int) :: request
   class(fckit_mpi_comm), intent(in) :: this
-  integer(c_long), intent(inout) :: buffer(:,:,:,:)
+  integer(c_long_long), intent(inout) :: buffer(:,:,:,:)
   integer(c_int), intent(in) :: dest
   integer(c_int), intent(in) :: tag
-  integer(c_long), pointer :: view_buffer(:)
+  integer(c_long_long), pointer :: view_buffer(:)
   view_buffer  => array_view1d(buffer)
   request = fckit__mpi__isend_int64(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),dest,tag)
 end function
@@ -2736,15 +2736,15 @@ function ireceive_int32_r4(this,buffer,source,tag) result(request)
 end function
 
 function ireceive_int64_r0(this,buffer,source,tag) result(request)
-  use, intrinsic :: iso_c_binding, only : c_int, c_long, c_size_t
+  use, intrinsic :: iso_c_binding, only : c_int, c_long_long, c_size_t
   use fckit_array_module, only: array_view1d
   integer(c_int) :: request
   class(fckit_mpi_comm), intent(in) :: this
-  integer(c_long), intent(inout) :: buffer
+  integer(c_long_long), intent(inout) :: buffer
   integer(c_int), intent(in) :: source
   integer(c_int), intent(in), optional :: tag
   integer(c_int) :: tag_opt
-  integer(c_long), pointer :: view_buffer(:)
+  integer(c_long_long), pointer :: view_buffer(:)
   if( present(tag) ) then
     tag_opt = tag
   else
@@ -2755,15 +2755,15 @@ function ireceive_int64_r0(this,buffer,source,tag) result(request)
 end function
 
 function ireceive_int64_r1(this,buffer,source,tag) result(request)
-  use, intrinsic :: iso_c_binding, only : c_int, c_long, c_size_t
+  use, intrinsic :: iso_c_binding, only : c_int, c_long_long, c_size_t
   use fckit_array_module, only: array_view1d
   integer(c_int) :: request
   class(fckit_mpi_comm), intent(in) :: this
-  integer(c_long), intent(inout) :: buffer(:)
+  integer(c_long_long), intent(inout) :: buffer(:)
   integer(c_int), intent(in) :: source
   integer(c_int), intent(in), optional :: tag
   integer(c_int) :: tag_opt
-  integer(c_long), pointer :: view_buffer(:)
+  integer(c_long_long), pointer :: view_buffer(:)
   if( present(tag) ) then
     tag_opt = tag
   else
@@ -2774,15 +2774,15 @@ function ireceive_int64_r1(this,buffer,source,tag) result(request)
 end function
 
 function ireceive_int64_r2(this,buffer,source,tag) result(request)
-  use, intrinsic :: iso_c_binding, only : c_int, c_long, c_size_t
+  use, intrinsic :: iso_c_binding, only : c_int, c_long_long, c_size_t
   use fckit_array_module, only: array_view1d
   integer(c_int) :: request
   class(fckit_mpi_comm), intent(in) :: this
-  integer(c_long), intent(inout) :: buffer(:,:)
+  integer(c_long_long), intent(inout) :: buffer(:,:)
   integer(c_int), intent(in) :: source
   integer(c_int), intent(in), optional :: tag
   integer(c_int) :: tag_opt
-  integer(c_long), pointer :: view_buffer(:)
+  integer(c_long_long), pointer :: view_buffer(:)
   if( present(tag) ) then
     tag_opt = tag
   else
@@ -2793,15 +2793,15 @@ function ireceive_int64_r2(this,buffer,source,tag) result(request)
 end function
 
 function ireceive_int64_r3(this,buffer,source,tag) result(request)
-  use, intrinsic :: iso_c_binding, only : c_int, c_long, c_size_t
+  use, intrinsic :: iso_c_binding, only : c_int, c_long_long, c_size_t
   use fckit_array_module, only: array_view1d
   integer(c_int) :: request
   class(fckit_mpi_comm), intent(in) :: this
-  integer(c_long), intent(inout) :: buffer(:,:,:)
+  integer(c_long_long), intent(inout) :: buffer(:,:,:)
   integer(c_int), intent(in) :: source
   integer(c_int), intent(in), optional :: tag
   integer(c_int) :: tag_opt
-  integer(c_long), pointer :: view_buffer(:)
+  integer(c_long_long), pointer :: view_buffer(:)
   if( present(tag) ) then
     tag_opt = tag
   else
@@ -2812,15 +2812,15 @@ function ireceive_int64_r3(this,buffer,source,tag) result(request)
 end function
 
 function ireceive_int64_r4(this,buffer,source,tag) result(request)
-  use, intrinsic :: iso_c_binding, only : c_int, c_long, c_size_t
+  use, intrinsic :: iso_c_binding, only : c_int, c_long_long, c_size_t
   use fckit_array_module, only: array_view1d
   integer(c_int) :: request
   class(fckit_mpi_comm), intent(in) :: this
-  integer(c_long), intent(inout) :: buffer(:,:,:,:)
+  integer(c_long_long), intent(inout) :: buffer(:,:,:,:)
   integer(c_int), intent(in) :: source
   integer(c_int), intent(in), optional :: tag
   integer(c_int) :: tag_opt
-  integer(c_long), pointer :: view_buffer(:)
+  integer(c_long_long), pointer :: view_buffer(:)
   if( present(tag) ) then
     tag_opt = tag
   else
