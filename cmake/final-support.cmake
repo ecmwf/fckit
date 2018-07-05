@@ -22,6 +22,7 @@ macro( check_final_support_case case )
                  ${CMAKE_CURRENT_BINARY_DIR}
                  ${CMAKE_CURRENT_BINARY_DIR}/fckit-test-${case}.F90
                  COMPILE_DEFINITIONS -D${case}
+                 LINK_LIBRARIES "${CMAKE_EXE_LINKER_FLAGS}"
                  OUTPUT_VARIABLE FCKIT_${case}_compile_output
                  COPY_FILE ${CMAKE_CURRENT_BINARY_DIR}/${case}.bin )
 
