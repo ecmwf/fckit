@@ -199,7 +199,7 @@ subroutine copy_f(this,obj_in)
   this%return = .false.
 end subroutine
 
-subroutine destructor(this)
+impure elemental subroutine destructor(this)
   type(Object), intent(inout) :: this
   final_base = final_base + 1
 

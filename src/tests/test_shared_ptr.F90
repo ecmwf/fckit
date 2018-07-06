@@ -131,8 +131,8 @@ function ObjectCXX_id(this) result(id)
   id = Object__id( this%c_ptr() )
 end function
 
-subroutine ObjectCXX_final_auto(this)
-  type(ObjectCXX) :: this
+FCKIT_FINAL subroutine ObjectCXX_final_auto(this)
+  type(ObjectCXX), intent(inout) :: this
   write(0,*) "ObjectCXX_final_auto"
 #if FCKIT_FINAL_NOT_PROPAGATING
   call this%final()
@@ -149,7 +149,7 @@ subroutine ObjectFortranSafer_final(this)
   if( scope_ended ) final_called_after_scope = final_called_after_scope+1
 end subroutine
 
-subroutine ObjectFortranUnSafe_final(this)
+FCKIT_FINAL subroutine ObjectFortranUnSafe_final(this)
   type(ObjectFortranUnSafe), intent(inout) :: this
   write(0,'(A,I0)') "ObjectFortranUnSafe_final id",this%id
   this%id = 0

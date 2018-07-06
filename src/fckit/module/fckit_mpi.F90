@@ -929,7 +929,7 @@ end subroutine
 
 !---------------------------------------------------------------------------------------
 
-subroutine fckit_mpi_comm__final_auto(this)
+FCKIT_FINAL subroutine fckit_mpi_comm__final_auto(this)
   type(fckit_mpi_comm), intent(inout) :: this
   call this%final()
 end subroutine

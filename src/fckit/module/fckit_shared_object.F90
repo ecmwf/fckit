@@ -36,7 +36,7 @@ contains
 
   procedure, public  :: c_ptr => fckit_shared_object_c_ptr
   procedure, private :: fckit_shared_object_c_ptr
-  
+
   procedure, public :: is_null
 
 ! WARNING: Not strictly necessary, as base class (fckit_shared_ptr) has the
@@ -64,7 +64,7 @@ private :: fckit_refcount_interface
 CONTAINS
 !========================================================================
 
-subroutine fckit_shared_object__final_auto(this)
+FCKIT_FINAL subroutine fckit_shared_object__final_auto(this)
   type(fckit_shared_object), intent(inout) :: this
 #if FCKIT_FINAL_DEBUGGING
   write(0,*) "fckit_shared_object__final_auto"

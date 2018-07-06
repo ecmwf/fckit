@@ -124,7 +124,7 @@ end interface
 CONTAINS
 !========================================================================
 
-subroutine fckit_owned_object__final_auto(this)
+FCKIT_FINAL subroutine fckit_owned_object__final_auto(this)
 #ifdef _CRAYFTN
   use, intrinsic :: iso_c_binding, only : c_loc, c_null_ptr
 #endif
