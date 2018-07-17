@@ -323,7 +323,7 @@ subroutine deallocate_fckit_configuration( array )
   endif
 end subroutine
 
-subroutine fckit_configuration__final_auto(this)
+FCKIT_FINAL subroutine fckit_configuration__final_auto(this)
   type(fckit_configuration), intent(inout) :: this
 #if FCKIT_FINAL_DEBUGGING
   write(0,*) "fckit_configuration__final_auto"

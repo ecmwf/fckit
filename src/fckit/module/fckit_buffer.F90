@@ -109,7 +109,7 @@ end function
 
 !========================================================================
 
-subroutine fckit_buffer__final_auto(this)
+FCKIT_FINAL subroutine fckit_buffer__final_auto(this)
   type(fckit_buffer), intent(inout) :: this
 #if FCKIT_FINAL_DEBUGGING
   write(0,*) "fckit_buffer__final_auto"

@@ -79,7 +79,7 @@ subroutine fckit_finalise( shared_ptr )
   end select
 end subroutine
 
-subroutine fckit_shared_ptr__final_auto(this)
+FCKIT_FINAL subroutine fckit_shared_ptr__final_auto(this)
 #ifdef _CRAYFTN
   use, intrinsic :: iso_c_binding, only : c_loc, c_null_ptr
 #endif

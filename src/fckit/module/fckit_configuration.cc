@@ -269,7 +269,6 @@ int c_fckit_configuration_get_array_double (const Configuration* This, const cha
 
 int c_fckit_configuration_has (const Configuration* This, const char *name) {
     return This->has( string(name) );
-    return 0;
 }
 
 void c_fckit_configuration_json(const Configuration* This, char* &json, int &size) {

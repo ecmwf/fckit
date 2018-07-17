@@ -83,7 +83,6 @@ LogTarget* createStyleTarget( LogTarget* target, Log::Style style, const char* p
   if( style == Log::PREFIX    ) return new eckit::PrefixTarget( prefix, target );
   if( style == Log::TIMESTAMP ) return new eckit::TimeStampTarget( prefix, target );
   NOTIMP;
-  return 0;
 }
 
 void Log::addFortranUnit(int unit, Style style, const char*) {

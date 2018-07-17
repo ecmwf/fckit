@@ -173,7 +173,7 @@ subroutine final( this )
   this%cpp_object_ptr = c_null_ptr
 end subroutine
 
-subroutine fckit_object_final_auto( this )
+FCKIT_FINAL subroutine fckit_object_final_auto( this )
   type(fckit_object), intent(inout) :: this
 #if FCKIT_FINAL_DEBUGGING
   write(0,*) "fckit_object_final_auto"
