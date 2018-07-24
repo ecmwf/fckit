@@ -12,12 +12,12 @@
 #define FORD_PRIVATE private
 interface
 
-  !int fckit__main_init (int argc, char* argv[])
+  !int32 fckit__main_init (int32 argc, char* argv[])
   function fckit__main_init(argc,argv) &
     & result(error_code) bind(c,name="fckit__main_init")
-    use iso_c_binding, only: c_int, c_ptr
-    integer(c_int) :: error_code
-    integer(c_int), value :: argc
+    use iso_c_binding, only: c_int32_t, c_ptr
+    integer(c_int32_t) :: error_code
+    integer(c_int32_t), value :: argc
     type(c_ptr), dimension(*) :: argv
   end function
 
@@ -26,45 +26,45 @@ interface
   end subroutine
 
 
-  !int fckit__main_ready (int& ready)
+  !int32 fckit__main_ready (int32& ready)
   function fckit__main_ready(ready) result(error_code) bind(c,name="fckit__main_ready")
-    use iso_c_binding, only: c_int
-    integer(c_int) :: error_code
-    integer(c_int) :: ready
+    use iso_c_binding, only: c_int32_t
+    integer(c_int32_t) :: error_code
+    integer(c_int32_t) :: ready
   end function
 
-  !int fckit__main_taskID (int& taskID)
+  !int32 fckit__main_taskID (int32& taskID)
   function fckit__main_taskID(taskID) result(error_code) bind(c,name="fckit__main_taskID")
-    use iso_c_binding, only: c_int
-    integer(c_int) :: error_code
-    integer(c_int) :: taskID
+    use iso_c_binding, only: c_int32_t
+    integer(c_int32_t) :: error_code
+    integer(c_int32_t) :: taskID
   end function
 
   function fckit__main_setTaskID(taskID) result(error_code) bind(c,name="fckit__main_setTaskID")
-    use iso_c_binding, only: c_int
-    integer(c_int) :: error_code
-    integer(c_int), value :: taskID
+    use iso_c_binding, only: c_int32_t
+    integer(c_int32_t) :: error_code
+    integer(c_int32_t), value :: taskID
   end function
 
   function fckit__main_debug() result(debug) bind(c)
-    use iso_c_binding, only : c_int
-    integer(c_int) :: debug
+    use iso_c_binding, only : c_int32_t
+    integer(c_int32_t) :: debug
   end function
 
-  !int fckit__main_name (char* &name, int &name_size)
+  !int32 fckit__main_name (char* &name, size_t &name_size)
   function fckit__main_name(name,name_size) result(error_code) bind(c)
-    use iso_c_binding, only: c_int, c_ptr
-    integer(c_int) :: error_code
+    use iso_c_binding, only: c_int32_t, c_size_t, c_ptr
+    integer(c_int32_t) :: error_code
     type(c_ptr) :: name
-    integer(c_int) :: name_size
+    integer(c_size_t) :: name_size
   end function
 
-  !int fckit__main_displayname (char* &name, int &name_size)
+  !int32 fckit__main_displayname (char* &name, size_t &name_size)
   function fckit__main_displayname(name,name_size) result(error_code) bind(c)
-    use iso_c_binding, only: c_int, c_ptr
-    integer(c_int) :: error_code
+    use iso_c_binding, only: c_int32_t, c_size_t, c_ptr
+    integer(c_int32_t) :: error_code
     type(c_ptr) :: name
-    integer(c_int) :: name_size
+    integer(c_size_t) :: name_size
   end function
 
 end interface

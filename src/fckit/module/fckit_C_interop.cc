@@ -8,8 +8,11 @@
  * does it submit to any jurisdiction.
  */
 
-#include <stdint.h>
-#include <stdlib.h>
+#include <cstdint>
+#include <cstdlib>
+
+using int32 = std::int32_t;
+using int64 = std::int64_t;
 
 extern "C"
 {
@@ -19,14 +22,14 @@ extern "C"
     ptr=0;
   }
 
-  int fckit__compare_cptr_equal( void* p1, void* p2 )
+  int32 fckit__compare_cptr_equal( void* p1, void* p2 )
   {
     return (p1 == p2);
   }
 
-  long fckit__cptr_to_loc( void* ptr )
+  int64 fckit__cptr_to_loc( void* ptr )
   {
-    intptr_t i = (intptr_t)ptr;
+    std::intptr_t i = (std::intptr_t)ptr;
     return i;
   }
 }

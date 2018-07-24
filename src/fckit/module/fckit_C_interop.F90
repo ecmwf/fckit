@@ -40,15 +40,15 @@ interface
 
   !int fckit__compare_cptr_equal( void* p1, void* p2 )
   function fckit__compare_cptr_equal(p1,p2) bind(c,name="fckit__compare_cptr_equal") result(equal)
-    use, intrinsic :: iso_c_binding, only: c_ptr, c_int
-    integer(c_int) :: equal
+    use, intrinsic :: iso_c_binding, only: c_ptr, c_int32_t
+    integer(c_int32_t) :: equal
     type(c_ptr), value :: p1
     type(c_ptr), value :: p2
   end function
 
   function fckit__cptr_to_loc(cptr) bind(c,name="fckit__cptr_to_loc") result(loc)
-    use, intrinsic :: iso_c_binding, only: c_ptr, c_long
-    integer(c_long) :: loc
+    use, intrinsic :: iso_c_binding, only: c_ptr, c_int64_t
+    integer(c_int64_t) :: loc
     type(c_ptr), value :: cptr
   end function
 end interface
@@ -96,8 +96,8 @@ function c_ptr_compare_equal(p1,p2) result(equal)
 end function
 
 function c_ptr_to_loc(cptr) result(loc)
-  use, intrinsic :: iso_c_binding, only: c_ptr, c_long
-  integer(c_long) :: loc
+  use, intrinsic :: iso_c_binding, only: c_ptr, c_int64_t
+  integer(c_int64_t) :: loc
   type(c_ptr), intent(in) :: cptr
   loc = fckit__cptr_to_loc(cptr)
 end function
@@ -149,7 +149,7 @@ function c_str_to_string(s) result(string)
      i = i + 1
   enddo
   nchars = i - 1  ! Exclude null character from Fortran string
-  allocate(character(len=nchars) :: string)
+  allocate(character(kind=c_char,len=nchars) :: string)
   do i=1,nchars
     string(i:i) = s(i)
   enddo
@@ -161,7 +161,7 @@ function c_ptr_to_string(cptr) result(string)
   use, intrinsic :: iso_c_binding
   type(c_ptr), intent(in) :: cptr
   character(kind=c_char,len=:), allocatable :: string
-  character, dimension(:), pointer  :: s
+  character(kind=c_char), dimension(:), pointer  :: s
   integer(c_int), parameter :: MAX_STR_LEN = 255
   call c_f_pointer ( cptr , s, (/MAX_STR_LEN/) )
   string = c_str_to_string(s)
@@ -171,7 +171,7 @@ end function
 
 function c_str(f_str)
   use, intrinsic :: iso_c_binding, only: c_char, c_null_char
-  character(len=*), intent(in) :: f_str
+  character(kind=c_char,len=*), intent(in) :: f_str
   character(kind=c_char,len=len_trim(f_str)+1) :: c_str
   c_str = trim(f_str) // c_null_char
 end function
@@ -180,7 +180,7 @@ end function
 
 function c_str_no_trim(f_str)
   use, intrinsic :: iso_c_binding, only: c_char, c_null_char
-  character(len=*), intent(in) :: f_str
+  character(kind=c_char,len=*), intent(in) :: f_str
   character(kind=c_char,len=len(f_str)+1) :: c_str_no_trim
   c_str_no_trim = f_str // c_null_char
 end function
@@ -189,7 +189,7 @@ end function
 
 function c_str_right_trim(f_str)
   use, intrinsic :: iso_c_binding, only: c_char, c_null_char
-  character(len=*), intent(in) :: f_str
+  character(kind=c_char,len=*), intent(in) :: f_str
   character(kind=c_char,len=len(f_str)+1) :: c_str_right_trim
   c_str_right_trim = f_str(1:len_trim(f_str)) // c_null_char
 end function

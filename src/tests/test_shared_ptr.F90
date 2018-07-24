@@ -52,9 +52,9 @@ endtype
 
 interface
     function new_Object(i) bind(c,name="new_Object")
-      use, intrinsic :: iso_c_binding, only : c_ptr, c_int
+      use, intrinsic :: iso_c_binding, only : c_ptr, c_int32_t
       type(c_ptr) :: new_Object
-      integer(c_int), value :: i
+      integer(c_int32_t), value :: i
     end function
 
    subroutine delete_Object(cptr) bind(c,name="delete_Object")
@@ -63,19 +63,19 @@ interface
    end subroutine
 
    function Object__id(this) bind(c,name="Object__id")
-     use, intrinsic :: iso_c_binding, only : c_ptr, c_int
+     use, intrinsic :: iso_c_binding, only : c_ptr, c_int32_t
      type(c_ptr), value :: this
-     integer(c_int) :: Object__id
+     integer(c_int32_t) :: Object__id
    end function
 
    function cxx_destructor_called() bind(c,name="cxx_destructor_called")
-     use, intrinsic :: iso_c_binding, only : c_int
-     integer(c_int) :: cxx_destructor_called
+     use, intrinsic :: iso_c_binding, only : c_int32_t
+     integer(c_int32_t) :: cxx_destructor_called
    end function
 
    function cxx_destructor_called_after_scope() bind(c,name="cxx_destructor_called_after_scope")
-     use, intrinsic :: iso_c_binding, only : c_int
-     integer(c_int) :: cxx_destructor_called_after_scope
+     use, intrinsic :: iso_c_binding, only : c_int32_t
+     integer(c_int32_t) :: cxx_destructor_called_after_scope
    end function
 
    subroutine cxx_reset_counters() bind(c,name="cxx_reset_counters")

@@ -12,6 +12,7 @@
 #include <stdexcept>
 #include <sstream>
 #include <cstdarg>
+#include <cstdint>
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/config/Configuration.h"
@@ -30,6 +31,10 @@ using eckit::JSON;
 using eckit::PathName;
 using eckit::Exception;
 using eckit::CodeLocation;
+
+using int32  = std::int32_t;
+using int64  = std::int64_t;
+using size_t = std::size_t;
 
 namespace fckit {
 
@@ -88,11 +93,11 @@ void c_fckit_configuration_set_config (Configuration* This, const char* name, co
         throw NotLocalConfiguration(Here());
 }
 
-void c_fckit_configuration_set_config_list (Configuration* This, const char* name, const Configuration* value[], int size)
+void c_fckit_configuration_set_config_list (Configuration* This, const char* name, const Configuration* value[], size_t size)
 {
     ASSERT( This != 0 );
     vector<LocalConfiguration> params(size);
-    for(int i = 0; i < size; ++i)
+    for(size_t i = 0; i < size; ++i)
         params[i] = LocalConfiguration(*value[i]);
     if( LocalConfiguration* local = dynamic_cast<LocalConfiguration*>(This) )
         local->set( string(name), params );
@@ -100,7 +105,7 @@ void c_fckit_configuration_set_config_list (Configuration* This, const char* nam
         throw NotLocalConfiguration(Here());
 }
 
-void c_fckit_configuration_set_int (Configuration* This, const char* name, int value) {
+void c_fckit_configuration_set_int32 (Configuration* This, const char* name, int32 value) {
     ASSERT( This != 0 );
     if( LocalConfiguration* local = dynamic_cast<LocalConfiguration*>(This) )
         local->set( string(name), value );
@@ -108,7 +113,7 @@ void c_fckit_configuration_set_int (Configuration* This, const char* name, int v
         throw NotLocalConfiguration(Here());
 }
 
-void c_fckit_configuration_set_long (Configuration* This, const char* name, long value) {
+void c_fckit_configuration_set_int64 (Configuration* This, const char* name, int64 value) {
     ASSERT( This != 0 );
     if( LocalConfiguration* local = dynamic_cast<LocalConfiguration*>(This) )
         local->set( string(name), value );
@@ -140,9 +145,9 @@ void c_fckit_configuration_set_string (Configuration* This, const char* name, co
         throw NotLocalConfiguration(Here());
 }
 
-void c_fckit_configuration_set_array_int (Configuration* This, const char* name, int value[], int size) {
+void c_fckit_configuration_set_array_int32 (Configuration* This, const char* name, int32 value[], size_t size) {
     ASSERT( This != 0 );
-    vector<int> v;
+    vector<int32> v;
     v.assign(value,value+size);
     if( LocalConfiguration* local = dynamic_cast<LocalConfiguration*>(This) )
         local->set( string(name), v );
@@ -150,9 +155,9 @@ void c_fckit_configuration_set_array_int (Configuration* This, const char* name,
         throw NotLocalConfiguration(Here());
 }
 
-void c_fckit_configuration_set_array_long (Configuration* This, const char* name, long value[], int size) {
+void c_fckit_configuration_set_array_int64 (Configuration* This, const char* name, int64 value[], size_t size) {
     ASSERT( This != 0 );
-    vector<long> v;
+    vector<int64> v;
     v.assign(value,value+size);
     if( LocalConfiguration* local = dynamic_cast<LocalConfiguration*>(This) )
         local->set( string(name), v );
@@ -160,7 +165,7 @@ void c_fckit_configuration_set_array_long (Configuration* This, const char* name
         throw NotLocalConfiguration(Here());
 }
 
-void c_fckit_configuration_set_array_float (Configuration* This, const char* name, float value[], int size) {
+void c_fckit_configuration_set_array_float (Configuration* This, const char* name, float value[], size_t size) {
     vector<float> v;
     v.assign(value,value+size);
     if( LocalConfiguration* local = dynamic_cast<LocalConfiguration*>(This) )
@@ -168,7 +173,7 @@ void c_fckit_configuration_set_array_float (Configuration* This, const char* nam
     else
         throw NotLocalConfiguration(Here());
 }
-void c_fckit_configuration_set_array_double (Configuration* This, const char* name, double value[], int size) {
+void c_fckit_configuration_set_array_double (Configuration* This, const char* name, double value[], size_t size) {
     vector<double> v;
     v.assign(value,value+size);
     if( LocalConfiguration* local = dynamic_cast<LocalConfiguration*>(This) )
@@ -177,45 +182,45 @@ void c_fckit_configuration_set_array_double (Configuration* This, const char* na
         throw NotLocalConfiguration(Here());
 }
 
-int c_fckit_configuration_get_config (const Configuration* This, const char* name, LocalConfiguration* value) {
+int32 c_fckit_configuration_get_config (const Configuration* This, const char* name, LocalConfiguration* value) {
     if( ! This->get(string(name),*value) )
         return false;
     return true;
 }
 
-int c_fckit_configuration_get_config_list (const Configuration* This, const char* name, LocalConfiguration** &value, int &size) {
+int32 c_fckit_configuration_get_config_list (const Configuration* This, const char* name, LocalConfiguration** &value, size_t &size) {
     value = 0;
     vector<LocalConfiguration> vector;
     if( ! This->get(string(name),vector) ) return false;
     size = vector.size();
     value = new LocalConfiguration*[size];
-    for(int i = 0; i < size; ++i) {
+    for(size_t i = 0; i < size; ++i) {
         value[i] = new LocalConfiguration(vector[i]);
     }
     return true;
 }
 
-int c_fckit_configuration_get_int (const Configuration* This, const char* name, int& value) {
+int32 c_fckit_configuration_get_int32(const Configuration* This, const char* name, int32& value) {
     if( ! This->get(string(name),value) )  return false;
     return true;
 }
 
-int c_fckit_configuration_get_long (const Configuration* This, const char* name, long& value) {
+int32 c_fckit_configuration_get_int64 (const Configuration* This, const char* name, int64& value) {
     if( ! This->get(string(name),value) )  return false;
     return true;
 }
 
-int c_fckit_configuration_get_float (const Configuration* This, const char* name, float& value) {
+int32 c_fckit_configuration_get_float (const Configuration* This, const char* name, float& value) {
     if( ! This->get(string(name),value) )  return false;
     return true;
 }
 
-int c_fckit_configuration_get_double (const Configuration* This, const char* name, double& value) {
+int32 c_fckit_configuration_get_double (const Configuration* This, const char* name, double& value) {
     if( ! This->get(string(name),value) )  return false;
     return true;
 }
 
-int c_fckit_configuration_get_string( const Configuration* This, const char* name, char* &value, int &size) {
+int32 c_fckit_configuration_get_string( const Configuration* This, const char* name, char* &value, size_t &size) {
     string s;
     if( ! This->get(string(name),s) ) {
         value = NULL;
@@ -227,27 +232,27 @@ int c_fckit_configuration_get_string( const Configuration* This, const char* nam
     return true;
 }
 
-int c_fckit_configuration_get_array_int (const Configuration* This, const char* name, int* &value, int& size) {
-    vector<int> v;
+int32 c_fckit_configuration_get_array_int32 (const Configuration* This, const char* name, int32* &value, size_t& size) {
+    vector<int32> v;
     if( ! This->get(string(name),v) )
         return false;
     size = v.size();
-    value = new int[size];
+    value = new int32[size];
     for( size_t j=0; j<v.size(); ++j ) value[j] = v[j];
     return true;
 }
 
-int c_fckit_configuration_get_array_long (const Configuration* This, const char* name, long* &value, int& size) {
-    vector<long> v;
+int32 c_fckit_configuration_get_array_int64 (const Configuration* This, const char* name, int64* &value, size_t& size) {
+    vector<int64> v;
     if( ! This->get(string(name),v) )
         return false;
     size = v.size();
-    value = new long[size];
+    value = new int64[size];
     for( size_t j=0; j<v.size(); ++j ) value[j] = v[j];
   return true;
 }
 
-int c_fckit_configuration_get_array_float (const Configuration* This, const char* name, float* &value, int& size) {
+int32 c_fckit_configuration_get_array_float (const Configuration* This, const char* name, float* &value, size_t& size) {
     vector<float> v;
     if( ! This->get(string(name),v) )
         return false;
@@ -257,7 +262,7 @@ int c_fckit_configuration_get_array_float (const Configuration* This, const char
     return true;
 }
 
-int c_fckit_configuration_get_array_double (const Configuration* This, const char* name, double* &value, int& size) {
+int32 c_fckit_configuration_get_array_double (const Configuration* This, const char* name, double* &value, size_t& size) {
     vector<double> v;
     if( ! This->get(string(name),v) )
         return false;
@@ -267,11 +272,11 @@ int c_fckit_configuration_get_array_double (const Configuration* This, const cha
     return true;
 }
 
-int c_fckit_configuration_has (const Configuration* This, const char *name) {
+int32 c_fckit_configuration_has (const Configuration* This, const char *name) {
     return This->has( string(name) );
 }
 
-void c_fckit_configuration_json(const Configuration* This, char* &json, int &size) {
+void c_fckit_configuration_json(const Configuration* This, char* &json, size_t &size) {
     stringstream s;
     JSON parser(s);
     parser.precision(17); // round-trippable double

@@ -31,8 +31,8 @@ interface
 !   char* &str, size_t &size)
 !-------------------------------------------------------------------------------
 function c_fckit_buffer_str( This, str, size ) bind(C,name="c_fckit_buffer_str")
-    use iso_c_binding, only: c_char, c_ptr, c_int, c_size_t
-    integer(c_int) :: c_fckit_buffer_str
+    use iso_c_binding, only: c_ptr, c_int32_t, c_size_t
+    integer(c_int32_t) :: c_fckit_buffer_str
     type(c_ptr), value :: This
     type(c_ptr) :: str
     integer(c_size_t) :: size
@@ -94,15 +94,15 @@ end function
 !---------------------------------------------------------------------------------------
 
 function str(this)
-  use, intrinsic :: iso_c_binding, only: c_ptr, c_int, c_size_t
+  use, intrinsic :: iso_c_binding, only: c_ptr, c_int32_t, c_size_t, c_char
   use fckit_c_interop_module
-  character(len=:), allocatable :: str
+  character(kind=c_char,len=:), allocatable :: str
   class(fckit_buffer), intent(in) :: this
-  integer(c_int) :: errcode
+  integer(c_int32_t) :: errcode
   integer(c_size_t) :: str_size
   type(c_ptr) :: str_cptr
   errcode = c_fckit_buffer_str(this%c_ptr(),str_cptr,str_size)
-  allocate(character(len=str_size) :: str )
+  allocate(character(kind=c_char,len=str_size) :: str )
   str = c_ptr_to_string(str_cptr)
   call c_ptr_free(str_cptr)
 end function

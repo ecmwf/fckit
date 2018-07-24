@@ -9,12 +9,16 @@
  */
 
 #include <string>
+#include <cstdint>
 
 #include "eckit/io/SharedBuffer.h"
 
+using int32  = std::int32_t;
+using size_t = std::size_t;
+
 extern "C" {
 
-  int c_fckit_buffer_str(const eckit::Buffer* This, char* &str, size_t &size) {
+  int32 c_fckit_buffer_str(const eckit::Buffer* This, char* &str, size_t &size) {
     std::string s(*This, This->size());
     size = s.size()+1;
     str = new char[size];

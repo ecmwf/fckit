@@ -16,10 +16,10 @@ private
 !========================================================================
 ! Public interface
 
-public fckit_refcount
-public fckit_refcount_interface
-public fckit_external
-public fckit_owned
+public :: fckit_refcount
+public :: fckit_refcount_interface
+public :: fckit_external
+public :: fckit_owned
 
 !========================================================================
 
@@ -32,8 +32,9 @@ end type
 
 interface
   function fckit_refcount_owners(this)
+    use, intrinsic :: iso_c_binding, only: c_int32_t
     import fckit_refcount
-    integer :: fckit_refcount_owners
+    integer(c_int32_t) :: fckit_refcount_owners
     class(fckit_refcount), intent(in) :: this
   end function
   subroutine fckit_refcount_attach(this)
@@ -69,8 +70,8 @@ end type
 interface
 
   function fckit__Owned__owners(this) bind(c,name="fckit__Owned__owners")
-    use, intrinsic :: iso_c_binding, only: c_int, c_ptr
-    integer(c_int) :: fckit__Owned__owners
+    use, intrinsic :: iso_c_binding, only: c_int32_t, c_ptr
+    integer(c_int32_t) :: fckit__Owned__owners
     type(c_ptr), value :: this
   end function
 
@@ -93,6 +94,8 @@ type, extends(fckit_refcount) :: fckit_refcount_owned
   procedure, public :: attach => fckit_refcount_owned_attach
   procedure, public :: detach => fckit_refcount_owned_detach
 end type
+
+private :: c_ptr, c_null_ptr
 
 !========================================================================
 CONTAINS
@@ -143,7 +146,8 @@ subroutine fckit_refcount_external_detach(this)
 end subroutine
 
 function fckit_refcount_external_owners(this) result(owners)
-  integer :: owners
+  use, intrinsic :: iso_c_binding, only : c_int32_t
+  integer(c_int32_t) :: owners
   class(fckit_refcount_external), intent(in) :: this
   owners = this%refcount_
 end function
@@ -159,7 +163,8 @@ subroutine fckit_refcount_owned_detach(this)
 end subroutine
 
 function fckit_refcount_owned_owners(this) result(owners)
-  integer :: owners
+  use, intrinsic :: iso_c_binding, only : c_int32_t
+  integer(c_int32_t) :: owners
   class(fckit_refcount_owned), intent(in) :: this
   owners = fckit__Owned__owners(this%cptr_)
 end function

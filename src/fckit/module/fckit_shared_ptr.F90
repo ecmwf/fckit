@@ -199,7 +199,8 @@ subroutine detach(this)
 end subroutine
 
 function owners(this)
-  integer :: owners
+  use, intrinsic :: iso_c_binding, only : c_int32_t
+  integer(c_int32_t) :: owners
   class(fckit_shared_ptr), intent(in) :: this
   if( associated( this%shared_ptr_) ) then
     owners = this%refcount_%owners()

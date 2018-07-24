@@ -94,7 +94,7 @@ TEST( test_allreduce )
   type(fckit_mpi_comm) :: comm
   real(c_double)  :: real64, res_real64, real64_r1(2),      res_real64_r1(2)
   real(c_float)   :: real32, res_real32, real32_r2(3,2),    res_real32_r2(3,2)
-  integer(c_int)  :: int32,  res_int32,  int32_r3(4,3,2),   res_int32_r3(4,3,2), j
+  integer(c_int32_t) :: int32,  res_int32,  int32_r3(4,3,2),   res_int32_r3(4,3,2), j
   integer(c_long) :: int64,  res_int64,  int64_r4(4,3,2,2), res_int64_r4(4,3,2,2), check_prod, check_sum
 
   FCKIT_SUPPRESS_UNUSED( real64_r1 )
@@ -169,7 +169,7 @@ TEST( test_allreduce_inplace )
   type(fckit_mpi_comm) :: comm
   real(c_double)  :: real64, real64_r1(2)
   real(c_float)   :: real32, real32_r2(3,2)
-  integer(c_int)  :: int32,  int32_r3(4,3,2), j
+  integer(c_int32_t) :: int32,  int32_r3(4,3,2), j
   integer(c_long) :: int64,  int64_r4(4,3,2,2), check_prod, check_sum
 
   FCKIT_SUPPRESS_UNUSED( real64_r1 )
@@ -255,7 +255,7 @@ TEST( test_broadcast )
   type(fckit_mpi_comm) :: comm
   real(c_double)  :: real64, real64_r1(2)
   real(c_float)   :: real32, real32_r2(3,2)
-  integer(c_int)  :: int32,  int32_r3(4,3,2)
+  integer(c_int32_t) :: int32,  int32_r3(4,3,2)
   integer(c_long) :: int64,  int64_r4(4,3,2,2)
 
   FCKIT_SUPPRESS_UNUSED( real64_r1 )
@@ -282,7 +282,7 @@ TEST( test_broadcast )
 
   if(comm%rank()==0) int32_r3(1,3,2) = 2
   call comm%broadcast(int32_r3,root=0)
-  FCTEST_CHECK_EQUAL(int32_r3(1,3,2), 2_c_int)
+  FCTEST_CHECK_EQUAL(int32_r3(1,3,2), 2_c_int32_t)
 
   if(comm%rank()==comm%size()-1) int32_r3(2,1,1) = 3
   call comm%broadcast(int32_r3,root=comm%size()-1)

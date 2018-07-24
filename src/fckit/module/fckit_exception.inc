@@ -18,66 +18,66 @@ interface
     type(c_funptr), value :: h
   end subroutine
 
-  !void fckit__abort (const char* what, const char* file, int line, const char* function )
+  !void fckit__abort (const char* what, const char* file, int32 line, const char* function )
   subroutine fckit__abort(what,file,line,function) bind(c)
-    use iso_c_binding, only : c_char, c_int
+    use iso_c_binding, only : c_char, c_int32_t
     character(kind=c_char), dimension(*) :: what
     character(kind=c_char), dimension(*) :: file
-    integer(c_int), value :: line
+    integer(c_int32_t), value :: line
     character(kind=c_char), dimension(*) :: function
   end subroutine
 
-  !void fckit__exception_throw (const char* what, const char* file, int line, const char* function )
+  !void fckit__exception_throw (const char* what, const char* file, int32 line, const char* function )
   subroutine fckit__exception_throw(what,file,line,function) bind(c)
-    use iso_c_binding, only : c_char, c_int
+    use iso_c_binding, only : c_char, c_int32_t
     character(kind=c_char), dimension(*) :: what
     character(kind=c_char), dimension(*) :: file
-    integer(c_int), value :: line
+    integer(c_int32_t), value :: line
     character(kind=c_char), dimension(*) :: function
   end subroutine
 
-  !int fckit__exception_what (char* &what, int &what_size)
+  !int fckit__exception_what (char* &what, size_t &what_size)
   function fckit__exception_what(what,what_size) result(error_code) bind(c)
-    use iso_c_binding, only: c_int, c_ptr
-    integer(c_int) :: error_code
+    use iso_c_binding, only: c_int32_t, c_size_t, c_ptr
+    integer(c_int32_t) :: error_code
     type(c_ptr) :: what
-    integer(c_int) :: what_size
+    integer(c_size_t) :: what_size
   end function
 
   !int fckit__exception_location ()
   function fckit__exception_location() result(location) bind(c)
-    use iso_c_binding, only: c_int
-    integer(c_int) :: location
+    use iso_c_binding, only: c_int32_t
+    integer(c_int32_t) :: location
   end function
 
-  !int fckit__exception_file (char* &file, int &file_size)
+  !int fckit__exception_file (char* &file, size_t &file_size)
   function fckit__exception_file(file,file_size) result(error_code) bind(c)
-    use iso_c_binding, only: c_int, c_ptr
-    integer(c_int) :: error_code
+    use iso_c_binding, only: c_int32_t, c_size_t, c_ptr
+    integer(c_int32_t) :: error_code
     type(c_ptr) :: file
-    integer(c_int) :: file_size
+    integer(c_size_t) :: file_size
   end function
 
   !int fckit__exception_line ()
   function fckit__exception_line() result(line) bind(c)
-    use iso_c_binding, only: c_int
-    integer(c_int) :: line
+    use iso_c_binding, only: c_int32_t
+    integer(c_int32_t) :: line
   end function
 
-  !int fckit__exception_function (char* &function, int &function_size)
+  !int fckit__exception_function (char* &function, size_t &function_size)
   function fckit__exception_function(function,function_size) result(error_code) bind(c)
-    use iso_c_binding, only: c_int, c_ptr
-    integer(c_int) :: error_code
+    use iso_c_binding, only: c_int32_t, c_size_t, c_ptr
+    integer(c_int32_t) :: error_code
     type(c_ptr) :: function
-    integer(c_int) :: function_size
+    integer(c_size_t) :: function_size
   end function
 
-  !int fckit__exception_callstack (char* &callstack, int &callstack_size)
+  !int fckit__exception_callstack (char* &callstack, size_t &callstack_size)
   function fckit__exception_callstack(callstack,callstack_size) result(error_code) bind(c)
-    use iso_c_binding, only: c_int, c_ptr
-    integer(c_int) :: error_code
+    use iso_c_binding, only: c_int32_t, c_size_t, c_ptr
+    integer(c_int32_t) :: error_code
     type(c_ptr) :: callstack
-    integer(c_int) :: callstack_size
+    integer(c_size_t) :: callstack_size
   end function
 
 end interface

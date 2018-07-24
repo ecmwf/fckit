@@ -60,9 +60,9 @@ subroutine abort_wrapper()
 end subroutine
 
 subroutine sig_handler(signum) bind(c)
-  use, intrinsic :: iso_c_binding, only : c_int
+  use, intrinsic :: iso_c_binding, only : c_int32_t
   use fckit_module
-  integer(c_int), value, intent(in) :: signum
+  integer(c_int32_t), value, intent(in) :: signum
   character(len=1024) :: string
   write(string,*) "signal handler intercepted signal ",signum
   call fckit_log%info(string,flush=.true.)
