@@ -22,7 +22,7 @@ static void assert_int64_support( const eckit::CodeLocation& here ) {
     if( sizeof(long) != sizeof(int64) ) {
         std::stringstream msg;
         msg << "MPI support for int64 on 32bit architectures currently not implemented in eckit. " << eckit::newl
-            << "Please create an eckit issue if this is required.";
+            << "Please check eckit issue ECKIT-349 to see if this check can be removed.";
         throw eckit::NotImplemented( msg.str(), here );
     }
 }
@@ -113,11 +113,12 @@ extern "C" {
 
   void fckit__mpi__allreduce_int64(const Comm* comm, const int64* in, int64* out, size_t count, int32 operation)
   {
+    // TODO: Use int64 when ECKIT-349 is finished
     assert_int64_support(Here());
     if( comm )
-      comm->allReduce(in,out,count,eckit::mpi::Operation::Code(operation));
+      comm->allReduce((long*)in,(long*)out,count,eckit::mpi::Operation::Code(operation));
     else
-      eckit::mpi::comm().allReduce(in,out,count,eckit::mpi::Operation::Code(operation));
+      eckit::mpi::comm().allReduce((long*)in,(long*)out,count,eckit::mpi::Operation::Code(operation));
   }
 
   void fckit__mpi__allreduce_real32(const Comm* comm, const float* in, float* out, size_t count, int32 operation)
@@ -146,11 +147,12 @@ extern "C" {
 
   void fckit__mpi__allreduce_inplace_int64(const Comm* comm, int64* inout, size_t count, int32 operation)
   {
+    // TODO: Use int64 when ECKIT-349 is finished
     assert_int64_support(Here());
     if( comm )
-      comm->allReduceInPlace(inout,count,eckit::mpi::Operation::Code(operation));
+      comm->allReduceInPlace((long*)inout,count,eckit::mpi::Operation::Code(operation));
     else
-      eckit::mpi::comm().allReduceInPlace(inout,count,eckit::mpi::Operation::Code(operation));
+      eckit::mpi::comm().allReduceInPlace((long*)inout,count,eckit::mpi::Operation::Code(operation));
   }
 
   void fckit__mpi__allreduce_inplace_real32(const Comm* comm, float* inout, size_t count, int32 operation)
@@ -179,11 +181,12 @@ extern "C" {
 
   void fckit__mpi__broadcast_int64(const Comm* comm, int64* buffer, size_t count, size_t root)
   {
+    // TODO: Use int64 when ECKIT-349 is finished
     assert_int64_support(Here());
     if( comm )
-      comm->broadcast(buffer,count,root);
+      comm->broadcast((long*)buffer,count,root);
     else
-      eckit::mpi::comm().broadcast(buffer,count,root);
+      eckit::mpi::comm().broadcast((long*)buffer,count,root);
   }
 
   void fckit__mpi__broadcast_real32(const Comm* comm, float* buffer, size_t count, size_t root)
@@ -242,11 +245,12 @@ extern "C" {
 
   void fckit__mpi__send_int64(const Comm* comm, int64* buffer, size_t count, int32 dest, int32 tag)
   {
+    // TODO: Use int64 when ECKIT-349 is finished
     assert_int64_support(Here());
     if( comm )
-      comm->send(buffer,count,dest,tag);
+      comm->send((long*)buffer,count,dest,tag);
     else
-      eckit::mpi::comm().send(buffer,count,dest,tag);
+      eckit::mpi::comm().send((long*)buffer,count,dest,tag);
   }
 
   void fckit__mpi__send_real32(const Comm* comm, float* buffer, size_t count, int32 dest, int32 tag)
@@ -279,12 +283,13 @@ extern "C" {
 
   void fckit__mpi__receive_int64(const Comm* comm, int64* buffer, size_t count, int32 source, int32 tag, int32* status)
   {
+    // TODO: Use int64 when ECKIT-349 is finished
     assert_int64_support(Here());
     eckit::mpi::Status _status;
     if( comm )
-      _status = comm->receive(buffer,count,source,tag);
+      _status = comm->receive((long*)buffer,count,source,tag);
     else
-      _status = eckit::mpi::comm().receive(buffer,count,source,tag);
+      _status = eckit::mpi::comm().receive((long*)buffer,count,source,tag);
     status[0] = _status.source();
     status[1] = _status.tag();
     status[2] = _status.error();
@@ -322,11 +327,12 @@ extern "C" {
   }
 
   int fckit__mpi__isend_int64(const Comm* comm, int64* buffer, size_t count, int32 dest, int32 tag) {
+    // TODO: Use int64 when ECKIT-349 is finished
     assert_int64_support(Here());
     if( comm )
-      return comm->iSend(buffer,count,dest,tag).request();
+      return comm->iSend((long*)buffer,count,dest,tag).request();
     else
-      return eckit::mpi::comm().iSend(buffer,count,dest,tag).request();
+      return eckit::mpi::comm().iSend((long*)buffer,count,dest,tag).request();
   }
 
   int fckit__mpi__isend_real32(const Comm* comm, float* buffer, size_t count, int32 dest, int32 tag) {
@@ -351,11 +357,12 @@ extern "C" {
   }
 
   int fckit__mpi__ireceive_int64(const Comm* comm, int64* buffer, size_t count, int32 source, int32 tag) {
+    // TODO: Use int64 when ECKIT-349 is finished
     assert_int64_support(Here());
     if( comm )
-      return comm->iReceive(buffer,count,source,tag).request();
+      return comm->iReceive((long*)buffer,count,source,tag).request();
     else
-      return eckit::mpi::comm().iReceive(buffer,count,source,tag).request();
+      return eckit::mpi::comm().iReceive((long*)buffer,count,source,tag).request();
   }
 
   int fckit__mpi__ireceive_real32(const Comm* comm, float* buffer, size_t count, int32 source, int32 tag) {
