@@ -79,6 +79,12 @@ ecbuild_add_test( TARGET  fckit_test_configuration_cpp
             CONDITION HAVE_ECKIT
             LIBS    fckit )
 
+if( HAVE_TESTS )
+  if( NOT (CMAKE_VERSION VERSION_LESS 3.1) )
+    set_property( TEST fckit_test_configuration_cpp APPEND PROPERTY LABELS "fortran" )
+  endif()
+endif()
+
 ecbuild_add_test( TARGET fckit_test_cpp
   LINKER_LANGUAGE Fortran
   SOURCES test_cpp.cc test_cpp_fortcode.F90

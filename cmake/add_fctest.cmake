@@ -33,6 +33,8 @@ function( fctest_generate_runner )
 
 endfunction()
 
+function( add_fctest )
+
 if( NOT (CMAKE_VERSION VERSION_LESS 3.4 ) )
   set( _cmake_supports_checking_for_TEST TRUE )
   cmake_policy( SET CMP0064 NEW )
@@ -42,7 +44,6 @@ if( CMAKE_VERSION VERSION_LESS 3.1 )
   ecbuild_deprecate( "add_fctest is better supported with CMake > 3.1 (have ${CMAKE_VERSION})" )
 endif()
 
-macro( add_fctest )
 
 if( NOT (CMAKE_VERSION VERSION_LESS 3.1) )
 
@@ -101,4 +102,4 @@ else()
 
 endif()
 
-endmacro()
+endfunction()
