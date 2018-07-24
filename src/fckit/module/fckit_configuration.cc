@@ -116,7 +116,8 @@ void c_fckit_configuration_set_int32 (Configuration* This, const char* name, int
 void c_fckit_configuration_set_int64 (Configuration* This, const char* name, int64 value) {
     ASSERT( This != 0 );
     if( LocalConfiguration* local = dynamic_cast<LocalConfiguration*>(This) )
-        local->set( string(name), value );
+        // TODO: long should be converted to int64 once ECKIT-349 is fixed
+        local->set( string(name), long(value) );
     else
         throw NotLocalConfiguration(Here());
 }
@@ -157,7 +158,8 @@ void c_fckit_configuration_set_array_int32 (Configuration* This, const char* nam
 
 void c_fckit_configuration_set_array_int64 (Configuration* This, const char* name, int64 value[], size_t size) {
     ASSERT( This != 0 );
-    vector<int64> v;
+    // TODO: long should be converted to int64 once ECKIT-349 is fixed
+    vector<long> v;
     v.assign(value,value+size);
     if( LocalConfiguration* local = dynamic_cast<LocalConfiguration*>(This) )
         local->set( string(name), v );
@@ -206,7 +208,10 @@ int32 c_fckit_configuration_get_int32(const Configuration* This, const char* nam
 }
 
 int32 c_fckit_configuration_get_int64 (const Configuration* This, const char* name, int64& value) {
-    if( ! This->get(string(name),value) )  return false;
+    // TODO: long should be converted to int64 once ECKIT-349 is fixed
+    long v;
+    if( ! This->get(string(name),v) ) return false;
+    value = v;
     return true;
 }
 
@@ -243,7 +248,8 @@ int32 c_fckit_configuration_get_array_int32 (const Configuration* This, const ch
 }
 
 int32 c_fckit_configuration_get_array_int64 (const Configuration* This, const char* name, int64* &value, size_t& size) {
-    vector<int64> v;
+    // TODO: long should be converted to int64 once ECKIT-349 is fixed
+    vector<long> v;
     if( ! This->get(string(name),v) )
         return false;
     size = v.size();
