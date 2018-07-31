@@ -159,8 +159,9 @@ enddo
   write(0,*) "  + deallocate_fckit_configuration(alist)"
   call deallocate_fckit_configuration(alist)
 #else
-  write(0,*) "  + deallocate(alist)"
-  deallocate(alist)
+   write(0,*) "Rely on automatic deallocation"
+!  write(0,*) "  + deallocate(alist)"
+!  deallocate(alist)
 #endif
   write(0,*) "deallocate alist... done"
 
@@ -221,7 +222,9 @@ TEST(test_configuration_json_string)
 #if ! FCKIT_HAVE_FINAL || FCKIT_FINAL_BROKEN_FOR_ALLOCATABLE_ARRAY
     call deallocate_fckit_configuration(records)
 #else
-    if( allocated(records) ) deallocate(records)
+    write(0,*) "Rely on automatic deallocation"
+
+    !if( allocated(records) ) deallocate(records)
 #endif
     write(0,*) "deallocate records... done"
   endif
@@ -276,7 +279,8 @@ TEST(test_configuration_json_file)
 #if ! FCKIT_HAVE_FINAL || FCKIT_FINAL_BROKEN_FOR_ALLOCATABLE_ARRAY
     call deallocate_fckit_configuration(records)
 #else
-    deallocate(records)
+    write(0,*) "Rely on automatic deallocation"
+    !deallocate(records)
 #endif
      write(0,*) "deallocate records... done"
   endif

@@ -528,6 +528,7 @@ subroutine test_shared_object_allocatable_list( final_auto, deallocate_auto )
   allocate( list(2) )
   list(1) = ObjectCXX(1)
   list(2) = ObjectCXX(2)
+  write(0,*) "assigned"
   FCTEST_CHECK_EQUAL( list(1)%id(), 1 )
   FCTEST_CHECK_EQUAL( list(1)%owners(), 1 )
   FCTEST_CHECK_EQUAL( list(2)%id(), 2 )
@@ -568,11 +569,13 @@ TEST( test_shared_object_allocatable_list_auto_auto )
 END_TEST
 
 TEST( test_shared_object_allocatable_list_auto_manual )
-#if 1
+#if 0
   write(0,'(A)') "-------------------------------------------------------------"
   write(0,'(A)') "TEST     test_shared_object_allocatable_list_auto_manual"
   call reset_counters()
   call test_shared_object_allocatable_list( final_auto = .true., deallocate_auto = .false. )
+  write(0,'(A)') '----'
+
 #if FCKIT_HAVE_FINAL
 #if ! FCKIT_FINAL_BROKEN_FOR_ALLOCATABLE_ARRAY
   FCTEST_CHECK_EQUAL( cxx_destructor_called(), 2 )
@@ -583,6 +586,8 @@ TEST( test_shared_object_allocatable_list_auto_manual )
 #endif
   write(0,'(A)') "-------------------------------------------------------------"
   write(0,'(A)')
+#else
+#warning test_shared_object_allocatable_list_auto_manual disabled
 #endif
 END_TEST
 
@@ -600,11 +605,13 @@ TEST( test_shared_object_allocatable_list_manual_auto )
 #endif
   write(0,'(A)') "-------------------------------------------------------------"
   write(0,'(A)')
+#else
+#warning test_shared_object_allocatable_list_manual_auto disabled
 #endif
 END_TEST
 
 TEST( test_shared_object_allocatable_list_manual_manual )
-#if 1
+#if 0
   write(0,'(A)') "-------------------------------------------------------------"
   write(0,'(A)') "TEST     test_shared_object_allocatable_list_manual_manual"
   call reset_counters()
@@ -617,8 +624,119 @@ TEST( test_shared_object_allocatable_list_manual_manual )
 #endif
   write(0,'(A)') "-------------------------------------------------------------"
   write(0,'(A)')
+#else
+#warning test_shared_object_allocatable_list_manual_manual disabled
 #endif
 END_TEST
+
+! -----------------------------------------------------------------------------
+
+subroutine test_shared_object_pointer_list( final_auto, deallocate_auto )
+
+  logical :: final_auto
+  logical :: deallocate_auto
+  type(ObjectCXX), pointer :: list(:)
+
+  write(0,'(A)') "~~~~~~~~~~~~~~ BEGIN SCOPE ~~~~~~~~~~~~~~~"
+
+  allocate( list(2) )
+  write(0,*) "allocated"
+  list(1) = ObjectCXX(1)
+  list(2) = ObjectCXX(2)
+  write(0,*) "assigned"
+  FCTEST_CHECK_EQUAL( list(1)%id(), 1 )
+  FCTEST_CHECK_EQUAL( list(1)%owners(), 1 )
+  FCTEST_CHECK_EQUAL( list(2)%id(), 2 )
+  FCTEST_CHECK_EQUAL( list(2)%owners(), 1 )
+
+  if( .not. final_auto ) then
+    call list(1)%final()
+    call list(2)%final()
+  endif
+
+  if( .not. deallocate_auto ) then
+    write(0,'(A)') "~~~~~~~~~~~~~~ DEALLOCATE ~~~~~~~~~~~~~~~"
+    deallocate_called = .true.
+    deallocate( list )
+  endif
+
+  write(0,'(A)') "~~~~~~~~~~~~~~~ END SCOPE ~~~~~~~~~~~~~~~"
+  call end_scope()
+  if( associated(list) ) deallocate( list )
+end subroutine
+
+TEST( test_shared_object_pointer_list_auto_auto )
+#if 1
+  write(0,'(A)') "-------------------------------------------------------------"
+  write(0,'(A)') "TEST     test_shared_object_pointer_list_auto_auto"
+  call reset_counters()
+  call test_shared_object_pointer_list( final_auto = .true., deallocate_auto = .true. )
+#if FCKIT_HAVE_FINAL
+#if ! FCKIT_FINAL_BROKEN_FOR_ALLOCATABLE_ARRAY
+  FCTEST_CHECK_EQUAL( cxx_destructor_called(), 2 )
+  FCTEST_CHECK_EQUAL( cxx_destructor_called_after_scope(), 2 )
+#endif
+#else
+  FCTEST_CHECK_EQUAL( cxx_destructor_called(), 0 )
+#endif
+  write(0,'(A)') "-------------------------------------------------------------"
+  write(0,'(A)')
+#endif
+END_TEST
+
+TEST( test_shared_object_pointer_list_auto_manual )
+#if 1
+  write(0,'(A)') "-------------------------------------------------------------"
+  write(0,'(A)') "TEST     test_shared_object_pointer_list_auto_manual"
+  call reset_counters()
+  call test_shared_object_pointer_list( final_auto = .true., deallocate_auto = .false. )
+#if FCKIT_HAVE_FINAL
+#if ! FCKIT_FINAL_BROKEN_FOR_ALLOCATABLE_ARRAY
+  FCTEST_CHECK_EQUAL( cxx_destructor_called(), 2 )
+  FCTEST_CHECK_EQUAL( cxx_destructor_called_after_scope(), 0 )
+#endif
+#else
+  FCTEST_CHECK_EQUAL( cxx_destructor_called(), 0 )
+#endif
+  write(0,'(A)') "-------------------------------------------------------------"
+  write(0,'(A)')
+#endif
+END_TEST
+
+TEST( test_shared_object_pointer_list_manual_auto )
+#if 1
+  write(0,'(A)') "-------------------------------------------------------------"
+  write(0,'(A)') "TEST     test_shared_object_pointer_list_manual_auto"
+  call reset_counters()
+  call test_shared_object_pointer_list( final_auto = .false., deallocate_auto = .true. )
+#if FCKIT_HAVE_FINAL
+  FCTEST_CHECK_EQUAL( cxx_destructor_called(), 2 )
+  FCTEST_CHECK_EQUAL( cxx_destructor_called_after_scope(), 0 )
+#else
+  FCTEST_CHECK_EQUAL( cxx_destructor_called(), 2 )
+#endif
+  write(0,'(A)') "-------------------------------------------------------------"
+  write(0,'(A)')
+#endif
+END_TEST
+
+TEST( test_shared_object_pointer_list_manual_manual )
+#if 1
+  write(0,'(A)') "-------------------------------------------------------------"
+  write(0,'(A)') "TEST     test_shared_object_pointer_list_manual_manual"
+  call reset_counters()
+  call test_shared_object_pointer_list( final_auto = .false., deallocate_auto = .false. )
+#if FCKIT_HAVE_FINAL
+  FCTEST_CHECK_EQUAL( cxx_destructor_called(), 2 )
+  FCTEST_CHECK_EQUAL( cxx_destructor_called_after_scope(), 0 )
+#else
+  FCTEST_CHECK_EQUAL( cxx_destructor_called(), 2 )
+#endif
+  write(0,'(A)') "-------------------------------------------------------------"
+  write(0,'(A)')
+#endif
+END_TEST
+
 
 ! -----------------------------------------------------------------------------
 
@@ -631,6 +749,7 @@ subroutine test_shared_object_automatic_list( final_auto )
 
   list(1) = ObjectCXX(1)
   list(2) = ObjectCXX(2)
+  write(0,'(A)') "assigned"
   FCTEST_CHECK_EQUAL( list(1)%id(), 1 )
   FCTEST_CHECK_EQUAL( list(1)%owners(), 1 )
   FCTEST_CHECK_EQUAL( list(2)%id(), 2 )

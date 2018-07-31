@@ -1,15 +1,28 @@
 #include <iostream>
+#include <sstream>
 #include <stdio.h>
 
 static int destructor_called = 0;
 static int destructor_called_after_scope = 0;
 static int scope_ended = 0;
 
+extern "C" {
+  void fckit_write_to_fortran_unit(int unit, const char* msg);
+  int fckit_fortranunit_stdout();
+  int fckit_fortranunit_stderr();
+}
+
 class Object {
 public:
-  Object(int i) : i_(i) { std::cout << "constructing Object " << i_ << std::endl; }
+  Object(int i) : i_(i) {
+    std::stringstream out;
+    out << "constructing Object " << i_ ;
+    fckit_write_to_fortran_unit(fckit_fortranunit_stderr(),out.str().c_str());
+  }
   ~Object() { 
-    std::cout << "destructing Object " << i_ << std::endl;
+    std::stringstream out;
+    out << "destructing Object " << i_ ;
+    fckit_write_to_fortran_unit(fckit_fortranunit_stderr(),out.str().c_str());
     destructor_called += 1;
     if( scope_ended )
       destructor_called_after_scope += 1;
