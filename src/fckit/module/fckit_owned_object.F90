@@ -17,7 +17,7 @@
 #endif
 
 module fckit_owned_object_module
-use, intrinsic :: iso_c_binding, only: c_ptr, c_funptr, c_null_ptr, c_null_funptr
+use, intrinsic :: iso_c_binding, only: c_ptr, c_funptr, c_null_ptr, c_null_funptr, c_int32_t
 implicit none
 private
 
@@ -92,6 +92,7 @@ private :: c_ptr
 private :: c_null_ptr
 private :: c_funptr
 private :: c_null_funptr
+private :: c_int32_t
 
 !========================================================================
 
@@ -103,8 +104,8 @@ interface
   end subroutine
 
   function fckit__Owned__owners(this) bind(c,name="fckit__Owned__owners")
-    use, intrinsic :: iso_c_binding, only: c_int, c_ptr
-    integer(c_int) :: fckit__Owned__owners
+    use, intrinsic :: iso_c_binding, only: c_int32_t, c_ptr
+    integer(c_int32_t) :: fckit__Owned__owners
     type(c_ptr), value :: this
   end function
 
@@ -243,7 +244,7 @@ subroutine detach(this)
 end subroutine
 
 function owners(this)
-  integer :: owners
+  integer(c_int32_t) :: owners
   class(fckit_owned_object), intent(in) :: this
   if( this%is_null() ) then
     owners = 0

@@ -130,26 +130,27 @@ end subroutine
 !------------------------------------------------------------------------------
 
 subroutine abort( what, file, line, function )
+  use, intrinsic :: iso_c_binding, only : c_char, c_int32_t
   use fckit_c_interop_module, only : c_str
 
-  character(len=*), optional :: what
+  character(kind=c_char,len=*), optional :: what
     !! what for abort
 
-  character(len=*), optional :: file
+  character(kind=c_char,len=*), optional :: file
     !! File path where aborted (hint: use ```___FILE___``` fortran-line-length permitting)
 
-  integer, optional :: line
+  integer(c_int32_t), optional :: line
     !! Line in file where aborted (hint: use ```___LINE___```)
 
-  character(len=*), optional :: function
+  character(kind=c_char,len=*), optional :: function
     !!  Function where aborted
 
   ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  character(len=:), allocatable :: opt_what
-  character(len=:), allocatable :: opt_file
-  integer :: opt_line
-  character(len=:), allocatable :: opt_function
+  character(kind=c_char,len=:), allocatable :: opt_what
+  character(kind=c_char,len=:), allocatable :: opt_file
+  integer(c_int32_t) :: opt_line
+  character(kind=c_char,len=:), allocatable :: opt_function
 
   if( present(what) ) then
     opt_what = what
@@ -181,17 +182,17 @@ function what()
   use, intrinsic :: iso_c_binding
   use fckit_c_interop_module
 
-  character(len=:), allocatable :: what
+  character(kind=c_char,len=:), allocatable :: what
     !! what for aborting
 
   ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   type(c_ptr)    :: what_c_ptr
-  integer(c_int) :: what_size
-  integer(c_int) :: error_code
+  integer(c_size_t) :: what_size
+  integer(c_int32_t) :: error_code
 
   error_code = fckit__exception_what(what_c_ptr,what_size)
-  allocate(character(len=what_size) :: what )
+  allocate(character(kind=c_char,len=what_size) :: what )
   what = c_ptr_to_string(what_c_ptr)
   call c_ptr_free(what_c_ptr)
 end function
@@ -217,17 +218,17 @@ function location_file() result(file)
   use, intrinsic :: iso_c_binding
   use fckit_c_interop_module
 
-  character(len=:), allocatable :: file
+  character(kind=c_char,len=:), allocatable :: file
     !! File where abort is called
 
   ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   type(c_ptr)    :: file_c_ptr
-  integer(c_int) :: file_size
-  integer(c_int) :: error_code
+  integer(c_size_t) :: file_size
+  integer(c_int32_t) :: error_code
 
   error_code = fckit__exception_file(file_c_ptr,file_size)
-  allocate(character(len=file_size) :: file )
+  allocate(character(kind=c_char,len=file_size) :: file )
   file = c_ptr_to_string(file_c_ptr)
   call c_ptr_free(file_c_ptr)
 end function
@@ -235,7 +236,8 @@ end function
 !------------------------------------------------------------------------------
 
 function location_line() result(line)
-  integer :: line
+  use, intrinsic :: iso_c_binding
+  integer(c_int32_t) :: line
     !! Line where abort is called
 
   ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -249,17 +251,17 @@ function location_function() result(function)
   use, intrinsic :: iso_c_binding
   use fckit_c_interop_module
 
-  character(len=:), allocatable :: function
+  character(kind=c_char,len=:), allocatable :: function
     !! Function where abort is called
 
   ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   type(c_ptr)    :: function_c_ptr
-  integer(c_int) :: function_size
-  integer(c_int) :: error_code
+  integer(c_size_t) :: function_size
+  integer(c_int32_t) :: error_code
 
   error_code = fckit__exception_function(function_c_ptr,function_size)
-  allocate(character(len=function_size) :: function )
+  allocate(character(kind=c_char,len=function_size) :: function )
   function = c_ptr_to_string(function_c_ptr)
   call c_ptr_free(function_c_ptr)
 end function
@@ -270,17 +272,17 @@ function callstack()
   use, intrinsic :: iso_c_binding
   use fckit_c_interop_module
 
-  character(len=:), allocatable :: callstack
+  character(kind=c_char,len=:), allocatable :: callstack
     !! Callstack is called
 
   ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   type(c_ptr)    :: callstack_c_ptr
-  integer(c_int) :: callstack_size
-  integer(c_int) :: error_code
+  integer(c_size_t) :: callstack_size
+  integer(c_int32_t) :: error_code
 
   error_code = fckit__exception_callstack(callstack_c_ptr,callstack_size)
-  allocate(character(len=callstack_size) :: callstack )
+  allocate(character(kind=c_char,len=callstack_size) :: callstack )
   callstack = c_ptr_to_string(callstack_c_ptr)
   call c_ptr_free(callstack_c_ptr)
 end function
@@ -288,18 +290,18 @@ end function
 !------------------------------------------------------------------------------
 
 subroutine throw( what, file, line, function )
+  use, intrinsic :: iso_c_binding
   use fckit_c_interop_module, only : c_str
-
-  character(len=*) :: what
-  character(len=*), optional :: file
-  integer, optional :: line
-  character(len=*), optional :: function
+  character(kind=c_char,len=*) :: what
+  character(kind=c_char,len=*), optional :: file
+  integer(c_int32_t), optional :: line
+  character(kind=c_char,len=*), optional :: function
 
   ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  character(len=:), allocatable :: opt_file
-  integer :: opt_line
-  character(len=:), allocatable :: opt_function
+  character(kind=c_char,len=:), allocatable :: opt_file
+  integer(c_int32_t) :: opt_line
+  character(kind=c_char,len=:), allocatable :: opt_function
 
   if( present(file) ) then
     opt_file = file

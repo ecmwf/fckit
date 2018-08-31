@@ -13,6 +13,7 @@
 #include <iosfwd>
 #include <map>
 #include <string>
+#include <cstdint>
 #include "eckit/runtime/Main.h"
 
 namespace fckit{
@@ -37,7 +38,7 @@ public:
 
 // ------------------------------------------------------------------------------------
 
-typedef void (*signal_handler_t)(int);
+typedef void (*signal_handler_t)(std::int32_t);
 
 class Signal {
 public:

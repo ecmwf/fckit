@@ -7,13 +7,13 @@
 ! does it submit to any jurisdiction.
 
 module fctest
-  use, intrinsic :: iso_c_binding, only: c_float, c_double, c_int, c_long_long
+  use, intrinsic :: iso_c_binding, only: c_float, c_double, c_int32_t, c_int64_t, c_char, c_int
   implicit none
-  integer, parameter :: sp=c_float
-  integer, parameter :: dp=c_double
+  integer(c_int32_t), parameter :: sp=c_float
+  integer(c_int32_t), parameter :: dp=c_double
 public
   character(len=1024) :: source_file
-  integer :: exit_status
+  integer(c_int32_t) :: exit_status
   interface FCE
     module procedure fctest_check_equal_int32
     module procedure fctest_check_equal_int64
@@ -35,13 +35,16 @@ public
     module procedure fctest_error
   end interface ERR
 
+! TODO: These should be private
+! private :: c_float, c_double, c_int32_t, c_int64_t, c_char
+
 contains
 
 function sweep_leading_blanks(in_str)
-  character(len=*), intent(in)  :: in_str
-  character(len=512) :: sweep_leading_blanks
-  character :: ch
-  integer :: j
+  character(kind=c_char,len=*), intent(in)  :: in_str
+  character(kind=c_char,len=512) :: sweep_leading_blanks
+  character(kind=c_char) :: ch
+  integer(c_int32_t) :: j
   do j=1, len_trim(in_str)
     ! get j-th char
     ch = in_str(j:j)
@@ -53,14 +56,14 @@ function sweep_leading_blanks(in_str)
 end function sweep_leading_blanks
 
 subroutine fctest_error(line)
-  integer, intent(in) :: line
+  integer(c_int32_t), intent(in) :: line
   write(0,'(2A,I0,2A)') trim(source_file),":",line,": warning: ",trim(sweep_leading_blanks(get_source_line(line)))
   exit_status=1
 end subroutine
 
 subroutine fctest_check_equal_int32(V1,V2,line)
-  integer(c_int), intent(in) :: V1, V2
-  integer, intent(in) :: line
+  integer(c_int32_t), intent(in) :: V1, V2
+  integer(c_int32_t), intent(in) :: line
   if(V1/=V2) then
     write(0,'(2A,I0,2A)') trim(source_file),":",line,": warning: ",trim(sweep_leading_blanks(get_source_line(line)))
     write(0,*) "--> [",V1,"!=",V2,"]"
@@ -69,8 +72,8 @@ subroutine fctest_check_equal_int32(V1,V2,line)
 end subroutine
 
 subroutine fctest_check_equal_int64(V1,V2,line)
-  integer(c_long_long), intent(in) :: V1, V2
-  integer, intent(in) :: line
+  integer(c_int64_t), intent(in) :: V1, V2
+  integer(c_int32_t), intent(in) :: line
   if(V1/=V2) then
     write(0,'(2A,I0,2A)') trim(source_file),":",line,": warning: ",trim(sweep_leading_blanks(get_source_line(line)))
     write(0,*) "--> [",V1,"!=",V2,"]"
@@ -80,7 +83,7 @@ end subroutine
 
 subroutine fctest_check_equal_real32(V1,V2,line)
   real(kind=c_float), intent(in) :: V1, V2
-  integer, intent(in) :: line
+  integer(c_int32_t), intent(in) :: line
   if(V1/=V2) then
     write(0,'(2A,I0,2A)') trim(source_file),":",line,": warning: ",trim(sweep_leading_blanks(get_source_line(line)))
     write(0,*) "--> [",V1,"!=",V2,"]"
@@ -90,7 +93,7 @@ end subroutine
 
 subroutine fctest_check_equal_real64(V1,V2,line)
   real(kind=c_double), intent(in) :: V1, V2
-  integer, intent(in) :: line
+  integer(c_int32_t), intent(in) :: line
   if(V1/=V2) then
     write(0,'(2A,I0,2A)') trim(source_file),":",line,": warning: ",trim(sweep_leading_blanks(get_source_line(line)))
     write(0,*) "--> [",V1,"!=",V2,"]"
@@ -99,8 +102,8 @@ subroutine fctest_check_equal_real64(V1,V2,line)
 end subroutine
 
 subroutine fctest_check_equal_string(V1,V2,line)
-  character(len=*), intent(in) :: V1, V2
-  integer, intent(in) :: line
+  character(kind=c_char,len=*), intent(in) :: V1, V2
+  integer(c_int32_t), intent(in) :: line
   if(V1/=V2) then
     write(0,'(2A,I0,2A)') trim(source_file),":",line,": warning: ",trim(sweep_leading_blanks(get_source_line(line)))
     write(0,*) "--> [",V1,"!=",V2,"]"
@@ -109,10 +112,10 @@ subroutine fctest_check_equal_string(V1,V2,line)
 end subroutine
 
 subroutine fctest_check_equal_int32_r1(V1,V2,line)
-  integer(c_int), intent(in) :: V1(:), V2(:)
-  integer, intent(in) :: line
+  integer(c_int32_t), intent(in) :: V1(:), V2(:)
+  integer(c_int32_t), intent(in) :: line
   logical :: compare = .True.
-  integer :: j
+  integer(c_int32_t) :: j
   if( size(V1) /= size(V2) ) compare = .False.
   if( compare .eqv. .True. ) then
     do j=1,size(V1)
@@ -129,10 +132,10 @@ subroutine fctest_check_equal_int32_r1(V1,V2,line)
 end subroutine
 
 subroutine fctest_check_equal_int64_r1(V1,V2,line)
-  integer(c_long_long), intent(in) :: V1(:), V2(:)
-  integer, intent(in) :: line
+  integer(c_int64_t), intent(in) :: V1(:), V2(:)
+  integer(c_int32_t), intent(in) :: line
   logical :: compare = .True.
-  integer :: j
+  integer(c_int32_t) :: j
   if( size(V1) /= size(V2) ) compare = .False.
   if( compare .eqv. .True. ) then
     do j=1,size(V1)
@@ -150,9 +153,9 @@ end subroutine
 
 subroutine fctest_check_equal_real32_r1(V1,V2,line)
   real(kind=c_float), intent(in) :: V1(:), V2(:)
-  integer, intent(in) :: line
+  integer(c_int32_t), intent(in) :: line
   logical :: compare
-  integer :: j
+  integer(c_int32_t) :: j
   compare = .True.
   if( size(V1) /= size(V2) ) compare = .False.
   if( compare .eqv. .True. ) then
@@ -171,9 +174,9 @@ end subroutine
 
 subroutine fctest_check_equal_real64_r1(V1,V2,line)
   real(kind=c_double), intent(in) :: V1(:), V2(:)
-  integer, intent(in) :: line
+  integer(c_int32_t), intent(in) :: line
   logical :: compare
-  integer :: j
+  integer(c_int32_t) :: j
   compare = .True.
   if( size(V1) /= size(V2) ) compare = .False.
   if( compare .eqv. .True. ) then
@@ -192,7 +195,7 @@ end subroutine
 
 subroutine fctest_check_close_real32(V1,V2,TOL,line)
   real(kind=c_float), intent(in) :: V1, V2, TOL
-  integer, intent(in) :: line
+  integer(c_int32_t), intent(in) :: line
   if(.not.(abs(V1-V2)<=TOL)) then;
     write(0,'(2A,I0,2A)') trim(source_file),":",line,": warning: ",trim(sweep_leading_blanks(get_source_line(line)))
     write(0,*) "--> [",V1,"!=",V2,"]"
@@ -202,7 +205,7 @@ end subroutine
 
 subroutine fctest_check_close_real64(V1,V2,TOL,line)
   real(kind=c_double), intent(in) :: V1, V2, TOL
-  integer, intent(in) :: line
+  integer(c_int32_t), intent(in) :: line
   if(.not.(abs(V1-V2)<=TOL)) then;
     write(0,'(2A,I0,2A)') trim(source_file),":",line,": warning: ",trim(sweep_leading_blanks(get_source_line(line)))
     write(0,*) "--> [",V1,"!=",V2,"]"
@@ -213,9 +216,9 @@ end subroutine
 subroutine fctest_check_close_real32_r1(V1,V2,TOL,line)
   real(kind=c_float), intent(in) :: V1(:), V2(:)
   real(kind=c_float), intent(in) :: TOL
-  integer, intent(in) :: line
+  integer(c_int32_t), intent(in) :: line
   logical :: compare
-  integer :: j
+  integer(c_int32_t) :: j
   compare = .True.
   if( size(V1) /= size(V2) ) compare = .False.
   if( compare .eqv. .True. ) then
@@ -235,9 +238,9 @@ end subroutine
 subroutine fctest_check_close_real64_r1(V1,V2,TOL,line)
   real(kind=c_double), intent(in) :: V1(:), V2(:)
   real(kind=c_double), intent(in) :: TOL
-  integer, intent(in) :: line
+  integer(c_int32_t), intent(in) :: line
   logical :: compare
-  integer :: j
+  integer(c_int32_t) :: j
   compare = .True.
   if( size(V1) /= size(V2) ) compare = .False.
   if( compare .eqv. .True. ) then
@@ -255,10 +258,10 @@ subroutine fctest_check_close_real64_r1(V1,V2,TOL,line)
 end subroutine
 
 function get_source_line(line_number) result(source_line)
-  integer, intent(in)  :: line_number
+  integer(c_int32_t), intent(in)  :: line_number
   ! Variables
-  integer stat, jline
-  character(len=512) :: source_line
+  integer(c_int32_t) stat, jline
+  character(kind=c_char,len=512) :: source_line
 
   ! open input file
   open (10, file=source_file, status='old', iostat=stat)

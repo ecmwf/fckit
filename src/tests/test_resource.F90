@@ -19,21 +19,22 @@ END_TESTSUITE_INIT
 ! -----------------------------------------------------------------------------
 
 TEST( test_resource )
+  use, intrinsic :: iso_c_binding
   use fckit_module
 
-  integer(c_int) :: intval
-  integer(c_long_long) :: longval
+  integer(c_int32_t) :: intval
+  integer(c_int64_t) :: longval
   real(c_float) :: floatval
   real(c_double) :: doubleval
   character(len=:), allocatable :: stringval
 
-  call fckit_resource("-integer",0_c_int,intval)
-  FCTEST_CHECK_EQUAL(intval, 10_c_int)
+  call fckit_resource("-integer",0_c_int32_t,intval)
+  FCTEST_CHECK_EQUAL(intval, 10_c_int32_t)
   write(0,*) "integer = ",intval
 
-  call fckit_resource("-long",0_c_long_long,longval)
+  call fckit_resource("-long",0_c_int64_t,longval)
   write(0,*) "long = ",longval
-  FCTEST_CHECK_EQUAL(longval, 5000000000_c_long_long)
+  FCTEST_CHECK_EQUAL(longval, 5000000000_c_int64_t)
 
   call fckit_resource("-float",0._c_float,floatval)
   FCTEST_CHECK_EQUAL(floatval, 0.123456_c_float )

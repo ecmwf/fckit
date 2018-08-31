@@ -77,7 +77,8 @@ CONTAINS
 function fckit_version()
   !! Function that returns the version of fckit
 
-  character(len=8) :: fckit_version
+  use, intrinsic :: iso_c_binding, only : c_char
+  character(kind=c_char,len=8) :: fckit_version
   fckit_version = FCKIT_VERSION
 end function
 
@@ -86,10 +87,11 @@ end function
 function fckit_git_sha1(length) result( sha1 )
   !! Function that returns the git-sha1 of fckit, if compiled from git repository
 
-  character(len=40) :: sha1
-  integer, optional :: length
+  use, intrinsic :: iso_c_binding, only : c_char, c_int32_t
+  character(kind=c_char,len=40) :: sha1
+  integer(c_int32_t), optional :: length
     !! Truncate git sha1 to specified length. Default truncates to 7 chars.
-  integer           :: opt_length
+  integer(c_int32_t)           :: opt_length
   opt_length = 7
   if( present(length) ) opt_length = length
   sha1 = FCKIT_GIT_SHA1

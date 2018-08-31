@@ -13,59 +13,59 @@
 interface
   ! void fckit__log_debug(char *msg, int newl, int flush)
   subroutine fckit__log_debug(msg,newl,flush) bind(c)
-    use, intrinsic :: iso_c_binding , only : c_char, c_int
+    use, intrinsic :: iso_c_binding , only : c_char, c_int32_t
     character(kind=c_char), dimension(*) :: msg
-    integer(c_int), value :: newl
-    integer(c_int), value :: flush
+    integer(c_int32_t), value :: newl
+    integer(c_int32_t), value :: flush
   end subroutine
   ! void fckit__log_info(char *msg, int newl, int flush)
   subroutine fckit__log_info(msg,newl,flush) bind(c)
-    use, intrinsic :: iso_c_binding , only : c_char, c_int
+    use, intrinsic :: iso_c_binding , only : c_char, c_int32_t
     character(kind=c_char), dimension(*) :: msg
-    integer(c_int), value :: newl
-    integer(c_int), value :: flush
+    integer(c_int32_t), value :: newl
+    integer(c_int32_t), value :: flush
   end subroutine
   ! void fckit__log_warning(char *msg, int newl, int flush)
   subroutine fckit__log_warning(msg,newl,flush) bind(c)
-    use, intrinsic :: iso_c_binding , only : c_char, c_int
+    use, intrinsic :: iso_c_binding , only : c_char, c_int32_t
     character(kind=c_char), dimension(*) :: msg
-    integer(c_int), value :: newl
-    integer(c_int), value :: flush
+    integer(c_int32_t), value :: newl
+    integer(c_int32_t), value :: flush
   end subroutine
   ! void fckit__log_error(char *msg, int newl, int flush)
   subroutine fckit__log_error(msg,newl,flush) bind(c)
-    use, intrinsic :: iso_c_binding , only : c_char, c_int
+    use, intrinsic :: iso_c_binding , only : c_char, c_int32_t
     character(kind=c_char), dimension(*) :: msg
-    integer(c_int), value :: newl
-    integer(c_int), value :: flush
+    integer(c_int32_t), value :: newl
+    integer(c_int32_t), value :: flush
   end subroutine
   subroutine fckit__log_add_fortran_unit(unit,style) bind(c)
-    use, intrinsic :: iso_c_binding, only : c_int
-    integer(c_int), value :: unit
-    integer(c_int), value :: style
+    use, intrinsic :: iso_c_binding, only : c_int32_t
+    integer(c_int32_t), value :: unit
+    integer(c_int32_t), value :: style
   end subroutine
   subroutine fckit__log_set_fortran_unit(unit,style) bind(c)
-    use, intrinsic :: iso_c_binding, only : c_int
-    integer(c_int), value :: unit
-    integer(c_int), value :: style
+    use, intrinsic :: iso_c_binding, only : c_int32_t
+    integer(c_int32_t), value :: unit
+    integer(c_int32_t), value :: style
   end subroutine
   subroutine fckit__log_add_file(path,style) bind(c)
-    use, intrinsic :: iso_c_binding , only : c_char, c_int
+    use, intrinsic :: iso_c_binding , only : c_char, c_int32_t
     character(kind=c_char), dimension(*) :: path
-    integer(c_int), value :: style
+    integer(c_int32_t), value :: style
   end subroutine
   subroutine fckit__log_set_file(path,style) bind(c)
-    use, intrinsic :: iso_c_binding , only : c_char, c_int
+    use, intrinsic :: iso_c_binding , only : c_char, c_int32_t
     character(kind=c_char), dimension(*) :: path
-    integer(c_int), value :: style
+    integer(c_int32_t), value :: style
   end subroutine
   subroutine fckit__log_add_stdout(style) bind(c)
-    use, intrinsic :: iso_c_binding , only : c_int
-    integer(c_int), value :: style
+    use, intrinsic :: iso_c_binding , only : c_int32_t
+    integer(c_int32_t), value :: style
   end subroutine
   subroutine fckit__log_set_stdout(style) bind(c)
-    use, intrinsic :: iso_c_binding , only : c_int
-    integer(c_int), value :: style
+    use, intrinsic :: iso_c_binding , only : c_int32_t
+    integer(c_int32_t), value :: style
   end subroutine
   subroutine fckit__log_reset() bind(c)
   end subroutine

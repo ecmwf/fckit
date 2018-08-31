@@ -9,14 +9,18 @@
  */
 
 #include <cstring>
+#include <cstdint>
+
 #include "eckit/log/Channel.h"
 #include "fckit/Log.h"
 using fckit::Log;
 using eckit::Channel;
 
+using int32 = std::int32_t;
+
 extern "C" {
 
-void fckit__log(Channel* channel, char *msg, int newl, int flush)
+void fckit__log(Channel* channel, char *msg, int32 newl, int32 flush)
 {
   if( ::strlen(msg) )
     *channel << msg;
@@ -28,52 +32,52 @@ void fckit__log(Channel* channel, char *msg, int newl, int flush)
     *channel << std::flush;
 }
 
-void fckit__log_debug(char *msg, int newl, int flush)
+void fckit__log_debug(char *msg, int32 newl, int32 flush)
 {
   fckit__log( &Log::debug(), msg, newl, flush );
 }
 
-void fckit__log_info(char *msg, int newl, int flush)
+void fckit__log_info(char *msg, int32 newl, int32 flush)
 {
   fckit__log( &Log::info(), msg, newl, flush );
 }
 
-void fckit__log_warning(char *msg, int newl, int flush)
+void fckit__log_warning(char *msg, int32 newl, int32 flush)
 {
   fckit__log( &Log::warning(), msg, newl, flush );
 }
 
-void fckit__log_error(char *msg, int newl, int flush)
+void fckit__log_error(char *msg, int32 newl, int32 flush)
 {
   fckit__log( &Log::error(), msg, newl, flush );
 }
 
-void fckit__log_add_fortran_unit(int unit, int style)
+void fckit__log_add_fortran_unit(int32 unit, int32 style)
 {
   Log::addFortranUnit(unit,Log::Style(style));
 }
 
-void fckit__log_set_fortran_unit(int unit, int style)
+void fckit__log_set_fortran_unit(int32 unit, int32 style)
 {
   Log::setFortranUnit(unit,Log::Style(style));
 }
 
-void fckit__log_add_file(const char* path, int style)
+void fckit__log_add_file(const char* path, int32 style)
 {
   Log::addFile(path,Log::Style(style));
 }
 
-void fckit__log_set_file(const char* path, int style)
+void fckit__log_set_file(const char* path, int32 style)
 {
   Log::setFile(path,Log::Style(style));
 }
 
-void fckit__log_add_stdout(int style)
+void fckit__log_add_stdout(int32 style)
 {
   Log::addStdOut(Log::Style(style));
 }
 
-void fckit__log_set_stdout(int style)
+void fckit__log_set_stdout(int32 style)
 {
   Log::setStdOut(Log::Style(style));
 }

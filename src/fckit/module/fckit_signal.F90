@@ -98,9 +98,9 @@ contains
 !------------------------------------------------------------------------------
 
 subroutine set_handler( signum, signal_handler )
-  use, intrinsic :: iso_c_binding, only : c_funloc
+  use, intrinsic :: iso_c_binding, only : c_funloc, c_int32_t
 
-  integer :: signum
+  integer(c_int32_t) :: signum
     !! signal code
 
   procedure(fckit_signal_handler), optional :: signal_handler
@@ -124,15 +124,17 @@ end subroutine
 !------------------------------------------------------------------------------
 
 subroutine raise( signum )
-  integer :: signum
-    !! Signal code
-    call fckit__raise_signal(signum)
+  use, intrinsic :: iso_c_binding, only : c_int32_t
+  integer(c_int32_t) :: signum
+  !! Signal code
+  call fckit__raise_signal(signum)
 end subroutine
 
 !------------------------------------------------------------------------------
 
 subroutine restore_handler( signum )
-  integer :: signum
+  use, intrinsic :: iso_c_binding, only : c_int32_t
+  integer(c_int32_t) :: signum
     !! Signal code
   call fckit__restore_signal_handler(signum)
 end subroutine
@@ -146,42 +148,50 @@ end subroutine
 !------------------------------------------------------------------------------
 
 function SIGABRT() result(signum)
-  integer :: signum
+  use, intrinsic :: iso_c_binding, only : c_int32_t
+  integer(c_int32_t) :: signum
   signum = fckit__SIGABRT()
 end function
 
 function SIGINT() result(signum)
-  integer :: signum
+  use, intrinsic :: iso_c_binding, only : c_int32_t
+  integer(c_int32_t) :: signum
   signum = fckit__SIGINT()
 end function
 
 function SIGKILL() result(signum)
-  integer :: signum
+  use, intrinsic :: iso_c_binding, only : c_int32_t
+  integer(c_int32_t) :: signum
   signum = fckit__SIGKILL()
 end function
 
 function SIGALRM() result(signum)
-  integer :: signum
+  use, intrinsic :: iso_c_binding, only : c_int32_t
+  integer(c_int32_t) :: signum
   signum = fckit__SIGALRM()
 end function
 
 function SIGILL() result(signum)
-  integer :: signum
+  use, intrinsic :: iso_c_binding, only : c_int32_t
+  integer(c_int32_t) :: signum
   signum = fckit__SIGILL()
 end function
 
 function SIGSEGV() result(signum)
-  integer :: signum
+  use, intrinsic :: iso_c_binding, only : c_int32_t
+  integer(c_int32_t) :: signum
   signum = fckit__SIGSEGV()
 end function
 
 function SIGTERM() result(signum)
-  integer :: signum
+  use, intrinsic :: iso_c_binding, only : c_int32_t
+  integer(c_int32_t) :: signum
   signum = fckit__SIGTERM()
 end function
 
 function SIGFPE() result(signum)
-  integer :: signum
+  use, intrinsic :: iso_c_binding, only : c_int32_t
+  integer(c_int32_t) :: signum
   signum = fckit__SIGFPE()
 end function
 

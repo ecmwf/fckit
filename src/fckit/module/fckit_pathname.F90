@@ -10,16 +10,19 @@ module fckit_pathname_module
   !! Module holding the [[fckit_pathname_module:fckit_pathname(type)]] type
   !! for strong typing of file paths
 
+use, intrinsic :: iso_c_binding, only : c_char, c_int32_t
+
 implicit none
 
 public :: fckit_pathname
+private :: c_char, c_int32_t
 
 private
 
 
 TYPE :: fckit_pathname
   !! Type encapsulated string, used for strong typing file paths.
-  character(len=1), allocatable, private :: string(:)
+  character(kind=c_char,len=1), allocatable, private :: string(:)
 contains
   procedure :: str => fckit_pathname__str
     !! Function that returns the file path as string
@@ -37,8 +40,8 @@ contains
 
 function fckit_pathname__ctor_str(str) result(pathname)
   type(fckit_pathname) :: pathname
-  character(len=*), intent(in) :: str
-  integer i, nchars
+  character(kind=c_char,len=*), intent(in) :: str
+  integer(c_int32_t) ::  i, nchars
   nchars = len(str)
   allocate( pathname%string(nchars) )
   do i=1,nchars
@@ -47,11 +50,11 @@ function fckit_pathname__ctor_str(str) result(pathname)
 end function
 
 function fckit_pathname__str(this) result(str)
-  character(len=:), allocatable :: str
+  character(kind=c_char,len=:), allocatable :: str
   class(fckit_pathname) :: this
-  integer i, nchars
+  integer(c_int32_t) :: i, nchars
   nchars = size(this%string)
-  allocate(character(len=nchars) :: str)
+  allocate(character(kind=c_char,len=nchars) :: str)
   do i=1,nchars
     str(i:i) = this%string(i)
   enddo

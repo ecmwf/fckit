@@ -9,6 +9,8 @@
  */
 
 #include <csignal>
+#include <cstdint>
+#include <cstring>
 #include <exception>
 #include <iomanip>
 #include "fckit/Main.h"
@@ -22,6 +24,8 @@
 #include "eckit/os/BackTrace.h"
 
 static eckit::Once<eckit::Mutex> local_mutex;
+
+using int32 = std::int32_t;
 
 namespace fckit{
 
@@ -125,7 +129,7 @@ void fckit_terminate() {
 
 
 
-void fckit_signal_handler(int signum) {
+void fckit_signal_handler(int32 signum) {
 
     Signal signal = Signals::instance().signal(signum);
 
@@ -263,39 +267,39 @@ void Main::finalise()
 
 #define SUCCESS 0
 extern "C" {
-  int fckit__exception_what (char* &what, int &what_size) {
+  int32 fckit__exception_what (char* &what, size_t &what_size) {
     what_size = exception_what.size();
     what = new char[what_size+1];
     ::strcpy(what,exception_what.c_str());
     return SUCCESS;
   }
 
-  int fckit__exception_location () {
+  int32 fckit__exception_location () {
     return bool(exception_location);
   }
 
-  int fckit__exception_file (char* &file, int &file_size) {
+  int32 fckit__exception_file (char* &file, size_t &file_size) {
     std::string f = exception_location ? exception_location.file() : "";
     file_size = f.size();
     file = new char[file_size+1];
     ::strcpy(file,f.c_str());
     return SUCCESS;
   }
-  int fckit__exception_function (char* &function, int &function_size) {
+  int32 fckit__exception_function (char* &function, size_t &function_size) {
     std::string f = exception_location ? exception_location.func() : "";
     function_size = f.size();
     function = new char[function_size+1];
     ::strcpy(function,f.c_str());
     return SUCCESS;
   }
-  int fckit__exception_line () {
+  int32 fckit__exception_line () {
     return exception_location ? exception_location.line() : 0;
   }
-  int fckit__exception_callstack (char* &callstack, int &callstack_size) {
+  int32 fckit__exception_callstack (char* &callstack, size_t &callstack_size) {
     std::string f = exception_callstack;
     callstack_size = f.size();
     callstack = new char[callstack_size+1];
-    ::strcpy(callstack,f.c_str());
+    std::strcpy(callstack,f.c_str());
     return SUCCESS;
   }
 }

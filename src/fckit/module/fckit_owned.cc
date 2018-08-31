@@ -7,6 +7,8 @@
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
+
+#include <cstdint>
 #include "fckit/fckit.h"
 
 #if FCKIT_HAVE_ECKIT
@@ -14,7 +16,7 @@
 
 extern "C" {
 
-  int fckit__Owned__owners(const eckit::Owned* owned)
+  std::int32_t fckit__Owned__owners(const eckit::Owned* owned)
   {
     return owned->owners();
   }
@@ -40,7 +42,7 @@ extern "C" {
 #else
 
 extern "C" {
-  int  fckit__Owned__owners(const eckit::Owned* owned) { return 0; }
+  std::int32_t  fckit__Owned__owners(const eckit::Owned* owned) { return 0; }
   void fckit__Owned__attach(const void*) {}
   void fckit__Owned__detach(const void*) {}
   void fckit__delete_Owned(void*) {}

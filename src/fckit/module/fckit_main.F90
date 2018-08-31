@@ -145,11 +145,11 @@ contains
 !------------------------------------------------------------------------------
 
 subroutine initialise()
-  use, intrinsic :: iso_c_binding, only : c_ptr, c_int
+  use, intrinsic :: iso_c_binding, only : c_ptr, c_int32_t
   use fckit_c_interop_module
   integer, save :: argc
   type(c_ptr), save :: argv(15)
-  integer(c_int):: error_code
+  integer(c_int32_t):: error_code
   call get_c_commandline_arguments(argc,argv)
   error_code = fckit__main_init(argc,argv)
 end subroutine
@@ -159,11 +159,11 @@ subroutine finalise()
 end subroutine
 
 function ready()
-  use, intrinsic :: iso_c_binding, only : c_int
+  use, intrinsic :: iso_c_binding, only : c_int32_t
   use fckit_c_interop_module
   logical :: ready
-  integer(c_int) :: ready_int
-  integer:: error_code
+  integer(c_int32_t) :: ready_int
+  integer(c_int32_t) :: error_code
   error_code = fckit__main_ready(ready_int)
   if( ready_int == 0 ) then
     ready = .false.
@@ -173,25 +173,25 @@ function ready()
 end function
 
 function taskID()
-  use, intrinsic :: iso_c_binding, only : c_int
+  use, intrinsic :: iso_c_binding, only : c_int32_t
   use fckit_c_interop_module
-  integer(c_int) :: taskID
-  integer:: error_code
+  integer(c_int32_t) :: taskID
+  integer(c_int32_t) :: error_code
   error_code = fckit__main_taskID(taskID)
 end function
 
 subroutine set_taskID(taskID)
-  use, intrinsic :: iso_c_binding, only : c_int
+  use, intrinsic :: iso_c_binding, only : c_int32_t
   use fckit_c_interop_module
-  integer(c_int), intent(in) :: taskID
-  integer:: error_code
+  integer(c_int32_t), intent(in) :: taskID
+  integer(c_int32_t) :: error_code
   error_code = fckit__main_setTaskID(taskID)
 end subroutine
 
 function debug()
-  use, intrinsic :: iso_c_binding, only : c_int
+  use, intrinsic :: iso_c_binding, only : c_int32_t
   logical :: debug
-  integer(c_int) :: debug_int
+  integer(c_int32_t) :: debug_int
   debug_int = fckit__main_debug()
   debug = .false.
   if( debug_int==1 ) debug = .true.
@@ -200,13 +200,13 @@ end function
 subroutine main_name(name)
   use, intrinsic :: iso_c_binding
   use fckit_c_interop_module
-  character(len=:), allocatable, intent(inout) :: name
+  character(kind=c_char,len=:), allocatable, intent(inout) :: name
     !! Name will be allocated.
   type(c_ptr) :: name_c_ptr
-  integer(c_int) :: name_size
-  integer(c_int) :: error_code
+  integer(c_size_t) :: name_size
+  integer(c_int32_t) :: error_code
   error_code = fckit__main_name(name_c_ptr,name_size)
-  allocate(character(len=name_size) :: name )
+  allocate(character(kind=c_char,len=name_size) :: name )
   name = c_ptr_to_string(name_c_ptr)
   call c_ptr_free(name_c_ptr)
 end subroutine
@@ -214,13 +214,13 @@ end subroutine
 subroutine displayname(name)
   use, intrinsic :: iso_c_binding
   use fckit_c_interop_module
-  character(len=:), allocatable, intent(inout) :: name
+  character(kind=c_char,len=:), allocatable, intent(inout) :: name
     !! Name will be allocated.
   type(c_ptr) :: name_c_ptr
-  integer(c_int) :: name_size
-  integer(c_int) :: error_code
+  integer(c_size_t) :: name_size
+  integer(c_int32_t) :: error_code
   error_code = fckit__main_displayname(name_c_ptr,name_size)
-  allocate(character(len=name_size) :: name )
+  allocate(character(kind=c_char,len=name_size) :: name )
   name = c_ptr_to_string(name_c_ptr)
   call c_ptr_free(name_c_ptr)
 end subroutine
