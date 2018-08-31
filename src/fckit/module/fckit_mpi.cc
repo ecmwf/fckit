@@ -171,6 +171,21 @@ extern "C" {
       eckit::mpi::comm().allReduceInPlace(inout,count,eckit::mpi::Operation::Code(operation));
   }
 
+  void fckit__mpi__allgather_int32(const Comm* comm, const int32* in, int32* out, size_t count)
+  {
+
+    if (count == 1) {
+      
+      recbuff.assign(out,out+Np);
+      
+      if( comm )
+	comm->allGather(*in,out,out+comm->size());
+      else
+	eckit::mpi::comm().allGather(*in,out,out+eckit::mpi::com().size());
+
+    }
+  }
+
   void fckit__mpi__broadcast_int32(const Comm* comm, int32* buffer, size_t count, size_t root)
   {
     if( comm )
