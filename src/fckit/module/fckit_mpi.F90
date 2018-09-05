@@ -80,7 +80,7 @@ type, extends(fckit_object) :: fckit_mpi_comm
   !!```
   !!
   !! The default constructor can be changed with the routine
-  !! [[fckit_mpi_module:fckit_mpi_setCommDefault(subroutine)]]
+  !! [[fckit_mpi_module:fckit_mpi_setCommDefault(interface)]]
 
 contains
   procedure, public :: final => fckit_mpi_comm__final
