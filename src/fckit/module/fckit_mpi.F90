@@ -147,6 +147,10 @@ contains
   procedure, private :: allreduce_inplace_real64_r2
   procedure, private :: allreduce_inplace_real64_r3
   procedure, private :: allreduce_inplace_real64_r4
+  procedure, private :: allgather_int32_r0
+  procedure, private :: allgather_int64_r0
+  procedure, private :: allgatherv_int32_r1
+  procedure, private :: allgatherv_int64_r1
   procedure, private :: broadcast_int32_r0
   procedure, private :: broadcast_int32_r1
   procedure, private :: broadcast_int32_r2
@@ -290,6 +294,13 @@ contains
     & allreduce_inplace_real64_r2 ,&
     & allreduce_inplace_real64_r3 ,&
     & allreduce_inplace_real64_r4
+
+  !> MPI allgather interface for most array and scalar types
+  generic, public :: allgather => &
+    & allgather_int32_r0  ,&
+    & allgather_int64_r0  ,&
+    & allgatherv_int32_r1  ,&
+    & allgatherv_int64_r1
 
   !> MPI broadcast for most array and scalar types
   generic, public :: broadcast => &
@@ -593,6 +604,36 @@ interface
     real(c_double), dimension(*) :: inout
     integer(c_size_t), value :: count
     integer(c_int32_t), value :: operation
+  end subroutine
+
+  subroutine fckit__mpi__allgather_int32(comm,in,out) bind(c)
+    use, intrinsic :: iso_c_binding, only : c_ptr, c_int32_t
+    type(c_ptr), value :: comm
+    integer(c_int32_t) :: in
+    integer(c_int32_t), dimension(*) :: out
+  end subroutine
+
+  subroutine fckit__mpi__allgather_int64(comm,in,out) bind(c)
+    use, intrinsic :: iso_c_binding, only : c_ptr, c_int64_t
+    type(c_ptr), value :: comm
+    integer(c_int64_t) :: in
+    integer(c_int64_t), dimension(*) :: out
+  end subroutine
+
+  subroutine fckit__mpi__allgatherv_int32(comm,in,out,sendcount,recvcounts,displs) bind(c)
+    use, intrinsic :: iso_c_binding, only : c_ptr, c_int32_t, c_size_t
+    type(c_ptr), value :: comm
+    integer(c_int32_t), dimension(*) :: in, out
+    integer(c_size_t), value :: sendcount
+    integer(c_int32_t), dimension(*) :: recvcounts, displs
+  end subroutine
+
+  subroutine fckit__mpi__allgatherv_int64(comm,in,out,sendcount,recvcounts,displs) bind(c)
+    use, intrinsic :: iso_c_binding, only : c_ptr, c_int32_t, c_int64_t, c_size_t
+    type(c_ptr), value :: comm
+    integer(c_int64_t), dimension(*) :: in, out
+    integer(c_size_t), value :: sendcount
+    integer(c_int32_t), dimension(*) :: recvcounts, displs
   end subroutine
 
   subroutine fckit__mpi__broadcast_int32(comm,buffer,count,root) bind(c)
@@ -1486,6 +1527,63 @@ subroutine allreduce_inplace_real64_r4(this,inout,operation)
   real(c_double), pointer :: view_inout(:)
   view_inout => array_view1d(inout)
   call fckit__mpi__allreduce_inplace_real64(this%c_ptr(),view_inout,int(ubound(view_inout,1),c_size_t),operation)
+end subroutine
+
+!---------------------------------------------------------------------------------------
+subroutine allgather_int32_r0(this,in,out)
+  use, intrinsic :: iso_c_binding, only : c_int32_t
+  use fckit_array_module, only: array_view1d
+  class(fckit_mpi_comm), intent(in) :: this
+  integer(c_int32_t), intent(in) :: in
+  integer(c_int32_t), intent(inout) :: out(:)
+  integer(c_int32_t), pointer :: view_out(:)
+  view_out => array_view1d(out)
+  call fckit__mpi__allgather_int32(this%c_ptr(),in,view_out)
+end subroutine
+
+subroutine allgather_int64_r0(this,in,out)
+  use, intrinsic :: iso_c_binding, only : c_int64_t
+  use fckit_array_module, only: array_view1d
+  class(fckit_mpi_comm), intent(in) :: this
+  integer(c_int64_t), intent(in) :: in
+  integer(c_int64_t), intent(inout) :: out(:)
+  integer(c_int64_t), pointer :: view_out(:)
+  view_out => array_view1d(out)
+  call fckit__mpi__allgather_int64(this%c_ptr(),in,view_out)
+end subroutine
+
+subroutine allgatherv_int32_r1(this,in,out,sendcount,recvcounts,displs)
+  use, intrinsic :: iso_c_binding, only : c_int32_t, c_size_t
+  use fckit_array_module, only: array_view1d
+  class(fckit_mpi_comm), intent(in) :: this
+  integer(c_int32_t), intent(in) :: in(:)
+  integer(c_int32_t), intent(inout) :: out(:)
+  integer(c_int32_t), value :: sendcount
+  integer(c_int32_t), intent(in) :: recvcounts(:), displs(:)
+  integer(c_int32_t), pointer :: view_in(:), view_out(:)
+  integer(c_int32_t), pointer :: view_rc(:), view_dp(:)
+  view_in => array_view1d(in)
+  view_out => array_view1d(out)
+  view_rc => array_view1d(recvcounts)
+  view_dp => array_view1d(displs)  
+  call fckit__mpi__allgatherv_int32(this%c_ptr(),view_in,view_out,int(sendcount,c_size_t),view_rc,view_dp)
+end subroutine
+
+subroutine allgatherv_int64_r1(this,in,out,sendcount,recvcounts,displs)
+  use, intrinsic :: iso_c_binding, only : c_int32_t, c_int64_t, c_size_t
+  use fckit_array_module, only: array_view1d
+  class(fckit_mpi_comm), intent(in) :: this
+  integer(c_int64_t), intent(in) :: in(:)
+  integer(c_int64_t), intent(inout) :: out(:)
+  integer(c_int32_t), value :: sendcount
+  integer(c_int32_t), intent(in) :: recvcounts(:), displs(:)
+  integer(c_int64_t), pointer :: view_in(:), view_out(:)
+  integer(c_int32_t), pointer :: view_rc(:), view_dp(:)
+  view_in => array_view1d(in)
+  view_out => array_view1d(out)
+  view_rc => array_view1d(recvcounts)
+  view_dp => array_view1d(displs)  
+  call fckit__mpi__allgatherv_int64(this%c_ptr(),view_in,view_out,int(sendcount,c_size_t),view_rc,view_dp)
 end subroutine
 
 !---------------------------------------------------------------------------------------

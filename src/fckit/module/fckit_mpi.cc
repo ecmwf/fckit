@@ -174,24 +174,42 @@ extern "C" {
   void fckit__mpi__allgather_int32(const Comm* comm, const int32* in, int32* out)
   {
 
-    recbuff.assign(out,out+Np);
-      
     if( comm )
       comm->allGather(*in,out,out+comm->size());
     else
-      eckit::mpi::comm().allGather(*in,out,out+eckit::mpi::com().size());
+      eckit::mpi::comm().allGather(*in,out,out+eckit::mpi::comm().size());
 
   }
 
-  void fckit__mpi__allgatherv_int32(const Comm* comm, const int32* in, int32* out, size_t count)
+  void fckit__mpi__allgather_int64(const Comm* comm, const int64* in, int64* out)
   {
 
-    recbuff.assign(out,out+Np);
-      
     if( comm )
       comm->allGather(*in,out,out+comm->size());
     else
-      eckit::mpi::comm().allGather(*in,out,out+eckit::mpi::com().size());
+      eckit::mpi::comm().allGather(*in,out,out+eckit::mpi::comm().size());
+
+  }
+
+  void fckit__mpi__allgatherv_int32(const Comm* comm, const int32* in, int32* out, size_t sendcount,
+				    int32 *recvcounts, int32 *displs)
+  {
+
+    if( comm )
+      comm->allGatherv(in,in+sendcount,out,recvcounts,displs);
+    else
+      eckit::mpi::comm().allGatherv(in,in+sendcount,out,recvcounts,displs);
+
+  }
+
+  void fckit__mpi__allgatherv_int64(const Comm* comm, const int64* in, int64* out, size_t sendcount,
+				    int32 *recvcounts, int32 *displs)
+  {
+
+    if( comm )
+      comm->allGatherv(in,in+sendcount,out,recvcounts,displs);
+    else
+      eckit::mpi::comm().allGatherv(in,in+sendcount,out,recvcounts,displs);
 
   }
 
