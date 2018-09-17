@@ -149,6 +149,8 @@ contains
   procedure, private :: allreduce_inplace_real64_r4
   procedure, private :: allgather_int32_r0
   procedure, private :: allgather_int64_r0
+  procedure, private :: allgather_int32_r1
+  procedure, private :: allgather_int64_r1
   procedure, private :: allgatherv_int32_r1
   procedure, private :: allgatherv_int64_r1
   procedure, private :: broadcast_int32_r0
@@ -299,6 +301,8 @@ contains
   generic, public :: allgather => &
     & allgather_int32_r0  ,&
     & allgather_int64_r0  ,&
+    & allgather_int32_r1  ,&
+    & allgather_int64_r1  ,&
     & allgatherv_int32_r1  ,&
     & allgatherv_int64_r1
 
@@ -1550,6 +1554,54 @@ subroutine allgather_int64_r0(this,in,out)
   integer(c_int64_t), pointer :: view_out(:)
   view_out => array_view1d(out)
   call fckit__mpi__allgather_int64(this%c_ptr(),in,view_out)
+end subroutine
+
+subroutine allgather_int32_r1(this,in,out,sendcount)
+  use, intrinsic :: iso_c_binding, only : c_int32_t, c_size_t
+  use fckit_array_module, only: array_view1d
+  class(fckit_mpi_comm), intent(in) :: this
+  integer(c_int32_t), intent(in) :: in(:)
+  integer(c_int32_t), intent(inout) :: out(:)
+  integer(c_int32_t), intent(in) :: sendcount
+  integer(c_int32_t) :: p
+  integer(c_int32_t), allocatable:: recvcounts(:), displs(:)
+  integer(c_int32_t), pointer :: view_in(:), view_out(:)
+  integer(c_int32_t), pointer :: view_rc(:), view_dp(:)
+  allocate(recvcounts(this%size()),displs(this%size()))
+  recvcounts(:) = sendcount
+  do p=1,this%size()
+     displs(p) = (p-1)*sendcount
+  enddo
+  view_in => array_view1d(in)
+  view_out => array_view1d(out)
+  view_rc => array_view1d(recvcounts)
+  view_dp => array_view1d(displs)  
+  call fckit__mpi__allgatherv_int32(this%c_ptr(),view_in,view_out,int(sendcount,c_size_t),view_rc,view_dp)
+  deallocate(recvcounts,displs)
+end subroutine
+
+subroutine allgather_int64_r1(this,in,out,sendcount)
+  use, intrinsic :: iso_c_binding, only : c_int32_t, c_int64_t, c_size_t
+  use fckit_array_module, only: array_view1d
+  class(fckit_mpi_comm), intent(in) :: this
+  integer(c_int64_t), intent(in) :: in(:)
+  integer(c_int64_t), intent(inout) :: out(:)
+  integer(c_int32_t), intent(in) :: sendcount
+  integer(c_int32_t) :: p
+  integer(c_int32_t), allocatable:: recvcounts(:), displs(:)
+  integer(c_int64_t), pointer :: view_in(:), view_out(:)
+  integer(c_int32_t), pointer :: view_rc(:), view_dp(:)
+  allocate(recvcounts(this%size()),displs(this%size()))
+  recvcounts(:) = sendcount
+  do p=1,this%size()
+     displs(p) = (p-1)*sendcount
+  enddo
+  view_in => array_view1d(in)
+  view_out => array_view1d(out)
+  view_rc => array_view1d(recvcounts)
+  view_dp => array_view1d(displs)  
+  call fckit__mpi__allgatherv_int64(this%c_ptr(),view_in,view_out,int(sendcount,c_size_t),view_rc,view_dp)
+  deallocate(recvcounts,displs)
 end subroutine
 
 subroutine allgatherv_int32_r1(this,in,out,sendcount,recvcounts,displs)

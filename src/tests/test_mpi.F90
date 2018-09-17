@@ -99,8 +99,7 @@ TEST( test_allreduce )
 
   FCKIT_SUPPRESS_UNUSED( real64_r1 )
   FCKIT_SUPPRESS_UNUSED( res_real64_r1 )
-  FCKIT_SUPPRESS_UNUSED( res_int32_r3 )
-  FCKIT_SUPPRESS_UNUSED( int32_r3 )
+  FCKIT_SUPPRESS_UNUSED( res_int32_r3 ) 
   FCKIT_SUPPRESS_UNUSED( res_real32_r2 )
   FCKIT_SUPPRESS_UNUSED( real32_r2 )
 
@@ -245,6 +244,97 @@ TEST( test_allreduce_inplace )
   FCTEST_CHECK_EQUAL(int64_r4(2,3,1,2),int(1,c_long))
   FCTEST_CHECK_EQUAL(int64_r4(3,1,2,1),int(comm%size(),c_long))
   FCTEST_CHECK_EQUAL(int64_r4(1,1,1,1),int(2,c_long))
+
+END_TEST
+
+TEST( test_allgather )
+  use fckit_module
+  use, intrinsic ::iso_c_binding
+  implicit none
+  type(fckit_mpi_comm) :: comm
+  real(c_double)  :: real64, real64_r1(2)    
+  real(c_double), allocatable :: res_real64(:), res_real64_r1(:)
+  real(c_float)   :: real32, real32_r1(2)
+  real(c_float), allocatable :: res_real32(:), res_real32_r1(:)
+  integer(c_int32_t) :: int32,  int32_r1(2), j
+  integer(c_int32_t), allocatable :: res_int32(:),  res_int32_r1(:)
+  integer(c_int32_t), allocatable :: int32v_r1(:),  res_int32v_r1(:)
+  integer(c_long) :: int64,  int64_r1(2)
+  integer(c_long), allocatable :: res_int64(:),  res_int64_r1(:)
+  integer(c_long), allocatable :: int64v_r1(:),  res_int64v_r1(:)
+  integer, allocatable :: recvcounts(:), displs(:)
+  
+  FCKIT_SUPPRESS_UNUSED( real32 )
+  FCKIT_SUPPRESS_UNUSED( res_real32 )
+  FCKIT_SUPPRESS_UNUSED( real64 )
+  FCKIT_SUPPRESS_UNUSED( res_real64 )
+  FCKIT_SUPPRESS_UNUSED( real32_r1 )
+  FCKIT_SUPPRESS_UNUSED( res_real32_r1 )
+  FCKIT_SUPPRESS_UNUSED( real64_r1 )
+  FCKIT_SUPPRESS_UNUSED( res_real64_r1 )
+  
+  write(0,*) "test_allgather"
+  comm = fckit_mpi_comm("world")
+
+  int32 = 2
+  allocate(res_int32(comm%size()))
+  call comm%allgather(int32,res_int32)
+  FCTEST_CHECK_EQUAL(minval(res_int32),int32)
+  FCTEST_CHECK_EQUAL(maxval(res_int32),int32)
+  deallocate(res_int32)
+
+  int64 = 3
+  allocate(res_int64(comm%size()))
+  call comm%allgather(int64,res_int64)
+  FCTEST_CHECK_EQUAL(minval(res_int64),int64)
+  FCTEST_CHECK_EQUAL(maxval(res_int64),int64)
+  deallocate(res_int64)
+
+  int32_r1 = (/ 2,3 /)
+  allocate(res_int32_r1(size(int32_r1)*comm%size()))
+  call comm%allgather(int32_r1,res_int32_r1,size(int32_r1))
+  FCTEST_CHECK_EQUAL(minval(res_int32_r1),minval(int32_r1))
+  FCTEST_CHECK_EQUAL(maxval(res_int32_r1),maxval(int32_r1))
+  deallocate(res_int32_r1)
+
+  int64_r1 = (/ 4,5 /)
+  allocate(res_int64_r1(size(int64_r1)*comm%size()))
+  call comm%allgather(int64_r1,res_int64_r1,size(int64_r1))
+  FCTEST_CHECK_EQUAL(minval(res_int64_r1),minval(int64_r1))
+  FCTEST_CHECK_EQUAL(maxval(res_int64_r1),maxval(int64_r1))
+  deallocate(res_int64_r1)
+
+  allocate(recvcounts(comm%size()),displs(comm%size()))
+  
+  allocate(int32v_r1(comm%rank()+1))
+  int32v_r1 = comm%rank()
+  recvcounts(1) = 1
+  displs(1) = 0
+  do j = 2,comm%size()
+     recvcounts(j) = j
+     displs(j) = displs(j-1)+recvcounts(j-1)
+  enddo
+  allocate(res_int32v_r1(sum(recvcounts)))
+  call comm%allgather(int32v_r1,res_int32v_r1,size(int32v_r1),recvcounts,displs)
+  FCTEST_CHECK_EQUAL(minval(res_int32v_r1),0)
+  FCTEST_CHECK_EQUAL(maxval(res_int32v_r1),comm%size()-1)
+  deallocate(int32v_r1,res_int32v_r1)
+  
+  allocate(int64v_r1(comm%size()-comm%rank()))
+  int64v_r1 = comm%rank()
+  recvcounts(1) = comm%size()
+  displs(1) = 0
+  do j = 2,comm%size()
+     recvcounts(j) = comm%size() - j + 1
+     displs(j) = displs(j-1)+recvcounts(j-1)
+  enddo
+  allocate(res_int64v_r1(sum(recvcounts)))
+  call comm%allgather(int64v_r1,res_int64v_r1,size(int64v_r1),recvcounts,displs)
+  FCTEST_CHECK_EQUAL(int(minval(res_int64v_r1)),0)
+  FCTEST_CHECK_EQUAL(int(maxval(res_int64v_r1)),comm%size()-1)
+  deallocate(int64v_r1,res_int64v_r1)
+  
+  deallocate(recvcounts,displs)
 
 END_TEST
 
