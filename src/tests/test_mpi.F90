@@ -254,8 +254,10 @@ TEST( test_allgather )
   type(fckit_mpi_comm) :: comm
   real(c_double)  :: real64, real64_r1(2)    
   real(c_double), allocatable :: res_real64(:), res_real64_r1(:)
+  real(c_double), allocatable :: real64v_r1(:), res_real64v_r1(:)
   real(c_float)   :: real32, real32_r1(2)
   real(c_float), allocatable :: res_real32(:), res_real32_r1(:)
+  real(c_float), allocatable :: real32v_r1(:), res_real32v_r1(:)
   integer(c_int32_t) :: int32,  int32_r1(2), j
   integer(c_int32_t), allocatable :: res_int32(:),  res_int32_r1(:)
   integer(c_int32_t), allocatable :: int32v_r1(:),  res_int32v_r1(:)
@@ -263,15 +265,6 @@ TEST( test_allgather )
   integer(c_long), allocatable :: res_int64(:),  res_int64_r1(:)
   integer(c_long), allocatable :: int64v_r1(:),  res_int64v_r1(:)
   integer, allocatable :: recvcounts(:), displs(:)
-  
-  FCKIT_SUPPRESS_UNUSED( real32 )
-  FCKIT_SUPPRESS_UNUSED( res_real32 )
-  FCKIT_SUPPRESS_UNUSED( real64 )
-  FCKIT_SUPPRESS_UNUSED( res_real64 )
-  FCKIT_SUPPRESS_UNUSED( real32_r1 )
-  FCKIT_SUPPRESS_UNUSED( res_real32_r1 )
-  FCKIT_SUPPRESS_UNUSED( real64_r1 )
-  FCKIT_SUPPRESS_UNUSED( res_real64_r1 )
   
   write(0,*) "test_allgather"
   comm = fckit_mpi_comm("world")
@@ -290,6 +283,20 @@ TEST( test_allgather )
   FCTEST_CHECK_EQUAL(maxval(res_int64),int64)
   deallocate(res_int64)
 
+  real32 = 4
+  allocate(res_real32(comm%size()))
+  call comm%allgather(real32,res_real32)
+  FCTEST_CHECK_EQUAL(minval(res_real32),real32)
+  FCTEST_CHECK_EQUAL(maxval(res_real32),real32)
+  deallocate(res_real32)
+
+  real64 = 5
+  allocate(res_real64(comm%size()))
+  call comm%allgather(real64,res_real64)
+  FCTEST_CHECK_EQUAL(minval(res_real64),real64)
+  FCTEST_CHECK_EQUAL(maxval(res_real64),real64)
+  deallocate(res_real64)
+
   int32_r1 = (/ 2,3 /)
   allocate(res_int32_r1(size(int32_r1)*comm%size()))
   call comm%allgather(int32_r1,res_int32_r1,size(int32_r1))
@@ -303,6 +310,20 @@ TEST( test_allgather )
   FCTEST_CHECK_EQUAL(minval(res_int64_r1),minval(int64_r1))
   FCTEST_CHECK_EQUAL(maxval(res_int64_r1),maxval(int64_r1))
   deallocate(res_int64_r1)
+
+  real32_r1 = (/ 6,7 /)
+  allocate(res_real32_r1(size(real32_r1)*comm%size()))
+  call comm%allgather(real32_r1,res_real32_r1,size(real32_r1))
+  FCTEST_CHECK_EQUAL(minval(res_real32_r1),minval(real32_r1))
+  FCTEST_CHECK_EQUAL(maxval(res_real32_r1),maxval(real32_r1))
+  deallocate(res_real32_r1)
+
+  real64_r1 = (/ 8,9 /)
+  allocate(res_real64_r1(size(real64_r1)*comm%size()))
+  call comm%allgather(real64_r1,res_real64_r1,size(real64_r1))
+  FCTEST_CHECK_EQUAL(minval(res_real64_r1),minval(real64_r1))
+  FCTEST_CHECK_EQUAL(maxval(res_real64_r1),maxval(real64_r1))
+  deallocate(res_real64_r1)
 
   allocate(recvcounts(comm%size()),displs(comm%size()))
   
@@ -333,6 +354,34 @@ TEST( test_allgather )
   FCTEST_CHECK_EQUAL(int(minval(res_int64v_r1)),0)
   FCTEST_CHECK_EQUAL(int(maxval(res_int64v_r1)),comm%size()-1)
   deallocate(int64v_r1,res_int64v_r1)
+
+  allocate(real32v_r1(comm%rank()+1))
+  real32v_r1 = comm%rank()
+  recvcounts(1) = 1
+  displs(1) = 0
+  do j = 2,comm%size()
+     recvcounts(j) = j
+     displs(j) = displs(j-1)+recvcounts(j-1)
+  enddo
+  allocate(res_real32v_r1(sum(recvcounts)))
+  call comm%allgather(real32v_r1,res_real32v_r1,size(real32v_r1),recvcounts,displs)
+  FCTEST_CHECK_EQUAL(minval(res_real32v_r1),real(0,c_float))
+  FCTEST_CHECK_EQUAL(maxval(res_real32v_r1),real(comm%size()-1,c_float))
+  deallocate(real32v_r1,res_real32v_r1)
+  
+  allocate(real64v_r1(comm%size()-comm%rank()))
+  real64v_r1 = comm%rank()
+  recvcounts(1) = comm%size()
+  displs(1) = 0
+  do j = 2,comm%size()
+     recvcounts(j) = comm%size() - j + 1
+     displs(j) = displs(j-1)+recvcounts(j-1)
+  enddo
+  allocate(res_real64v_r1(sum(recvcounts)))
+  call comm%allgather(real64v_r1,res_real64v_r1,size(real64v_r1),recvcounts,displs)
+  FCTEST_CHECK_EQUAL(minval(res_real64v_r1),real(0,c_double))
+  FCTEST_CHECK_EQUAL(maxval(res_real64v_r1),real(comm%size()-1,c_double))
+  deallocate(real64v_r1,res_real64v_r1)
   
   deallocate(recvcounts,displs)
 

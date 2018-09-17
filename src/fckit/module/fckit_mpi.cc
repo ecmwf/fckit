@@ -191,26 +191,60 @@ extern "C" {
 
   }
 
+  void fckit__mpi__allgather_real32(const Comm* comm, const float* in, float* out)
+  {
+
+    if( comm )
+      comm->allGather(*in,out,out+comm->size());
+    else
+      eckit::mpi::comm().allGather(*in,out,out+eckit::mpi::comm().size());
+
+  }
+
+  void fckit__mpi__allgather_real64(const Comm* comm, const double* in, double* out)
+  {
+
+    if( comm )
+      comm->allGather(*in,out,out+comm->size());
+    else
+      eckit::mpi::comm().allGather(*in,out,out+eckit::mpi::comm().size());
+
+  }
+
   void fckit__mpi__allgatherv_int32(const Comm* comm, const int32* in, int32* out, size_t sendcount,
 				    int32 *recvcounts, int32 *displs)
   {
-
     if( comm )
       comm->allGatherv(in,in+sendcount,out,recvcounts,displs);
     else
       eckit::mpi::comm().allGatherv(in,in+sendcount,out,recvcounts,displs);
-
   }
 
   void fckit__mpi__allgatherv_int64(const Comm* comm, const int64* in, int64* out, size_t sendcount,
 				    int32 *recvcounts, int32 *displs)
   {
-
     if( comm )
       comm->allGatherv(in,in+sendcount,out,recvcounts,displs);
     else
       eckit::mpi::comm().allGatherv(in,in+sendcount,out,recvcounts,displs);
+  }
 
+  void fckit__mpi__allgatherv_real32(const Comm* comm, const float* in, float* out, size_t sendcount,
+				    int32 *recvcounts, int32 *displs)
+  {
+    if( comm )
+      comm->allGatherv(in,in+sendcount,out,recvcounts,displs);
+    else
+      eckit::mpi::comm().allGatherv(in,in+sendcount,out,recvcounts,displs);
+  }
+
+  void fckit__mpi__allgatherv_real64(const Comm* comm, const double* in, double* out, size_t sendcount,
+				    int32 *recvcounts, int32 *displs)
+  {
+    if( comm )
+      comm->allGatherv(in,in+sendcount,out,recvcounts,displs);
+    else
+      eckit::mpi::comm().allGatherv(in,in+sendcount,out,recvcounts,displs);
   }
 
   void fckit__mpi__broadcast_int32(const Comm* comm, int32* buffer, size_t count, size_t root)
