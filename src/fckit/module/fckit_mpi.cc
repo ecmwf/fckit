@@ -455,6 +455,24 @@ extern "C" {
       return eckit::mpi::comm().iReceive(buffer,count,source,tag).request();
   }
 
+  void fckit__mpi__alltoallv_real32(const Comm* comm, const float*  in, int32* scounts, int32* sdispl,
+				                            float* out, int32* rcounts, int32* rdispl)
+  {
+    if( comm )
+      comm->allToAllv(in, scounts, sdispl, out, rcounts, rdispl);
+    else
+      eckit::mpi::comm().allToAllv(in, scounts, sdispl, out, rcounts, rdispl);
+  }
+
+  void fckit__mpi__alltoallv_real64(const Comm* comm, const double*  in, int32* scounts, int32* sdispl,
+				                            double* out, int32* rcounts, int32* rdispl)
+  {
+    if( comm )
+      comm->allToAllv(in, scounts, sdispl, out, rcounts, rdispl);
+    else
+      eckit::mpi::comm().allToAllv(in, scounts, sdispl, out, rcounts, rdispl);
+  }
+
   void fckit__mpi__wait(const Comm* comm, int32 request, int32* status) {
     eckit::mpi::Status _status;
     eckit::mpi::Request req(request);

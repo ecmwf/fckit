@@ -283,6 +283,8 @@ contains
   procedure, private :: ireceive_real64_r2
   procedure, private :: ireceive_real64_r3
   procedure, private :: ireceive_real64_r4
+  procedure, private :: alltoallv_real32_r1
+  procedure, private :: alltoallv_real64_r1
 
   !> MPI allreduce interface for most array and scalar types
   generic, public :: allreduce => &
@@ -483,6 +485,11 @@ contains
     & ireceive_real64_r2 ,&
     & ireceive_real64_r3 ,&
     & ireceive_real64_r4
+
+  !> MPI allgather interface for most array and scalar types
+  generic, public :: alltoallv => &
+    & alltoallv_real32_r1  ,&
+    & alltoallv_real64_r1
 
   !> MPI wait for this communicator
   procedure, public :: wait
@@ -937,6 +944,22 @@ interface
     integer(c_int32_t), value :: source
     integer(c_int32_t), value :: tag
   end function
+
+  subroutine fckit__mpi__alltoallv_real32(comm,in,scounts,sdispl,out,rcounts,rdispl) bind(c)
+    use, intrinsic :: iso_c_binding, only : c_ptr, c_int32_t, c_float
+    type(c_ptr), value :: comm
+    real(c_float), dimension(*) :: in, out
+    integer(c_int32_t), dimension(*) :: scounts, sdispl
+    integer(c_int32_t), dimension(*) :: rcounts, rdispl
+  end subroutine
+
+  subroutine fckit__mpi__alltoallv_real64(comm,in,scounts,sdispl,out,rcounts,rdispl) bind(c)
+    use, intrinsic :: iso_c_binding, only : c_ptr, c_int32_t, c_double
+    type(c_ptr), value :: comm
+    real(c_double), dimension(*) :: in, out
+    integer(c_int32_t), dimension(*) :: scounts, sdispl
+    integer(c_int32_t), dimension(*) :: rcounts, rdispl
+  end subroutine
 
   subroutine fckit__mpi__wait(comm,request,status) bind(c)
     use, intrinsic :: iso_c_binding, only : c_ptr, c_int32_t
@@ -3866,6 +3889,48 @@ function ireceive_real64_r4(this,buffer,source,tag) result(request)
   view_buffer  => array_view1d(buffer)
   request = fckit__mpi__ireceive_real64(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),source,tag_opt)
 end function
+!---------------------------------------------------------------------------------------
+
+subroutine alltoallv_real32_r1(this,in,scounts,sdispl,out,rcounts,rdispl)
+  use, intrinsic :: iso_c_binding, only : c_int32_t, c_float
+  use fckit_array_module, only: array_view1d
+  class(fckit_mpi_comm), intent(in) :: this
+  real(c_float), intent(in) :: in(:)
+  integer(c_int32_t), intent(in) :: scounts(:), sdispl(:)
+  real(c_float), intent(inout) :: out(:)
+  integer(c_int32_t), intent(in) :: rcounts(:), rdispl(:)
+  real(c_float), pointer :: view_in(:), view_out(:)
+  integer(c_int32_t), pointer :: view_sc(:), view_sd(:)
+  integer(c_int32_t), pointer :: view_rc(:), view_rd(:)
+  view_in => array_view1d(in)
+  view_out => array_view1d(out)
+  view_sc => array_view1d(scounts)
+  view_sd => array_view1d(sdispl)  
+  view_rc => array_view1d(rcounts)
+  view_rd => array_view1d(rdispl)  
+  call fckit__mpi__alltoallv_real32(this%c_ptr(),view_in,view_sc,view_sd,view_out,view_rc,view_rd)
+end subroutine
+
+subroutine alltoallv_real64_r1(this,in,scounts,sdispl,out,rcounts,rdispl)
+  use, intrinsic :: iso_c_binding, only : c_int32_t, c_double
+  use fckit_array_module, only: array_view1d
+  class(fckit_mpi_comm), intent(in) :: this
+  real(c_double), intent(in) :: in(:)
+  integer(c_int32_t), intent(in) :: scounts(:), sdispl(:)
+  real(c_double), intent(inout) :: out(:)
+  integer(c_int32_t), intent(in) :: rcounts(:), rdispl(:)
+  real(c_double), pointer :: view_in(:), view_out(:)
+  integer(c_int32_t), pointer :: view_sc(:), view_sd(:)
+  integer(c_int32_t), pointer :: view_rc(:), view_rd(:)
+  view_in => array_view1d(in)
+  view_out => array_view1d(out)
+  view_sc => array_view1d(scounts)
+  view_sd => array_view1d(sdispl)  
+  view_rc => array_view1d(rcounts)
+  view_rd => array_view1d(rdispl)  
+  call fckit__mpi__alltoallv_real64(this%c_ptr(),view_in,view_sc,view_sd,view_out,view_rc,view_rd)
+end subroutine
+
 !---------------------------------------------------------------------------------------
 
 subroutine wait(this,request,status)
