@@ -223,6 +223,8 @@ contains
   procedure, private :: send_real64_r2
   procedure, private :: send_real64_r3
   procedure, private :: send_real64_r4
+  procedure, private :: send_logical_r0
+  procedure, private :: send_logical_r1
   procedure, private :: receive_int32_r0
   procedure, private :: receive_int32_r1
   procedure, private :: receive_int32_r2
@@ -243,6 +245,8 @@ contains
   procedure, private :: receive_real64_r2
   procedure, private :: receive_real64_r3
   procedure, private :: receive_real64_r4
+  procedure, private :: receive_logical_r0
+  procedure, private :: receive_logical_r1
   procedure, private :: isend_int32_r0
   procedure, private :: isend_int32_r1
   procedure, private :: isend_int32_r2
@@ -415,7 +419,9 @@ contains
     & send_real64_r1 ,&
     & send_real64_r2 ,&
     & send_real64_r3 ,&
-    & send_real64_r4
+    & send_real64_r4 , &
+    & send_logical_r0, &
+    & send_logical_r1
 
   !> MPI receive for most array and scalar types
   generic, public :: receive => &
@@ -438,7 +444,9 @@ contains
     & receive_real64_r1 ,&
     & receive_real64_r2 ,&
     & receive_real64_r3 ,&
-    & receive_real64_r4
+    & receive_real64_r4 ,&
+    & receive_logical_r0,&
+    & receive_logical_r1
 
   !> MPI asynchronous send for most array and scalar types
   generic, public :: isend => &
@@ -2824,6 +2832,47 @@ subroutine send_real64_r4(this,buffer,dest,tag)
   call fckit__mpi__send_real64(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),dest,tag)
 end subroutine
 
+subroutine send_logical_r0(this,buffer,dest,tag)
+  use, intrinsic :: iso_c_binding, only : c_int32_t, c_size_t
+  use fckit_array_module, only: array_view1d
+  class(fckit_mpi_comm), intent(in) :: this
+  logical, intent(in) :: buffer
+  integer(c_int32_t), intent(in) :: dest
+  integer(c_int32_t), intent(in) :: tag
+  integer(c_int32_t) :: ibuffer
+  integer(c_int32_t), pointer :: view_buffer(:)
+  if (buffer) then
+     ibuffer = 1
+  else
+     ibuffer = 0
+  endif
+  view_buffer  => array_view1d(ibuffer)
+  call fckit__mpi__send_int32(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),dest,tag)
+end subroutine
+
+subroutine send_logical_r1(this,buffer,dest,tag)
+  use, intrinsic :: iso_c_binding, only : c_int32_t, c_size_t
+  use fckit_array_module, only: array_view1d
+  class(fckit_mpi_comm), intent(in) :: this
+  logical, intent(in) :: buffer(1:)
+  integer(c_int32_t), intent(in) :: dest
+  integer(c_int32_t), intent(in) :: tag
+  integer(c_int32_t), allocatable :: ibuffer(:)
+  integer(c_int32_t), pointer :: view_buffer(:)
+  integer :: j
+  allocate(ibuffer(ubound(buffer,1)))
+  do j=1,ubound(buffer,1)
+     if (buffer(j)) then
+        ibuffer(j) = 1
+     else
+        ibuffer(j) = 0
+     endif
+  enddo
+  view_buffer  => array_view1d(ibuffer)
+  call fckit__mpi__send_int32(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),dest,tag)
+  deallocate(ibuffer)
+end subroutine
+
 !---------------------------------------------------------------------------------------
 
 subroutine receive_int32_r0(this,buffer,source,tag,status)
@@ -3243,6 +3292,64 @@ subroutine receive_real64_r4(this,buffer,source,tag,status)
   endif
   view_buffer  => array_view1d(buffer)
   call fckit__mpi__receive_real64(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),source,tag_opt,status_out%status)
+  if( present(status) ) status = status_out
+end subroutine
+
+subroutine receive_logical_r0(this,buffer,source,tag,status)
+  use, intrinsic :: iso_c_binding, only : c_int32_t, c_size_t
+  use fckit_array_module, only: array_view1d
+  class(fckit_mpi_comm), intent(in) :: this
+  logical, intent(out) :: buffer
+  integer(c_int32_t), intent(in) :: source
+  integer(c_int32_t), intent(in), optional :: tag
+  integer(c_int32_t) :: tag_opt
+  type(fckit_mpi_status), optional, intent(out) :: status
+  type(fckit_mpi_status) :: status_out
+  integer(c_int32_t) :: ibuffer
+  integer(c_int32_t), pointer :: view_buffer(:)
+  if( present(tag) ) then
+    tag_opt = tag
+  else
+    tag_opt = fckit__mpi__anytag(this%c_ptr())
+  endif
+  view_buffer  => array_view1d(ibuffer)
+  call fckit__mpi__receive_int32(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),source,tag_opt,status_out%status)
+  if (ibuffer == 0) then
+     buffer = .false.
+  else
+     buffer = .true.
+  endif
+  if( present(status) ) status = status_out
+end subroutine
+
+subroutine receive_logical_r1(this,buffer,source,tag,status)
+  use, intrinsic :: iso_c_binding, only : c_int32_t, c_size_t
+  use fckit_array_module, only: array_view1d
+  class(fckit_mpi_comm), intent(in) :: this
+  logical, intent(inout) :: buffer(1:)
+  integer(c_int32_t), intent(in) :: source
+  integer(c_int32_t), intent(in), optional :: tag
+  integer(c_int32_t) :: tag_opt
+  type(fckit_mpi_status), optional, intent(out) :: status
+  type(fckit_mpi_status) :: status_out
+  integer(c_int32_t), allocatable :: ibuffer(:)
+  integer(c_int32_t), pointer :: view_buffer(:)
+  integer :: j
+  if( present(tag) ) then
+    tag_opt = tag
+  else
+    tag_opt = fckit__mpi__anytag(this%c_ptr())
+  endif
+  allocate(ibuffer(ubound(buffer,1)))
+  view_buffer  => array_view1d(ibuffer)
+  call fckit__mpi__receive_int32(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),source,tag_opt,status_out%status)
+  do j=1,ubound(buffer,1)
+     if (ibuffer(j) == 0) then
+        buffer(j) = .false.
+     else
+        buffer(j) = .true.
+     endif
+  enddo
   if( present(status) ) status = status_out
 end subroutine
 
