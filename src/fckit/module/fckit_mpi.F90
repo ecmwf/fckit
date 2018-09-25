@@ -2728,7 +2728,7 @@ subroutine send_real32_r1(this,buffer,dest,tag)
   use, intrinsic :: iso_c_binding, only : c_int32_t, c_float, c_size_t
   use fckit_array_module, only: array_view1d
   class(fckit_mpi_comm), intent(in) :: this
-  real(c_float), intent(inout) :: buffer(:)
+  real(c_float), intent(in) :: buffer(:)
   integer(c_int32_t), intent(in) :: dest
   integer(c_int32_t), intent(in) :: tag
   real(c_float), pointer :: view_buffer(:)
@@ -2788,7 +2788,7 @@ subroutine send_real64_r1(this,buffer,dest,tag)
   use, intrinsic :: iso_c_binding, only : c_int32_t, c_double, c_size_t
   use fckit_array_module, only: array_view1d
   class(fckit_mpi_comm), intent(in) :: this
-  real(c_double), intent(inout) :: buffer(:)
+  real(c_double), intent(in) :: buffer(:)
   integer(c_int32_t), intent(in) :: dest
   integer(c_int32_t), intent(in) :: tag
   real(c_double), pointer :: view_buffer(:)
