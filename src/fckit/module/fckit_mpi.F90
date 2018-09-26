@@ -2596,7 +2596,7 @@ subroutine send_int32_r0(this,buffer,dest,tag)
   use, intrinsic :: iso_c_binding, only : c_int32_t, c_size_t
   use fckit_array_module, only: array_view1d
   class(fckit_mpi_comm), intent(in) :: this
-  integer(c_int32_t), intent(inout) :: buffer
+  integer(c_int32_t), intent(in) :: buffer
   integer(c_int32_t), intent(in) :: dest
   integer(c_int32_t), intent(in) :: tag
   integer(c_int32_t), pointer :: view_buffer(:)
@@ -2608,7 +2608,7 @@ subroutine send_int32_r1(this,buffer,dest,tag)
   use, intrinsic :: iso_c_binding, only : c_int32_t, c_size_t
   use fckit_array_module, only: array_view1d
   class(fckit_mpi_comm), intent(in) :: this
-  integer(c_int32_t), intent(inout) :: buffer(:)
+  integer(c_int32_t), intent(in) :: buffer(:)
   integer(c_int32_t), intent(in) :: dest
   integer(c_int32_t), intent(in) :: tag
   integer(c_int32_t), pointer :: view_buffer(:)
@@ -2656,7 +2656,7 @@ subroutine send_int64_r0(this,buffer,dest,tag)
   use, intrinsic :: iso_c_binding, only : c_int32_t, c_int64_t, c_size_t
   use fckit_array_module, only: array_view1d
   class(fckit_mpi_comm), intent(in) :: this
-  integer(c_int64_t), intent(inout) :: buffer
+  integer(c_int64_t), intent(in) :: buffer
   integer(c_int32_t), intent(in) :: dest
   integer(c_int32_t), intent(in) :: tag
   integer(c_int64_t), pointer :: view_buffer(:)
@@ -2668,7 +2668,7 @@ subroutine send_int64_r1(this,buffer,dest,tag)
   use, intrinsic :: iso_c_binding, only : c_int32_t, c_int64_t, c_size_t
   use fckit_array_module, only: array_view1d
   class(fckit_mpi_comm), intent(in) :: this
-  integer(c_int64_t), intent(inout) :: buffer(:)
+  integer(c_int64_t), intent(in) :: buffer(:)
   integer(c_int32_t), intent(in) :: dest
   integer(c_int32_t), intent(in) :: tag
   integer(c_int64_t), pointer :: view_buffer(:)
