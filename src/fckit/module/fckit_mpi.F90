@@ -203,6 +203,9 @@ contains
   procedure, private :: broadcast_real64_r2
   procedure, private :: broadcast_real64_r3
   procedure, private :: broadcast_real64_r4
+  procedure, private :: broadcast_logical_r0
+  procedure, private :: broadcast_logical_r1
+  procedure, private :: broadcast_string
   procedure, private :: send_int32_r0
   procedure, private :: send_int32_r1
   procedure, private :: send_int32_r2
@@ -393,7 +396,10 @@ contains
     & broadcast_real64_r1 ,&
     & broadcast_real64_r2 ,&
     & broadcast_real64_r3 ,&
-    & broadcast_real64_r4
+    & broadcast_real64_r4 ,&
+    & broadcast_logical_r0, &
+    & broadcast_logical_r1, &
+    & broadcast_string
 
   !> MPI broadcast file to buffer
   procedure, public :: broadcast_file
@@ -773,6 +779,14 @@ interface
     use, intrinsic :: iso_c_binding, only : c_ptr, c_double, c_size_t
     type(c_ptr), value :: comm
     real(c_double), dimension(*) :: buffer
+    integer(c_size_t), value :: count
+    integer(c_size_t), value :: root
+  end subroutine
+
+  subroutine fckit__mpi__broadcast_string(comm,buffer,count,root) bind(c)
+    use, intrinsic :: iso_c_binding, only : c_ptr, c_char, c_size_t
+    type(c_ptr), value :: comm
+    character(kind=c_char,len=1), dimension(*) :: buffer
     integer(c_size_t), value :: count
     integer(c_size_t), value :: root
   end subroutine
@@ -2577,6 +2591,77 @@ subroutine broadcast_real64_r4(this,buffer,root)
   call fckit__mpi__broadcast_real64(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),int(root,c_size_t))
 end subroutine
 
+subroutine broadcast_logical_r0(this,buffer,root)
+  use, intrinsic :: iso_c_binding, only : c_int32_t, c_size_t
+  use fckit_array_module, only: array_view1d
+  class(fckit_mpi_comm), intent(in) :: this
+  logical, intent(inout) :: buffer
+  integer(c_int32_t), intent(in) :: root
+  integer(c_int32_t), pointer :: view_buffer(:)
+  integer(c_int32_t) :: ibuffer
+  if (buffer) then
+     ibuffer = 1
+  else
+     ibuffer = 0
+  endif
+  view_buffer  => array_view1d(ibuffer)
+  call fckit__mpi__broadcast_int32(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),int(root,c_size_t))
+  if (ibuffer == 0) then
+     buffer = .false.
+  else
+     buffer = .true.
+  endif
+end subroutine
+
+subroutine broadcast_logical_r1(this,buffer,root)
+  use, intrinsic :: iso_c_binding, only : c_int32_t, c_size_t
+  use fckit_array_module, only: array_view1d
+  class(fckit_mpi_comm), intent(in) :: this
+  logical, intent(inout) :: buffer(1:)
+  integer(c_int32_t), intent(in) :: root
+  integer(c_int32_t), pointer :: view_buffer(:)
+  integer(c_int32_t), allocatable :: ibuffer(:)
+  integer :: j
+  allocate(ibuffer(ubound(buffer,1)))
+  do j=1,ubound(buffer,1)
+     if (buffer(j)) then
+        ibuffer(j) = 1
+     else
+        ibuffer(j) = 0
+     endif
+  enddo
+  view_buffer  => array_view1d(ibuffer)
+  call fckit__mpi__broadcast_int32(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),int(root,c_size_t))
+  do j=1,ubound(buffer,1)
+     if (ibuffer(j) == 0) then
+        buffer(j) = .false.
+     else
+        buffer(j) = .true.
+     endif
+  enddo
+  deallocate(ibuffer)
+end subroutine
+
+subroutine broadcast_string(this,buffer,root)
+  use, intrinsic :: iso_c_binding, only : c_int32_t, c_size_t, c_char, c_null_char
+  use fckit_array_module, only: array_view1d
+  class(fckit_mpi_comm), intent(in) :: this
+  character(len=*),intent(inout) :: buffer
+  integer(c_int32_t), intent(in) :: root
+  character(kind=c_char,len=1),allocatable :: c_string(:)
+  integer :: j
+  allocate(c_string(len_trim(buffer)+1))
+  do j=1,len(c_string)-1
+     c_string(j) = buffer(j:j)
+  enddo
+  c_string(len_trim(buffer)+1) = c_null_char
+  call fckit__mpi__broadcast_string(this%c_ptr(),c_string,int(len(c_string),c_size_t),int(root,c_size_t))
+  do j=1,len(c_string)-1
+     buffer(j:j) = c_string(j)
+  enddo
+  deallocate(c_string)
+end subroutine
+
 !---------------------------------------------------------------------------------------
 
 function broadcast_file(this,path,root) result(buffer)
@@ -3350,6 +3435,7 @@ subroutine receive_logical_r1(this,buffer,source,tag,status)
         buffer(j) = .true.
      endif
   enddo
+  deallocate(ibuffer)
   if( present(status) ) status = status_out
 end subroutine
 
