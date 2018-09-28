@@ -284,9 +284,9 @@ extern "C" {
   void fckit__mpi__broadcast_string(const Comm* comm, char* buffer, size_t count, size_t root)
   {
     if( comm )
-      comm->broadcast(buffer,count,root);
+      comm->broadcast(buffer,buffer+count,root);
     else
-      eckit::mpi::comm().broadcast(buffer,count,root);
+      eckit::mpi::comm().broadcast(buffer,buffer+count,root);
   }
 
   static eckit::CountedBuffer* extract_buffer( const eckit::SharedBuffer& cb ) {

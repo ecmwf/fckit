@@ -2650,13 +2650,16 @@ subroutine broadcast_string(this,buffer,root)
   integer(c_int32_t), intent(in) :: root
   character(kind=c_char,len=1),allocatable :: c_string(:)
   integer :: j
-  allocate(c_string(len_trim(buffer)+1))
-  do j=1,len(c_string)-1
-     c_string(j) = buffer(j:j)
-  enddo
-  c_string(len_trim(buffer)+1) = c_null_char
-  call fckit__mpi__broadcast_string(this%c_ptr(),c_string,int(len(c_string),c_size_t),int(root,c_size_t))
-  do j=1,len(c_string)-1
+  allocate(c_string(len(buffer)+1))   
+  if (this%rank() == root) then
+     c_string(:)=''
+     do j=1,len_trim(buffer)
+        c_string(j) = buffer(j:j)
+     enddo
+     c_string(len(buffer)+1) = c_null_char
+  endif
+  call fckit__mpi__broadcast_string(this%c_ptr(),c_string,int(len(buffer)+1,c_size_t),int(root,c_size_t))
+  do j=1,len(buffer)
      buffer(j:j) = c_string(j)
   enddo
   deallocate(c_string)
