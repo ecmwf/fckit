@@ -205,6 +205,8 @@ contains
   procedure, private :: broadcast_real64_r4
   procedure, private :: broadcast_logical_r0
   procedure, private :: broadcast_logical_r1
+  procedure, private :: broadcast_logical_r2
+  procedure, private :: broadcast_logical_r3
   procedure, private :: broadcast_string
   procedure, private :: send_int32_r0
   procedure, private :: send_int32_r1
@@ -399,6 +401,8 @@ contains
     & broadcast_real64_r4 ,&
     & broadcast_logical_r0, &
     & broadcast_logical_r1, &
+    & broadcast_logical_r2, &
+    & broadcast_logical_r3, &
     & broadcast_string
 
   !> MPI broadcast file to buffer
@@ -2638,6 +2642,76 @@ subroutine broadcast_logical_r1(this,buffer,root)
      else
         buffer(j) = .true.
      endif
+  enddo
+  deallocate(ibuffer)
+end subroutine
+
+subroutine broadcast_logical_r2(this,buffer,root)
+  use, intrinsic :: iso_c_binding, only : c_int32_t, c_size_t
+  use fckit_array_module, only: array_view1d
+  class(fckit_mpi_comm), intent(in) :: this
+  logical, intent(inout) :: buffer(1:,1:)
+  integer(c_int32_t), intent(in) :: root
+  integer(c_int32_t), pointer :: view_buffer(:)
+  integer(c_int32_t), allocatable :: ibuffer(:,:)
+  integer :: i,j
+  allocate(ibuffer(ubound(buffer,1),ubound(buffer,2)))
+  do i=1,ubound(buffer,1)
+     do j=1,ubound(buffer,2)
+        if (buffer(i,j)) then
+           ibuffer(i,j) = 1
+        else
+           ibuffer(i,j) = 0
+        endif
+     enddo
+  enddo
+  view_buffer  => array_view1d(ibuffer)
+  call fckit__mpi__broadcast_int32(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),int(root,c_size_t))
+  do i=1,ubound(buffer,1)
+     do j=1,ubound(buffer,2)
+        if (ibuffer(i,j) == 0) then
+           buffer(i,j) = .false.
+        else
+           buffer(i,j) = .true.
+        endif
+     enddo
+  enddo
+  deallocate(ibuffer)
+end subroutine
+
+subroutine broadcast_logical_r3(this,buffer,root)
+  use, intrinsic :: iso_c_binding, only : c_int32_t, c_size_t
+  use fckit_array_module, only: array_view1d
+  class(fckit_mpi_comm), intent(in) :: this
+  logical, intent(inout) :: buffer(1:,1:,1:)
+  integer(c_int32_t), intent(in) :: root
+  integer(c_int32_t), pointer :: view_buffer(:)
+  integer(c_int32_t), allocatable :: ibuffer(:,:,:)
+  integer :: i,j,k
+  allocate(ibuffer(ubound(buffer,1),ubound(buffer,2),ubound(buffer,3)))
+  do i=1,ubound(buffer,1)
+     do j=1,ubound(buffer,2)
+        do k=1,ubound(buffer,3)
+           if (buffer(i,j,k)) then
+              ibuffer(i,j,k) = 1
+           else
+              ibuffer(i,j,k) = 0
+           endif
+        enddo
+     enddo
+  enddo
+  view_buffer  => array_view1d(ibuffer)
+  call fckit__mpi__broadcast_int32(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),int(root,c_size_t))
+  do i=1,ubound(buffer,1)
+     do j=1,ubound(buffer,2)
+        do k=1,ubound(buffer,3)
+           if (ibuffer(i,j,k) == 0) then
+              buffer(i,j,k) = .false.
+           else
+              buffer(i,j,k) = .true.
+           endif
+        enddo
+     enddo
   enddo
   deallocate(ibuffer)
 end subroutine
