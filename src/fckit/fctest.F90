@@ -16,6 +16,8 @@ public
   integer(c_int32_t) :: exit_status
   interface FCE
     module procedure fctest_check_equal_int32
+    module procedure fctest_check_equal_int64_int32
+    module procedure fctest_check_equal_int32_int64
     module procedure fctest_check_equal_int64
     module procedure fctest_check_equal_real32
     module procedure fctest_check_equal_real64
@@ -73,6 +75,28 @@ end subroutine
 
 subroutine fctest_check_equal_int64(V1,V2,line)
   integer(c_int64_t), intent(in) :: V1, V2
+  integer(c_int32_t), intent(in) :: line
+  if(V1/=V2) then
+    write(0,'(2A,I0,2A)') trim(source_file),":",line,": warning: ",trim(sweep_leading_blanks(get_source_line(line)))
+    write(0,*) "--> [",V1,"!=",V2,"]"
+    exit_status=1
+  endif
+end subroutine
+
+subroutine fctest_check_equal_int64_int32(V1,V2,line)
+  integer(c_int64_t), intent(in) :: V1
+  integer(c_int32_t), intent(in) :: V2
+  integer(c_int32_t), intent(in) :: line
+  if(V1/=V2) then
+    write(0,'(2A,I0,2A)') trim(source_file),":",line,": warning: ",trim(sweep_leading_blanks(get_source_line(line)))
+    write(0,*) "--> [",V1,"!=",V2,"]"
+    exit_status=1
+  endif
+end subroutine
+
+subroutine fctest_check_equal_int32_int64(V1,V2,line)
+  integer(c_int32_t), intent(in) :: V1
+  integer(c_int64_t), intent(in) :: V2
   integer(c_int32_t), intent(in) :: line
   if(V1/=V2) then
     write(0,'(2A,I0,2A)') trim(source_file),":",line,": warning: ",trim(sweep_leading_blanks(get_source_line(line)))
