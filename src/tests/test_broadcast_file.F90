@@ -11,7 +11,7 @@
 #if (defined(__GFORTRAN__) && __GNUC__ == 7 )
 #define COMPILER_BUGS 1
 #endif
-#if (defined(__GFORTRAN__) && __GNUC__ == 8 && __GNUC_MINOR__ <=1 )
+#if (defined(__GFORTRAN__) && __GNUC__ == 8 && __GNUC_MINOR__ <=2 )
 #define COMPILER_BUGS 1
 #endif
 #ifndef COMPILER_BUGS
