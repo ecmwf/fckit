@@ -919,7 +919,7 @@ end function
 subroutine delete(this)
   use fckit_c_interop_module
   class(fckit_mpi_comm), intent(inout) :: this
-!   call c_ptr_free(this%c_ptr())
+!   call c_ptr_free(this%CPTR_PGIBUG_A)
   FCKIT_SUPPRESS_UNUSED( this )
 end subroutine
 
@@ -945,7 +945,7 @@ function communicator(this)
   use, intrinsic :: iso_c_binding, only : c_int32_t
   integer(c_int32_t) :: communicator
   class(fckit_mpi_comm), intent(in) :: this
-  communicator = fckit__mpi__comm_communicator(this%c_ptr())
+  communicator = fckit__mpi__comm_communicator(this%CPTR_PGIBUG_A)
 end function
 
 !---------------------------------------------------------------------------------------
@@ -954,7 +954,7 @@ function rank(this)
   use, intrinsic :: iso_c_binding, only : c_int32_t
   integer(c_int32_t) :: rank
   class(fckit_mpi_comm), intent(in) :: this
-  rank = fckit__mpi__rank(this%c_ptr())
+  rank = fckit__mpi__rank(this%CPTR_PGIBUG_A)
 end function
 
 !---------------------------------------------------------------------------------------
@@ -963,7 +963,7 @@ function size(this)
   use, intrinsic :: iso_c_binding, only : c_int32_t
   integer(c_int32_t) :: size
   class(fckit_mpi_comm), intent(in) :: this
-  size = fckit__mpi__size(this%c_ptr())
+  size = fckit__mpi__size(this%CPTR_PGIBUG_A)
 end function
 
 !---------------------------------------------------------------------------------------
@@ -972,7 +972,7 @@ function anytag(this)
   use, intrinsic :: iso_c_binding, only : c_int32_t
   integer(c_int32_t) :: anytag
   class(fckit_mpi_comm), intent(in) :: this
-  anytag = fckit__mpi__anytag(this%c_ptr())
+  anytag = fckit__mpi__anytag(this%CPTR_PGIBUG_A)
 end function
 
 !---------------------------------------------------------------------------------------
@@ -981,14 +981,14 @@ function anysource(this)
   use, intrinsic :: iso_c_binding, only : c_int32_t
   integer(c_int32_t) :: anysource
   class(fckit_mpi_comm), intent(in) :: this
-  anysource = fckit__mpi__anysource(this%c_ptr())
+  anysource = fckit__mpi__anysource(this%CPTR_PGIBUG_A)
 end function
 
 !---------------------------------------------------------------------------------------
 
 subroutine barrier(this)
   class(fckit_mpi_comm), intent(in) :: this
-  call fckit__mpi__barrier(this%c_ptr())
+  call fckit__mpi__barrier(this%CPTR_PGIBUG_A)
 end subroutine
 
 !---------------------------------------------------------------------------------------
@@ -998,9 +998,9 @@ subroutine abort(this,error_code)
   class(fckit_mpi_comm), intent(in) :: this
   integer(c_int32_t), intent(in), optional :: error_code
   if( present(error_code) ) then
-    call fckit__mpi__abort(this%c_ptr(),error_code)
+    call fckit__mpi__abort(this%CPTR_PGIBUG_A,error_code)
   else
-    call fckit__mpi__abort(this%c_ptr(),-1)
+    call fckit__mpi__abort(this%CPTR_PGIBUG_A,-1)
   endif
 end subroutine
 
@@ -1016,7 +1016,7 @@ subroutine allreduce_int32_r0(this,in,out,operation)
   integer(c_int32_t), pointer :: view_in(:), view_out(:)
   view_in  => array_view1d(in)
   view_out => array_view1d(out)
-  call fckit__mpi__allreduce_int32(this%c_ptr(),view_in,view_out,1_c_size_t,operation)
+  call fckit__mpi__allreduce_int32(this%CPTR_PGIBUG_A,view_in,view_out,1_c_size_t,operation)
 end subroutine
 
 subroutine allreduce_int32_r1(this,in,out,operation)
@@ -1029,7 +1029,8 @@ subroutine allreduce_int32_r1(this,in,out,operation)
   integer(c_int32_t), pointer :: view_in(:), view_out(:)
   view_in  => array_view1d(in)
   view_out => array_view1d(out)
-  call fckit__mpi__allreduce_int32(this%c_ptr(),view_in,view_out,int(ubound(view_in,1),c_size_t),operation)
+  call fckit__mpi__allreduce_int32(this%CPTR_PGIBUG_A,view_in,view_out, &
+    int(ubound(view_in,1),c_size_t),operation)
 end subroutine
 
 subroutine allreduce_int32_r2(this,in,out,operation)
@@ -1042,7 +1043,8 @@ subroutine allreduce_int32_r2(this,in,out,operation)
   integer(c_int32_t), pointer :: view_in(:), view_out(:)
   view_in  => array_view1d(in)
   view_out => array_view1d(out)
-  call fckit__mpi__allreduce_int32(this%c_ptr(),view_in,view_out,int(ubound(view_in,1),c_size_t),operation)
+  call fckit__mpi__allreduce_int32(this%CPTR_PGIBUG_A,view_in,view_out, &
+    int(ubound(view_in,1),c_size_t),operation)
 end subroutine
 
 subroutine allreduce_int32_r3(this,in,out,operation)
@@ -1055,7 +1057,8 @@ subroutine allreduce_int32_r3(this,in,out,operation)
   integer(c_int32_t), pointer :: view_in(:), view_out(:)
   view_in  => array_view1d(in)
   view_out => array_view1d(out)
-  call fckit__mpi__allreduce_int32(this%c_ptr(),view_in,view_out,int(ubound(view_in,1),c_size_t),operation)
+  call fckit__mpi__allreduce_int32(this%CPTR_PGIBUG_A,view_in,view_out, &
+    int(ubound(view_in,1),c_size_t),operation)
 end subroutine
 
 subroutine allreduce_int32_r4(this,in,out,operation)
@@ -1068,7 +1071,8 @@ subroutine allreduce_int32_r4(this,in,out,operation)
   integer(c_int32_t), pointer :: view_in(:), view_out(:)
   view_in  => array_view1d(in)
   view_out => array_view1d(out)
-  call fckit__mpi__allreduce_int32(this%c_ptr(),view_in,view_out,int(ubound(view_in,1),c_size_t),operation)
+  call fckit__mpi__allreduce_int32(this%CPTR_PGIBUG_A,view_in,view_out, &
+    int(ubound(view_in,1),c_size_t),operation)
 end subroutine
 
 subroutine allreduce_int64_r0(this,in,out,operation)
@@ -1081,7 +1085,7 @@ subroutine allreduce_int64_r0(this,in,out,operation)
   integer(c_int64_t), pointer :: view_in(:), view_out(:)
   view_in  => array_view1d(in)
   view_out => array_view1d(out)
-  call fckit__mpi__allreduce_int64(this%c_ptr(),view_in,view_out,1_c_size_t,operation)
+  call fckit__mpi__allreduce_int64(this%CPTR_PGIBUG_A,view_in,view_out,1_c_size_t,operation)
 end subroutine
 
 subroutine allreduce_int64_r1(this,in,out,operation)
@@ -1094,7 +1098,8 @@ subroutine allreduce_int64_r1(this,in,out,operation)
   integer(c_int64_t), pointer :: view_in(:), view_out(:)
   view_in  => array_view1d(in)
   view_out => array_view1d(out)
-  call fckit__mpi__allreduce_int64(this%c_ptr(),view_in,view_out,int(ubound(view_in,1),c_size_t),operation)
+  call fckit__mpi__allreduce_int64(this%CPTR_PGIBUG_A,view_in,view_out, &
+    int(ubound(view_in,1),c_size_t),operation)
 end subroutine
 
 subroutine allreduce_int64_r2(this,in,out,operation)
@@ -1107,7 +1112,8 @@ subroutine allreduce_int64_r2(this,in,out,operation)
   integer(c_int64_t), pointer :: view_in(:), view_out(:)
   view_in  => array_view1d(in)
   view_out => array_view1d(out)
-  call fckit__mpi__allreduce_int64(this%c_ptr(),view_in,view_out,int(ubound(view_in,1),c_size_t),operation)
+  call fckit__mpi__allreduce_int64(this%CPTR_PGIBUG_A,view_in,view_out, &
+    int(ubound(view_in,1),c_size_t),operation)
 end subroutine
 
 subroutine allreduce_int64_r3(this,in,out,operation)
@@ -1120,7 +1126,8 @@ subroutine allreduce_int64_r3(this,in,out,operation)
   integer(c_int64_t), pointer :: view_in(:), view_out(:)
   view_in  => array_view1d(in)
   view_out => array_view1d(out)
-  call fckit__mpi__allreduce_int64(this%c_ptr(),view_in,view_out,int(ubound(view_in,1),c_size_t),operation)
+  call fckit__mpi__allreduce_int64(this%CPTR_PGIBUG_A,view_in,view_out, &
+    int(ubound(view_in,1),c_size_t),operation)
 end subroutine
 
 subroutine allreduce_int64_r4(this,in,out,operation)
@@ -1133,7 +1140,8 @@ subroutine allreduce_int64_r4(this,in,out,operation)
   integer(c_int64_t), pointer :: view_in(:), view_out(:)
   view_in  => array_view1d(in)
   view_out => array_view1d(out)
-  call fckit__mpi__allreduce_int64(this%c_ptr(),view_in,view_out,int(ubound(view_in,1),c_size_t),operation)
+  call fckit__mpi__allreduce_int64(this%CPTR_PGIBUG_A,view_in,view_out, &
+    int(ubound(view_in,1),c_size_t),operation)
 end subroutine
 
 subroutine allreduce_real32_r0(this,in,out,operation)
@@ -1146,7 +1154,7 @@ subroutine allreduce_real32_r0(this,in,out,operation)
   real(c_float), pointer :: view_in(:), view_out(:)
   view_in  => array_view1d(in)
   view_out => array_view1d(out)
-  call fckit__mpi__allreduce_real32(this%c_ptr(),view_in,view_out,1_c_size_t,operation)
+  call fckit__mpi__allreduce_real32(this%CPTR_PGIBUG_A,view_in,view_out,1_c_size_t,operation)
 end subroutine
 
 subroutine allreduce_real32_r1(this,in,out,operation)
@@ -1159,7 +1167,8 @@ subroutine allreduce_real32_r1(this,in,out,operation)
   real(c_float), pointer :: view_in(:), view_out(:)
   view_in  => array_view1d(in)
   view_out => array_view1d(out)
-  call fckit__mpi__allreduce_real32(this%c_ptr(),view_in,view_out,int(ubound(view_in,1),c_size_t),operation)
+  call fckit__mpi__allreduce_real32(this%CPTR_PGIBUG_A,view_in,view_out, &
+    int(ubound(view_in,1),c_size_t),operation)
 end subroutine
 
 subroutine allreduce_real32_r2(this,in,out,operation)
@@ -1172,7 +1181,8 @@ subroutine allreduce_real32_r2(this,in,out,operation)
   real(c_float), pointer :: view_in(:), view_out(:)
   view_in  => array_view1d(in)
   view_out => array_view1d(out)
-  call fckit__mpi__allreduce_real32(this%c_ptr(),view_in,view_out,int(ubound(view_in,1),c_size_t),operation)
+  call fckit__mpi__allreduce_real32(this%CPTR_PGIBUG_A,view_in,view_out, &
+    int(ubound(view_in,1),c_size_t),operation)
 end subroutine
 
 subroutine allreduce_real32_r3(this,in,out,operation)
@@ -1185,7 +1195,8 @@ subroutine allreduce_real32_r3(this,in,out,operation)
   real(c_float), pointer :: view_in(:), view_out(:)
   view_in  => array_view1d(in)
   view_out => array_view1d(out)
-  call fckit__mpi__allreduce_real32(this%c_ptr(),view_in,view_out,int(ubound(view_in,1),c_size_t),operation)
+  call fckit__mpi__allreduce_real32(this%CPTR_PGIBUG_A,view_in,view_out, &
+    int(ubound(view_in,1),c_size_t),operation)
 end subroutine
 
 subroutine allreduce_real32_r4(this,in,out,operation)
@@ -1198,7 +1209,8 @@ subroutine allreduce_real32_r4(this,in,out,operation)
   real(c_float), pointer :: view_in(:), view_out(:)
   view_in  => array_view1d(in)
   view_out => array_view1d(out)
-  call fckit__mpi__allreduce_real32(this%c_ptr(),view_in,view_out,int(ubound(view_in,1),c_size_t),operation)
+  call fckit__mpi__allreduce_real32(this%CPTR_PGIBUG_A,view_in,view_out, &
+    int(ubound(view_in,1),c_size_t),operation)
 end subroutine
 
 subroutine allreduce_real64_r0(this,in,out,operation)
@@ -1211,7 +1223,7 @@ subroutine allreduce_real64_r0(this,in,out,operation)
   real(c_double), pointer :: view_in(:), view_out(:)
   view_in  => array_view1d(in)
   view_out => array_view1d(out)
-  call fckit__mpi__allreduce_real64(this%c_ptr(),view_in,view_out,1_c_size_t,operation)
+  call fckit__mpi__allreduce_real64(this%CPTR_PGIBUG_A,view_in,view_out,1_c_size_t,operation)
 end subroutine
 
 subroutine allreduce_real64_r1(this,in,out,operation)
@@ -1224,7 +1236,8 @@ subroutine allreduce_real64_r1(this,in,out,operation)
   real(c_double), pointer :: view_in(:), view_out(:)
   view_in  => array_view1d(in)
   view_out => array_view1d(out)
-  call fckit__mpi__allreduce_real64(this%c_ptr(),view_in,view_out,int(ubound(view_in,1),c_size_t),operation)
+  call fckit__mpi__allreduce_real64(this%CPTR_PGIBUG_A,view_in,view_out, &
+    int(ubound(view_in,1),c_size_t),operation)
 end subroutine
 
 subroutine allreduce_real64_r2(this,in,out,operation)
@@ -1237,7 +1250,8 @@ subroutine allreduce_real64_r2(this,in,out,operation)
   real(c_double), pointer :: view_in(:), view_out(:)
   view_in  => array_view1d(in)
   view_out => array_view1d(out)
-  call fckit__mpi__allreduce_real64(this%c_ptr(),view_in,view_out,int(ubound(view_in,1),c_size_t),operation)
+  call fckit__mpi__allreduce_real64(this%CPTR_PGIBUG_A,view_in,view_out, &
+    int(ubound(view_in,1),c_size_t),operation)
 end subroutine
 
 subroutine allreduce_real64_r3(this,in,out,operation)
@@ -1250,7 +1264,8 @@ subroutine allreduce_real64_r3(this,in,out,operation)
   real(c_double), pointer :: view_in(:), view_out(:)
   view_in  => array_view1d(in)
   view_out => array_view1d(out)
-  call fckit__mpi__allreduce_real64(this%c_ptr(),view_in,view_out,int(ubound(view_in,1),c_size_t),operation)
+  call fckit__mpi__allreduce_real64(this%CPTR_PGIBUG_A,view_in,view_out, &
+    int(ubound(view_in,1),c_size_t),operation)
 end subroutine
 
 subroutine allreduce_real64_r4(this,in,out,operation)
@@ -1263,7 +1278,8 @@ subroutine allreduce_real64_r4(this,in,out,operation)
   real(c_double), pointer :: view_in(:), view_out(:)
   view_in  => array_view1d(in)
   view_out => array_view1d(out)
-  call fckit__mpi__allreduce_real64(this%c_ptr(),view_in,view_out,int(ubound(view_in,1),c_size_t),operation)
+  call fckit__mpi__allreduce_real64(this%CPTR_PGIBUG_A,view_in,view_out, &
+    int(ubound(view_in,1),c_size_t),operation)
 end subroutine
 
 !---------------------------------------------------------------------------------------
@@ -1276,7 +1292,7 @@ subroutine allreduce_inplace_int32_r0(this,inout,operation)
   integer(c_int32_t), intent(in) :: operation
   integer(c_int32_t), pointer :: view_inout(:)
   view_inout => array_view1d(inout)
-  call fckit__mpi__allreduce_inplace_int32(this%c_ptr(),view_inout,1_c_size_t,operation)
+  call fckit__mpi__allreduce_inplace_int32(this%CPTR_PGIBUG_A,view_inout,1_c_size_t,operation)
 end subroutine
 
 subroutine allreduce_inplace_int32_r1(this,inout,operation)
@@ -1287,7 +1303,8 @@ subroutine allreduce_inplace_int32_r1(this,inout,operation)
   integer(c_int32_t), intent(in) :: operation
   integer(c_int32_t), pointer :: view_inout(:)
   view_inout => array_view1d(inout)
-  call fckit__mpi__allreduce_inplace_int32(this%c_ptr(),view_inout,int(ubound(view_inout,1),c_size_t),operation)
+  call fckit__mpi__allreduce_inplace_int32(this%CPTR_PGIBUG_A,view_inout, &
+    int(ubound(view_inout,1),c_size_t),operation)
 end subroutine
 
 subroutine allreduce_inplace_int32_r2(this,inout,operation)
@@ -1298,7 +1315,8 @@ subroutine allreduce_inplace_int32_r2(this,inout,operation)
   integer(c_int32_t), intent(in) :: operation
   integer(c_int32_t), pointer :: view_inout(:)
   view_inout => array_view1d(inout)
-  call fckit__mpi__allreduce_inplace_int32(this%c_ptr(),view_inout,int(ubound(view_inout,1),c_size_t),operation)
+  call fckit__mpi__allreduce_inplace_int32(this%CPTR_PGIBUG_A,view_inout, &
+    int(ubound(view_inout,1),c_size_t),operation)
 end subroutine
 
 subroutine allreduce_inplace_int32_r3(this,inout,operation)
@@ -1309,7 +1327,8 @@ subroutine allreduce_inplace_int32_r3(this,inout,operation)
   integer(c_int32_t), intent(in) :: operation
   integer(c_int32_t), pointer :: view_inout(:)
   view_inout => array_view1d(inout)
-  call fckit__mpi__allreduce_inplace_int32(this%c_ptr(),view_inout,int(ubound(view_inout,1),c_size_t),operation)
+  call fckit__mpi__allreduce_inplace_int32(this%CPTR_PGIBUG_A,view_inout, &
+    int(ubound(view_inout,1),c_size_t),operation)
 end subroutine
 
 subroutine allreduce_inplace_int32_r4(this,inout,operation)
@@ -1320,7 +1339,8 @@ subroutine allreduce_inplace_int32_r4(this,inout,operation)
   integer(c_int32_t), intent(in) :: operation
   integer(c_int32_t), pointer :: view_inout(:)
   view_inout => array_view1d(inout)
-  call fckit__mpi__allreduce_inplace_int32(this%c_ptr(),view_inout,int(ubound(view_inout,1),c_size_t),operation)
+  call fckit__mpi__allreduce_inplace_int32(this%CPTR_PGIBUG_A,view_inout, &
+    int(ubound(view_inout,1),c_size_t),operation)
 end subroutine
 
 subroutine allreduce_inplace_int64_r0(this,inout,operation)
@@ -1331,7 +1351,7 @@ subroutine allreduce_inplace_int64_r0(this,inout,operation)
   integer(c_int32_t), intent(in) :: operation
   integer(c_int64_t), pointer :: view_inout(:)
   view_inout => array_view1d(inout)
-  call fckit__mpi__allreduce_inplace_int64(this%c_ptr(),view_inout,1_c_size_t,operation)
+  call fckit__mpi__allreduce_inplace_int64(this%CPTR_PGIBUG_A,view_inout,1_c_size_t,operation)
 end subroutine
 
 subroutine allreduce_inplace_int64_r1(this,inout,operation)
@@ -1342,7 +1362,8 @@ subroutine allreduce_inplace_int64_r1(this,inout,operation)
   integer(c_int32_t), intent(in) :: operation
   integer(c_int64_t), pointer :: view_inout(:)
   view_inout => array_view1d(inout)
-  call fckit__mpi__allreduce_inplace_int64(this%c_ptr(),view_inout,int(ubound(view_inout,1),c_size_t),operation)
+  call fckit__mpi__allreduce_inplace_int64(this%CPTR_PGIBUG_A,view_inout, &
+    int(ubound(view_inout,1),c_size_t),operation)
 end subroutine
 
 subroutine allreduce_inplace_int64_r2(this,inout,operation)
@@ -1353,7 +1374,8 @@ subroutine allreduce_inplace_int64_r2(this,inout,operation)
   integer(c_int32_t), intent(in) :: operation
   integer(c_int64_t), pointer :: view_inout(:)
   view_inout => array_view1d(inout)
-  call fckit__mpi__allreduce_inplace_int64(this%c_ptr(),view_inout,int(ubound(view_inout,1),c_size_t),operation)
+  call fckit__mpi__allreduce_inplace_int64(this%CPTR_PGIBUG_A,view_inout, &
+    int(ubound(view_inout,1),c_size_t),operation)
 end subroutine
 
 subroutine allreduce_inplace_int64_r3(this,inout,operation)
@@ -1364,7 +1386,8 @@ subroutine allreduce_inplace_int64_r3(this,inout,operation)
   integer(c_int32_t), intent(in) :: operation
   integer(c_int64_t), pointer :: view_inout(:)
   view_inout => array_view1d(inout)
-  call fckit__mpi__allreduce_inplace_int64(this%c_ptr(),view_inout,int(ubound(view_inout,1),c_size_t),operation)
+  call fckit__mpi__allreduce_inplace_int64(this%CPTR_PGIBUG_A,view_inout, &
+    int(ubound(view_inout,1),c_size_t),operation)
 end subroutine
 
 subroutine allreduce_inplace_int64_r4(this,inout,operation)
@@ -1375,7 +1398,8 @@ subroutine allreduce_inplace_int64_r4(this,inout,operation)
   integer(c_int32_t), intent(in) :: operation
   integer(c_int64_t), pointer :: view_inout(:)
   view_inout => array_view1d(inout)
-  call fckit__mpi__allreduce_inplace_int64(this%c_ptr(),view_inout,int(ubound(view_inout,1),c_size_t),operation)
+  call fckit__mpi__allreduce_inplace_int64(this%CPTR_PGIBUG_A,view_inout, &
+    int(ubound(view_inout,1),c_size_t),operation)
 end subroutine
 
 subroutine allreduce_inplace_real32_r0(this,inout,operation)
@@ -1386,7 +1410,7 @@ subroutine allreduce_inplace_real32_r0(this,inout,operation)
   integer(c_int32_t), intent(in) :: operation
   real(c_float), pointer :: view_inout(:)
   view_inout => array_view1d(inout)
-  call fckit__mpi__allreduce_inplace_real32(this%c_ptr(),view_inout,1_c_size_t,operation)
+  call fckit__mpi__allreduce_inplace_real32(this%CPTR_PGIBUG_A,view_inout,1_c_size_t,operation)
 end subroutine
 
 subroutine allreduce_inplace_real32_r1(this,inout,operation)
@@ -1397,7 +1421,8 @@ subroutine allreduce_inplace_real32_r1(this,inout,operation)
   integer(c_int32_t), intent(in) :: operation
   real(c_float), pointer :: view_inout(:)
   view_inout => array_view1d(inout)
-  call fckit__mpi__allreduce_inplace_real32(this%c_ptr(),view_inout,int(ubound(view_inout,1),c_size_t),operation)
+  call fckit__mpi__allreduce_inplace_real32(this%CPTR_PGIBUG_A,view_inout, &
+    int(ubound(view_inout,1),c_size_t),operation)
 end subroutine
 
 subroutine allreduce_inplace_real32_r2(this,inout,operation)
@@ -1408,7 +1433,8 @@ subroutine allreduce_inplace_real32_r2(this,inout,operation)
   integer(c_int32_t), intent(in) :: operation
   real(c_float), pointer :: view_inout(:)
   view_inout => array_view1d(inout)
-  call fckit__mpi__allreduce_inplace_real32(this%c_ptr(),view_inout,int(ubound(view_inout,1),c_size_t),operation)
+  call fckit__mpi__allreduce_inplace_real32(this%CPTR_PGIBUG_A,view_inout, &
+    int(ubound(view_inout,1),c_size_t),operation)
 end subroutine
 
 subroutine allreduce_inplace_real32_r3(this,inout,operation)
@@ -1419,7 +1445,8 @@ subroutine allreduce_inplace_real32_r3(this,inout,operation)
   integer(c_int32_t), intent(in) :: operation
   real(c_float), pointer :: view_inout(:)
   view_inout => array_view1d(inout)
-  call fckit__mpi__allreduce_inplace_real32(this%c_ptr(),view_inout,int(ubound(view_inout,1),c_size_t),operation)
+  call fckit__mpi__allreduce_inplace_real32(this%CPTR_PGIBUG_A,view_inout, &
+    int(ubound(view_inout,1),c_size_t),operation)
 end subroutine
 
 subroutine allreduce_inplace_real32_r4(this,inout,operation)
@@ -1430,7 +1457,8 @@ subroutine allreduce_inplace_real32_r4(this,inout,operation)
   integer(c_int32_t), intent(in) :: operation
   real(c_float), pointer :: view_inout(:)
   view_inout => array_view1d(inout)
-  call fckit__mpi__allreduce_inplace_real32(this%c_ptr(),view_inout,int(ubound(view_inout,1),c_size_t),operation)
+  call fckit__mpi__allreduce_inplace_real32(this%CPTR_PGIBUG_A,view_inout, &
+    int(ubound(view_inout,1),c_size_t),operation)
 end subroutine
 
 subroutine allreduce_inplace_real64_r0(this,inout,operation)
@@ -1441,7 +1469,7 @@ subroutine allreduce_inplace_real64_r0(this,inout,operation)
   integer(c_int32_t), intent(in) :: operation
   real(c_double), pointer :: view_inout(:)
   view_inout => array_view1d(inout)
-  call fckit__mpi__allreduce_inplace_real64(this%c_ptr(),view_inout,1_c_size_t,operation)
+  call fckit__mpi__allreduce_inplace_real64(this%CPTR_PGIBUG_A,view_inout,1_c_size_t,operation)
 end subroutine
 
 subroutine allreduce_inplace_real64_r1(this,inout,operation)
@@ -1452,7 +1480,8 @@ subroutine allreduce_inplace_real64_r1(this,inout,operation)
   integer(c_int32_t), intent(in) :: operation
   real(c_double), pointer :: view_inout(:)
   view_inout => array_view1d(inout)
-  call fckit__mpi__allreduce_inplace_real64(this%c_ptr(),view_inout,int(ubound(view_inout,1),c_size_t),operation)
+  call fckit__mpi__allreduce_inplace_real64(this%CPTR_PGIBUG_A,view_inout, &
+    int(ubound(view_inout,1),c_size_t),operation)
 end subroutine
 
 subroutine allreduce_inplace_real64_r2(this,inout,operation)
@@ -1463,7 +1492,8 @@ subroutine allreduce_inplace_real64_r2(this,inout,operation)
   integer(c_int32_t), intent(in) :: operation
   real(c_double), pointer :: view_inout(:)
   view_inout => array_view1d(inout)
-  call fckit__mpi__allreduce_inplace_real64(this%c_ptr(),view_inout,int(ubound(view_inout,1),c_size_t),operation)
+  call fckit__mpi__allreduce_inplace_real64(this%CPTR_PGIBUG_A,view_inout, &
+    int(ubound(view_inout,1),c_size_t),operation)
 end subroutine
 
 subroutine allreduce_inplace_real64_r3(this,inout,operation)
@@ -1474,7 +1504,8 @@ subroutine allreduce_inplace_real64_r3(this,inout,operation)
   integer(c_int32_t), intent(in) :: operation
   real(c_double), pointer :: view_inout(:)
   view_inout => array_view1d(inout)
-  call fckit__mpi__allreduce_inplace_real64(this%c_ptr(),view_inout,int(ubound(view_inout,1),c_size_t),operation)
+  call fckit__mpi__allreduce_inplace_real64(this%CPTR_PGIBUG_A,view_inout, &
+    int(ubound(view_inout,1),c_size_t),operation)
 end subroutine
 
 subroutine allreduce_inplace_real64_r4(this,inout,operation)
@@ -1485,7 +1516,8 @@ subroutine allreduce_inplace_real64_r4(this,inout,operation)
   integer(c_int32_t), intent(in) :: operation
   real(c_double), pointer :: view_inout(:)
   view_inout => array_view1d(inout)
-  call fckit__mpi__allreduce_inplace_real64(this%c_ptr(),view_inout,int(ubound(view_inout,1),c_size_t),operation)
+  call fckit__mpi__allreduce_inplace_real64(this%CPTR_PGIBUG_A,view_inout, &
+    int(ubound(view_inout,1),c_size_t),operation)
 end subroutine
 
 !---------------------------------------------------------------------------------------
@@ -1498,7 +1530,8 @@ subroutine broadcast_int32_r0(this,buffer,root)
   integer(c_int32_t), intent(in) :: root
   integer(c_int32_t), pointer :: view_buffer(:)
   view_buffer  => array_view1d(buffer)
-  call fckit__mpi__broadcast_int32(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),int(root,c_size_t))
+  call fckit__mpi__broadcast_int32(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),int(root,c_size_t))
 end subroutine
 
 subroutine broadcast_int32_r1(this,buffer,root)
@@ -1509,7 +1542,8 @@ subroutine broadcast_int32_r1(this,buffer,root)
   integer(c_int32_t), intent(in) :: root
   integer(c_int32_t), pointer :: view_buffer(:)
   view_buffer  => array_view1d(buffer)
-  call fckit__mpi__broadcast_int32(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),int(root,c_size_t))
+  call fckit__mpi__broadcast_int32(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),int(root,c_size_t))
 end subroutine
 
 subroutine broadcast_int32_r2(this,buffer,root)
@@ -1520,7 +1554,8 @@ subroutine broadcast_int32_r2(this,buffer,root)
   integer(c_int32_t), intent(in) :: root
   integer(c_int32_t), pointer :: view_buffer(:)
   view_buffer  => array_view1d(buffer)
-  call fckit__mpi__broadcast_int32(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),int(root,c_size_t))
+  call fckit__mpi__broadcast_int32(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),int(root,c_size_t))
 end subroutine
 
 subroutine broadcast_int32_r3(this,buffer,root)
@@ -1531,7 +1566,8 @@ subroutine broadcast_int32_r3(this,buffer,root)
   integer(c_int32_t), intent(in) :: root
   integer(c_int32_t), pointer :: view_buffer(:)
   view_buffer  => array_view1d(buffer)
-  call fckit__mpi__broadcast_int32(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),int(root,c_size_t))
+  call fckit__mpi__broadcast_int32(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),int(root,c_size_t))
 end subroutine
 
 subroutine broadcast_int32_r4(this,buffer,root)
@@ -1542,7 +1578,8 @@ subroutine broadcast_int32_r4(this,buffer,root)
   integer(c_int32_t), intent(in) :: root
   integer(c_int32_t), pointer :: view_buffer(:)
   view_buffer  => array_view1d(buffer)
-  call fckit__mpi__broadcast_int32(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),int(root,c_size_t))
+  call fckit__mpi__broadcast_int32(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),int(root,c_size_t))
 end subroutine
 
 subroutine broadcast_int64_r0(this,buffer,root)
@@ -1553,7 +1590,8 @@ subroutine broadcast_int64_r0(this,buffer,root)
   integer(c_int32_t), intent(in) :: root
   integer(c_int64_t), pointer :: view_buffer(:)
   view_buffer  => array_view1d(buffer)
-  call fckit__mpi__broadcast_int64(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),int(root,c_size_t))
+  call fckit__mpi__broadcast_int64(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),int(root,c_size_t))
 end subroutine
 
 subroutine broadcast_int64_r1(this,buffer,root)
@@ -1564,7 +1602,8 @@ subroutine broadcast_int64_r1(this,buffer,root)
   integer(c_int32_t), intent(in) :: root
   integer(c_int64_t), pointer :: view_buffer(:)
   view_buffer  => array_view1d(buffer)
-  call fckit__mpi__broadcast_int64(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),int(root,c_size_t))
+  call fckit__mpi__broadcast_int64(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),int(root,c_size_t))
 end subroutine
 
 subroutine broadcast_int64_r2(this,buffer,root)
@@ -1575,7 +1614,8 @@ subroutine broadcast_int64_r2(this,buffer,root)
   integer(c_int32_t), intent(in) :: root
   integer(c_int64_t), pointer :: view_buffer(:)
   view_buffer  => array_view1d(buffer)
-  call fckit__mpi__broadcast_int64(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),int(root,c_size_t))
+  call fckit__mpi__broadcast_int64(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),int(root,c_size_t))
 end subroutine
 
 subroutine broadcast_int64_r3(this,buffer,root)
@@ -1586,7 +1626,8 @@ subroutine broadcast_int64_r3(this,buffer,root)
   integer(c_int32_t), intent(in) :: root
   integer(c_int64_t), pointer :: view_buffer(:)
   view_buffer  => array_view1d(buffer)
-  call fckit__mpi__broadcast_int64(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),int(root,c_size_t))
+  call fckit__mpi__broadcast_int64(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),int(root,c_size_t))
 end subroutine
 
 subroutine broadcast_int64_r4(this,buffer,root)
@@ -1597,7 +1638,8 @@ subroutine broadcast_int64_r4(this,buffer,root)
   integer(c_int32_t), intent(in) :: root
   integer(c_int64_t), pointer :: view_buffer(:)
   view_buffer  => array_view1d(buffer)
-  call fckit__mpi__broadcast_int64(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),int(root,c_size_t))
+  call fckit__mpi__broadcast_int64(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),int(root,c_size_t))
 end subroutine
 
 subroutine broadcast_real32_r0(this,buffer,root)
@@ -1608,7 +1650,8 @@ subroutine broadcast_real32_r0(this,buffer,root)
   integer(c_int32_t), intent(in) :: root
   real(c_float), pointer :: view_buffer(:)
   view_buffer  => array_view1d(buffer)
-  call fckit__mpi__broadcast_real32(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),int(root,c_size_t))
+  call fckit__mpi__broadcast_real32(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),int(root,c_size_t))
 end subroutine
 
 subroutine broadcast_real32_r1(this,buffer,root)
@@ -1619,7 +1662,8 @@ subroutine broadcast_real32_r1(this,buffer,root)
   integer(c_int32_t), intent(in) :: root
   real(c_float), pointer :: view_buffer(:)
   view_buffer  => array_view1d(buffer)
-  call fckit__mpi__broadcast_real32(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),int(root,c_size_t))
+  call fckit__mpi__broadcast_real32(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),int(root,c_size_t))
 end subroutine
 
 subroutine broadcast_real32_r2(this,buffer,root)
@@ -1630,7 +1674,8 @@ subroutine broadcast_real32_r2(this,buffer,root)
   integer(c_int32_t), intent(in) :: root
   real(c_float), pointer :: view_buffer(:)
   view_buffer  => array_view1d(buffer)
-  call fckit__mpi__broadcast_real32(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),int(root,c_size_t))
+  call fckit__mpi__broadcast_real32(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),int(root,c_size_t))
 end subroutine
 
 subroutine broadcast_real32_r3(this,buffer,root)
@@ -1641,7 +1686,8 @@ subroutine broadcast_real32_r3(this,buffer,root)
   integer(c_int32_t), intent(in) :: root
   real(c_float), pointer :: view_buffer(:)
   view_buffer  => array_view1d(buffer)
-  call fckit__mpi__broadcast_real32(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),int(root,c_size_t))
+  call fckit__mpi__broadcast_real32(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),int(root,c_size_t))
 end subroutine
 
 subroutine broadcast_real32_r4(this,buffer,root)
@@ -1652,7 +1698,8 @@ subroutine broadcast_real32_r4(this,buffer,root)
   integer(c_int32_t), intent(in) :: root
   real(c_float), pointer :: view_buffer(:)
   view_buffer  => array_view1d(buffer)
-  call fckit__mpi__broadcast_real32(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),int(root,c_size_t))
+  call fckit__mpi__broadcast_real32(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),int(root,c_size_t))
 end subroutine
 
 subroutine broadcast_real64_r0(this,buffer,root)
@@ -1663,7 +1710,8 @@ subroutine broadcast_real64_r0(this,buffer,root)
   integer(c_int32_t), intent(in) :: root
   real(c_double), pointer :: view_buffer(:)
   view_buffer  => array_view1d(buffer)
-  call fckit__mpi__broadcast_real64(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),int(root,c_size_t))
+  call fckit__mpi__broadcast_real64(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),int(root,c_size_t))
 end subroutine
 
 subroutine broadcast_real64_r1(this,buffer,root)
@@ -1674,7 +1722,8 @@ subroutine broadcast_real64_r1(this,buffer,root)
   integer(c_int32_t), intent(in) :: root
   real(c_double), pointer :: view_buffer(:)
   view_buffer  => array_view1d(buffer)
-  call fckit__mpi__broadcast_real64(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),int(root,c_size_t))
+  call fckit__mpi__broadcast_real64(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),int(root,c_size_t))
 end subroutine
 
 subroutine broadcast_real64_r2(this,buffer,root)
@@ -1685,7 +1734,8 @@ subroutine broadcast_real64_r2(this,buffer,root)
   integer(c_int32_t), intent(in) :: root
   real(c_double), pointer :: view_buffer(:)
   view_buffer  => array_view1d(buffer)
-  call fckit__mpi__broadcast_real64(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),int(root,c_size_t))
+  call fckit__mpi__broadcast_real64(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),int(root,c_size_t))
 end subroutine
 
 subroutine broadcast_real64_r3(this,buffer,root)
@@ -1696,7 +1746,8 @@ subroutine broadcast_real64_r3(this,buffer,root)
   integer(c_int32_t), intent(in) :: root
   real(c_double), pointer :: view_buffer(:)
   view_buffer  => array_view1d(buffer)
-  call fckit__mpi__broadcast_real64(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),int(root,c_size_t))
+  call fckit__mpi__broadcast_real64(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),int(root,c_size_t))
 end subroutine
 
 subroutine broadcast_real64_r4(this,buffer,root)
@@ -1707,7 +1758,8 @@ subroutine broadcast_real64_r4(this,buffer,root)
   integer(c_int32_t), intent(in) :: root
   real(c_double), pointer :: view_buffer(:)
   view_buffer  => array_view1d(buffer)
-  call fckit__mpi__broadcast_real64(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),int(root,c_size_t))
+  call fckit__mpi__broadcast_real64(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),int(root,c_size_t))
 end subroutine
 
 !---------------------------------------------------------------------------------------
@@ -1719,7 +1771,7 @@ function broadcast_file(this,path,root) result(buffer)
   class(fckit_mpi_comm), intent(in) :: this
   character(kind=c_char,len=*), intent(in) :: path
   integer(c_int32_t), intent(in) :: root
-  buffer = fckit_buffer( fckit__mpi__broadcast_file(this%c_ptr(),c_str(path),int(root,c_size_t)), share=.true. )
+  buffer = fckit_buffer( fckit__mpi__broadcast_file(this%CPTR_PGIBUG_A,c_str(path),int(root,c_size_t)), share=.true. )
   call buffer%return()
 end function
 
@@ -1734,7 +1786,8 @@ subroutine send_int32_r0(this,buffer,dest,tag)
   integer(c_int32_t), intent(in) :: tag
   integer(c_int32_t), pointer :: view_buffer(:)
   view_buffer  => array_view1d(buffer)
-  call fckit__mpi__send_int32(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),dest,tag)
+  call fckit__mpi__send_int32(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),dest,tag)
 end subroutine
 
 subroutine send_int32_r1(this,buffer,dest,tag)
@@ -1746,7 +1799,8 @@ subroutine send_int32_r1(this,buffer,dest,tag)
   integer(c_int32_t), intent(in) :: tag
   integer(c_int32_t), pointer :: view_buffer(:)
   view_buffer  => array_view1d(buffer)
-  call fckit__mpi__send_int32(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),dest,tag)
+  call fckit__mpi__send_int32(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),dest,tag)
 end subroutine
 
 subroutine send_int32_r2(this,buffer,dest,tag)
@@ -1758,7 +1812,8 @@ subroutine send_int32_r2(this,buffer,dest,tag)
   integer(c_int32_t), intent(in) :: tag
   integer(c_int32_t), pointer :: view_buffer(:)
   view_buffer  => array_view1d(buffer)
-  call fckit__mpi__send_int32(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),dest,tag)
+  call fckit__mpi__send_int32(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),dest,tag)
 end subroutine
 
 subroutine send_int32_r3(this,buffer,dest,tag)
@@ -1770,7 +1825,8 @@ subroutine send_int32_r3(this,buffer,dest,tag)
   integer(c_int32_t), intent(in) :: tag
   integer(c_int32_t), pointer :: view_buffer(:)
   view_buffer  => array_view1d(buffer)
-  call fckit__mpi__send_int32(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),dest,tag)
+  call fckit__mpi__send_int32(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),dest,tag)
 end subroutine
 
 subroutine send_int32_r4(this,buffer,dest,tag)
@@ -1782,7 +1838,8 @@ subroutine send_int32_r4(this,buffer,dest,tag)
   integer(c_int32_t), intent(in) :: tag
   integer(c_int32_t), pointer :: view_buffer(:)
   view_buffer  => array_view1d(buffer)
-  call fckit__mpi__send_int32(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),dest,tag)
+  call fckit__mpi__send_int32(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),dest,tag)
 end subroutine
 
 subroutine send_int64_r0(this,buffer,dest,tag)
@@ -1794,7 +1851,8 @@ subroutine send_int64_r0(this,buffer,dest,tag)
   integer(c_int32_t), intent(in) :: tag
   integer(c_int64_t), pointer :: view_buffer(:)
   view_buffer  => array_view1d(buffer)
-  call fckit__mpi__send_int64(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),dest,tag)
+  call fckit__mpi__send_int64(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),dest,tag)
 end subroutine
 
 subroutine send_int64_r1(this,buffer,dest,tag)
@@ -1806,7 +1864,8 @@ subroutine send_int64_r1(this,buffer,dest,tag)
   integer(c_int32_t), intent(in) :: tag
   integer(c_int64_t), pointer :: view_buffer(:)
   view_buffer  => array_view1d(buffer)
-  call fckit__mpi__send_int64(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),dest,tag)
+  call fckit__mpi__send_int64(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),dest,tag)
 end subroutine
 
 subroutine send_int64_r2(this,buffer,dest,tag)
@@ -1818,7 +1877,8 @@ subroutine send_int64_r2(this,buffer,dest,tag)
   integer(c_int32_t), intent(in) :: tag
   integer(c_int64_t), pointer :: view_buffer(:)
   view_buffer  => array_view1d(buffer)
-  call fckit__mpi__send_int64(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),dest,tag)
+  call fckit__mpi__send_int64(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),dest,tag)
 end subroutine
 
 subroutine send_int64_r3(this,buffer,dest,tag)
@@ -1830,7 +1890,8 @@ subroutine send_int64_r3(this,buffer,dest,tag)
   integer(c_int32_t), intent(in) :: tag
   integer(c_int64_t), pointer :: view_buffer(:)
   view_buffer  => array_view1d(buffer)
-  call fckit__mpi__send_int64(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),dest,tag)
+  call fckit__mpi__send_int64(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),dest,tag)
 end subroutine
 
 subroutine send_int64_r4(this,buffer,dest,tag)
@@ -1842,7 +1903,8 @@ subroutine send_int64_r4(this,buffer,dest,tag)
   integer(c_int32_t), intent(in) :: tag
   integer(c_int64_t), pointer :: view_buffer(:)
   view_buffer  => array_view1d(buffer)
-  call fckit__mpi__send_int64(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),dest,tag)
+  call fckit__mpi__send_int64(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),dest,tag)
 end subroutine
 
 subroutine send_real32_r0(this,buffer,dest,tag)
@@ -1854,7 +1916,8 @@ subroutine send_real32_r0(this,buffer,dest,tag)
   integer(c_int32_t), intent(in) :: tag
   real(c_float), pointer :: view_buffer(:)
   view_buffer  => array_view1d(buffer)
-  call fckit__mpi__send_real32(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),dest,tag)
+  call fckit__mpi__send_real32(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),dest,tag)
 end subroutine
 
 subroutine send_real32_r1(this,buffer,dest,tag)
@@ -1866,7 +1929,8 @@ subroutine send_real32_r1(this,buffer,dest,tag)
   integer(c_int32_t), intent(in) :: tag
   real(c_float), pointer :: view_buffer(:)
   view_buffer  => array_view1d(buffer)
-  call fckit__mpi__send_real32(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),dest,tag)
+  call fckit__mpi__send_real32(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),dest,tag)
 end subroutine
 
 subroutine send_real32_r2(this,buffer,dest,tag)
@@ -1878,7 +1942,8 @@ subroutine send_real32_r2(this,buffer,dest,tag)
   integer(c_int32_t), intent(in) :: tag
   real(c_float), pointer :: view_buffer(:)
   view_buffer  => array_view1d(buffer)
-  call fckit__mpi__send_real32(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),dest,tag)
+  call fckit__mpi__send_real32(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),dest,tag)
 end subroutine
 
 subroutine send_real32_r3(this,buffer,dest,tag)
@@ -1890,7 +1955,8 @@ subroutine send_real32_r3(this,buffer,dest,tag)
   integer(c_int32_t), intent(in) :: tag
   real(c_float), pointer :: view_buffer(:)
   view_buffer  => array_view1d(buffer)
-  call fckit__mpi__send_real32(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),dest,tag)
+  call fckit__mpi__send_real32(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),dest,tag)
 end subroutine
 
 subroutine send_real32_r4(this,buffer,dest,tag)
@@ -1902,7 +1968,8 @@ subroutine send_real32_r4(this,buffer,dest,tag)
   integer(c_int32_t), intent(in) :: tag
   real(c_float), pointer :: view_buffer(:)
   view_buffer  => array_view1d(buffer)
-  call fckit__mpi__send_real32(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),dest,tag)
+  call fckit__mpi__send_real32(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),dest,tag)
 end subroutine
 
 subroutine send_real64_r0(this,buffer,dest,tag)
@@ -1914,7 +1981,8 @@ subroutine send_real64_r0(this,buffer,dest,tag)
   integer(c_int32_t), intent(in) :: tag
   real(c_double), pointer :: view_buffer(:)
   view_buffer  => array_view1d(buffer)
-  call fckit__mpi__send_real64(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),dest,tag)
+  call fckit__mpi__send_real64(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),dest,tag)
 end subroutine
 
 subroutine send_real64_r1(this,buffer,dest,tag)
@@ -1926,7 +1994,8 @@ subroutine send_real64_r1(this,buffer,dest,tag)
   integer(c_int32_t), intent(in) :: tag
   real(c_double), pointer :: view_buffer(:)
   view_buffer  => array_view1d(buffer)
-  call fckit__mpi__send_real64(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),dest,tag)
+  call fckit__mpi__send_real64(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),dest,tag)
 end subroutine
 
 subroutine send_real64_r2(this,buffer,dest,tag)
@@ -1938,7 +2007,8 @@ subroutine send_real64_r2(this,buffer,dest,tag)
   integer(c_int32_t), intent(in) :: tag
   real(c_double), pointer :: view_buffer(:)
   view_buffer  => array_view1d(buffer)
-  call fckit__mpi__send_real64(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),dest,tag)
+  call fckit__mpi__send_real64(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),dest,tag)
 end subroutine
 
 subroutine send_real64_r3(this,buffer,dest,tag)
@@ -1950,7 +2020,8 @@ subroutine send_real64_r3(this,buffer,dest,tag)
   integer(c_int32_t), intent(in) :: tag
   real(c_double), pointer :: view_buffer(:)
   view_buffer  => array_view1d(buffer)
-  call fckit__mpi__send_real64(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),dest,tag)
+  call fckit__mpi__send_real64(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),dest,tag)
 end subroutine
 
 subroutine send_real64_r4(this,buffer,dest,tag)
@@ -1962,7 +2033,8 @@ subroutine send_real64_r4(this,buffer,dest,tag)
   integer(c_int32_t), intent(in) :: tag
   real(c_double), pointer :: view_buffer(:)
   view_buffer  => array_view1d(buffer)
-  call fckit__mpi__send_real64(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),dest,tag)
+  call fckit__mpi__send_real64(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),dest,tag)
 end subroutine
 
 !---------------------------------------------------------------------------------------
@@ -1981,10 +2053,11 @@ subroutine receive_int32_r0(this,buffer,source,tag,status)
   if( present(tag) ) then
     tag_opt = tag
   else
-    tag_opt = fckit__mpi__anytag(this%c_ptr())
+    tag_opt = fckit__mpi__anytag(this%CPTR_PGIBUG_A)
   endif
   view_buffer  => array_view1d(buffer)
-  call fckit__mpi__receive_int32(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),source,tag_opt,status_out%status)
+  call fckit__mpi__receive_int32(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),source,tag_opt,status_out%status)
   if( present(status) ) status = status_out
 end subroutine
 
@@ -2002,10 +2075,11 @@ subroutine receive_int32_r1(this,buffer,source,tag,status)
   if( present(tag) ) then
     tag_opt = tag
   else
-    tag_opt = fckit__mpi__anytag(this%c_ptr())
+    tag_opt = fckit__mpi__anytag(this%CPTR_PGIBUG_A)
   endif
   view_buffer  => array_view1d(buffer)
-  call fckit__mpi__receive_int32(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),source,tag_opt,status_out%status)
+  call fckit__mpi__receive_int32(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),source,tag_opt,status_out%status)
   if( present(status) ) status = status_out
 end subroutine
 
@@ -2023,10 +2097,11 @@ subroutine receive_int32_r2(this,buffer,source,tag,status)
   if( present(tag) ) then
     tag_opt = tag
   else
-    tag_opt = fckit__mpi__anytag(this%c_ptr())
+    tag_opt = fckit__mpi__anytag(this%CPTR_PGIBUG_A)
   endif
   view_buffer  => array_view1d(buffer)
-  call fckit__mpi__receive_int32(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),source,tag_opt,status_out%status)
+  call fckit__mpi__receive_int32(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),source,tag_opt,status_out%status)
   if( present(status) ) status = status_out
 end subroutine
 
@@ -2044,10 +2119,11 @@ subroutine receive_int32_r3(this,buffer,source,tag,status)
   if( present(tag) ) then
     tag_opt = tag
   else
-    tag_opt = fckit__mpi__anytag(this%c_ptr())
+    tag_opt = fckit__mpi__anytag(this%CPTR_PGIBUG_A)
   endif
   view_buffer  => array_view1d(buffer)
-  call fckit__mpi__receive_int32(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),source,tag_opt,status_out%status)
+  call fckit__mpi__receive_int32(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),source,tag_opt,status_out%status)
   if( present(status) ) status = status_out
 end subroutine
 
@@ -2065,10 +2141,11 @@ subroutine receive_int32_r4(this,buffer,source,tag,status)
   if( present(tag) ) then
     tag_opt = tag
   else
-    tag_opt = fckit__mpi__anytag(this%c_ptr())
+    tag_opt = fckit__mpi__anytag(this%CPTR_PGIBUG_A)
   endif
   view_buffer  => array_view1d(buffer)
-  call fckit__mpi__receive_int32(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),source,tag_opt,status_out%status)
+  call fckit__mpi__receive_int32(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),source,tag_opt,status_out%status)
   if( present(status) ) status = status_out
 end subroutine
 
@@ -2086,10 +2163,11 @@ subroutine receive_int64_r0(this,buffer,source,tag,status)
   if( present(tag) ) then
     tag_opt = tag
   else
-    tag_opt = fckit__mpi__anytag(this%c_ptr())
+    tag_opt = fckit__mpi__anytag(this%CPTR_PGIBUG_A)
   endif
   view_buffer  => array_view1d(buffer)
-  call fckit__mpi__receive_int64(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),source,tag_opt,status_out%status)
+  call fckit__mpi__receive_int64(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),source,tag_opt,status_out%status)
   if( present(status) ) status = status_out
 end subroutine
 
@@ -2107,10 +2185,11 @@ subroutine receive_int64_r1(this,buffer,source,tag,status)
   if( present(tag) ) then
     tag_opt = tag
   else
-    tag_opt = fckit__mpi__anytag(this%c_ptr())
+    tag_opt = fckit__mpi__anytag(this%CPTR_PGIBUG_A)
   endif
   view_buffer  => array_view1d(buffer)
-  call fckit__mpi__receive_int64(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),source,tag_opt,status_out%status)
+  call fckit__mpi__receive_int64(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),source,tag_opt,status_out%status)
   if( present(status) ) status = status_out
 end subroutine
 
@@ -2128,10 +2207,11 @@ subroutine receive_int64_r2(this,buffer,source,tag,status)
   if( present(tag) ) then
     tag_opt = tag
   else
-    tag_opt = fckit__mpi__anytag(this%c_ptr())
+    tag_opt = fckit__mpi__anytag(this%CPTR_PGIBUG_A)
   endif
   view_buffer  => array_view1d(buffer)
-  call fckit__mpi__receive_int64(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),source,tag_opt,status_out%status)
+  call fckit__mpi__receive_int64(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),source,tag_opt,status_out%status)
   if( present(status) ) status = status_out
 end subroutine
 
@@ -2149,10 +2229,11 @@ subroutine receive_int64_r3(this,buffer,source,tag,status)
   if( present(tag) ) then
     tag_opt = tag
   else
-    tag_opt = fckit__mpi__anytag(this%c_ptr())
+    tag_opt = fckit__mpi__anytag(this%CPTR_PGIBUG_A)
   endif
   view_buffer  => array_view1d(buffer)
-  call fckit__mpi__receive_int64(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),source,tag_opt,status_out%status)
+  call fckit__mpi__receive_int64(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),source,tag_opt,status_out%status)
   if( present(status) ) status = status_out
 end subroutine
 
@@ -2170,10 +2251,11 @@ subroutine receive_int64_r4(this,buffer,source,tag,status)
   if( present(tag) ) then
     tag_opt = tag
   else
-    tag_opt = fckit__mpi__anytag(this%c_ptr())
+    tag_opt = fckit__mpi__anytag(this%CPTR_PGIBUG_A)
   endif
   view_buffer  => array_view1d(buffer)
-  call fckit__mpi__receive_int64(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),source,tag_opt,status_out%status)
+  call fckit__mpi__receive_int64(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),source,tag_opt,status_out%status)
   if( present(status) ) status = status_out
 end subroutine
 
@@ -2191,10 +2273,11 @@ subroutine receive_real32_r0(this,buffer,source,tag,status)
   if( present(tag) ) then
     tag_opt = tag
   else
-    tag_opt = fckit__mpi__anytag(this%c_ptr())
+    tag_opt = fckit__mpi__anytag(this%CPTR_PGIBUG_A)
   endif
   view_buffer  => array_view1d(buffer)
-  call fckit__mpi__receive_real32(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),source,tag_opt,status_out%status)
+  call fckit__mpi__receive_real32(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),source,tag_opt,status_out%status)
   if( present(status) ) status = status_out
 end subroutine
 
@@ -2212,10 +2295,11 @@ subroutine receive_real32_r1(this,buffer,source,tag,status)
   if( present(tag) ) then
     tag_opt = tag
   else
-    tag_opt = fckit__mpi__anytag(this%c_ptr())
+    tag_opt = fckit__mpi__anytag(this%CPTR_PGIBUG_A)
   endif
   view_buffer  => array_view1d(buffer)
-  call fckit__mpi__receive_real32(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),source,tag_opt,status_out%status)
+  call fckit__mpi__receive_real32(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),source,tag_opt,status_out%status)
   if( present(status) ) status = status_out
 end subroutine
 
@@ -2233,10 +2317,11 @@ subroutine receive_real32_r2(this,buffer,source,tag,status)
   if( present(tag) ) then
     tag_opt = tag
   else
-    tag_opt = fckit__mpi__anytag(this%c_ptr())
+    tag_opt = fckit__mpi__anytag(this%CPTR_PGIBUG_A)
   endif
   view_buffer  => array_view1d(buffer)
-  call fckit__mpi__receive_real32(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),source,tag_opt,status_out%status)
+  call fckit__mpi__receive_real32(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),source,tag_opt,status_out%status)
   if( present(status) ) status = status_out
 end subroutine
 
@@ -2254,10 +2339,11 @@ subroutine receive_real32_r3(this,buffer,source,tag,status)
   if( present(tag) ) then
     tag_opt = tag
   else
-    tag_opt = fckit__mpi__anytag(this%c_ptr())
+    tag_opt = fckit__mpi__anytag(this%CPTR_PGIBUG_A)
   endif
   view_buffer  => array_view1d(buffer)
-  call fckit__mpi__receive_real32(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),source,tag_opt,status_out%status)
+  call fckit__mpi__receive_real32(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),source,tag_opt,status_out%status)
   if( present(status) ) status = status_out
 end subroutine
 
@@ -2275,10 +2361,11 @@ subroutine receive_real32_r4(this,buffer,source,tag,status)
   if( present(tag) ) then
     tag_opt = tag
   else
-    tag_opt = fckit__mpi__anytag(this%c_ptr())
+    tag_opt = fckit__mpi__anytag(this%CPTR_PGIBUG_A)
   endif
   view_buffer  => array_view1d(buffer)
-  call fckit__mpi__receive_real32(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),source,tag_opt,status_out%status)
+  call fckit__mpi__receive_real32(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),source,tag_opt,status_out%status)
   if( present(status) ) status = status_out
 end subroutine
 
@@ -2296,10 +2383,11 @@ subroutine receive_real64_r0(this,buffer,source,tag,status)
   if( present(tag) ) then
     tag_opt = tag
   else
-    tag_opt = fckit__mpi__anytag(this%c_ptr())
+    tag_opt = fckit__mpi__anytag(this%CPTR_PGIBUG_A)
   endif
   view_buffer  => array_view1d(buffer)
-  call fckit__mpi__receive_real64(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),source,tag_opt,status_out%status)
+  call fckit__mpi__receive_real64(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),source,tag_opt,status_out%status)
   if( present(status) ) status = status_out
 end subroutine
 
@@ -2317,10 +2405,11 @@ subroutine receive_real64_r1(this,buffer,source,tag,status)
   if( present(tag) ) then
     tag_opt = tag
   else
-    tag_opt = fckit__mpi__anytag(this%c_ptr())
+    tag_opt = fckit__mpi__anytag(this%CPTR_PGIBUG_A)
   endif
   view_buffer  => array_view1d(buffer)
-  call fckit__mpi__receive_real64(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),source,tag_opt,status_out%status)
+  call fckit__mpi__receive_real64(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),source,tag_opt,status_out%status)
   if( present(status) ) status = status_out
 end subroutine
 
@@ -2338,10 +2427,11 @@ subroutine receive_real64_r2(this,buffer,source,tag,status)
   if( present(tag) ) then
     tag_opt = tag
   else
-    tag_opt = fckit__mpi__anytag(this%c_ptr())
+    tag_opt = fckit__mpi__anytag(this%CPTR_PGIBUG_A)
   endif
   view_buffer  => array_view1d(buffer)
-  call fckit__mpi__receive_real64(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),source,tag_opt,status_out%status)
+  call fckit__mpi__receive_real64(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),source,tag_opt,status_out%status)
   if( present(status) ) status = status_out
 end subroutine
 
@@ -2359,10 +2449,11 @@ subroutine receive_real64_r3(this,buffer,source,tag,status)
   if( present(tag) ) then
     tag_opt = tag
   else
-    tag_opt = fckit__mpi__anytag(this%c_ptr())
+    tag_opt = fckit__mpi__anytag(this%CPTR_PGIBUG_A)
   endif
   view_buffer  => array_view1d(buffer)
-  call fckit__mpi__receive_real64(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),source,tag_opt,status_out%status)
+  call fckit__mpi__receive_real64(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),source,tag_opt,status_out%status)
   if( present(status) ) status = status_out
 end subroutine
 
@@ -2380,10 +2471,11 @@ subroutine receive_real64_r4(this,buffer,source,tag,status)
   if( present(tag) ) then
     tag_opt = tag
   else
-    tag_opt = fckit__mpi__anytag(this%c_ptr())
+    tag_opt = fckit__mpi__anytag(this%CPTR_PGIBUG_A)
   endif
   view_buffer  => array_view1d(buffer)
-  call fckit__mpi__receive_real64(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),source,tag_opt,status_out%status)
+  call fckit__mpi__receive_real64(this%CPTR_PGIBUG_A,view_buffer, &
+     int(ubound(view_buffer,1),c_size_t),source,tag_opt,status_out%status)
   if( present(status) ) status = status_out
 end subroutine
 
@@ -2399,7 +2491,8 @@ function isend_int32_r0(this,buffer,dest,tag) result(request)
   integer(c_int32_t), intent(in) :: tag
   integer(c_int32_t), pointer :: view_buffer(:)
   view_buffer  => array_view1d(buffer)
-  request = fckit__mpi__isend_int32(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),dest,tag)
+  request = fckit__mpi__isend_int32(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),dest,tag)
 end function
 
 function isend_int32_r1(this,buffer,dest,tag) result(request)
@@ -2412,7 +2505,8 @@ function isend_int32_r1(this,buffer,dest,tag) result(request)
   integer(c_int32_t), intent(in) :: tag
   integer(c_int32_t), pointer :: view_buffer(:)
   view_buffer  => array_view1d(buffer)
-  request = fckit__mpi__isend_int32(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),dest,tag)
+  request = fckit__mpi__isend_int32(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),dest,tag)
 end function
 
 function isend_int32_r2(this,buffer,dest,tag) result(request)
@@ -2425,7 +2519,8 @@ function isend_int32_r2(this,buffer,dest,tag) result(request)
   integer(c_int32_t), intent(in) :: tag
   integer(c_int32_t), pointer :: view_buffer(:)
   view_buffer  => array_view1d(buffer)
-  request = fckit__mpi__isend_int32(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),dest,tag)
+  request = fckit__mpi__isend_int32(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),dest,tag)
 end function
 
 function isend_int32_r3(this,buffer,dest,tag) result(request)
@@ -2438,7 +2533,8 @@ function isend_int32_r3(this,buffer,dest,tag) result(request)
   integer(c_int32_t), intent(in) :: tag
   integer(c_int32_t), pointer :: view_buffer(:)
   view_buffer  => array_view1d(buffer)
-  request = fckit__mpi__isend_int32(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),dest,tag)
+  request = fckit__mpi__isend_int32(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),dest,tag)
 end function
 
 function isend_int32_r4(this,buffer,dest,tag) result(request)
@@ -2451,7 +2547,8 @@ function isend_int32_r4(this,buffer,dest,tag) result(request)
   integer(c_int32_t), intent(in) :: tag
   integer(c_int32_t), pointer :: view_buffer(:)
   view_buffer  => array_view1d(buffer)
-  request = fckit__mpi__isend_int32(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),dest,tag)
+  request = fckit__mpi__isend_int32(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),dest,tag)
 end function
 
 function isend_int64_r0(this,buffer,dest,tag) result(request)
@@ -2464,7 +2561,8 @@ function isend_int64_r0(this,buffer,dest,tag) result(request)
   integer(c_int32_t), intent(in) :: tag
   integer(c_int64_t), pointer :: view_buffer(:)
   view_buffer  => array_view1d(buffer)
-  request = fckit__mpi__isend_int64(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),dest,tag)
+  request = fckit__mpi__isend_int64(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),dest,tag)
 end function
 
 function isend_int64_r1(this,buffer,dest,tag) result(request)
@@ -2477,7 +2575,8 @@ function isend_int64_r1(this,buffer,dest,tag) result(request)
   integer(c_int32_t), intent(in) :: tag
   integer(c_int64_t), pointer :: view_buffer(:)
   view_buffer  => array_view1d(buffer)
-  request = fckit__mpi__isend_int64(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),dest,tag)
+  request = fckit__mpi__isend_int64(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),dest,tag)
 end function
 
 function isend_int64_r2(this,buffer,dest,tag) result(request)
@@ -2490,7 +2589,8 @@ function isend_int64_r2(this,buffer,dest,tag) result(request)
   integer(c_int32_t), intent(in) :: tag
   integer(c_int64_t), pointer :: view_buffer(:)
   view_buffer  => array_view1d(buffer)
-  request = fckit__mpi__isend_int64(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),dest,tag)
+  request = fckit__mpi__isend_int64(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),dest,tag)
 end function
 
 function isend_int64_r3(this,buffer,dest,tag) result(request)
@@ -2503,7 +2603,8 @@ function isend_int64_r3(this,buffer,dest,tag) result(request)
   integer(c_int32_t), intent(in) :: tag
   integer(c_int64_t), pointer :: view_buffer(:)
   view_buffer  => array_view1d(buffer)
-  request = fckit__mpi__isend_int64(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),dest,tag)
+  request = fckit__mpi__isend_int64(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),dest,tag)
 end function
 
 function isend_int64_r4(this,buffer,dest,tag) result(request)
@@ -2516,7 +2617,8 @@ function isend_int64_r4(this,buffer,dest,tag) result(request)
   integer(c_int32_t), intent(in) :: tag
   integer(c_int64_t), pointer :: view_buffer(:)
   view_buffer  => array_view1d(buffer)
-  request = fckit__mpi__isend_int64(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),dest,tag)
+  request = fckit__mpi__isend_int64(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),dest,tag)
 end function
 
 function isend_real32_r0(this,buffer,dest,tag) result(request)
@@ -2529,7 +2631,8 @@ function isend_real32_r0(this,buffer,dest,tag) result(request)
   integer(c_int32_t), intent(in) :: tag
   real(c_float), pointer :: view_buffer(:)
   view_buffer  => array_view1d(buffer)
-  request = fckit__mpi__isend_real32(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),dest,tag)
+  request = fckit__mpi__isend_real32(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),dest,tag)
 end function
 
 function isend_real32_r1(this,buffer,dest,tag) result(request)
@@ -2542,7 +2645,8 @@ function isend_real32_r1(this,buffer,dest,tag) result(request)
   integer(c_int32_t), intent(in) :: tag
   real(c_float), pointer :: view_buffer(:)
   view_buffer  => array_view1d(buffer)
-  request = fckit__mpi__isend_real32(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),dest,tag)
+  request = fckit__mpi__isend_real32(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),dest,tag)
 end function
 
 function isend_real32_r2(this,buffer,dest,tag) result(request)
@@ -2555,7 +2659,8 @@ function isend_real32_r2(this,buffer,dest,tag) result(request)
   integer(c_int32_t), intent(in) :: tag
   real(c_float), pointer :: view_buffer(:)
   view_buffer  => array_view1d(buffer)
-  request = fckit__mpi__isend_real32(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),dest,tag)
+  request = fckit__mpi__isend_real32(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),dest,tag)
 end function
 
 function isend_real32_r3(this,buffer,dest,tag) result(request)
@@ -2568,7 +2673,8 @@ function isend_real32_r3(this,buffer,dest,tag) result(request)
   integer(c_int32_t), intent(in) :: tag
   real(c_float), pointer :: view_buffer(:)
   view_buffer  => array_view1d(buffer)
-  request = fckit__mpi__isend_real32(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),dest,tag)
+  request = fckit__mpi__isend_real32(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),dest,tag)
 end function
 
 function isend_real32_r4(this,buffer,dest,tag) result(request)
@@ -2581,7 +2687,8 @@ function isend_real32_r4(this,buffer,dest,tag) result(request)
   integer(c_int32_t), intent(in) :: tag
   real(c_float), pointer :: view_buffer(:)
   view_buffer  => array_view1d(buffer)
-  request = fckit__mpi__isend_real32(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),dest,tag)
+  request = fckit__mpi__isend_real32(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),dest,tag)
 end function
 
 function isend_real64_r0(this,buffer,dest,tag) result(request)
@@ -2594,7 +2701,8 @@ function isend_real64_r0(this,buffer,dest,tag) result(request)
   integer(c_int32_t), intent(in) :: tag
   real(c_double), pointer :: view_buffer(:)
   view_buffer  => array_view1d(buffer)
-  request = fckit__mpi__isend_real64(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),dest,tag)
+  request = fckit__mpi__isend_real64(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),dest,tag)
 end function
 
 function isend_real64_r1(this,buffer,dest,tag) result(request)
@@ -2607,7 +2715,8 @@ function isend_real64_r1(this,buffer,dest,tag) result(request)
   integer(c_int32_t), intent(in) :: tag
   real(c_double), pointer :: view_buffer(:)
   view_buffer  => array_view1d(buffer)
-  request = fckit__mpi__isend_real64(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),dest,tag)
+  request = fckit__mpi__isend_real64(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),dest,tag)
 end function
 
 function isend_real64_r2(this,buffer,dest,tag) result(request)
@@ -2620,7 +2729,8 @@ function isend_real64_r2(this,buffer,dest,tag) result(request)
   integer(c_int32_t), intent(in) :: tag
   real(c_double), pointer :: view_buffer(:)
   view_buffer  => array_view1d(buffer)
-  request = fckit__mpi__isend_real64(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),dest,tag)
+  request = fckit__mpi__isend_real64(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),dest,tag)
 end function
 
 function isend_real64_r3(this,buffer,dest,tag) result(request)
@@ -2633,7 +2743,8 @@ function isend_real64_r3(this,buffer,dest,tag) result(request)
   integer(c_int32_t), intent(in) :: tag
   real(c_double), pointer :: view_buffer(:)
   view_buffer  => array_view1d(buffer)
-  request = fckit__mpi__isend_real64(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),dest,tag)
+  request = fckit__mpi__isend_real64(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),dest,tag)
 end function
 
 function isend_real64_r4(this,buffer,dest,tag) result(request)
@@ -2646,7 +2757,8 @@ function isend_real64_r4(this,buffer,dest,tag) result(request)
   integer(c_int32_t), intent(in) :: tag
   real(c_double), pointer :: view_buffer(:)
   view_buffer  => array_view1d(buffer)
-  request = fckit__mpi__isend_real64(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),dest,tag)
+  request = fckit__mpi__isend_real64(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),dest,tag)
 end function
 
 !---------------------------------------------------------------------------------------
@@ -2664,10 +2776,11 @@ function ireceive_int32_r0(this,buffer,source,tag) result(request)
   if( present(tag) ) then
     tag_opt = tag
   else
-    tag_opt = fckit__mpi__anytag(this%c_ptr())
+    tag_opt = fckit__mpi__anytag(this%CPTR_PGIBUG_A)
   endif
   view_buffer  => array_view1d(buffer)
-  request = fckit__mpi__ireceive_int32(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),source,tag_opt)
+  request = fckit__mpi__ireceive_int32(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),source,tag_opt)
 end function
 
 function ireceive_int32_r1(this,buffer,source,tag) result(request)
@@ -2683,10 +2796,11 @@ function ireceive_int32_r1(this,buffer,source,tag) result(request)
   if( present(tag) ) then
     tag_opt = tag
   else
-    tag_opt = fckit__mpi__anytag(this%c_ptr())
+    tag_opt = fckit__mpi__anytag(this%CPTR_PGIBUG_A)
   endif
   view_buffer  => array_view1d(buffer)
-  request = fckit__mpi__ireceive_int32(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),source,tag_opt)
+  request = fckit__mpi__ireceive_int32(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),source,tag_opt)
 end function
 
 function ireceive_int32_r2(this,buffer,source,tag) result(request)
@@ -2702,10 +2816,11 @@ function ireceive_int32_r2(this,buffer,source,tag) result(request)
   if( present(tag) ) then
     tag_opt = tag
   else
-    tag_opt = fckit__mpi__anytag(this%c_ptr())
+    tag_opt = fckit__mpi__anytag(this%CPTR_PGIBUG_A)
   endif
   view_buffer  => array_view1d(buffer)
-  request = fckit__mpi__ireceive_int32(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),source,tag_opt)
+  request = fckit__mpi__ireceive_int32(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),source,tag_opt)
 end function
 
 function ireceive_int32_r3(this,buffer,source,tag) result(request)
@@ -2721,10 +2836,11 @@ function ireceive_int32_r3(this,buffer,source,tag) result(request)
   if( present(tag) ) then
     tag_opt = tag
   else
-    tag_opt = fckit__mpi__anytag(this%c_ptr())
+    tag_opt = fckit__mpi__anytag(this%CPTR_PGIBUG_A)
   endif
   view_buffer  => array_view1d(buffer)
-  request = fckit__mpi__ireceive_int32(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),source,tag_opt)
+  request = fckit__mpi__ireceive_int32(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),source,tag_opt)
 end function
 
 function ireceive_int32_r4(this,buffer,source,tag) result(request)
@@ -2740,10 +2856,11 @@ function ireceive_int32_r4(this,buffer,source,tag) result(request)
   if( present(tag) ) then
     tag_opt = tag
   else
-    tag_opt = fckit__mpi__anytag(this%c_ptr())
+    tag_opt = fckit__mpi__anytag(this%CPTR_PGIBUG_A)
   endif
   view_buffer  => array_view1d(buffer)
-  request = fckit__mpi__ireceive_int32(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),source,tag_opt)
+  request = fckit__mpi__ireceive_int32(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),source,tag_opt)
 end function
 
 function ireceive_int64_r0(this,buffer,source,tag) result(request)
@@ -2759,10 +2876,11 @@ function ireceive_int64_r0(this,buffer,source,tag) result(request)
   if( present(tag) ) then
     tag_opt = tag
   else
-    tag_opt = fckit__mpi__anytag(this%c_ptr())
+    tag_opt = fckit__mpi__anytag(this%CPTR_PGIBUG_A)
   endif
   view_buffer  => array_view1d(buffer)
-  request = fckit__mpi__ireceive_int64(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),source,tag_opt)
+  request = fckit__mpi__ireceive_int64(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),source,tag_opt)
 end function
 
 function ireceive_int64_r1(this,buffer,source,tag) result(request)
@@ -2778,10 +2896,11 @@ function ireceive_int64_r1(this,buffer,source,tag) result(request)
   if( present(tag) ) then
     tag_opt = tag
   else
-    tag_opt = fckit__mpi__anytag(this%c_ptr())
+    tag_opt = fckit__mpi__anytag(this%CPTR_PGIBUG_A)
   endif
   view_buffer  => array_view1d(buffer)
-  request = fckit__mpi__ireceive_int64(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),source,tag_opt)
+  request = fckit__mpi__ireceive_int64(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),source,tag_opt)
 end function
 
 function ireceive_int64_r2(this,buffer,source,tag) result(request)
@@ -2797,10 +2916,11 @@ function ireceive_int64_r2(this,buffer,source,tag) result(request)
   if( present(tag) ) then
     tag_opt = tag
   else
-    tag_opt = fckit__mpi__anytag(this%c_ptr())
+    tag_opt = fckit__mpi__anytag(this%CPTR_PGIBUG_A)
   endif
   view_buffer  => array_view1d(buffer)
-  request = fckit__mpi__ireceive_int64(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),source,tag_opt)
+  request = fckit__mpi__ireceive_int64(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),source,tag_opt)
 end function
 
 function ireceive_int64_r3(this,buffer,source,tag) result(request)
@@ -2816,10 +2936,11 @@ function ireceive_int64_r3(this,buffer,source,tag) result(request)
   if( present(tag) ) then
     tag_opt = tag
   else
-    tag_opt = fckit__mpi__anytag(this%c_ptr())
+    tag_opt = fckit__mpi__anytag(this%CPTR_PGIBUG_A)
   endif
   view_buffer  => array_view1d(buffer)
-  request = fckit__mpi__ireceive_int64(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),source,tag_opt)
+  request = fckit__mpi__ireceive_int64(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),source,tag_opt)
 end function
 
 function ireceive_int64_r4(this,buffer,source,tag) result(request)
@@ -2835,10 +2956,11 @@ function ireceive_int64_r4(this,buffer,source,tag) result(request)
   if( present(tag) ) then
     tag_opt = tag
   else
-    tag_opt = fckit__mpi__anytag(this%c_ptr())
+    tag_opt = fckit__mpi__anytag(this%CPTR_PGIBUG_A)
   endif
   view_buffer  => array_view1d(buffer)
-  request = fckit__mpi__ireceive_int64(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),source,tag_opt)
+  request = fckit__mpi__ireceive_int64(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),source,tag_opt)
 end function
 
 function ireceive_real32_r0(this,buffer,source,tag) result(request)
@@ -2854,10 +2976,11 @@ function ireceive_real32_r0(this,buffer,source,tag) result(request)
   if( present(tag) ) then
     tag_opt = tag
   else
-    tag_opt = fckit__mpi__anytag(this%c_ptr())
+    tag_opt = fckit__mpi__anytag(this%CPTR_PGIBUG_A)
   endif
   view_buffer  => array_view1d(buffer)
-  request = fckit__mpi__ireceive_real32(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),source,tag_opt)
+  request = fckit__mpi__ireceive_real32(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),source,tag_opt)
 end function
 
 function ireceive_real32_r1(this,buffer,source,tag) result(request)
@@ -2873,10 +2996,11 @@ function ireceive_real32_r1(this,buffer,source,tag) result(request)
   if( present(tag) ) then
     tag_opt = tag
   else
-    tag_opt = fckit__mpi__anytag(this%c_ptr())
+    tag_opt = fckit__mpi__anytag(this%CPTR_PGIBUG_A)
   endif
   view_buffer  => array_view1d(buffer)
-  request = fckit__mpi__ireceive_real32(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),source,tag_opt)
+  request = fckit__mpi__ireceive_real32(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),source,tag_opt)
 end function
 
 function ireceive_real32_r2(this,buffer,source,tag) result(request)
@@ -2892,10 +3016,11 @@ function ireceive_real32_r2(this,buffer,source,tag) result(request)
   if( present(tag) ) then
     tag_opt = tag
   else
-    tag_opt = fckit__mpi__anytag(this%c_ptr())
+    tag_opt = fckit__mpi__anytag(this%CPTR_PGIBUG_A)
   endif
   view_buffer  => array_view1d(buffer)
-  request = fckit__mpi__ireceive_real32(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),source,tag_opt)
+  request = fckit__mpi__ireceive_real32(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),source,tag_opt)
 end function
 
 function ireceive_real32_r3(this,buffer,source,tag) result(request)
@@ -2911,10 +3036,11 @@ function ireceive_real32_r3(this,buffer,source,tag) result(request)
   if( present(tag) ) then
     tag_opt = tag
   else
-    tag_opt = fckit__mpi__anytag(this%c_ptr())
+    tag_opt = fckit__mpi__anytag(this%CPTR_PGIBUG_A)
   endif
   view_buffer  => array_view1d(buffer)
-  request = fckit__mpi__ireceive_real32(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),source,tag_opt)
+  request = fckit__mpi__ireceive_real32(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),source,tag_opt)
 end function
 
 function ireceive_real32_r4(this,buffer,source,tag) result(request)
@@ -2930,10 +3056,11 @@ function ireceive_real32_r4(this,buffer,source,tag) result(request)
   if( present(tag) ) then
     tag_opt = tag
   else
-    tag_opt = fckit__mpi__anytag(this%c_ptr())
+    tag_opt = fckit__mpi__anytag(this%CPTR_PGIBUG_A)
   endif
   view_buffer  => array_view1d(buffer)
-  request = fckit__mpi__ireceive_real32(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),source,tag_opt)
+  request = fckit__mpi__ireceive_real32(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),source,tag_opt)
 end function
 
 function ireceive_real64_r0(this,buffer,source,tag) result(request)
@@ -2949,10 +3076,11 @@ function ireceive_real64_r0(this,buffer,source,tag) result(request)
   if( present(tag) ) then
     tag_opt = tag
   else
-    tag_opt = fckit__mpi__anytag(this%c_ptr())
+    tag_opt = fckit__mpi__anytag(this%CPTR_PGIBUG_A)
   endif
   view_buffer  => array_view1d(buffer)
-  request = fckit__mpi__ireceive_real64(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),source,tag_opt)
+  request = fckit__mpi__ireceive_real64(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),source,tag_opt)
 end function
 
 function ireceive_real64_r1(this,buffer,source,tag) result(request)
@@ -2968,10 +3096,11 @@ function ireceive_real64_r1(this,buffer,source,tag) result(request)
   if( present(tag) ) then
     tag_opt = tag
   else
-    tag_opt = fckit__mpi__anytag(this%c_ptr())
+    tag_opt = fckit__mpi__anytag(this%CPTR_PGIBUG_A)
   endif
   view_buffer  => array_view1d(buffer)
-  request = fckit__mpi__ireceive_real64(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),source,tag_opt)
+  request = fckit__mpi__ireceive_real64(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),source,tag_opt)
 end function
 
 function ireceive_real64_r2(this,buffer,source,tag) result(request)
@@ -2987,10 +3116,11 @@ function ireceive_real64_r2(this,buffer,source,tag) result(request)
   if( present(tag) ) then
     tag_opt = tag
   else
-    tag_opt = fckit__mpi__anytag(this%c_ptr())
+    tag_opt = fckit__mpi__anytag(this%CPTR_PGIBUG_A)
   endif
   view_buffer  => array_view1d(buffer)
-  request = fckit__mpi__ireceive_real64(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),source,tag_opt)
+  request = fckit__mpi__ireceive_real64(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),source,tag_opt)
 end function
 
 function ireceive_real64_r3(this,buffer,source,tag) result(request)
@@ -3006,10 +3136,11 @@ function ireceive_real64_r3(this,buffer,source,tag) result(request)
   if( present(tag) ) then
     tag_opt = tag
   else
-    tag_opt = fckit__mpi__anytag(this%c_ptr())
+    tag_opt = fckit__mpi__anytag(this%CPTR_PGIBUG_A)
   endif
   view_buffer  => array_view1d(buffer)
-  request = fckit__mpi__ireceive_real64(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),source,tag_opt)
+  request = fckit__mpi__ireceive_real64(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),source,tag_opt)
 end function
 
 function ireceive_real64_r4(this,buffer,source,tag) result(request)
@@ -3025,10 +3156,11 @@ function ireceive_real64_r4(this,buffer,source,tag) result(request)
   if( present(tag) ) then
     tag_opt = tag
   else
-    tag_opt = fckit__mpi__anytag(this%c_ptr())
+    tag_opt = fckit__mpi__anytag(this%CPTR_PGIBUG_A)
   endif
   view_buffer  => array_view1d(buffer)
-  request = fckit__mpi__ireceive_real64(this%c_ptr(),view_buffer,int(ubound(view_buffer,1),c_size_t),source,tag_opt)
+  request = fckit__mpi__ireceive_real64(this%CPTR_PGIBUG_A,view_buffer, &
+    int(ubound(view_buffer,1),c_size_t),source,tag_opt)
 end function
 !---------------------------------------------------------------------------------------
 
@@ -3038,7 +3170,7 @@ subroutine wait(this,request,status)
   integer(c_int32_t), intent(in) :: request
   type(fckit_mpi_status), optional, intent(out) :: status
   type(fckit_mpi_status) :: status_out
-  call fckit__mpi__wait(this%c_ptr(),request,status_out%status)
+  call fckit__mpi__wait(this%CPTR_PGIBUG_A,request,status_out%status)
   if( present(status) ) status = status_out
 end subroutine
 

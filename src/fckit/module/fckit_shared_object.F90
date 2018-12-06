@@ -27,14 +27,14 @@ public :: fckit_owned
 !========================================================================
 
 type, extends(fckit_shared_ptr) :: fckit_shared_object
-  class(fckit_object), pointer, private  :: shared_object_ => null()
+  class(fckit_object), pointer, public  :: shared_object_ => null()
 contains
 
   procedure, public :: shared_ptr_cast
 
   procedure, public :: reset_c_ptr
 
-  procedure, public  :: c_ptr => fckit_shared_object_c_ptr
+  !procedure, public  :: c_ptr => fckit_shared_object_c_ptr
   procedure, private :: fckit_shared_object_c_ptr
 
   procedure, public :: is_null
@@ -128,7 +128,7 @@ function fckit_shared_object_c_ptr(this) result(cptr)
   use, intrinsic :: iso_c_binding, only : c_ptr
   type(c_ptr) :: cptr
   class(fckit_shared_object) :: this
-  cptr = this%shared_object_%c_ptr()
+  cptr = this%CPTR_PGIBUG_B
 end function
 
 end module

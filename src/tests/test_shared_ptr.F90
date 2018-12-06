@@ -128,7 +128,7 @@ end function
 function ObjectCXX_id(this) result(id)
   class(ObjectCXX) :: this
   integer :: id
-  id = Object__id( this%c_ptr() )
+  id = Object__id( this%CPTR_PGIBUG_B )
 end function
 
 FCKIT_FINAL subroutine ObjectCXX_final_auto(this)
