@@ -11,5 +11,7 @@ module unload fftw
 module unload libemos
 
 module switch gnu clang
-export FC=/usr/local/apps/gcc/6.3.0/bin/gfortran
+
+####  As of clang/6.0.1 we use gfortran as part of clang distribution
+#export FC=/usr/local/apps/gcc/6.3.0/bin/gfortran
 

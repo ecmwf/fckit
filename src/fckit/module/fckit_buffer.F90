@@ -56,7 +56,7 @@ type, extends(fckit_shared_object) :: fckit_buffer
   !! A typical use case is with the function [[fckit_mpi_module:fckit_mpi_comm(type):broadcast_file(function)]]
   !! where a file is read on one MPI task, and broadcast to all MPI tasks, storing it in a buffer.
   !! This buffer can then be used to construct a configuration
-  !! (see e.g. [[fckit_configuration_module:fckit_YAMLConfiguration(type)]] )
+  !! (see e.g. [[fckit_configuration_module:fckit_YAMLConfiguration(interface)]] )
 contains
   procedure, public :: str
 

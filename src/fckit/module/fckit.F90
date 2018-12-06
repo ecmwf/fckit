@@ -64,7 +64,7 @@ public :: fckit_YAMLConfiguration    !! - [[fckit_configuration_module:fckit_YAM
 public :: fckit_buffer               !! - [[fckit_buffer_module:fckit_buffer(type)]]
 public :: fckit_version              !! - [[fckit_module:fckit_version(function)]]
 public :: fckit_git_sha1             !! - [[fckit_module:fckit_git_sha1(function)]]
-public :: deallocate_fckit_configuration  !! - [[fckit_configuration_module:deallocate_fckit_configuration(function)]]
+public :: deallocate_fckit_configuration  !! - [[fckit_configuration_module:deallocate_fckit_configuration(subroutine)]]
 
 public :: log ! DEPRECATED. Use fckit_log instead.
 

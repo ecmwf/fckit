@@ -341,7 +341,7 @@ end function
 function c_fckit_configuration_get_array_int64( This, name, value, size ) bind(C&
   &,name="c_fckit_configuration_get_array_int64")
     use iso_c_binding, only: c_char, c_ptr, c_int32_t, c_size_t
-    integer(c_int32_t) :: c_fckit_configuration_get_array_long
+    integer(c_int32_t) :: c_fckit_configuration_get_array_int64
     type(c_ptr), value :: This
     character(c_char), dimension(*) :: name
     type(c_ptr) :: value
