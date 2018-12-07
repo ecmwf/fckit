@@ -128,11 +128,11 @@ enddo
 
   found = config%get("logical_true",logval)
   FCTEST_CHECK( found )
-  FCTEST_CHECK( logval == .True. )
+  FCTEST_CHECK( logval )
 
   found = config%get("logical_false",logval)
   FCTEST_CHECK( found )
-  FCTEST_CHECK( logval == .False. )
+  FCTEST_CHECK( .not. logval )
 
   found = config%get("nested",anested)
   FCTEST_CHECK( found )
@@ -312,11 +312,11 @@ TEST(test_configuration_json_file)
   endif
 
   if( config%get("trueval",logval) ) then
-    FCTEST_CHECK( logval == .true. )
+    FCTEST_CHECK( logval )
   endif
 
   if( config%get("falseval",logval) ) then
-    FCTEST_CHECK( logval == .false. )
+    FCTEST_CHECK( .not. logval )
   endif
 
   write(0,*) "config%owners() = ", config%owners()
