@@ -99,6 +99,19 @@ end subroutine
 !-------------------------------------------------------------------------------
 
 !-------------------------------------------------------------------------------
+! void c_fckit_configuration_set_bool (Configuration* This, const char* name,
+!                                       int32 value)
+!-------------------------------------------------------------------------------
+subroutine c_fckit_configuration_set_bool( This, name, value ) bind(C,name="c_&
+ &fckit_configuration_set_bool")
+   use iso_c_binding, only: c_int32_t, c_ptr, c_char
+   type(c_ptr), value :: This
+   character(c_char), dimension(*) :: name
+   integer(c_int32_t), value :: value
+end subroutine
+!-------------------------------------------------------------------------------
+
+                                               !-------------------------------------------------------------------------------
 ! void c_fckit_configuration_set_int32 (Configuration* This, const char* name,
 !                                       int32 value)
 !-------------------------------------------------------------------------------
@@ -245,6 +258,20 @@ function c_fckit_configuration_get_config_list( This, name, value, size ) bind(&
     character(c_char), dimension(*) :: name
     type(c_ptr) :: value
     integer(c_size_t) :: size
+end function
+!-------------------------------------------------------------------------------
+
+!-------------------------------------------------------------------------------
+! int32 c_fckit_configuration_get_bool (const Configuration* This, const char*
+!   name, int32& value)
+!-------------------------------------------------------------------------------
+function c_fckit_configuration_get_bool( This, name, value ) bind(C,name="c_fc&
+  &kit_configuration_get_bool")
+    use iso_c_binding, only: c_char, c_ptr, c_int32_t
+    integer(c_int32_t) :: c_fckit_configuration_get_bool
+    type(c_ptr), value :: This
+    character(c_char), dimension(*) :: name
+    integer(c_int32_t) :: value
 end function
 !-------------------------------------------------------------------------------
 

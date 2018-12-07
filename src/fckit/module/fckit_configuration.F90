@@ -437,7 +437,7 @@ subroutine set_logical(this, name, value)
   else
     value_int = 0
   end if
-  call c_fckit_configuration_set_int32(this%CPTR_PGIBUG_B, c_str(name), value_int )
+  call c_fckit_configuration_set_bool(this%CPTR_PGIBUG_B, c_str(name), value_int )
 end subroutine
 
 subroutine set_int32(this, name, value)
@@ -577,7 +577,7 @@ function get_logical(this, name, value) result(found)
   logical, intent(inout) :: value
   integer(c_int32_t) :: value_int
   integer(c_int32_t) :: found_int
-  found_int = c_fckit_configuration_get_int32(this%CPTR_PGIBUG_B,c_str(name), value_int )
+  found_int = c_fckit_configuration_get_bool(this%CPTR_PGIBUG_B,c_str(name), value_int )
   found = .False.
   if (found_int == 1) found = .True.
   if (found) then
