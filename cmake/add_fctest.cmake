@@ -71,6 +71,15 @@ if( NOT (CMAKE_VERSION VERSION_LESS 3.1) )
         endif()
       endif()
       target_sources( ${_PAR_TARGET} PUBLIC ${TESTRUNNER} )
+
+      list( APPEND _properties COMPILE_FLAGS COMPILE_DEFINITIONS )
+      foreach( _prop ${_properties} )
+          get_source_file_property( TESTSUITE_PROPERTY ${TESTSUITE} ${_prop} )
+          if( TESTSUITE_PROPERTY )
+              set_source_files_properties( ${TESTRUNNER} PROPERTIES ${_prop} ${TESTSUITE_PROPERTY} )
+          endif()
+      endforeach()
+
       add_custom_target( ${_PAR_TARGET}_testsuite SOURCES ${TESTSUITE} )
 
   endif()
