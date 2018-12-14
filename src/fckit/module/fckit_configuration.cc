@@ -8,6 +8,13 @@
  * nor does it submit to any jurisdiction.
  */
 
+#include <cstdarg>
+#include <cstdint>
+#include <iostream>
+#include <sstream>
+#include <stdexcept>
+#include <cstring>
+
 #include "eckit/config/Configuration.h"
 #include "eckit/config/LocalConfiguration.h"
 #include "eckit/config/YAMLConfiguration.h"
@@ -15,11 +22,6 @@
 #include "eckit/filesystem/PathName.h"
 #include "eckit/parser/JSON.h"
 #include "eckit/parser/JSONParser.h"
-#include <cstdarg>
-#include <cstdint>
-#include <iostream>
-#include <sstream>
-#include <stdexcept>
 
 using eckit::CodeLocation;
 using eckit::Configuration;

@@ -9,6 +9,7 @@
  */
 
 #include <string>
+#include <cstring>
 #include <cstdint>
 
 #include "eckit/io/SharedBuffer.h"
