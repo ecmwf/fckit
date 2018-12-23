@@ -1,6 +1,7 @@
 #include <iostream>
 #include <sstream>
 #include <stdio.h>
+#include <string>
 
 static int destructor_called = 0;
 static int destructor_called_after_scope = 0;
