@@ -177,6 +177,67 @@ void fckit__mpi__allreduce_inplace_real64( const Comm* comm, double* inout, size
         eckit::mpi::comm().allReduceInPlace( inout, count, eckit::mpi::Operation::Code( operation ) );
 }
 
+
+void fckit__mpi__allgather_int32( const Comm* comm, const int32* in, int32* out ) {
+    if ( comm )
+        comm->allGather( *in, out, out + comm->size() );
+    else
+        eckit::mpi::comm().allGather( *in, out, out + eckit::mpi::comm().size() );
+}
+
+void fckit__mpi__allgather_int64( const Comm* comm, const int64* in, int64* out ) {
+    if ( comm )
+        comm->allGather( *in, out, out + comm->size() );
+    else
+        eckit::mpi::comm().allGather( *in, out, out + eckit::mpi::comm().size() );
+}
+
+void fckit__mpi__allgather_real32( const Comm* comm, const float* in, float* out ) {
+    if ( comm )
+        comm->allGather( *in, out, out + comm->size() );
+    else
+        eckit::mpi::comm().allGather( *in, out, out + eckit::mpi::comm().size() );
+}
+
+void fckit__mpi__allgather_real64( const Comm* comm, const double* in, double* out ) {
+    if ( comm )
+        comm->allGather( *in, out, out + comm->size() );
+    else
+        eckit::mpi::comm().allGather( *in, out, out + eckit::mpi::comm().size() );
+}
+
+void fckit__mpi__allgatherv_int32( const Comm* comm, const int32* in, int32* out, size_t sendcount, int32* recvcounts,
+                                   int32* displs ) {
+    if ( comm )
+        comm->allGatherv( in, in + sendcount, out, recvcounts, displs );
+    else
+        eckit::mpi::comm().allGatherv( in, in + sendcount, out, recvcounts, displs );
+}
+
+void fckit__mpi__allgatherv_int64( const Comm* comm, const int64* in, int64* out, size_t sendcount, int32* recvcounts,
+                                   int32* displs ) {
+    if ( comm )
+        comm->allGatherv( in, in + sendcount, out, recvcounts, displs );
+    else
+        eckit::mpi::comm().allGatherv( in, in + sendcount, out, recvcounts, displs );
+}
+
+void fckit__mpi__allgatherv_real32( const Comm* comm, const float* in, float* out, size_t sendcount, int32* recvcounts,
+                                    int32* displs ) {
+    if ( comm )
+        comm->allGatherv( in, in + sendcount, out, recvcounts, displs );
+    else
+        eckit::mpi::comm().allGatherv( in, in + sendcount, out, recvcounts, displs );
+}
+
+void fckit__mpi__allgatherv_real64( const Comm* comm, const double* in, double* out, size_t sendcount,
+                                    int32* recvcounts, int32* displs ) {
+    if ( comm )
+        comm->allGatherv( in, in + sendcount, out, recvcounts, displs );
+    else
+        eckit::mpi::comm().allGatherv( in, in + sendcount, out, recvcounts, displs );
+}
+
 void fckit__mpi__broadcast_int32( const Comm* comm, int32* buffer, size_t count, size_t root ) {
     if ( comm )
         comm->broadcast( buffer, count, root );
@@ -205,6 +266,13 @@ void fckit__mpi__broadcast_real64( const Comm* comm, double* buffer, size_t coun
         comm->broadcast( buffer, count, root );
     else
         eckit::mpi::comm().broadcast( buffer, count, root );
+}
+
+void fckit__mpi__broadcast_string( const Comm* comm, char* buffer, size_t count, size_t root ) {
+    if ( comm )
+        comm->broadcast( buffer, buffer + count, root );
+    else
+        eckit::mpi::comm().broadcast( buffer, buffer + count, root );
 }
 
 static eckit::CountedBuffer* extract_buffer( const eckit::SharedBuffer& cb ) {
@@ -374,6 +442,22 @@ int fckit__mpi__ireceive_real64( const Comm* comm, double* buffer, size_t count,
         return eckit::mpi::comm().iReceive( buffer, count, source, tag ).request();
 }
 
+void fckit__mpi__alltoallv_real32( const Comm* comm, const float* in, int32* scounts, int32* sdispl, float* out,
+                                   int32* rcounts, int32* rdispl ) {
+    if ( comm )
+        comm->allToAllv( in, scounts, sdispl, out, rcounts, rdispl );
+    else
+        eckit::mpi::comm().allToAllv( in, scounts, sdispl, out, rcounts, rdispl );
+}
+
+void fckit__mpi__alltoallv_real64( const Comm* comm, const double* in, int32* scounts, int32* sdispl, double* out,
+                                   int32* rcounts, int32* rdispl ) {
+    if ( comm )
+        comm->allToAllv( in, scounts, sdispl, out, rcounts, rdispl );
+    else
+        eckit::mpi::comm().allToAllv( in, scounts, sdispl, out, rcounts, rdispl );
+}
+
 void fckit__mpi__wait( const Comm* comm, int32 request, int32* status ) {
     eckit::mpi::Status _status;
     eckit::mpi::Request req( request );
@@ -385,4 +469,5 @@ void fckit__mpi__wait( const Comm* comm, int32 request, int32* status ) {
     status[1] = _status.tag();
     status[2] = _status.error();
 }
-}
+
+} // extern "C"
