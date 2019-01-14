@@ -48,14 +48,18 @@ static std::string debug_prefix( const std::string& libname ) {
 void libs_debug_addTarget( LogTarget* target ) {
     for ( std::string libname : Library::list() ) {
         const Library& lib = Library::lookup( libname );
-        if ( lib.debug() ) { lib.debugChannel().addTarget( new PrefixTarget( debug_prefix( libname ), target ) ); }
+        if ( lib.debug() ) {
+            lib.debugChannel().addTarget( new PrefixTarget( debug_prefix( libname ), target ) );
+        }
     }
 }
 
 void libs_debug_setTarget( LogTarget* target ) {
     for ( std::string libname : Library::list() ) {
         const Library& lib = Library::lookup( libname );
-        if ( lib.debug() ) { lib.debugChannel().setTarget( new PrefixTarget( debug_prefix( libname ), target ) ); }
+        if ( lib.debug() ) {
+            lib.debugChannel().setTarget( new PrefixTarget( debug_prefix( libname ), target ) );
+        }
     }
 }
 
@@ -76,9 +80,12 @@ FortranUnitTarget::FortranUnitTarget( int unit ) :
     unit_( unit ) {}
 
 LogTarget* createStyleTarget( LogTarget* target, Log::Style style, const char* prefix ) {
-    if ( style == Log::SIMPLE ) return target;
-    if ( style == Log::PREFIX ) return new eckit::PrefixTarget( prefix, target );
-    if ( style == Log::TIMESTAMP ) return new eckit::TimeStampTarget( prefix, target );
+    if ( style == Log::SIMPLE )
+        return target;
+    if ( style == Log::PREFIX )
+        return new eckit::PrefixTarget( prefix, target );
+    if ( style == Log::TIMESTAMP )
+        return new eckit::TimeStampTarget( prefix, target );
     NOTIMP;
 }
 
@@ -87,7 +94,8 @@ void Log::addFortranUnit( int unit, Style style, const char* ) {
     info().addTarget( createStyleTarget( funit, style, "(I)" ) );
     warning().addTarget( createStyleTarget( funit, style, "(W)" ) );
     error().addTarget( createStyleTarget( funit, style, "(E)" ) );
-    if ( Main::instance().debug() ) debug().addTarget( createStyleTarget( funit, style, "(D)" ) );
+    if ( Main::instance().debug() )
+        debug().addTarget( createStyleTarget( funit, style, "(D)" ) );
     libs_debug_addTarget( funit );
 }
 void Log::setFortranUnit( int unit, Style style, const char* ) {
@@ -95,7 +103,8 @@ void Log::setFortranUnit( int unit, Style style, const char* ) {
     info().setTarget( createStyleTarget( funit, style, "(I)" ) );
     warning().setTarget( createStyleTarget( funit, style, "(W)" ) );
     error().setTarget( createStyleTarget( funit, style, "(E)" ) );
-    if ( Main::instance().debug() ) debug().setTarget( createStyleTarget( funit, style, "(D)" ) );
+    if ( Main::instance().debug() )
+        debug().setTarget( createStyleTarget( funit, style, "(D)" ) );
     libs_debug_setTarget( funit );
 }
 
@@ -104,7 +113,8 @@ void Log::addFile( const char* path, Style style, const char* ) {
     info().addTarget( createStyleTarget( file, style, "(I)" ) );
     warning().addTarget( createStyleTarget( file, style, "(W)" ) );
     error().addTarget( createStyleTarget( file, style, "(E)" ) );
-    if ( Main::instance().debug() ) debug().addTarget( createStyleTarget( file, style, "(D)" ) );
+    if ( Main::instance().debug() )
+        debug().addTarget( createStyleTarget( file, style, "(D)" ) );
     libs_debug_addTarget( file );
 }
 void Log::setFile( const char* path, Style style, const char* ) {
@@ -112,7 +122,8 @@ void Log::setFile( const char* path, Style style, const char* ) {
     info().setTarget( createStyleTarget( file, style, "(I)" ) );
     warning().setTarget( createStyleTarget( file, style, "(W)" ) );
     error().setTarget( createStyleTarget( file, style, "(E)" ) );
-    if ( Main::instance().debug() ) debug().setTarget( createStyleTarget( file, style, "(D)" ) );
+    if ( Main::instance().debug() )
+        debug().setTarget( createStyleTarget( file, style, "(D)" ) );
     libs_debug_setTarget( file );
 }
 
@@ -129,7 +140,8 @@ void Log::addStdOut( Style style, const char* ) {
     info().addTarget( createStyleTarget( stdout, style, "(I)" ) );
     warning().addTarget( createStyleTarget( stdout, style, "(W)" ) );
     error().addTarget( createStyleTarget( stdout, style, "(E)" ) );
-    if ( Main::instance().debug() ) debug().addTarget( createStyleTarget( stdout, style, "(D)" ) );
+    if ( Main::instance().debug() )
+        debug().addTarget( createStyleTarget( stdout, style, "(D)" ) );
     libs_debug_addTarget( stdout );
 }
 
@@ -138,7 +150,8 @@ void Log::setStdOut( Style style, const char* ) {
     info().setTarget( createStyleTarget( stdout, style, "(I)" ) );
     warning().setTarget( createStyleTarget( stdout, style, "(W)" ) );
     error().setTarget( createStyleTarget( stdout, style, "(E)" ) );
-    if ( Main::instance().debug() ) debug().setTarget( createStyleTarget( stdout, style, "(D)" ) );
+    if ( Main::instance().debug() )
+        debug().setTarget( createStyleTarget( stdout, style, "(D)" ) );
     libs_debug_setTarget( stdout );
 }
 
@@ -152,14 +165,18 @@ int Log::error_unit() {
 void Log::reset() {
     eckit::Log::reset();
     for ( std::string libname : Library::list() ) {
-        if ( Channel& debug = Library::lookup( libname ).debugChannel() ) { debug.reset(); }
+        if ( Channel& debug = Library::lookup( libname ).debugChannel() ) {
+            debug.reset();
+        }
     }
 }
 
 void Log::flush() {
     eckit::Log::flush();
     for ( std::string libname : Library::list() ) {
-        if ( Channel& debug = Library::lookup( libname ).debugChannel() ) { debug.flush(); }
+        if ( Channel& debug = Library::lookup( libname ).debugChannel() ) {
+            debug.flush();
+        }
     }
 }
 

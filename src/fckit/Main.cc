@@ -228,7 +228,8 @@ Main::Main( int argc, char** argv, const char* homeenv ) : eckit::Main( argc, ar
             displayName_ = arg.substr( pos );
         }
         if ( arg == "--displayname" ) {
-            if ( j + 1 < argc ) displayName_ = argv[j + 1];
+            if ( j + 1 < argc )
+                displayName_ = argv[j + 1];
         }
     }
 
@@ -237,7 +238,9 @@ Main::Main( int argc, char** argv, const char* homeenv ) : eckit::Main( argc, ar
 
 void Main::initialise( int argc, char** argv, const char* homeenv ) {
     eckit::AutoLock<eckit::Mutex> lock( local_mutex );
-    if ( not ready() ) { new Main( argc, argv, homeenv ); }
+    if ( not ready() ) {
+        new Main( argc, argv, homeenv );
+    }
 }
 
 void Main::finalise() {

@@ -41,7 +41,9 @@ void fckit_throw( const std::string& what, const eckit::CodeLocation& loc ) {
 extern "C" {
 
 int32 fckit__main_init( int32 argc, char* argv[] ) {
-    if ( not fckit::Main::ready() ) { fckit::Main::initialise( argc, argv ); }
+    if ( not fckit::Main::ready() ) {
+        fckit::Main::initialise( argc, argv );
+    }
 
     return SUCCESS;
 }

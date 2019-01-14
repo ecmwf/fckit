@@ -99,7 +99,7 @@ TEST( test_allreduce )
 
   FCKIT_SUPPRESS_UNUSED( real64_r1 )
   FCKIT_SUPPRESS_UNUSED( res_real64_r1 )
-  FCKIT_SUPPRESS_UNUSED( res_int32_r3 ) 
+  FCKIT_SUPPRESS_UNUSED( res_int32_r3 )
   FCKIT_SUPPRESS_UNUSED( res_real32_r2 )
   FCKIT_SUPPRESS_UNUSED( real32_r2 )
 
@@ -252,7 +252,7 @@ TEST( test_allgather )
   use, intrinsic ::iso_c_binding
   implicit none
   type(fckit_mpi_comm) :: comm
-  real(c_double)  :: real64, real64_r1(2)    
+  real(c_double)  :: real64, real64_r1(2)
   real(c_double), allocatable :: res_real64(:), res_real64_r1(:)
   real(c_double), allocatable :: real64v_r1(:), res_real64v_r1(:)
   real(c_float)   :: real32, real32_r1(2)
@@ -265,7 +265,7 @@ TEST( test_allgather )
   integer(c_long), allocatable :: res_int64(:),  res_int64_r1(:)
   integer(c_long), allocatable :: int64v_r1(:),  res_int64v_r1(:)
   integer, allocatable :: recvcounts(:), displs(:)
-  
+
   write(0,*) "test_allgather"
   comm = fckit_mpi_comm("world")
 
@@ -326,7 +326,7 @@ TEST( test_allgather )
   deallocate(res_real64_r1)
 
   allocate(recvcounts(comm%size()),displs(comm%size()))
-  
+
   allocate(int32v_r1(comm%rank()+1))
   int32v_r1 = comm%rank()
   recvcounts(1) = 1
@@ -340,7 +340,7 @@ TEST( test_allgather )
   FCTEST_CHECK_EQUAL(minval(res_int32v_r1),0)
   FCTEST_CHECK_EQUAL(maxval(res_int32v_r1),comm%size()-1)
   deallocate(int32v_r1,res_int32v_r1)
-  
+
   allocate(int64v_r1(comm%size()-comm%rank()))
   int64v_r1 = comm%rank()
   recvcounts(1) = comm%size()
@@ -368,7 +368,7 @@ TEST( test_allgather )
   FCTEST_CHECK_EQUAL(minval(res_real32v_r1),real(0,c_float))
   FCTEST_CHECK_EQUAL(maxval(res_real32v_r1),real(comm%size()-1,c_float))
   deallocate(real32v_r1,res_real32v_r1)
-  
+
   allocate(real64v_r1(comm%size()-comm%rank()))
   real64v_r1 = comm%rank()
   recvcounts(1) = comm%size()
@@ -382,7 +382,7 @@ TEST( test_allgather )
   FCTEST_CHECK_EQUAL(minval(res_real64v_r1),real(0,c_double))
   FCTEST_CHECK_EQUAL(maxval(res_real64v_r1),real(comm%size()-1,c_double))
   deallocate(real64v_r1,res_real64v_r1)
-  
+
   deallocate(recvcounts,displs)
 
 END_TEST

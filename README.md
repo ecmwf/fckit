@@ -4,7 +4,7 @@ Fortran toolkit for interoperating Fortran with C/C++.
 
 In addition useful algorithms from ecKit are wrapped with Fortran.
 
-Project website and reference documentation on released versions: 
+Project website and reference documentation on released versions:
 https://software.ecmwf.int/wiki/display/FCKIT
 
 ## fctest

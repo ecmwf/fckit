@@ -25,7 +25,8 @@ public:
         out << "destructing Object " << i_;
         fckit_write_to_fortran_unit( fckit_fortranunit_stderr(), out.str().c_str() );
         destructor_called += 1;
-        if ( scope_ended ) destructor_called_after_scope += 1;
+        if ( scope_ended )
+            destructor_called_after_scope += 1;
     }
     int id() const { return i_; }
 

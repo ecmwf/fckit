@@ -11,7 +11,7 @@ AllowAllParametersOfDeclarationOnNextLine: true
 AllowShortBlocksOnASingleLine: true
 AllowShortCaseLabelsOnASingleLine: false
 AllowShortFunctionsOnASingleLine: Inline
-AllowShortIfStatementsOnASingleLine: true
+AllowShortIfStatementsOnASingleLine: false
 AllowShortLoopsOnASingleLine: false
 AlwaysBreakAfterDefinitionReturnType: None
 AlwaysBreakAfterReturnType: None
@@ -66,7 +66,7 @@ IncludeCategories:
     Priority:        3
 IncludeIsMainRegex: '([-_](test|unittest))?$'
 IndentCaseLabels: true
-IndentWidth:    4 
+IndentWidth:     4
 IndentWrappedFunctionNames: false
 JavaScriptQuotes: Leave
 JavaScriptWrapImports: true

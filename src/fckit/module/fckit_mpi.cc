@@ -47,7 +47,9 @@ const Comm* fckit__mpi__comm_wrap( int32 comm ) {
     std::ostringstream s;
     s << "fort." << comm;
     std::string name = s.str();
-    if ( not eckit::mpi::hasComm( name.c_str() ) ) { eckit::mpi::addComm( name.c_str(), comm ); }
+    if ( not eckit::mpi::hasComm( name.c_str() ) ) {
+        eckit::mpi::addComm( name.c_str(), comm );
+    }
     return &eckit::mpi::comm( name.c_str() );
 }
 
@@ -55,7 +57,9 @@ void fckit__mpi__setCommDefault_int( int32 comm ) {
     std::ostringstream s;
     s << "fort." << comm;
     std::string name = s.str();
-    if ( not eckit::mpi::hasComm( name.c_str() ) ) { eckit::mpi::addComm( name.c_str(), comm ); }
+    if ( not eckit::mpi::hasComm( name.c_str() ) ) {
+        eckit::mpi::addComm( name.c_str(), comm );
+    }
     eckit::mpi::setCommDefault( name.c_str() );
 }
 
@@ -470,4 +474,4 @@ void fckit__mpi__wait( const Comm* comm, int32 request, int32* status ) {
     status[2] = _status.error();
 }
 
-} // extern "C"
+}  // extern "C"

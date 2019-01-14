@@ -25,8 +25,10 @@ void fckit__log( Channel* channel, char* msg, int32 newl, int32 flush ) {
         *channel << msg;
     else
         *channel << " ";
-    if ( newl ) *channel << eckit::newl;
-    if ( flush ) *channel << std::flush;
+    if ( newl )
+        *channel << eckit::newl;
+    if ( flush )
+        *channel << std::flush;
 }
 
 void fckit__log_debug( char* msg, int32 newl, int32 flush ) {

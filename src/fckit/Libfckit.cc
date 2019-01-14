@@ -39,7 +39,9 @@ std::string Libfckit::version() const {
 
 std::string Libfckit::gitsha1( unsigned int count ) const {
     static std::string sha1( FCKIT_GIT_SHA1 );
-    if ( sha1.empty() ) { return "not available"; }
+    if ( sha1.empty() ) {
+        return "not available";
+    }
     sha1 = sha1.substr( 0, std::min( count, 40u ) );
     return sha1.c_str();
 }

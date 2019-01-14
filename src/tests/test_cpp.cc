@@ -32,7 +32,8 @@ public:
     }
     void finalise() { traceChannel_.reset( new eckit::Channel() ); }
     eckit::Channel& traceChannel() {
-        if ( traceChannel_ ) return *traceChannel_;
+        if ( traceChannel_ )
+            return *traceChannel_;
         traceChannel_.reset( new eckit::Channel(
             new eckit::PrefixTarget( "FCKIT_TRACE", new eckit::OStreamTarget( eckit::Log::info() ) ) ) );
         return *traceChannel_;

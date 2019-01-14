@@ -192,7 +192,8 @@ void c_fckit_configuration_set_array_double( Configuration* This, const char* na
 }
 
 int32 c_fckit_configuration_get_config( const Configuration* This, const char* name, LocalConfiguration* value ) {
-    if ( !This->get( string( name ), *value ) ) return false;
+    if ( !This->get( string( name ), *value ) )
+        return false;
     return true;
 }
 
@@ -200,7 +201,8 @@ int32 c_fckit_configuration_get_config_list( const Configuration* This, const ch
                                              size_t& size ) {
     value = nullptr;
     vector<LocalConfiguration> vector;
-    if ( !This->get( string( name ), vector ) ) return false;
+    if ( !This->get( string( name ), vector ) )
+        return false;
     size  = vector.size();
     value = new LocalConfiguration*[size];
     for ( size_t i = 0; i < size; ++i ) {
@@ -219,25 +221,29 @@ int32 c_fckit_configuration_get_bool( const Configuration* This, const char* nam
 }
 
 int32 c_fckit_configuration_get_int32( const Configuration* This, const char* name, int32& value ) {
-    if ( !This->get( string( name ), value ) ) return false;
+    if ( !This->get( string( name ), value ) )
+        return false;
     return true;
 }
 
 int32 c_fckit_configuration_get_int64( const Configuration* This, const char* name, int64& value ) {
     // TODO: long should be converted to int64 once ECKIT-349 is fixed
     long v;
-    if ( !This->get( string( name ), v ) ) return false;
+    if ( !This->get( string( name ), v ) )
+        return false;
     value = v;
     return true;
 }
 
 int32 c_fckit_configuration_get_float( const Configuration* This, const char* name, float& value ) {
-    if ( !This->get( string( name ), value ) ) return false;
+    if ( !This->get( string( name ), value ) )
+        return false;
     return true;
 }
 
 int32 c_fckit_configuration_get_double( const Configuration* This, const char* name, double& value ) {
-    if ( !This->get( string( name ), value ) ) return false;
+    if ( !This->get( string( name ), value ) )
+        return false;
     return true;
 }
 
@@ -256,7 +262,8 @@ int32 c_fckit_configuration_get_string( const Configuration* This, const char* n
 int32 c_fckit_configuration_get_array_int32( const Configuration* This, const char* name, int32*& value,
                                              size_t& size ) {
     vector<int32> v;
-    if ( !This->get( string( name ), v ) ) return false;
+    if ( !This->get( string( name ), v ) )
+        return false;
     size  = v.size();
     value = new int32[size];
     for ( size_t j = 0; j < v.size(); ++j )
@@ -268,7 +275,8 @@ int32 c_fckit_configuration_get_array_int64( const Configuration* This, const ch
                                              size_t& size ) {
     // TODO: long should be converted to int64 once ECKIT-349 is fixed
     vector<long> v;
-    if ( !This->get( string( name ), v ) ) return false;
+    if ( !This->get( string( name ), v ) )
+        return false;
     size  = v.size();
     value = new int64[size];
     for ( size_t j = 0; j < v.size(); ++j )
@@ -279,7 +287,8 @@ int32 c_fckit_configuration_get_array_int64( const Configuration* This, const ch
 int32 c_fckit_configuration_get_array_float( const Configuration* This, const char* name, float*& value,
                                              size_t& size ) {
     vector<float> v;
-    if ( !This->get( string( name ), v ) ) return false;
+    if ( !This->get( string( name ), v ) )
+        return false;
     size  = v.size();
     value = new float[size];
     for ( size_t j = 0; j < v.size(); ++j )
@@ -290,7 +299,8 @@ int32 c_fckit_configuration_get_array_float( const Configuration* This, const ch
 int32 c_fckit_configuration_get_array_double( const Configuration* This, const char* name, double*& value,
                                               size_t& size ) {
     vector<double> v;
-    if ( !This->get( string( name ), v ) ) return false;
+    if ( !This->get( string( name ), v ) )
+        return false;
     size  = v.size();
     value = new double[size];
     for ( size_t j = 0; j < v.size(); ++j )
