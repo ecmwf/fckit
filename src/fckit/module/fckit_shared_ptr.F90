@@ -9,11 +9,19 @@
 #include "fckit/fckit.h"
 
 module fckit_shared_ptr_module
+
+#if FCKIT_HAVE_ECKIT
 use fckit_refcount_module, only : &
   & fckit_refcount, &
   & fckit_refcount_interface, &
   & fckit_external, &
   & fckit_owned
+#else
+use fckit_refcount_module, only : &
+  & fckit_refcount, &
+  & fckit_refcount_interface, &
+  & fckit_external
+#endif
 implicit none
 private
 
@@ -25,7 +33,10 @@ public fckit_make_shared
 public fckit_refcount
 public fckit_refcount_interface
 public fckit_external
+
+#if FCKIT_HAVE_ECKIT
 public fckit_owned
+#endif
 
 !========================================================================
 

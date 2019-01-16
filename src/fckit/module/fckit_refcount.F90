@@ -19,7 +19,10 @@ private
 public :: fckit_refcount
 public :: fckit_refcount_interface
 public :: fckit_external
+
+#if FCKIT_HAVE_ECKIT
 public :: fckit_owned
+#endif
 
 !========================================================================
 
@@ -87,6 +90,7 @@ interface
 
 end interface
 
+#if FCKIT_HAVE_ECKIT
 type, extends(fckit_refcount) :: fckit_refcount_owned
   type(c_ptr), private :: cptr_ = c_null_ptr
   contains
@@ -94,6 +98,7 @@ type, extends(fckit_refcount) :: fckit_refcount_owned
   procedure, public :: attach => fckit_refcount_owned_attach
   procedure, public :: detach => fckit_refcount_owned_detach
 end type
+#endif
 
 private :: c_ptr, c_null_ptr
 
@@ -112,6 +117,7 @@ function fckit_external() result(funptr)
   funptr => allocate_fckit_external
 end function
 
+#if FCKIT_HAVE_ECKIT
 subroutine allocate_fckit_refcount_owned(refcount,shared_ptr)
   use fckit_object_module, only : fckit_object
   use, intrinsic :: iso_c_binding, only : c_ptr
@@ -134,6 +140,8 @@ function fckit_owned() result(funptr)
   funptr => allocate_fckit_refcount_owned
 end function
 
+#endif
+
 
 subroutine fckit_refcount_external_attach(this)
   class(fckit_refcount_external), intent(inout) :: this
@@ -152,6 +160,7 @@ function fckit_refcount_external_owners(this) result(owners)
   owners = this%refcount_
 end function
 
+#if FCKIT_HAVE_ECKIT
 subroutine fckit_refcount_owned_attach(this)
   class(fckit_refcount_owned), intent(inout) :: this
   call fckit__Owned__attach(this%cptr_)
@@ -168,5 +177,6 @@ function fckit_refcount_owned_owners(this) result(owners)
   class(fckit_refcount_owned), intent(in) :: this
   owners = fckit__Owned__owners(this%cptr_)
 end function
+#endif
 
 end module

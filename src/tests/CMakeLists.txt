@@ -79,7 +79,7 @@ ecbuild_add_test( TARGET  fckit_test_configuration_cpp
             CONDITION HAVE_ECKIT
             LIBS    fckit )
 
-if( HAVE_TESTS )
+if( HAVE_TESTS AND HAVE_ECKIT )
   if( NOT (CMAKE_VERSION VERSION_LESS 3.1) )
     set_property( TEST fckit_test_configuration_cpp APPEND PROPERTY LABELS "fortran" )
   endif()
@@ -98,7 +98,7 @@ if( CMAKE_Fortran_COMPILER_ID MATCHES "PGI" )
 elseif( CMAKE_Fortran_COMPILER_ID MATCHES "Intel" )
   set( NO_MAIN "-nofor-main" )
 endif()
-if( HAVE_TESTS )
+if( HAVE_TESTS AND HAVE_ECKIT )
   if( NO_MAIN )
     set_target_properties(fckit_test_configuration_cpp PROPERTIES LINK_FLAGS ${NO_MAIN} )
     set_target_properties(fckit_test_cpp               PROPERTIES LINK_FLAGS ${NO_MAIN} )
