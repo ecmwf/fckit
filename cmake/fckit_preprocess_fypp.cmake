@@ -15,6 +15,9 @@ function( fckit_preprocess_fypp output )
     list( APPEND args -l 132 )
     if( (NOT _PAR_NO_LINE_NUMBERING) AND (NOT FYPP_NO_LINE_NUMBERING) )
       list( APPEND args -n )
+      if( CMAKE_Fortran_COMPILER_ID MATCHES "Cray" )
+        list( APPEND args -N nocontlines )
+      endif()
     endif()
 
     add_custom_command(
