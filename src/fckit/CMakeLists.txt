@@ -10,8 +10,6 @@ add_custom_target( fctest_includes SOURCES
        fctest.h
        ../../tools/fctest_generate_runner.py )
 
-install( FILES ../../tools/fctest_generate_runner.py DESTINATION libexec )
-
 configure_file(fckit.h.in  fckit.h)
 install( FILES ${CMAKE_CURRENT_BINARY_DIR}/fckit.h DESTINATION ${INSTALL_INCLUDE_DIR}/fckit )
 

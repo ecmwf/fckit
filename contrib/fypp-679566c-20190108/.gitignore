@@ -1,0 +1,10 @@
+*~
+.idea
+*.pyc
+dist
+build
+docs/_build
+*.egg-info
+.tox
+_gitmsg.saved.txt
+

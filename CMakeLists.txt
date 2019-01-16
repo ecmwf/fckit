@@ -106,7 +106,9 @@ set( FCKIT_LIBRARIES  fckit )
 # sources
 
 set( FCTEST_GENERATOR ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/tools/fctest_generate_runner.py )
-include(add_fctest)
+set( FYPP ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/tools/fckit_fypp.py )
+include( add_fctest )
+include( fckit_preprocess_fypp )
 
 include_directories( ${FCKIT_INCLUDE_DIRS} )
 
@@ -124,10 +126,14 @@ if(ECBUILD_INSTALL_FORTRAN_MODULES)
   install(DIRECTORY ${CMAKE_Fortran_MODULE_DIRECTORY}/${CMAKE_CFG_INTDIR} DESTINATION ${INSTALL_INCLUDE_DIR} )
 endif()
 
-set( INSTALL_LIBEXEC_DIR libexec )
 if( NOT PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
   set( FCTEST_GENERATOR ${FCTEST_GENERATOR} PARENT_SCOPE )
+  set( FYPP ${FYPP} PARENT_SCOPE )
 endif()
-file(READ ${CMAKE_CURRENT_SOURCE_DIR}/cmake/add_fctest.cmake FCKIT_IMPORT)
+file(READ ${CMAKE_CURRENT_SOURCE_DIR}/cmake/add_fctest.cmake ADD_FCTEST)
+file(READ ${CMAKE_CURRENT_SOURCE_DIR}/cmake/fckit_preprocess_fypp.cmake FCKIT_PREPROCESS_FYPP )
+
+install( FILES tools/fctest_generate_runner.py DESTINATION libexec )
+install( FILES contrib/fypp-679566c-20190108/bin/fypp DESTINATION libexec RENAME fckit_fypp.py )
 
 ecbuild_install_project( NAME fckit )
