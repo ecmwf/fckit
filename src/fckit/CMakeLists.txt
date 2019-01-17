@@ -10,8 +10,6 @@ add_custom_target( fctest_includes SOURCES
        fctest.h
        ../../tools/fctest_generate_runner.py )
 
-install( FILES ../../tools/fctest_generate_runner.py DESTINATION libexec )
-
 configure_file(fckit.h.in  fckit.h)
 install( FILES ${CMAKE_CURRENT_BINARY_DIR}/fckit.h DESTINATION ${INSTALL_INCLUDE_DIR}/fckit )
 
@@ -35,6 +33,7 @@ if( HAVE_ECKIT )
       module/fckit_log.F90
       module/fckit_buffer.cc
       module/fckit_buffer.F90
+      module/fckit_owned.cc
       module/fckit_owned_object.F90
       Libfckit.h
       Libfckit.cc
@@ -42,7 +41,6 @@ if( HAVE_ECKIT )
       Main.cc
       Log.h
       Log.cc
-      Log.F90
   )
 endif()
 
@@ -73,12 +71,12 @@ ecbuild_add_library( TARGET     fckit
                      LINKER_LANGUAGE ${FCKIT_LINKER_LANGUAGE}
                      SOURCES
                                 fctest.F90
+                                Log.F90
                                 module/fckit_array.F90
                                 module/fckit_C_interop.cc
                                 module/fckit_C_interop.F90
                                 module/fckit_object.F90
                                 module/fckit_final.F90
-                                module/fckit_owned.cc
                                 module/fckit_refcount.F90
                                 module/fckit_shared_ptr.F90
                                 module/fckit_shared_object.F90
