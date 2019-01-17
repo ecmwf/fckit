@@ -12,11 +12,12 @@ function( fckit_preprocess_fypp output )
     # Append to output and set in parent scope
     set(${output} ${${output}} ${outfile} PARENT_SCOPE)
 
-    list( APPEND args -l 132 )
+    list( APPEND args -l 132 ) # Line length
+    list( APPEND args -p )     # Create parent folder
     if( (NOT _PAR_NO_LINE_NUMBERING) AND (NOT FYPP_NO_LINE_NUMBERING) )
-      list( APPEND args -n )
+      list( APPEND args -n )   # Create line numbering for compile errors
       if( CMAKE_Fortran_COMPILER_ID MATCHES "Cray" )
-        list( APPEND args -N nocontlines )
+        list( APPEND args -N nocontlines )  # workaround for line numbers in continuation lines
       endif()
     endif()
 
