@@ -2,7 +2,7 @@ function( fckit_preprocess_fypp output )
 
   set( options NO_LINE_NUMBERING )
   set( single_value_args "" )
-  set( multi_value_args SOURCES FYPP_ARGS )
+  set( multi_value_args SOURCES FYPP_ARGS TARGET_INCLUDES )
   cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
 
   foreach( filename ${_PAR_SOURCES} )
@@ -19,6 +19,27 @@ function( fckit_preprocess_fypp output )
       if( CMAKE_Fortran_COMPILER_ID MATCHES "Cray" )
         list( APPEND args -N nocontlines )  # workaround for line numbers in continuation lines
       endif()
+    endif()
+
+    if( _PAR_FYPP_ARGS )
+        set( args ${args} ${_PAR_FYPP_ARGS} )
+    endif()
+
+    if( _PAR_TARGET_INCLUDES )
+      foreach( target ${_PAR_TARGET_INCLUDES} )
+        get_target_property( _target_include_dirs ${target} INTERFACE_INCLUDE_DIRECTORIES )
+        if( _target_include_dirs )
+          foreach( _target_include_dir ${_target_include_dirs} )
+            list( APPEND args -I ${_target_include_dir} } )
+          endforeach()
+        endif()
+        get_target_property( _target_include_dirs ${target} INCLUDE_DIRECTORIES )
+        if( _target_include_dirs )
+          foreach( _target_include_dir ${_target_include_dirs} )
+            list( APPEND args -I ${_target_include_dir} )
+          endforeach()
+        endif()
+      endforeach()
     endif()
 
     add_custom_command(

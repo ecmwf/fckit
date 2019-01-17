@@ -15,7 +15,7 @@ function( fctest_generate_runner )
   cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
 
   get_filename_component(base ${_PAR_FILENAME} NAME_WE)
-  set(base_abs ${CMAKE_CURRENT_SOURCE_DIR}/${base})
+
   set(outfile ${CMAKE_CURRENT_BINARY_DIR}/${base}_main.F90)
   set(${_PAR_OUTPUT} ${outfile} PARENT_SCOPE)
 
@@ -26,8 +26,9 @@ function( fctest_generate_runner )
 
   add_custom_command(
     OUTPUT ${outfile}
-    COMMAND ${FCTEST_GENERATOR} -i ${CMAKE_CURRENT_SOURCE_DIR}/${_PAR_FILENAME} -o ${outfile}
-    DEPENDS ${_depends} )
+    COMMAND ${FCTEST_GENERATOR} -i ${_PAR_FILENAME} -o ${outfile}
+    DEPENDS ${_depends}
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} )
 
   set_source_files_properties(${outfile} PROPERTIES GENERATED TRUE)
 
