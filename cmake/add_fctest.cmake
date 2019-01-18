@@ -15,7 +15,6 @@ function( fctest_generate_runner )
   cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
 
   get_filename_component(base ${_PAR_FILENAME} NAME_WE)
-
   set(outfile ${CMAKE_CURRENT_BINARY_DIR}/${base}_main.F90)
   set(${_PAR_OUTPUT} ${outfile} PARENT_SCOPE)
 
@@ -57,13 +56,41 @@ if( NOT (CMAKE_VERSION VERSION_LESS 3.1) )
   cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}" ${_FIRST_ARG} ${ARGN} )
 
   if( TARGET ${_PAR_TARGET} )
-      get_property( test_sources TARGET ${_PAR_TARGET} PROPERTY SOURCES )
+      get_target_property( test_sources ${_PAR_TARGET} SOURCES )
       list( GET test_sources 0 TESTSUITE )
-      list( REMOVE_ITEM test_sources ${TESTSUITE} )
+
+      get_filename_component( extension ${TESTSUITE} EXT )
+      get_filename_component( base ${TESTSUITE} NAME_WE )
+
+    ### Preprocess files with extension ".fypp.F90"      
+      fckit_target_preprocess_fypp( ${_PAR_TARGET} )
+
+    ### Remove TESTSUITE from target
+      get_target_property( test_sources ${_PAR_TARGET} SOURCES )
+      set( match_regex "${base}.F90")
+      set( match_found FALSE )
+      foreach( source ${test_sources} )
+        if( ${source} MATCHES "${match_regex}" )
+          if( match_found ) 
+            message( FATAL_ERROR "Second match found for ${match_regex} in fctest ${_PAR_TARGET}" )
+          endif()
+          set( match_found TRUE )
+          set( TESTSUITE ${source} )
+          list( FILTER test_sources EXCLUDE REGEX ${source} )
+        endif()
+      endforeach()
+      if( NOT match_found )
+        message( FATAL_ERROR "No match found for ${match_regex} in fctest ${_PAR_TARGET}" )
+      endif()
       set_property( TARGET ${_PAR_TARGET} PROPERTY SOURCES ${test_sources} )
+
+    ### Add TESTRUNNER generated from TESTSUITE
       fctest_generate_runner(
           OUTPUT TESTRUNNER
           FILENAME ${TESTSUITE} )
+      target_sources( ${_PAR_TARGET} PUBLIC ${TESTRUNNER} )
+
+    ### Add dependencies
       target_include_directories( ${_PAR_TARGET} PUBLIC ${FCKIT_INCLUDE_DIRS} )
       target_link_libraries( ${_PAR_TARGET} fckit )
       if( _cmake_supports_checking_for_TEST )
@@ -71,18 +98,20 @@ if( NOT (CMAKE_VERSION VERSION_LESS 3.1) )
           set_property( TEST ${_PAR_TARGET} APPEND PROPERTY LABELS "fortran" )
         endif()
       endif()
-      target_sources( ${_PAR_TARGET} PUBLIC ${TESTRUNNER} )
 
+    ### Add compile flags
       list( APPEND _properties COMPILE_FLAGS COMPILE_DEFINITIONS )
       foreach( _prop ${_properties} )
-          get_source_file_property( TESTSUITE_PROPERTY ${TESTSUITE} ${_prop} )
+          if( NOT ORIGINAL_TESTSUITE )
+            set( ORIGINAL_TESTSUITE ${TESTSUITE} )
+          endif()
+          get_source_file_property( TESTSUITE_PROPERTY ${ORIGINAL_TESTSUITE} ${_prop} )
           if( TESTSUITE_PROPERTY )
               set_source_files_properties( ${TESTRUNNER} PROPERTIES ${_prop} ${TESTSUITE_PROPERTY} )
           endif()
       endforeach()
 
       add_custom_target( ${_PAR_TARGET}_testsuite SOURCES ${TESTSUITE} )
-
   endif()
 
 else()

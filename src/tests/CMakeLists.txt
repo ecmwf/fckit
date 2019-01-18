@@ -107,9 +107,9 @@ if( HAVE_ECKIT )
   endif()
 endif()
 
-fckit_preprocess_fypp( test_fypp_preprocessed SOURCES test_fypp.F90 )
-ecbuild_add_test( TARGET fckit_test_fypp 
-  SOURCES ${test_fypp_preprocessed}
+add_fctest( TARGET fckit_test_fypp 
+  SOURCES test_fypp.fypp.F90
+  LIBS fckit
 )
 
 endif()

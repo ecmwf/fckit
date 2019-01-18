@@ -25,18 +25,23 @@ write(0,*) "This is a very long line in which we will print the code location of
 
 #:endmute
 
-program test_fypp
-use, intrinsic :: iso_c_binding
-implicit none
+#include "fckit/fctest.h"
 
-    integer :: err_code
+TESTSUITE( test_fypp )
 
-#:for rank  in ranks
-#:for dtype,ftype in types
-${ftype}$, allocatable :: var_${dtype}$_${rank}$(${dim[rank]}$)
-#:endfor
-#:endfor
+TEST( allocate_different_types )
+  use, intrinsic :: iso_c_binding
+  implicit none
+  #:for rank  in ranks
+  #:for dtype,ftype in types
+  ${ftype}$, allocatable :: var_${dtype}$_${rank}$(${dim[rank]}$)
+  #:endfor
+  #:endfor
+END_TEST
+
+TEST( test_macros )
   integer :: a
+  integer :: err_code
   a = 1
 
   err_code = 0
@@ -44,8 +49,7 @@ ${ftype}$, allocatable :: var_${dtype}$_${rank}$(${dim[rank]}$)
   @:print_code_location()
   @:ensure( a == 2, "a must be 2" )
 
-  if( err_code == 0 ) then
-    STOP 1 ! error
-  endif
+  FCTEST_CHECK_EQUAL(err_code, 1)
+END_TEST
 
-end program
+END_TESTSUITE
