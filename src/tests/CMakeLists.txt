@@ -108,6 +108,7 @@ if( HAVE_ECKIT )
 endif()
 
 add_fctest( TARGET fckit_test_fypp 
+  LINKER_LANGUAGE Fortran
   SOURCES test_fypp.fypp.F90
   LIBS fckit
 )
