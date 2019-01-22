@@ -1,5 +1,6 @@
 
 function( fckit_target_append_fypp_args output target )
+  unset(args)
   # Require CMake 3.12 !!!
   if( CMAKE_VERSION VERSION_LESS 3.12 ) # Hopefully we can remove this soon
     if( TARGET ${target} )
@@ -35,6 +36,8 @@ function( fckit_preprocess_fypp_sources output )
   set( multi_value_args SOURCES FYPP_ARGS DEPENDS )
   cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
 
+  unset( outfiles )
+
   foreach( filename ${_PAR_SOURCES} )
 
     get_filename_component( dir ${filename} DIRECTORY )
@@ -45,9 +48,9 @@ function( fckit_preprocess_fypp_sources output )
     endif()
     set( outfile "${outfile}/${base}.F90" )
 
-    # Append to output and set in parent scope
-    set(${output} ${${output}} ${outfile} PARENT_SCOPE)
+    list( APPEND outfiles ${outfile} )
 
+    unset(args)
     list( APPEND args -l 132 ) # Line length
     list( APPEND args -p )     # Create parent folder
     if( (NOT _PAR_NO_LINE_NUMBERING) AND (NOT FYPP_NO_LINE_NUMBERING) )
@@ -65,14 +68,25 @@ function( fckit_preprocess_fypp_sources output )
       fckit_target_append_fypp_args( args target )
     endforeach()
 
+    if( dir )
+      set( short_outfile "${dir}/${base}.F90" )
+    else()
+      set( short_outfile "${base}.F90")
+    endif()
+
     add_custom_command(
       OUTPUT ${outfile}
       COMMAND ${FYPP} ${args} ${CMAKE_CURRENT_SOURCE_DIR}/${filename} ${outfile}
-      DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${filename} ${_PAR_DEPENDS} )
+      DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${filename} ${_PAR_DEPENDS} 
+      COMMENT "[fypp] Preprocessor generating ${short_outfile}" )
 
     set_source_files_properties(${outfile} PROPERTIES GENERATED TRUE)
 
   endforeach()
+
+  # Append to output and set in parent scope
+  set(${output} ${${output}} ${outfiles} PARENT_SCOPE)
+
 
 endfunction()
 
@@ -106,12 +120,16 @@ function( fckit_target_preprocess_fypp _PAR_TARGET )
       endforeach()
 
       fckit_target_append_fypp_args( args ${_PAR_TARGET} )
+
+      message( "sources: ${sources_to_be_preprocessed}" )
     
       fckit_preprocess_fypp_sources( preprocessed_sources
           SOURCES ${sources_to_be_preprocessed}
           FYPP_ARGS ${_PAR_FYPP_ARGS} ${args}
           DEPENDS ${preprocessed_depends} ${_PAR_DEPENDS}
       )
+
+      message( "sources: ${preprocessed_sources}" )
 
       target_sources( ${_PAR_TARGET} PRIVATE ${preprocessed_sources} )
 
