@@ -22,7 +22,7 @@ if( HAVE_ECKIT )
       module/fckit_configuration.F90
       module/fckit_configuration.cc
       module/fckit_mpi.cc
-      module/fckit_mpi.F90
+      module/fckit_mpi.fypp.F90
       module/fckit_main.cc
       module/fckit_main.F90
       module/fckit_exception.F90
@@ -99,3 +99,5 @@ ecbuild_add_library( TARGET     fckit
 
                      TYPE ${fckit_type}
                     )
+
+fckit_target_preprocess_fypp( fckit )
