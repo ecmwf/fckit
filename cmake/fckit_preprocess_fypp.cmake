@@ -58,11 +58,17 @@ function( fckit_preprocess_fypp_sources output )
     unset(args)
     list( APPEND args -l 132 ) # Line length
     list( APPEND args -p )     # Create parent folder
-    if( (NOT _PAR_NO_LINE_NUMBERING) AND (NOT FYPP_NO_LINE_NUMBERING) )
+    set( _enable_line_numbers TRUE )
+    if( _PAR_NO_LINE_NUMBERING OR FYPP_NO_LINE_NUMBERING )
+      set( _enable_line_numbers FALSE )
+    endif()
+    if( CMAKE_Fortran_COMPILER_ID MATCHES "Cray" )
+      set( _enable_line_numbers FALSE )
+      # Compiler errors occur (tested with cce/8.7.5 )
+    endif()
+    if( _enable_line_numbers )
       list( APPEND args -n )   # Create line numbering for compile errors
-      if( CMAKE_Fortran_COMPILER_ID MATCHES "Cray" )
-        list( APPEND args -N nocontlines )  # workaround for line numbers in continuation lines
-      endif()
+      # list( APPEND args -N nocontlines )  # workaround for line numbers in continuation lines
     endif()
 
     if( _PAR_FYPP_ARGS )
