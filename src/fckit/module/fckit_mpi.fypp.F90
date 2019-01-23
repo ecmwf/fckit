@@ -696,9 +696,9 @@ subroutine alltoallv_${dtype}$_r0(this,in,scounts,sdispl,out,rcounts,rdispl,dumm
   use, intrinsic :: iso_c_binding
   use fckit_array_module, only: array_view1d
   class(fckit_mpi_comm), intent(in) :: this
-  ${ftype}$, intent(in) :: in${dim[rank]}$
+  ${ftype}$, intent(in) :: in
   integer(c_int32_t), intent(in) :: scounts(:), sdispl(:)
-  ${ftype}$, intent(inout) :: out${dim[rank]}$
+  ${ftype}$, intent(inout) :: out
   integer(c_int32_t), intent(in) :: rcounts(:), rdispl(:)
   ${ftype}$, intent(in) :: dummy
   ! This routine should never be called because of dummy
