@@ -231,6 +231,14 @@ contains
   final :: fckit_mpi_comm__final_auto
 #endif
 
+  !> Operators that can be passed to collective methods
+  procedure, public, nopass :: sum            => fckit_mpi_sum
+  procedure, public, nopass :: prod           => fckit_mpi_prod
+  procedure, public, nopass :: min            => fckit_mpi_min
+  procedure, public, nopass :: max            => fckit_mpi_max
+  procedure, public, nopass :: minloc         => fckit_mpi_minloc
+  procedure, public, nopass :: maxloc         => fckit_mpi_maxloc
+
 endtype
 
 interface fckit_mpi_comm
