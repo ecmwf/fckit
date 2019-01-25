@@ -1,3 +1,4 @@
+
 ! (C) Copyright 2013 ECMWF.
 !
 ! This software is licensed under the terms of the Apache Licence Version 2.0
@@ -10,10 +11,10 @@
 
 !========================================================================
 
+#:mute
 #! Following is fypp preprocessor code to allow generic programming in Fortran
 #! to reduce the amount of code in this file 20-fold
 
-#:mute
 #:set ranks  = [0,1,2,3,4]
 #:set dim    = ['','(:)','(:,:)','(:,:,:)','(:,:,:,:)','(:,:,:,:,:)']
 
@@ -696,6 +697,9 @@ subroutine allgatherv_${dtype}$_r0(this,in,out,dummy)
   ${ftype}$, intent(inout) :: out(:)
   ${ftype}$, intent(in) :: dummy
   ! This routine should never be called because of dummy
+  FCKIT_SUPPRESS_UNUSED( this )
+  FCKIT_SUPPRESS_UNUSED( in )
+  FCKIT_SUPPRESS_UNUSED( out )
 end subroutine
 
 !---------------------------------------------------------------------------------------
@@ -710,6 +714,14 @@ subroutine alltoallv_${dtype}$_r0(this,in,scounts,sdispl,out,rcounts,rdispl,dumm
   integer(c_int32_t), intent(in) :: rcounts(:), rdispl(:)
   ${ftype}$, intent(in) :: dummy
   ! This routine should never be called because of dummy
+  FCKIT_SUPPRESS_UNUSED( this )
+  FCKIT_SUPPRESS_UNUSED( in )
+  FCKIT_SUPPRESS_UNUSED( scounts )
+  FCKIT_SUPPRESS_UNUSED( sdispl )
+  FCKIT_SUPPRESS_UNUSED( out )
+  FCKIT_SUPPRESS_UNUSED( rcounts )
+  FCKIT_SUPPRESS_UNUSED( rdispl )
+  FCKIT_SUPPRESS_UNUSED( dummy )
 end subroutine
 
 !---------------------------------------------------------------------------------------

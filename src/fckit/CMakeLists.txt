@@ -12,6 +12,7 @@ add_custom_target( fctest_includes SOURCES
 
 configure_file(fckit.h.in  fckit.h)
 install( FILES ${CMAKE_CURRENT_BINARY_DIR}/fckit.h DESTINATION ${INSTALL_INCLUDE_DIR}/fckit )
+set( source_files_properties fckit.h.in PROPERTIES HEADER_FILE_ONLY TRUE )
 
 set( FCKIT_HAVE_ECKIT 0 )
 if( HAVE_ECKIT )
@@ -22,7 +23,7 @@ if( HAVE_ECKIT )
       module/fckit_configuration.F90
       module/fckit_configuration.cc
       module/fckit_mpi.cc
-      module/fckit_mpi.fypp.F90
+      module/fckit_mpi.fypp
       module/fckit_main.cc
       module/fckit_main.F90
       module/fckit_exception.F90
@@ -70,6 +71,7 @@ endif()
 ecbuild_add_library( TARGET     fckit
                      LINKER_LANGUAGE ${FCKIT_LINKER_LANGUAGE}
                      SOURCES
+                                fckit.h.in
                                 fctest.F90
                                 Log.F90
                                 module/fckit_array.F90

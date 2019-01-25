@@ -116,12 +116,34 @@ function( fckit_target_preprocess_fypp _PAR_TARGET )
       foreach( source ${_target_sources} )
         if( source MATCHES ".fypp.F90" )
           list( APPEND sources_to_be_preprocessed ${source} )
+        elseif( source MATCHES ".F90.fypp" )
+          list( APPEND sources_to_be_preprocessed ${source} )
+        elseif( source MATCHES ".fypp" )
+          list( APPEND sources_to_be_preprocessed ${source} )
         endif()
       endforeach()
       foreach( source ${sources_to_be_preprocessed} )
-        list(FILTER _target_sources EXCLUDE REGEX ${source} )
+        set( source_files_properties ${source} PROPERTIES HEADER_FILE_ONLY TRUE )
       endforeach()
-      set_property( TARGET ${_PAR_TARGET} PROPERTY SOURCES ${_target_sources} )
+
+### BUG (tested upto 3.13.2)
+#   Even though source files to be preprocessed with final extension .F90 have just been
+#   declared as HEADER_FILE_ONLY, CMake still tries to compile these files.
+#   This does not happen for files ending with other extensions ( .fypp )
+      set( _create_fypp_target FALSE )
+      foreach( source ${sources_to_be_preprocessed} )
+        if( source MATCHES ".fypp.F90" )
+          set( _create_fypp_target TRUE )
+          list(FILTER _target_sources EXCLUDE REGEX ${source} )
+        endif()
+      endforeach()
+      if( NOT TARGET ${_PAR_TARGET}_fypp AND _create_fypp_target )
+          set_property( TARGET ${_PAR_TARGET} PROPERTY SOURCES ${_target_sources} )
+          add_custom_target( ${_PAR_TARGET}_fypp SOURCES ${sources_to_be_preprocessed} )
+      endif()
+### END BUG
+
+
 
       foreach( depends_property LINK_DEPENDS;MANUALLY_ADDED_DEPENDENCIES )
         get_target_property( target_depends ${_PAR_TARGET} ${depends_property} )
