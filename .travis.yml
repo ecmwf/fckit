@@ -53,7 +53,7 @@ matrix:
         - CACHE_NAME=linux-gcc7-mpich
         - CXX_COMPILER='g++-7' C_COMPILER='gcc-7' Fortran_COMPILER='gfortran-7'
         - MPI='mpich'
-        - FCKIT_CMAKE_OPTIONS="-DCMAKE_BUILD_TYPE=DEBUG -DENABLE_GPROF=ON"
+        - FCKIT_CMAKE_OPTIONS="-DCMAKE_BUILD_TYPE=DEBUG -DENABLE_GPROF=ON -DECBUILD_Fortran_FLAGS_DEBUG='-fprofile-arcs -ftest-coverage -O0 -g'"
         - COVERAGE=ON
       addons:
         apt:
@@ -219,7 +219,7 @@ after_success:
       lcov --remove coverage.info '/usr/*' --output-file coverage.info # filter out system
       lcov --list coverage.info #debug info
       # Uploading report to CodeCov
-      bash <(curl -s https://codecov.io/bash) -t 9c489980-d292-499c-8615-af02df3b20d1 || echo "Codecov did not collect coverage reports"
+      bash <(curl -s https://codecov.io/bash) -t d604c898-35ae-4ce6-ad24-a4c0d56c2afc || echo "Codecov did not collect coverage reports"
     fi
 
 after_failure:
