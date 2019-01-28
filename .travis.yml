@@ -53,7 +53,7 @@ matrix:
         - CACHE_NAME=linux-gcc7-mpich
         - CXX_COMPILER='g++-7' C_COMPILER='gcc-7' Fortran_COMPILER='gfortran-7'
         - MPI='mpich'
-        - FCKIT_CMAKE_OPTIONS='-DCMAKE_BUILD_TYPE=DEBUG -DENABLE_GPROF=ON -DECBUILD_GPROF_FLAG="-fprofile-arcs -ftest-coverage"'
+        - FCKIT_CMAKE_OPTIONS='-DCMAKE_BUILD_TYPE=DEBUG -DENABLE_GPROF=ON'
         - COVERAGE=ON
       addons:
         apt:
