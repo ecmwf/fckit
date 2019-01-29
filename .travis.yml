@@ -202,7 +202,7 @@ script:
   - mkdir -p ${FCKIT_BUILD_DIR} && cd ${FCKIT_BUILD_DIR}
   - cmake -DCMAKE_MODULE_PATH=${ECBUILD_MODULE_PATH} ${FCKIT_CMAKE_OPTIONS} ${FCKIT_SOURCE_DIR}
   - make -j4
-  #- bin/atlas --info
+  - bin/fckit --info
 
   #################################################################
   # Test fckit
