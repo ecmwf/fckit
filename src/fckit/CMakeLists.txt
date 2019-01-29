@@ -6,10 +6,6 @@
 # granted to it by virtue of its status as an intergovernmental organisation nor
 # does it submit to any jurisdiction.
 
-add_custom_target( fctest_includes SOURCES
-       fctest.h
-       ../../tools/fctest_generate_runner.py )
-
 configure_file(fckit.h.in  fckit.h)
 install( FILES ${CMAKE_CURRENT_BINARY_DIR}/fckit.h DESTINATION ${INSTALL_INCLUDE_DIR}/fckit )
 set( source_files_properties fckit.h.in PROPERTIES HEADER_FILE_ONLY TRUE )
@@ -72,6 +68,7 @@ ecbuild_add_library( TARGET     fckit
                      LINKER_LANGUAGE ${FCKIT_LINKER_LANGUAGE}
                      SOURCES
                                 fckit.h.in
+                                fctest.h
                                 fctest.F90
                                 Log.F90
                                 module/fckit_array.F90

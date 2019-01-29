@@ -19,10 +19,12 @@ if( HAVE_DOCS )
   endif()
 
   set( FORDFILE ford.md CACHE INTERNAL "FORD project filename" )
+  set( FORDPREPROCESSOR ford-preprocessor )
   configure_file(${CMAKE_CURRENT_SOURCE_DIR}/${FORDFILE}.in "${CMAKE_CURRENT_BINARY_DIR}/${FORDFILE}" @ONLY )
+  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/${FORDPREPROCESSOR}.in "${CMAKE_CURRENT_BINARY_DIR}/${FORDPREPROCESSOR}" @ONLY )
 
   add_custom_command(OUTPUT "ford/index.html"
-  	COMMAND ${FORD_EXECUTABLE} "${CMAKE_CURRENT_BINARY_DIR}/${FORDFILE}"
+  	COMMAND ${FORD_EXECUTABLE} --debug "${CMAKE_CURRENT_BINARY_DIR}/${FORDFILE}"
   WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}")
   add_custom_target( ${FCKIT_DOC} DEPENDS "ford/index.html")
 

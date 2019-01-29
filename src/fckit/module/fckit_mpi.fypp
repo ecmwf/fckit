@@ -156,6 +156,8 @@ type, extends(fckit_object) :: fckit_mpi_comm
 
 contains
   procedure, public :: final => fckit_mpi_comm__final
+    !! Destructor
+
   procedure, public :: delete
 
   procedure, public :: communicator
@@ -179,66 +181,72 @@ contains
   procedure, public :: anysource
     !! anysource
 
-  !> MPI allreduce interface for most array and scalar types
   @:begin_interface( allreduce )
   @:generate_interfaces( allreduce )
   @:generate_interfaces( allreduce_inplace )
   @:end_interface()
+    !! MPI allreduce interface for most array and scalar types
 
-  !> MPI broadcast for most array and scalar types
   @:begin_interface( broadcast )
   @:generate_interfaces( broadcast )
   @:add_interface( broadcast_string )
   @:end_interface()
+    !! MPI broadcast for most array and scalar types
 
-  !> MPI broadcast file to buffer
   procedure, public :: broadcast_file
+    !! MPI broadcast file to buffer
 
-  !> MPI allgather interface for most array and scalar types
   @:begin_interface( allgather )
   @:generate_interfaces( allgather )
   @:generate_interfaces( allgatherv )
   @:end_interface()
+    !! MPI allgather interface for most array and scalar types
 
-  !> MPI send for most array and scalar types
   @:begin_interface( send )
   @:generate_interfaces( send )
   @:end_interface()
+    !! MPI send for most array and scalar types
 
-  !> MPI receive for most array and scalar types
   @:begin_interface( receive )
   @:generate_interfaces( receive )
   @:end_interface()
+    !! MPI receive for most array and scalar types
 
-  !> MPI asynchronous send for most array and scalar types
   @:begin_interface( isend )
   @:generate_interfaces( isend )
   @:end_interface()
+    !! MPI asynchronous send for most array and scalar types
 
-  !> MPI asynchronous receive for most array and scalar types
   @:begin_interface( ireceive )
   @:generate_interfaces( ireceive )
   @:end_interface()
+    !! MPI asynchronous receive for most array and scalar types
 
-  !> MPI allgather interface for most array and scalar types
   @:begin_interface( alltoall )
   @:generate_interfaces( alltoallv )
   @:end_interface()
+    !! MPI allgather interface for most array and scalar types
 
-  !> MPI wait for this communicator
   procedure, public :: wait
+    !! MPI wait for this communicator
 
 #if FCKIT_HAVE_FINAL
   final :: fckit_mpi_comm__final_auto
+    !! Destructor
 #endif
 
-  !> Operators that can be passed to collective methods
   procedure, public, nopass :: sum            => fckit_mpi_sum
+    !! Sum operator that can be passed to collective method
   procedure, public, nopass :: prod           => fckit_mpi_prod
+    !! Product operator that can be passed to collective method
   procedure, public, nopass :: min            => fckit_mpi_min
+    !! Min operator that can be passed to collective method
   procedure, public, nopass :: max            => fckit_mpi_max
+    !! Max operator that can be passed to collective method
   procedure, public, nopass :: minloc         => fckit_mpi_minloc
+    !! Minloc operator that can be passed to collective method
   procedure, public, nopass :: maxloc         => fckit_mpi_maxloc
+    !! Maxloc operator that can be passed to collective method
 
 endtype
 
@@ -808,11 +816,18 @@ end subroutine
 !---------------------------------------------------------------------------------------
 
 subroutine broadcast_string(this,buffer,root)
+  !! Broadcast a string ```buffer``` from MPI rank ```root```
+
   use, intrinsic :: iso_c_binding, only : c_int32_t, c_size_t, c_char, c_null_char
   use fckit_array_module, only: array_view1d
+
   class(fckit_mpi_comm), intent(in) :: this
+    !! This communicator
   character(len=*),intent(inout) :: buffer
+    !! String to be broadcast
   integer(c_int32_t), intent(in) :: root
+    !! MPI rank that broadcasts
+
   character(kind=c_char,len=1),allocatable :: c_string(:)
   integer :: j
   allocate(c_string(len(buffer)+1))
@@ -833,12 +848,20 @@ end subroutine
 !---------------------------------------------------------------------------------------
 
 function broadcast_file(this,path,root) result(buffer)
+  !! Read a file with given ```path``` on MPI rank ```root``` and broadcast as a ```fckit_buffer``` buffer
+
   use, intrinsic :: iso_c_binding, only : c_int32_t, c_size_t, c_ptr, c_char
   use fckit_c_interop_module, only : c_str
+
   type(fckit_buffer) :: buffer
+    !! Returned buffer
   class(fckit_mpi_comm), intent(in) :: this
+    !! This communicator
   character(kind=c_char,len=*), intent(in) :: path
+    !! File path of file to be broadcast
   integer(c_int32_t), intent(in) :: root
+    !! MPI rank that reads and broadcasts file
+
   buffer = fckit_buffer( fckit__mpi__broadcast_file(this%CPTR_PGIBUG_A,c_str(path),int(root,c_size_t)), share=.true. )
   call buffer%return()
 end function
@@ -851,12 +874,20 @@ end function
 !---------------------------------------------------------------------------------------
 
 subroutine allreduce_${dtype}$_r${rank}$(this,in,out,operation)
+  !! MPI all reduce of input buffer ```in``` to output buffer ```out``` with given ```operation```
+
   use, intrinsic :: iso_c_binding
   use fckit_array_module, only: array_view1d
+  
   class(fckit_mpi_comm), intent(in) :: this
+    !! This communicator
   ${ftype}$, intent(in)    :: in${dim[rank]}$
+    !! Input buffer
   ${ftype}$, intent(inout) :: out${dim[rank]}$
+    !! Output buffer
   integer(c_int32_t), intent(in) :: operation
+    !! Operation used to process input to output
+
   ${ftype}$, pointer :: view_in(:), view_out(:)
   view_in  => array_view1d(in)
   view_out => array_view1d(out)
@@ -867,11 +898,18 @@ end subroutine
 !---------------------------------------------------------------------------------------
 
 subroutine allreduce_inplace_${dtype}$_r${rank}$(this,inout,operation)
+  !! In-place MPI all reduce of given ```inout``` buffer with given ```operation```
+
   use, intrinsic :: iso_c_binding
   use fckit_array_module, only: array_view1d
+  
   class(fckit_mpi_comm), intent(in) :: this
+    !! This communicator
   ${ftype}$, intent(inout) :: inout${dim[rank]}$
+    !! Buffer to process
   integer(c_int32_t), intent(in) :: operation
+    !! Operation used to process ```inout``` buffer
+
   ${ftype}$, pointer :: view_inout(:)
   view_inout => array_view1d(inout)
   call fckit__mpi__allreduce_inplace_${ctype}$(this%CPTR_PGIBUG_A,view_inout, &
@@ -881,11 +919,18 @@ end subroutine
 !---------------------------------------------------------------------------------------
 
 subroutine broadcast_${ctype}$_r${rank}$(this,buffer,root)
+  !! Broadcast ```buffer``` from MPI rank ```root```
+
   use, intrinsic :: iso_c_binding
   use fckit_array_module, only: array_view1d
+
   class(fckit_mpi_comm), intent(in) :: this
+    !! This communicator
   ${ftype}$, intent(inout) :: buffer${dim[rank]}$
+    !! Buffer to be broadcast
   integer(c_int32_t), intent(in) :: root
+    !! MPI rank to broadcast from
+
   ${ftype}$, pointer :: view_buffer(:)
   view_buffer  => array_view1d(buffer)
   call fckit__mpi__broadcast_${ctype}$(this%CPTR_PGIBUG_A,view_buffer, &
@@ -895,12 +940,20 @@ end subroutine
 !---------------------------------------------------------------------------------------
 
 subroutine send_${ctype}$_r${rank}$(this,buffer,dest,tag)
+  !! Send ```buffer``` to MPI rank ```dest``` with given ```tag```
+
   use, intrinsic :: iso_c_binding
   use fckit_array_module, only: array_view1d
+
   class(fckit_mpi_comm), intent(in) :: this
+    !! This communicator
   ${ftype}$, intent(inout) :: buffer${dim[rank]}$
+    !! Buffer to be sent
   integer(c_int32_t), intent(in) :: dest
+    !! Destination MPI rank
   integer(c_int32_t), intent(in) :: tag
+    !! MPI tag
+
   ${ftype}$, pointer :: view_buffer(:)
   view_buffer  => array_view1d(buffer)
   call fckit__mpi__send_${ctype}$(this%CPTR_PGIBUG_A,view_buffer, &
@@ -910,14 +963,23 @@ end subroutine
 !---------------------------------------------------------------------------------------
 
 subroutine receive_${ctype}$_r${rank}$(this,buffer,source,tag,status)
+  !! Receive ```buffer``` from MPI rank ```source``` with optional ```tag``` and optionally return ```status```
+
   use, intrinsic :: iso_c_binding
   use fckit_array_module, only: array_view1d
+  
   class(fckit_mpi_comm), intent(in) :: this
+    !! This communicator
   ${ftype}$, intent(inout) :: buffer${dim[rank]}$
+    !! Buffer to be received
   integer(c_int32_t), intent(in) :: source
+    !! Source MPI rank
   integer(c_int32_t), intent(in), optional :: tag
-  integer(c_int32_t) :: tag_opt
+    !! MPI tag
   type(fckit_mpi_status), optional, intent(out) :: status
+    !! MPI status
+
+  integer(c_int32_t) :: tag_opt
   type(fckit_mpi_status) :: status_out
   ${ftype}$, pointer :: view_buffer(:)
   if( present(tag) ) then
@@ -934,13 +996,23 @@ end subroutine
 !---------------------------------------------------------------------------------------
 
 function isend_${ctype}$_r${rank}$(this,buffer,dest,tag) result(request)
+  !! Non-blocking send of ```buffer``` to MPI rank ```dest``` with given ```tag```
+  !!   An MPI request will be returned
+
   use, intrinsic :: iso_c_binding
   use fckit_array_module, only: array_view1d
+  
   integer(c_int32_t) :: request
+    !! Returned MPI request
   class(fckit_mpi_comm), intent(in) :: this
+    !! This communicator
   ${ftype}$, intent(inout) :: buffer${dim[rank]}$
+    !! Buffer to be sent
   integer(c_int32_t), intent(in) :: dest
+    !! Destination MPI rank
   integer(c_int32_t), intent(in) :: tag
+    !! MPI tag
+
   ${ftype}$, pointer :: view_buffer(:)
   view_buffer  => array_view1d(buffer)
   request = fckit__mpi__isend_${ctype}$(this%CPTR_PGIBUG_A,view_buffer, &
@@ -950,13 +1022,23 @@ end function
 !---------------------------------------------------------------------------------------
 
 function ireceive_${ctype}$_r${rank}$(this,buffer,source,tag) result(request)
+  !! Non-blocking receive of ```buffer``` from MPI rank ```source``` with optional ```tag```
+  !!   An MPI request will be returned
+
   use, intrinsic :: iso_c_binding
   use fckit_array_module, only: array_view1d
+
   integer(c_int32_t) :: request
+    !! Returned MPI request
   class(fckit_mpi_comm), intent(in) :: this
+    !! This communicator
   ${ftype}$, intent(inout) :: buffer${dim[rank]}$
+    !! Buffer to be received
   integer(c_int32_t), intent(in) :: source
+    !! Source MPI rank
   integer(c_int32_t), intent(in), optional :: tag
+    !! MPI tag
+
   integer(c_int32_t) :: tag_opt
   ${ftype}$, pointer :: view_buffer(:)
   if( present(tag) ) then
@@ -977,10 +1059,17 @@ end function
 !---------------------------------------------------------------------------------------
 
 subroutine wait(this,request,status)
+  !! Wait for ```request``` to finish
+
   use, intrinsic :: iso_c_binding, only : c_int32_t
+
   class(fckit_mpi_comm), intent(in) :: this
+    !! This communicator
   integer(c_int32_t), intent(in) :: request
+    !! Request to wait for
   type(fckit_mpi_status), optional, intent(out) :: status
+    !! MPI status
+
   type(fckit_mpi_status) :: status_out
   call fckit__mpi__wait(this%CPTR_PGIBUG_A,request,status_out%status)
   if( present(status) ) status = status_out
