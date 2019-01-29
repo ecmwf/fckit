@@ -27,7 +27,8 @@ function( fctest_generate_runner )
     OUTPUT ${outfile}
     COMMAND ${FCTEST_GENERATOR} -i ${_PAR_FILENAME} -o ${outfile}
     DEPENDS ${_depends}
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} )
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    COMMENT "[fctest] Generating test driver ${base}_main.F90")
 
   set_source_files_properties(${outfile} PROPERTIES GENERATED TRUE)
 

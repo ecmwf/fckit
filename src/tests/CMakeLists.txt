@@ -109,7 +109,7 @@ endif()
 
 add_fctest( TARGET fckit_test_fypp 
   LINKER_LANGUAGE Fortran
-  SOURCES test_fypp.fypp.F90
+  SOURCES test_fypp.fypp
   LIBS fckit
 )
 
