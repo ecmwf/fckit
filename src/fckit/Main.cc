@@ -234,6 +234,12 @@ Main::Main( int argc, char** argv, const char* homeenv ) : eckit::Main( argc, ar
     }
 
     taskID( eckit::mpi::comm( "world" ).rank() );
+
+    eckit::LibEcKit::instance().setAbortHandler( [] {
+        eckit::Log::error() << "[" << eckit::mpi::comm().rank() << "] "
+                            << "calling MPI_Abort" << std::endl;
+        eckit::mpi::comm().abort();
+    } );
 }
 
 void Main::initialise( int argc, char** argv, const char* homeenv ) {
