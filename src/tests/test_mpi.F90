@@ -528,5 +528,43 @@ TEST( test_blocking_send_receive )
 
 END_TEST
 
+TEST( test_blocking_send_receive_rank1 )
+  use fckit_mpi_module
+  use, intrinsic :: iso_c_binding
+  implicit none
+  type(fckit_mpi_comm) :: comm
+  type(fckit_mpi_status) :: status
+  integer :: tag=99
+  real(c_double)  :: send_real64(2), recv_real64(2)
+
+  write(0,*) "test_blocking_send_receive_rank1"
+  comm = fckit_mpi_comm("world")
+
+  send_real64 = [ 0._c_double , 0._c_double ]
+
+  if(comm%rank()==0) then
+
+    send_real64 = [ 0.1_c_double , 0.1_c_double ]
+    call comm%send(send_real64,comm%size()-1,tag)
+
+    send_real64 = [ 0.2_c_double , 0.2_c_double ]
+    call comm%send(send_real64,comm%size()-1,tag+1)
+
+  endif
+  if( comm%rank()==comm%size()-1) then
+
+    call comm%receive(recv_real64,0,tag,status)
+    FCTEST_CHECK_CLOSE(recv_real64, ( [0.1_c_double,0.1_c_double] ),1.e-9_c_double)
+    FCTEST_CHECK_EQUAL(status%source(), 0)
+    FCTEST_CHECK_EQUAL(status%tag(), tag)
+    FCTEST_CHECK_EQUAL(status%error(), 0)
+
+    call comm%receive(recv_real64,0,tag=comm%anytag(),status=status)
+    FCTEST_CHECK_EQUAL(status%tag(), tag+1)
+    FCTEST_CHECK_CLOSE(recv_real64, ( [0.2_c_double,0.2_c_double] ),1.e-9_c_double)
+
+  endif
+
+END_TEST
 
 END_TESTSUITE
