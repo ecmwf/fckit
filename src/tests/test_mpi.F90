@@ -528,7 +528,7 @@ TEST( test_blocking_send_receive )
 
 END_TEST
 
-TEST( test_blocking_send_receive_rank1 )
+TEST( test_blocking_send_receive_real64_rank1 )
   use fckit_mpi_module
   use, intrinsic :: iso_c_binding
   implicit none
@@ -562,6 +562,85 @@ TEST( test_blocking_send_receive_rank1 )
     call comm%receive(recv_real64,0,tag=comm%anytag(),status=status)
     FCTEST_CHECK_EQUAL(status%tag(), tag+1)
     FCTEST_CHECK_CLOSE(recv_real64, ( [0.2_c_double,0.2_c_double] ),1.e-9_c_double)
+
+  endif
+
+END_TEST
+
+
+TEST( test_blocking_send_receive_int32_rank1 )
+  use fckit_mpi_module
+  use, intrinsic :: iso_c_binding
+  implicit none
+  type(fckit_mpi_comm) :: comm
+  type(fckit_mpi_status) :: status
+  integer :: tag=99
+  integer(c_int32_t)  :: send(2), recv(2)
+
+  write(0,*) "test_blocking_send_receive_int32_rank1"
+  comm = fckit_mpi_comm("world")
+
+  send = [ 0_c_int32_t , 0_c_int32_t ]
+
+  if(comm%rank()==0) then
+
+    send = [ 1_c_int32_t , 2_c_int32_t ]
+    call comm%send(send,comm%size()-1,tag)
+
+    send = [ 3_c_int32_t , 4_c_int32_t ]
+    call comm%send(send,comm%size()-1,tag+1)
+
+  endif
+  if( comm%rank()==comm%size()-1) then
+
+    call comm%receive(recv,0,tag,status)
+    FCTEST_CHECK_EQUAL(recv, ( [1_c_int32_t,2_c_int32_t] ) )
+    FCTEST_CHECK_EQUAL(status%source(), 0)
+    FCTEST_CHECK_EQUAL(status%tag(), tag)
+    FCTEST_CHECK_EQUAL(status%error(), 0)
+
+    call comm%receive(recv,0,tag=comm%anytag(),status=status)
+    FCTEST_CHECK_EQUAL(status%tag(), tag+1)
+    FCTEST_CHECK_EQUAL(recv, ( [3_c_int32_t,4_c_int32_t] ) )
+
+  endif
+
+END_TEST
+
+TEST( test_blocking_send_receive_int64_rank1 )
+  use fckit_mpi_module
+  use, intrinsic :: iso_c_binding
+  implicit none
+  type(fckit_mpi_comm) :: comm
+  type(fckit_mpi_status) :: status
+  integer :: tag=99
+  integer(c_int64_t)  :: send(2), recv(2)
+
+  write(0,*) "test_blocking_send_receive_int64_rank1"
+  comm = fckit_mpi_comm("world")
+
+  send = [ 0_c_int64_t , 0_c_int64_t ]
+
+  if(comm%rank()==0) then
+
+    send = [ 1_c_int64_t , 2_c_int64_t ]
+    call comm%send(send,comm%size()-1,tag)
+
+    send = [ 3_c_int64_t , 4_c_int64_t ]
+    call comm%send(send,comm%size()-1,tag+1)
+
+  endif
+  if( comm%rank()==comm%size()-1) then
+
+    call comm%receive(recv,0,tag,status)
+    FCTEST_CHECK_EQUAL(recv, ( [1_c_int64_t,2_c_int64_t] ) )
+    FCTEST_CHECK_EQUAL(status%source(), 0)
+    FCTEST_CHECK_EQUAL(status%tag(), tag)
+    FCTEST_CHECK_EQUAL(status%error(), 0)
+
+    call comm%receive(recv,0,tag=comm%anytag(),status=status)
+    FCTEST_CHECK_EQUAL(status%tag(), tag+1)
+    FCTEST_CHECK_EQUAL(recv, ( [3_c_int64_t,4_c_int64_t] ) )
 
   endif
 
