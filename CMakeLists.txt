@@ -81,7 +81,7 @@ endif()
 
 ecbuild_add_option( FEATURE ECKIT
                     DESCRIPTION "Wrap ecKit functionality"
-                    REQUIRED_PACKAGES "PROJECT eckit VERSION 0.18" )
+                    REQUIRED_PACKAGES "PROJECT eckit VERSION 0.21.0" )
 
 ecbuild_add_cxx11_flags()
 
