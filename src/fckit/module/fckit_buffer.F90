@@ -56,7 +56,7 @@ type, extends(fckit_shared_object) :: fckit_buffer
   !! A typical use case is with the function [[fckit_mpi_module:fckit_mpi_comm(type):broadcast_file(function)]]
   !! where a file is read on one MPI task, and broadcast to all MPI tasks, storing it in a buffer.
   !! This buffer can then be used to construct a configuration
-  !! (see e.g. [[fckit_configuration_module:fckit_YAMLConfiguration(type)]] )
+  !! (see e.g. [[fckit_configuration_module:fckit_YAMLConfiguration(interface)]] )
 contains
   procedure, public :: str
 
@@ -101,7 +101,7 @@ function str(this)
   integer(c_int32_t) :: errcode
   integer(c_size_t) :: str_size
   type(c_ptr) :: str_cptr
-  errcode = c_fckit_buffer_str(this%c_ptr(),str_cptr,str_size)
+  errcode = c_fckit_buffer_str(this%CPTR_PGIBUG_B,str_cptr,str_size)
   allocate(character(kind=c_char,len=str_size) :: str )
   str = c_ptr_to_string(str_cptr)
   call c_ptr_free(str_cptr)

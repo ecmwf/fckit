@@ -2,7 +2,7 @@ project: fcKit
 project_website: https://software.ecmwf.int/wiki/display/FCKIT
 project_github: https://github.com/ecmwf/fckit
 version: @FCKIT_VERSION@
-summary: Fortran support library, compatible with ecKit C++ support library.
+summary: Fortran support library
 author: ECMWF
 author_website: www.ecmwf.int
 src_dir: @CMAKE_CURRENT_SOURCE_DIR@/../src/fckit
@@ -19,6 +19,11 @@ macro: FORD
 extra_filetypes: sh #
 exclude: Log.F90
 include: @CMAKE_CURRENT_BINARY_DIR@/../src
+extensions: F90
+            fypp
+fpp_extensions: F90
+                fypp
+preprocessor: @CMAKE_CURRENT_BINARY_DIR@/ford-preprocessor
 
 
 ## Capabilities:
