@@ -210,21 +210,19 @@ function( fckit_target_preprocess_fypp _PAR_TARGET )
 
       target_sources( ${_PAR_TARGET} PRIVATE ${preprocessed_sources} )
 
-### BUG WORKAROUND
+### BUG WORKAROUND for CMake < 3.12
 #   CMake seems to not add the "-fPIC -h PIC" flags for the Cray compiler when the target
 #   has the POSITION_INDEPENDENT_CODE property set, so add it manually
+    if( CMAKE_VERSION VERSION_LESS 3.12 )
       get_property( _target_pic TARGET ${_PAR_TARGET} PROPERTY POSITION_INDEPENDENT_CODE )
       if( _target_pic )
-        if( "${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Cray" )
+        if( CMAKE_Fortran_COMPILER_ID MATCHES "Cray" )
           foreach( _src ${preprocessed_sources} )
-            if( CMAKE_VERSION VERSION_LESS 3.11 ) # Hopefully we can remove this soon
-              set_source_files_properties( ${_src} COMPILE_FLAGS "-fPIC -h PIC ${_PAR_FFLAGS}" )
-            else()
-              set_source_files_properties( ${_src} COMPILE_OPTIONS "-fPIC -h PIC ${_PAR_FFLAGS}" )
-            endif()
+            set_source_files_properties( ${_src} COMPILE_FLAGS "-h PIC" )
           endforeach()
         endif()
       endif()
+    endif()
   endif()
 ### END BUG WORKAROUND
 
