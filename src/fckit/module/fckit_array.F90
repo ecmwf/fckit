@@ -28,7 +28,7 @@ real(c_float),  target :: zero_length_array_real32(0)
 real(c_double), target :: zero_length_array_real64(0)
 logical, target :: zero_length_array_logical(0)
 
-INTERFACE array_view1d
+interface array_view1d
   module procedure array_view1d_int32_r0
   module procedure array_view1d_int32_r1
   module procedure array_view1d_int32_r2
@@ -54,10 +54,13 @@ INTERFACE array_view1d
   module procedure array_view1d_logical_r2
   module procedure array_view1d_logical_r3
   module procedure array_view1d_logical_r4
-
+  module procedure array_view1d_logical_r1_mold_int32
+  module procedure array_view1d_logical_r2_mold_int32
+  module procedure array_view1d_logical_r3_mold_int32
+  module procedure array_view1d_logical_r4_mold_int32
 end interface
 
-INTERFACE array_stride
+interface array_stride
   module procedure array_stride_int32_r1_dim
   module procedure array_stride_int32_r2_dim
   module procedure array_stride_int32_r3_dim
@@ -80,7 +83,7 @@ INTERFACE array_stride
   module procedure array_stride_logical_r4_dim
 end interface
 
-INTERFACE array_strides
+interface array_strides
   module procedure array_stride_int32_r1
   module procedure array_stride_int32_r2
   module procedure array_stride_int32_r3
@@ -102,6 +105,7 @@ INTERFACE array_strides
   module procedure array_stride_logical_r3
   module procedure array_stride_logical_r4
 end interface
+
 
 ! =============================================================================
 CONTAINS
@@ -529,6 +533,87 @@ function array_view1d_logical_r4(array) result( view )
     call c_f_pointer ( array_c_ptr , view , (/size(array)/) )
   else
     view => zero_length_array_logical
+  endif
+end function
+
+! =============================================================================
+
+function array_view1d_logical_r0_mold_int32(scalar,mold) result( view )
+  use, intrinsic :: iso_c_binding
+  logical, intent(in), target :: scalar
+  integer(c_int32_t), intent(in) :: mold
+  type(c_ptr) :: array_c_ptr
+  integer(c_int32_t), pointer :: view(:)
+  nullify(view)
+  array_c_ptr = c_loc_logical(scalar)
+  call c_f_pointer ( array_c_ptr , view , (/1/) )
+end function
+
+! =============================================================================
+
+function array_view1d_logical_r1_mold_int32(array,mold) result( view )
+  use, intrinsic :: iso_c_binding
+  logical, intent(in), target :: array(:)
+  integer(c_int32_t), intent(in) :: mold
+  type(c_ptr) :: array_c_ptr
+  integer(c_int32_t), pointer :: view(:)
+  nullify(view)
+  if( size(array) > 0 ) then
+    array_c_ptr = c_loc_logical(array(1))
+    call c_f_pointer ( array_c_ptr , view , (/size(array)/) )
+  else
+    view => zero_length_array_int32
+  endif
+end function
+
+! =============================================================================
+
+function array_view1d_logical_r2_mold_int32(array,mold) result( view )
+  use, intrinsic :: iso_c_binding
+  logical, intent(in), target :: array(:,:)
+  integer(c_int32_t), intent(in) :: mold
+  type(c_ptr) :: array_c_ptr
+  integer(c_int32_t), pointer :: view(:)
+  nullify(view)
+  if( size(array) > 0 ) then
+    array_c_ptr = c_loc_logical(array(1,1))
+    call c_f_pointer ( array_c_ptr , view , (/size(array)/) )
+  else
+    view => zero_length_array_int32
+  endif
+end function
+
+! =============================================================================
+
+function array_view1d_logical_r3_mold_int32(array,mold) result( view )
+  use, intrinsic :: iso_c_binding
+  logical, intent(in), target :: array(:,:,:)
+  integer(c_int32_t), intent(in) :: mold
+  type(c_ptr) :: array_c_ptr
+  integer(c_int32_t), pointer :: view(:)
+  nullify(view)
+  if( size(array) > 0 ) then
+    array_c_ptr = c_loc_logical(array(1,1,1))
+    call c_f_pointer ( array_c_ptr , view , (/size(array)/) )
+  else
+    view => zero_length_array_int32
+  endif
+end function
+
+! =============================================================================
+
+function array_view1d_logical_r4_mold_int32(array,mold) result( view )
+  use, intrinsic :: iso_c_binding
+  logical, intent(in), target :: array(:,:,:,:)
+  integer(c_int32_t), intent(in) :: mold
+  type(c_ptr) :: array_c_ptr
+  integer(c_int32_t), pointer :: view(:)
+  nullify(view)
+  if( size(array) > 0 ) then
+    array_c_ptr = c_loc_logical(array(1,1,1,1))
+    call c_f_pointer ( array_c_ptr , view , (/size(array)/) )
+  else
+    view => zero_length_array_int32
   endif
 end function
 
