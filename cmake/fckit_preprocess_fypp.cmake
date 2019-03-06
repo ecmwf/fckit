@@ -1,4 +1,13 @@
 
+##############################################################################################
+# fckit_target_append_fypp_args( output target )
+#   Purpose:
+#        From a target, assemble arguments to pass to fypp. These arguments are
+#        the include flags and compile definition flags.
+#   Arguments:
+#        output            This argument will contain the flags as a list
+#        target            The name of the target to process
+
 function( fckit_target_append_fypp_args output target )
   unset(_args)
   if( CMAKE_VERSION VERSION_LESS 3.12 ) # Hopefully we can remove this soon
@@ -33,6 +42,24 @@ function( fckit_target_append_fypp_args output target )
     set(${output} ${${output}} ${_args} PARENT_SCOPE)
   endif()
 endfunction()
+
+##############################################################################################
+# fckit_preprocess_fypp_sources( output
+#                                [SOURCES file1 [file2]... ]
+#                                [FYPP_ARGS arg1 [arg2]... ]
+#                                [DEPENDS dep1 [dep2]... ] )
+#    Purpose:
+#        Preprocess source files with fypp
+#
+#    Arguments:
+#        output                         Append preprocessed source files to this list
+#        [SOURCES file1 [file2]... ]    List of source files to append
+#        [FYPP_ARGS arg1 [arg2]...]     Arguments passed to fypp
+#        [DEPENDS dep1 [dep2]... ]      Dependencies before processing files
+#
+#    Notes:
+#        The include flags and compile flags of targets with the DEPENDS argument
+#        will be automatically deduced and added to the fypp command
 
 function( fckit_preprocess_fypp_sources output )
 
@@ -101,6 +128,27 @@ function( fckit_preprocess_fypp_sources output )
 
 endfunction()
 
+##############################################################################################
+
+
+##############################################################################################
+# fckit_preprocess_fypp_sources( target
+#                                [FYPP_ARGS arg1 [arg2]... ]
+#                                [DEPENDS dep1 [dep2]... ] )
+#    Purpose:
+#        Preprocess source files in the target with the extensions
+#        {.fypp, .fypp.F90, .F90.fypp}
+#
+#    Arguments:
+#        target                         Preprocess all files from this target
+#        [FYPP_ARGS arg1 [arg2]...]     Arguments passed to fypp
+#        [DEPENDS dep1 [dep2]... ]      Dependencies before processing files
+#
+#    Notes:
+#        The include flags and compile flags of current target and targets
+#        within the DEPENDS argument will be automatically deduced
+#        and added to the fypp command
+
 function( fckit_target_preprocess_fypp _PAR_TARGET )
 
   set( options NO_LINE_NUMBERING )
@@ -126,7 +174,7 @@ function( fckit_target_preprocess_fypp _PAR_TARGET )
         set( source_files_properties ${source} PROPERTIES HEADER_FILE_ONLY TRUE )
       endforeach()
 
-### BUG (tested upto 3.13.2)
+### BUG WORKAROUND (tested upto 3.13.2)
 #   Even though source files to be preprocessed with final extension .F90 have just been
 #   declared as HEADER_FILE_ONLY, CMake still tries to compile these files.
 #   This does not happen for files ending with other extensions ( .fypp )
@@ -141,7 +189,7 @@ function( fckit_target_preprocess_fypp _PAR_TARGET )
           set_property( TARGET ${_PAR_TARGET} PROPERTY SOURCES ${_target_sources} )
           add_custom_target( ${_PAR_TARGET}_fypp SOURCES ${sources_to_be_preprocessed} )
       endif()
-### END BUG
+### END BUG WORKAROUND
 
 
 
@@ -153,7 +201,7 @@ function( fckit_target_preprocess_fypp _PAR_TARGET )
       endforeach()
 
       fckit_target_append_fypp_args( args ${_PAR_TARGET} )
-   
+
       fckit_preprocess_fypp_sources( preprocessed_sources
           SOURCES ${sources_to_be_preprocessed}
           FYPP_ARGS ${_PAR_FYPP_ARGS} ${args}
@@ -162,6 +210,20 @@ function( fckit_target_preprocess_fypp _PAR_TARGET )
 
       target_sources( ${_PAR_TARGET} PRIVATE ${preprocessed_sources} )
 
+### BUG WORKAROUND for CMake < 3.12
+#   CMake seems to not add the "-fPIC -h PIC" flags for the Cray compiler when the target
+#   has the POSITION_INDEPENDENT_CODE property set, so add it manually
+    if( CMAKE_VERSION VERSION_LESS 3.12 )
+      get_property( _target_pic TARGET ${_PAR_TARGET} PROPERTY POSITION_INDEPENDENT_CODE )
+      if( _target_pic )
+        if( CMAKE_Fortran_COMPILER_ID MATCHES "Cray" )
+          foreach( _src ${preprocessed_sources} )
+            set_source_files_properties( ${_src} COMPILE_FLAGS "-h PIC" )
+          endforeach()
+        endif()
+      endif()
+    endif()
   endif()
+### END BUG WORKAROUND
 
 endfunction()
