@@ -7,7 +7,7 @@
 # does it submit to any jurisdiction.
 
 configure_file(fckit.h.in  fckit.h)
-install( FILES ${CMAKE_CURRENT_BINARY_DIR}/fckit.h DESTINATION ${INSTALL_INCLUDE_DIR}/fckit )
+install( FILES ${CMAKE_CURRENT_BINARY_DIR}/fckit.h DESTINATION include/fckit )
 set( source_files_properties fckit.h.in PROPERTIES HEADER_FILE_ONLY TRUE )
 
 set( FCKIT_HAVE_ECKIT 0 )
@@ -94,9 +94,16 @@ ecbuild_add_library( TARGET     fckit
                                 Log.h
                                 Main.h
 
-                     HEADER_DESTINATION  ${INSTALL_INCLUDE_DIR}/fckit
+                     HEADER_DESTINATION  include/fckit
 
                      TYPE ${fckit_type}
                     )
+
+target_include_directories( fckit PUBLIC 
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/..>
+    $<BUILD_INTERFACE:${CMAKE_Fortran_MODULE_DIRECTORY}>
+    $<INSTALL_INTERFACE:include>
+    $<INSTALL_INTERFACE:module/fckit>
+)
 
 fckit_target_preprocess_fypp( fckit )

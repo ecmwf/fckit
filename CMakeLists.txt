@@ -37,7 +37,7 @@ ecbuild_declare_project()
 ecbuild_find_python( REQUIRED NO_LIBS )
 
 ### Fortran ...
-ecbuild_enable_fortran( REQUIRED MODULE_DIRECTORY ${CMAKE_BINARY_DIR}/module )
+ecbuild_enable_fortran( REQUIRED MODULE_DIRECTORY ${PROJECT_BINARY_DIR}/module )
 
 ecbuild_check_fortran( FEATURES finalization )
 
@@ -122,10 +122,11 @@ add_subdirectory( doc )
 ecbuild_print_summary()
 ################################################################################################
 
-if(ECBUILD_INSTALL_FORTRAN_MODULES)
-  install(DIRECTORY ${CMAKE_Fortran_MODULE_DIRECTORY}/${CMAKE_CFG_INTDIR} DESTINATION ${INSTALL_INCLUDE_DIR} )
+if( ECBUILD_INSTALL_FORTRAN_MODULES )
+    install( DIRECTORY ${CMAKE_Fortran_MODULE_DIRECTORY}/${CMAKE_CFG_INTDIR}
+             DESTINATION module/fckit
+             COMPONENT modules )
 endif()
-
 if( NOT PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
   set( FCTEST_GENERATOR ${FCTEST_GENERATOR} PARENT_SCOPE )
   set( FYPP ${FYPP} PARENT_SCOPE )
