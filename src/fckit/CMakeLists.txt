@@ -83,8 +83,6 @@ ecbuild_add_library( TARGET     fckit
                      PRIVATE_INCLUDES
                                 ${ECKIT_INCLUDE_DIRS}
                                 ${CMAKE_CURRENT_BINARY_DIR}
-                     LIBS
-                                ${ECKIT_LIBRARIES}
 
                      DEFINITIONS
                                 ${FCKIT_DEFINITIONS}
@@ -99,8 +97,13 @@ ecbuild_add_library( TARGET     fckit
                      TYPE ${fckit_type}
                     )
 
+if( HAVE_ECKIT )
+  target_link_libraries( fckit PRIVATE eckit eckit_mpi )
+endif()
+
 target_include_directories( fckit PUBLIC 
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/..>
+    $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src>
+    $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/src>
     $<BUILD_INTERFACE:${CMAKE_Fortran_MODULE_DIRECTORY}>
     $<INSTALL_INTERFACE:include>
     $<INSTALL_INTERFACE:module/fckit>

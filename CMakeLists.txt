@@ -85,12 +85,8 @@ ecbuild_add_option( FEATURE ECKIT
 
 ecbuild_add_cxx11_flags()
 
-if( HAVE_ECKIT )
-  set( ECKIT_LIBRARIES eckit eckit_mpi )
-
-  if( NOT ECKIT_HAVE_MPI )
-    ecbuild_warn("ecKit has been compiled without MPI. This causes fckit to not be able to run parallel executables.")
-  endif()
+if( HAVE_ECKIT AND NOT ECKIT_HAVE_MPI )
+  ecbuild_warn("ecKit has been compiled without MPI. This causes fckit to not be able to run parallel executables.")
 endif()
 
 ################################################################################################
@@ -109,8 +105,6 @@ set( FYPP ${CMAKE_CURRENT_SOURCE_DIR}/tools/fckit-eval.sh ${PYTHON_EXECUTABLE} $
 set( FCTEST_GENERATOR ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/tools/fctest-generate-runner.py )
 include( fckit_preprocess_fypp )
 include( add_fctest )
-
-include_directories( ${FCKIT_INCLUDE_DIRS} )
 
 set( HAVE_FCTEST 1)
 add_subdirectory( src )
