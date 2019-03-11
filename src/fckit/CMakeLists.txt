@@ -97,10 +97,6 @@ ecbuild_add_library( TARGET     fckit
                      TYPE ${fckit_type}
                     )
 
-if( HAVE_ECKIT )
-  target_link_libraries( fckit PRIVATE eckit eckit_mpi )
-endif()
-
 target_include_directories( fckit PUBLIC 
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src>
     $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/src>
@@ -108,5 +104,11 @@ target_include_directories( fckit PUBLIC
     $<INSTALL_INTERFACE:include>
     $<INSTALL_INTERFACE:module/fckit>
 )
+
+if( ecbuild_VERSION ) # defined for ecbuild 3
+  target_link_libraries( fckit PRIVATE eckit eckit_mpi )
+else()
+  target_link_libraries( fckit eckit eckit_mpi )
+endif()
 
 fckit_target_preprocess_fypp( fckit )
