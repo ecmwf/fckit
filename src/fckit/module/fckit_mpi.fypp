@@ -98,6 +98,7 @@ private :: fckit_buffer
 !========================================================================
 ! Public interface
 
+public :: fckit_mpi
 public :: fckit_mpi_comm
 public :: fckit_mpi_status
 public :: fckit_mpi_setCommDefault
@@ -154,10 +155,12 @@ type, extends(fckit_object) :: fckit_mpi_comm
   !! [[fckit_mpi_module:fckit_mpi_setCommDefault(interface)]]
 
 contains
-  procedure, public :: final => fckit_mpi_comm__final
-    !! Destructor
 
-  procedure, public :: delete
+  procedure, public :: set_default
+    !! Set this communicator to become the default one
+
+  procedure, public :: name
+    !! Return the name of this communicator
 
   procedure, public :: communicator
     !! Fortran MPI communicator handle
@@ -170,6 +173,12 @@ contains
 
   procedure, public :: barrier
     !! MPI Barrier in this communicator
+
+  procedure, public :: split
+    !! Split communicator
+
+  procedure, public :: delete
+    !! Delete communicator ( throws error if this is also the default )
 
   procedure, public :: abort
     !! MPI Abort
@@ -229,11 +238,6 @@ contains
   procedure, public :: wait
     !! MPI wait for this communicator
 
-#if FCKIT_HAVE_FINAL
-  final :: fckit_mpi_comm__final_auto
-    !! Destructor
-#endif
-
   procedure, public, nopass :: sum            => fckit_mpi_sum
     !! Sum operator that can be passed to collective method
   procedure, public, nopass :: prod           => fckit_mpi_prod
@@ -248,6 +252,8 @@ contains
     !! Maxloc operator that can be passed to collective method
 
 endtype
+
+type(fckit_mpi_comm) :: fckit_mpi
 
 interface fckit_mpi_comm
   module procedure comm_constructor
@@ -322,10 +328,35 @@ interface
     integer(c_int32_t), value :: comm
   end subroutine
 
+  function fckit__mpi__comm_split(comm,colour,name) bind(c,name="fckit__mpi__comm_split")
+    use, intrinsic :: iso_c_binding, only : c_int32_t, c_char, c_ptr
+    type(c_ptr) :: fckit__mpi__comm_split
+    type(c_ptr), value :: comm
+    integer(c_int32_t), value :: colour
+    character(kind=c_char), dimension(*) :: name
+  end function
+
   ! void fckit__mpi__setCommDefault_name(const char* name)
   subroutine fckit__mpi__setCommDefault_name(name) bind(c,name="fckit__mpi__setCommDefault_name")
     use, intrinsic :: iso_c_binding, only : c_char
     character(kind=c_char), dimension(*) :: name
+  end subroutine
+
+  subroutine fckit__mpi__comm_set_default(comm) bind(c,name="fckit__mpi__comm_set_default")
+    use, intrinsic :: iso_c_binding, only : c_ptr
+    type(c_ptr), value :: comm
+  end subroutine
+
+  subroutine fckit__mpi__comm_delete(comm) bind(c,name="fckit__mpi__comm_delete")
+    use, intrinsic :: iso_c_binding, only: c_ptr
+    type(c_ptr), value :: comm
+  end subroutine
+
+  subroutine fckit__mpi__comm_name( comm, name, size ) bind(C,name="fckit__mpi__comm_name")
+    use iso_c_binding, only: c_ptr, c_int32_t
+    type(c_ptr), value :: comm
+    type(c_ptr) :: name
+    integer(c_int32_t) :: size
   end subroutine
 
   function fckit__mpi__sum() bind(c)
@@ -591,24 +622,44 @@ end function
 subroutine delete(this)
   use fckit_c_interop_module
   class(fckit_mpi_comm), intent(inout) :: this
-!   call c_ptr_free(this%CPTR_PGIBUG_A)
-  FCKIT_SUPPRESS_UNUSED( this )
+  call fckit__mpi__comm_delete(this%CPTR_PGIBUG_A)
+  call this%reset_c_ptr()
 end subroutine
+
 
 !---------------------------------------------------------------------------------------
 
-subroutine fckit_mpi_comm__final(this)
+function split( this, colour, name )
+  use, intrinsic :: iso_c_binding, only : c_ptr, c_int32_t
+  use fckit_c_interop_module, only : c_str
+  type(fckit_mpi_comm) :: split
+  class(fckit_mpi_comm), intent(in) :: this
+  integer(c_int32_t), intent(in) :: colour
+  character(len=*) :: name
+  call split%reset_c_ptr( &
+      & fckit__mpi__comm_split( this%CPTR_PGIBUG_A, colour, c_str(name) ) )
+end function
+
+!---------------------------------------------------------------------------------------
+
+function name(this)
+  use, intrinsic :: iso_c_binding, only : c_ptr, c_int32_t
+  use fckit_c_interop_module, only : c_ptr_to_string, c_str, c_ptr_free
+  class(fckit_mpi_comm), intent(in) :: this
+  character(len=:), allocatable :: name
+  type(c_ptr) :: name_c_ptr
+  integer(c_int32_t) :: name_size
+  call fckit__mpi__comm_name( this%CPTR_PGIBUG_A, name_c_ptr, name_size )
+  allocate(character(len=name_size) :: name )
+  name = c_ptr_to_string(name_c_ptr)
+  call c_ptr_free(name_c_ptr)
+end function
+
+!---------------------------------------------------------------------------------------
+
+subroutine set_default(this)
   class(fckit_mpi_comm), intent(inout) :: this
-  if( .not. this%is_null() ) then
-    call this%delete()
-  endif
-end subroutine
-
-!---------------------------------------------------------------------------------------
-
-FCKIT_FINAL subroutine fckit_mpi_comm__final_auto(this)
-  type(fckit_mpi_comm), intent(inout) :: this
-  call this%final()
+  call fckit__mpi__comm_set_default( this%CPTR_PGIBUG_A )
 end subroutine
 
 !---------------------------------------------------------------------------------------

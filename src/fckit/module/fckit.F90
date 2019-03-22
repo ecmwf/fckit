@@ -26,7 +26,8 @@ use fckit_resource_module,  only: &
   fckit_resource
 
 use fckit_mpi_module,       only: &
-  fckit_mpi_comm
+  fckit_mpi_comm, &
+  fckit_mpi
 
 use fckit_exception_module, only: &
   fckit_exception, &
@@ -54,6 +55,7 @@ public :: fckit_main                 !! - [[fckit_main_module:fckit_main(variabl
 public :: fckit_log                  !! - [[fckit_log_module:fckit_log(variable)]]
 public :: fckit_resource             !! - [[fckit_resource_module:fckit_resource(interface)]]
 public :: fckit_mpi_comm             !! - [[fckit_mpi_module:fckit_mpi_comm(type)]]
+public :: fckit_mpi                  !! - [[fckit_mpi_module:fckit_mpi(variable)]]
 public :: fckit_exception            !! - [[fckit_exception_module:fckit_exception(variable)]]
 public :: fckit_exception_handler    !! - [[fckit_exception_module:fckit_exception_handler(interface)]]
 public :: fckit_signal               !! - [[fckit_signal_module:fckit_signal(variable)]]
