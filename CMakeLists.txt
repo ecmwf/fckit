@@ -37,7 +37,7 @@ ecbuild_declare_project()
 ecbuild_find_python( REQUIRED NO_LIBS )
 
 ### Fortran ...
-ecbuild_enable_fortran( REQUIRED MODULE_DIRECTORY ${CMAKE_BINARY_DIR}/module )
+ecbuild_enable_fortran( REQUIRED MODULE_DIRECTORY ${PROJECT_BINARY_DIR}/module )
 
 ecbuild_check_fortran( FEATURES finalization )
 
@@ -85,12 +85,8 @@ ecbuild_add_option( FEATURE ECKIT
 
 ecbuild_add_cxx11_flags()
 
-if( HAVE_ECKIT )
-  set( ECKIT_LIBRARIES eckit eckit_mpi )
-
-  if( NOT ECKIT_HAVE_MPI )
-    ecbuild_warn("ecKit has been compiled without MPI. This causes fckit to not be able to run parallel executables.")
-  endif()
+if( HAVE_ECKIT AND NOT ECKIT_HAVE_MPI )
+  ecbuild_warn("ecKit has been compiled without MPI. This causes fckit to not be able to run parallel executables.")
 endif()
 
 ################################################################################################
@@ -110,8 +106,6 @@ set( FCTEST_GENERATOR ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/tools/fct
 include( fckit_preprocess_fypp )
 include( add_fctest )
 
-include_directories( ${FCKIT_INCLUDE_DIRS} )
-
 set( HAVE_FCTEST 1)
 add_subdirectory( src )
 add_subdirectory( doc )
@@ -122,10 +116,11 @@ add_subdirectory( doc )
 ecbuild_print_summary()
 ################################################################################################
 
-if(ECBUILD_INSTALL_FORTRAN_MODULES)
-  install(DIRECTORY ${CMAKE_Fortran_MODULE_DIRECTORY}/${CMAKE_CFG_INTDIR} DESTINATION ${INSTALL_INCLUDE_DIR} )
+if( ECBUILD_INSTALL_FORTRAN_MODULES )
+    install( DIRECTORY ${CMAKE_Fortran_MODULE_DIRECTORY}/${CMAKE_CFG_INTDIR}
+             DESTINATION module/fckit
+             COMPONENT modules )
 endif()
-
 if( NOT PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
   set( FCTEST_GENERATOR ${FCTEST_GENERATOR} PARENT_SCOPE )
   set( FYPP ${FYPP} PARENT_SCOPE )

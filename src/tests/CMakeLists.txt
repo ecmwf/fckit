@@ -79,7 +79,7 @@ ecbuild_add_test( TARGET  fckit_test_configuration_cpp
             DEFINITIONS ${FCKIT_DEFINITIONS}
             INCLUDES ${ECKIT_INCLUDE_DIRS}
             CONDITION HAVE_ECKIT
-            LIBS    fckit )
+            LIBS    fckit  eckit eckit_mpi )
 
 if( HAVE_ECKIT )
   if( NOT (CMAKE_VERSION VERSION_LESS 3.1) )
@@ -93,7 +93,7 @@ ecbuild_add_test( TARGET fckit_test_cpp
   INCLUDES ${ECKIT_INCLUDE_DIRS}
   ENVIRONMENT "DEBUG=1"
   CONDITION HAVE_ECKIT
-  LIBS fckit )
+  LIBS fckit eckit eckit_mpi )
 
 if( CMAKE_Fortran_COMPILER_ID MATCHES "PGI" )
   set( NO_MAIN "-Mnomain" )

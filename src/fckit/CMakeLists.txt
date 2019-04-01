@@ -7,7 +7,7 @@
 # does it submit to any jurisdiction.
 
 configure_file(fckit.h.in  fckit.h)
-install( FILES ${CMAKE_CURRENT_BINARY_DIR}/fckit.h DESTINATION ${INSTALL_INCLUDE_DIR}/fckit )
+install( FILES ${CMAKE_CURRENT_BINARY_DIR}/fckit.h DESTINATION include/fckit )
 set( source_files_properties fckit.h.in PROPERTIES HEADER_FILE_ONLY TRUE )
 
 set( FCKIT_HAVE_ECKIT 0 )
@@ -83,8 +83,6 @@ ecbuild_add_library( TARGET     fckit
                      PRIVATE_INCLUDES
                                 ${ECKIT_INCLUDE_DIRS}
                                 ${CMAKE_CURRENT_BINARY_DIR}
-                     LIBS
-                                ${ECKIT_LIBRARIES}
 
                      DEFINITIONS
                                 ${FCKIT_DEFINITIONS}
@@ -94,9 +92,23 @@ ecbuild_add_library( TARGET     fckit
                                 Log.h
                                 Main.h
 
-                     HEADER_DESTINATION  ${INSTALL_INCLUDE_DIR}/fckit
+                     HEADER_DESTINATION  include/fckit
 
                      TYPE ${fckit_type}
                     )
+
+target_include_directories( fckit PUBLIC 
+    $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src>
+    $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/src>
+    $<BUILD_INTERFACE:${CMAKE_Fortran_MODULE_DIRECTORY}>
+    $<INSTALL_INTERFACE:include>
+    $<INSTALL_INTERFACE:module/fckit>
+)
+
+if( ecbuild_VERSION ) # defined for ecbuild 3
+  target_link_libraries( fckit PRIVATE eckit eckit_mpi )
+else()
+  target_link_libraries( fckit eckit eckit_mpi )
+endif()
 
 fckit_target_preprocess_fypp( fckit )
