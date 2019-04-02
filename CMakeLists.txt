@@ -86,7 +86,7 @@ ecbuild_add_option( FEATURE ECKIT
 ecbuild_add_cxx11_flags()
 
 if( HAVE_ECKIT )
-  set( ECKIT_LIBRARIES eckit eckit_mpi )
+  set( ECKIT_LIBRARIES eckit eckit_mpi eckit_geometry)
 
   if( NOT ECKIT_HAVE_MPI )
     ecbuild_warn("ecKit has been compiled without MPI. This causes fckit to not be able to run parallel executables.")
