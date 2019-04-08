@@ -684,7 +684,7 @@ function get_string(this, name, value) result(found)
   found_int = c_fckit_configuration_get_string(this%CPTR_PGIBUG_B,c_str(name),value_cptr,value_size)
   if( found_int == 1 ) then
     if( allocated(value) ) deallocate(value)
-    allocate(character(kind=c_char,len=value_size) :: value )
+    FCKIT_ALLOCATE_CHARACTER(value,value_size)
     value = c_ptr_to_string(value_cptr)
     call c_ptr_free(value_cptr)
   endif
@@ -830,7 +830,7 @@ function json(this) result(jsonstr)
   type(c_ptr) :: json_cptr
   integer(c_size_t) :: json_size
   call c_fckit_configuration_json(this%CPTR_PGIBUG_B,json_cptr,json_size)
-  allocate(character(kind=c_char,len=json_size) :: jsonstr )
+  FCKIT_ALLOCATE_CHARACTER(jsonstr,json_size)
   jsonstr = c_ptr_to_string(json_cptr)
   call c_ptr_free(json_cptr)
 end function

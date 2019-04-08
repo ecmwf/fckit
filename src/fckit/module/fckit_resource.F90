@@ -6,6 +6,8 @@
 ! granted to it by virtue of its status as an intergovernmental organisation nor
 ! does it submit to any jurisdiction.
 
+#include "fckit/fckit.h"
+
 module fckit_resource_module
   !! Fortran interface to eckit Resource
 
@@ -136,7 +138,7 @@ subroutine resource_get_string(resource_str,default_value,value)
   integer(c_size_t) :: value_size
   integer(c_int32_t) :: error_code
   error_code = fckit__resource_string(c_str(resource_str),c_str(default_value),value_c_ptr,value_size)
-  allocate(character(kind=c_char,len=value_size) :: value )
+  FCKIT_ALLOCATE_CHARACTER(value,value_size)
   value = c_ptr_to_string(value_c_ptr)
   call c_ptr_free(value_c_ptr)
 end subroutine
