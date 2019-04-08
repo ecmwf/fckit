@@ -99,7 +99,10 @@ END_TEST
 TEST( test_abort_1 )
   use fckit_module
   implicit none
-  external :: abort_func_0
+  interface
+    subroutine abort_func_0()
+    end subroutine
+  end interface
   procedure(fckit_exception_handler), pointer:: exception_handler
   exception_handler => abort_func_0
   call fckit_exception%set_handler( exception_handler )
