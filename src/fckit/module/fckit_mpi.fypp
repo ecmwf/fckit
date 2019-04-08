@@ -19,11 +19,10 @@
 #:set dim    = ['','(:)','(:,:)','(:,:,:)','(:,:,:,:)','(:,:,:,:,:)']
 
 #:set ftypes = ['integer(c_int32_t)','integer(c_int64_t)','real(c_float)','real(c_double)','logical']
-#:set ctypes = ['int32','int64','real32','real64','logical']
+#:set btypes = ['integer(c_int32_t)','integer(c_int64_t)','real(c_float)','real(c_double)','integer(c_int32_t)']
 #:set dtypes = ['int32', 'int64', 'real32', 'real64','logical']
 
-#:set types  = list(zip(dtypes,ftypes,ctypes))
-
+#:set types  = list(zip(dtypes,ftypes,btypes))
 
 #:def begin_interface( interface )
 #:global _interface
@@ -359,90 +358,90 @@ interface
     integer(c_int32_t) :: fckit__mpi__maxloc
   end function
 
-#:for dtype,ftype,ctype in types
-  subroutine fckit__mpi__allreduce_${ctype}$(comm,in,out,count,operation) bind(c)
+#:for dtype,ftype,btype in types
+  subroutine fckit__mpi__allreduce_${dtype}$(comm,in,out,count,operation) bind(c)
     use, intrinsic :: iso_c_binding
     type(c_ptr), value :: comm
-    ${ftype}$, dimension(*) :: in
-    ${ftype}$, dimension(*) :: out
+    ${btype}$, dimension(*) :: in
+    ${btype}$, dimension(*) :: out
     integer(c_size_t), value :: count
     integer(c_int32_t), value :: operation
   end subroutine
 
-    subroutine fckit__mpi__allreduce_inplace_${ctype}$(comm,inout,count,operation) bind(c)
+    subroutine fckit__mpi__allreduce_inplace_${dtype}$(comm,inout,count,operation) bind(c)
     use, intrinsic :: iso_c_binding
     type(c_ptr), value :: comm
-    ${ftype}$, dimension(*) :: inout
+    ${btype}$, dimension(*) :: inout
     integer(c_size_t), value :: count
     integer(c_int32_t), value :: operation
   end subroutine
 
-  subroutine fckit__mpi__allgather_${ctype}$(comm,in,out) bind(c)
+  subroutine fckit__mpi__allgather_${dtype}$(comm,in,out) bind(c)
     use, intrinsic :: iso_c_binding
     type(c_ptr), value :: comm
-    ${ftype}$ :: in
-    ${ftype}$, dimension(*) :: out
+    ${btype}$ :: in
+    ${btype}$, dimension(*) :: out
   end subroutine
 
-  subroutine fckit__mpi__allgatherv_${ctype}$(comm,in,out,sendcount,recvcounts,displs) bind(c)
+  subroutine fckit__mpi__allgatherv_${dtype}$(comm,in,out,sendcount,recvcounts,displs) bind(c)
     use, intrinsic :: iso_c_binding
     type(c_ptr), value :: comm
-    ${ftype}$, dimension(*) :: in, out
+    ${btype}$, dimension(*) :: in, out
     integer(c_size_t), value :: sendcount
     integer(c_int32_t), dimension(*) :: recvcounts, displs
   end subroutine
 
-  subroutine fckit__mpi__broadcast_${ctype}$(comm,buffer,count,root) bind(c)
+  subroutine fckit__mpi__broadcast_${dtype}$(comm,buffer,count,root) bind(c)
     use, intrinsic :: iso_c_binding
     type(c_ptr), value :: comm
-    ${ftype}$, dimension(*) :: buffer
+    ${btype}$, dimension(*) :: buffer
     integer(c_size_t), value :: count
     integer(c_size_t), value :: root
   end subroutine
 
-  subroutine fckit__mpi__send_${ctype}$(comm,buffer,count,dest,tag) bind(c)
+  subroutine fckit__mpi__send_${dtype}$(comm,buffer,count,dest,tag) bind(c)
     use, intrinsic :: iso_c_binding
     type(c_ptr), value :: comm
-    ${ftype}$, dimension(*) :: buffer
+    ${btype}$, dimension(*) :: buffer
     integer(c_size_t), value :: count
     integer(c_int32_t), value :: dest
     integer(c_int32_t), value :: tag
   end subroutine
 
-  subroutine fckit__mpi__receive_${ctype}$(comm,buffer,count,source,tag,status) bind(c)
+  subroutine fckit__mpi__receive_${dtype}$(comm,buffer,count,source,tag,status) bind(c)
     use, intrinsic :: iso_c_binding
     type(c_ptr), value :: comm
-    ${ftype}$, dimension(*) :: buffer
+    ${btype}$, dimension(*) :: buffer
     integer(c_size_t), value :: count
     integer(c_int32_t), value :: source
     integer(c_int32_t), value :: tag
     integer(c_int32_t), dimension(*) :: status
   end subroutine
 
-  function fckit__mpi__isend_${ctype}$(comm,buffer,count,dest,tag) result(request) bind(c)
+  function fckit__mpi__isend_${dtype}$(comm,buffer,count,dest,tag) result(request) bind(c)
     use, intrinsic :: iso_c_binding
     integer(c_int32_t) :: request
     type(c_ptr), value :: comm
-    ${ftype}$, dimension(*) :: buffer
+    ${btype}$, dimension(*) :: buffer
     integer(c_size_t), value :: count
     integer(c_int32_t), value :: dest
     integer(c_int32_t), value :: tag
   end function
 
-  function fckit__mpi__ireceive_${ctype}$(comm,buffer,count,source,tag) result(request) bind(c)
+  function fckit__mpi__ireceive_${dtype}$(comm,buffer,count,source,tag) result(request) bind(c)
     use, intrinsic :: iso_c_binding
     integer(c_int32_t) :: request
     type(c_ptr), value :: comm
-    ${ftype}$, dimension(*) :: buffer
+    ${btype}$, dimension(*) :: buffer
     integer(c_size_t), value :: count
     integer(c_int32_t), value :: source
     integer(c_int32_t), value :: tag
   end function
 
-  subroutine fckit__mpi__alltoallv_${ctype}$(comm,in,scounts,sdispl,out,rcounts,rdispl) bind(c)
+  subroutine fckit__mpi__alltoallv_${dtype}$(comm,in,scounts,sdispl,out,rcounts,rdispl) bind(c)
     use, intrinsic :: iso_c_binding
     type(c_ptr), value :: comm
-    ${ftype}$, dimension(*) :: in, out
+    ${btype}$, dimension(*) :: in, out
     integer(c_int32_t), dimension(*) :: scounts, sdispl
     integer(c_int32_t), dimension(*) :: rcounts, rdispl
   end subroutine
@@ -551,7 +550,6 @@ end function
 
 !---------------------------------------------------------------------------------------
 
-#if 1
 subroutine fckit_mpi_setCommDefault_int(comm)
   use, intrinsic :: iso_c_binding, only : c_int32_t
   integer(c_int32_t), intent(in) :: comm
@@ -566,7 +564,7 @@ subroutine fckit_mpi_setCommDefault_name(name)
   character(kind=c_char,len=*), intent(in), optional :: name
   call fckit__mpi__setCommDefault_name(c_str(name))
 end subroutine
-#endif
+
 !---------------------------------------------------------------------------------------
 
 function comm_constructor(name) result(this)
@@ -680,7 +678,7 @@ end subroutine
 
 !---------------------------------------------------------------------------------------
 
-#:for dtype,ftype,ctype in types
+#:for dtype,ftype,btype in types
 
 !---------------------------------------------------------------------------------------
 
@@ -690,9 +688,12 @@ subroutine allgather_${dtype}$_r0(this,in,out)
   class(fckit_mpi_comm), intent(in) :: this
   ${ftype}$, intent(in) :: in
   ${ftype}$, intent(inout) :: out(:)
-  ${ftype}$, pointer :: view_out(:)
-  view_out => array_view1d(out)
-  call fckit__mpi__allgather_${ctype}$(this%c_ptr(),in,view_out)
+  ${btype}$, pointer :: view_in(:)
+  ${btype}$, pointer :: view_out(:)
+  ${btype}$ :: mold 
+  view_in => array_view1d(in,mold)
+  view_out => array_view1d(out,mold)
+  call fckit__mpi__allgather_${dtype}$(this%c_ptr(),view_in(1),view_out)
 end subroutine
 
 !---------------------------------------------------------------------------------------
@@ -739,7 +740,7 @@ end subroutine
 !---------------------------------------------------------------------------------------
 
 #:for rank in ranks[1:]
-#:for dtype,ftype,ctype in types
+#:for dtype,ftype,btype in types
 
 !---------------------------------------------------------------------------------------
 
@@ -752,18 +753,19 @@ subroutine allgather_${dtype}$_r${rank}$(this,in,out,sendcount)
   integer(c_int32_t), intent(in) :: sendcount
   integer(c_int32_t) :: p
   integer(c_int32_t), allocatable:: recvcounts(:), displs(:)
-  ${ftype}$, pointer :: view_in(:), view_out(:)
+  ${btype}$, pointer :: view_in(:), view_out(:)
+  ${btype}$ :: mold
   integer(c_int32_t), pointer :: view_rc(:), view_dp(:)
   allocate(recvcounts(this%size()),displs(this%size()))
   recvcounts(:) = sendcount
   do p=1,this%size()
      displs(p) = (p-1)*sendcount
   enddo
-  view_in => array_view1d(in)
-  view_out => array_view1d(out)
+  view_in => array_view1d(in,mold)
+  view_out => array_view1d(out,mold)
   view_rc => array_view1d(recvcounts)
   view_dp => array_view1d(displs)
-  call fckit__mpi__allgatherv_${ctype}$(this%c_ptr(),view_in,view_out,int(sendcount,c_size_t),view_rc,view_dp)
+  call fckit__mpi__allgatherv_${dtype}$(this%c_ptr(),view_in,view_out,int(sendcount,c_size_t),view_rc,view_dp)
   deallocate(recvcounts,displs)
 end subroutine
 
@@ -777,13 +779,14 @@ subroutine allgatherv_${dtype}$_r${rank}$(this,in,out,sendcount,recvcounts,displ
   ${ftype}$, intent(inout) :: out${dim[rank]}$
   integer(c_int32_t), value :: sendcount
   integer(c_int32_t), intent(in) :: recvcounts(:), displs(:)
-  ${ftype}$, pointer :: view_in(:), view_out(:)
+  ${btype}$, pointer :: view_in(:), view_out(:)
+  ${btype}$ :: mold
   integer(c_int32_t), pointer :: view_rc(:), view_dp(:)
-  view_in => array_view1d(in)
-  view_out => array_view1d(out)
+  view_in => array_view1d(in,mold)
+  view_out => array_view1d(out,mold)
   view_rc => array_view1d(recvcounts)
   view_dp => array_view1d(displs)
-  call fckit__mpi__allgatherv_${ctype}$(this%c_ptr(),view_in,view_out,int(sendcount,c_size_t),view_rc,view_dp)
+  call fckit__mpi__allgatherv_${dtype}$(this%c_ptr(),view_in,view_out,int(sendcount,c_size_t),view_rc,view_dp)
 end subroutine
 
 !---------------------------------------------------------------------------------------
@@ -796,16 +799,17 @@ subroutine alltoallv_${dtype}$_r${rank}$(this,in,scounts,sdispl,out,rcounts,rdis
   integer(c_int32_t), intent(in) :: scounts(:), sdispl(:)
   ${ftype}$, intent(inout) :: out${dim[rank]}$
   integer(c_int32_t), intent(in) :: rcounts(:), rdispl(:)
-  ${ftype}$, pointer :: view_in(:), view_out(:)
+  ${btype}$, pointer :: view_in(:), view_out(:)
+  ${btype}$ :: mold
   integer(c_int32_t), pointer :: view_sc(:), view_sd(:)
   integer(c_int32_t), pointer :: view_rc(:), view_rd(:)
-  view_in => array_view1d(in)
-  view_out => array_view1d(out)
+  view_in => array_view1d(in,mold)
+  view_out => array_view1d(out,mold)
   view_sc => array_view1d(scounts)
   view_sd => array_view1d(sdispl)
   view_rc => array_view1d(rcounts)
   view_rd => array_view1d(rdispl)
-  call fckit__mpi__alltoallv_${ctype}$(this%c_ptr(),view_in,view_sc,view_sd,view_out,view_rc,view_rd)
+  call fckit__mpi__alltoallv_${dtype}$(this%c_ptr(),view_in,view_sc,view_sd,view_out,view_rc,view_rd)
 end subroutine
 
 !---------------------------------------------------------------------------------------
@@ -869,7 +873,7 @@ end function
 !---------------------------------------------------------------------------------------
 
 #:for rank in ranks
-#:for dtype,ftype,ctype in types
+#:for dtype,ftype,btype in types
 
 !---------------------------------------------------------------------------------------
 
@@ -888,10 +892,11 @@ subroutine allreduce_${dtype}$_r${rank}$(this,in,out,operation)
   integer(c_int32_t), intent(in) :: operation
     !! Operation used to process input to output
 
-  ${ftype}$, pointer :: view_in(:), view_out(:)
-  view_in  => array_view1d(in)
-  view_out => array_view1d(out)
-  call fckit__mpi__allreduce_${ctype}$(this%CPTR_PGIBUG_A,view_in,view_out, &
+  ${btype}$, pointer :: view_in(:), view_out(:)
+  ${btype}$ :: mold
+  view_in  => array_view1d(in,mold)
+  view_out => array_view1d(out,mold)
+  call fckit__mpi__allreduce_${dtype}$(this%CPTR_PGIBUG_A,view_in,view_out, &
     int(ubound(view_in,1),c_size_t),operation)
 end subroutine
 
@@ -910,15 +915,16 @@ subroutine allreduce_inplace_${dtype}$_r${rank}$(this,inout,operation)
   integer(c_int32_t), intent(in) :: operation
     !! Operation used to process ```inout``` buffer
 
-  ${ftype}$, pointer :: view_inout(:)
-  view_inout => array_view1d(inout)
-  call fckit__mpi__allreduce_inplace_${ctype}$(this%CPTR_PGIBUG_A,view_inout, &
+  ${btype}$, pointer :: view_inout(:)
+  ${btype}$ :: mold
+  view_inout => array_view1d(inout,mold)
+  call fckit__mpi__allreduce_inplace_${dtype}$(this%CPTR_PGIBUG_A,view_inout, &
     int(ubound(view_inout,1),c_size_t),operation)
 end subroutine
 
 !---------------------------------------------------------------------------------------
 
-subroutine broadcast_${ctype}$_r${rank}$(this,buffer,root)
+subroutine broadcast_${dtype}$_r${rank}$(this,buffer,root)
   !! Broadcast ```buffer``` from MPI rank ```root```
 
   use, intrinsic :: iso_c_binding
@@ -931,15 +937,16 @@ subroutine broadcast_${ctype}$_r${rank}$(this,buffer,root)
   integer(c_int32_t), intent(in) :: root
     !! MPI rank to broadcast from
 
-  ${ftype}$, pointer :: view_buffer(:)
-  view_buffer  => array_view1d(buffer)
-  call fckit__mpi__broadcast_${ctype}$(this%CPTR_PGIBUG_A,view_buffer, &
+  ${btype}$, pointer :: view_buffer(:)
+  ${btype}$ :: mold 
+  view_buffer  => array_view1d(buffer,mold)
+  call fckit__mpi__broadcast_${dtype}$(this%CPTR_PGIBUG_A,view_buffer, &
     int(ubound(view_buffer,1),c_size_t),int(root,c_size_t))
 end subroutine
 
 !---------------------------------------------------------------------------------------
 
-subroutine send_${ctype}$_r${rank}$(this,buffer,dest,tag)
+subroutine send_${dtype}$_r${rank}$(this,buffer,dest,tag)
   !! Send ```buffer``` to MPI rank ```dest``` with given ```tag```
 
   use, intrinsic :: iso_c_binding
@@ -954,15 +961,16 @@ subroutine send_${ctype}$_r${rank}$(this,buffer,dest,tag)
   integer(c_int32_t), intent(in) :: tag
     !! MPI tag
 
-  ${ftype}$, pointer :: view_buffer(:)
-  view_buffer  => array_view1d(buffer)
-  call fckit__mpi__send_${ctype}$(this%CPTR_PGIBUG_A,view_buffer, &
+  ${btype}$, pointer :: view_buffer(:)
+  ${btype}$ :: mold
+  view_buffer  => array_view1d(buffer,mold)
+  call fckit__mpi__send_${dtype}$(this%CPTR_PGIBUG_A,view_buffer, &
     int(ubound(view_buffer,1),c_size_t),dest,tag)
 end subroutine
 
 !---------------------------------------------------------------------------------------
 
-subroutine receive_${ctype}$_r${rank}$(this,buffer,source,tag,status)
+subroutine receive_${dtype}$_r${rank}$(this,buffer,source,tag,status)
   !! Receive ```buffer``` from MPI rank ```source``` with optional ```tag``` and optionally return ```status```
 
   use, intrinsic :: iso_c_binding
@@ -981,21 +989,22 @@ subroutine receive_${ctype}$_r${rank}$(this,buffer,source,tag,status)
 
   integer(c_int32_t) :: tag_opt
   type(fckit_mpi_status) :: status_out
-  ${ftype}$, pointer :: view_buffer(:)
+  ${btype}$, pointer :: view_buffer(:)
+  ${btype}$ :: mold
   if( present(tag) ) then
     tag_opt = tag
   else
     tag_opt = fckit__mpi__anytag(this%CPTR_PGIBUG_A)
   endif
-  view_buffer  => array_view1d(buffer)
-  call fckit__mpi__receive_${ctype}$(this%CPTR_PGIBUG_A,view_buffer, &
+  view_buffer  => array_view1d(buffer,mold)
+  call fckit__mpi__receive_${dtype}$(this%CPTR_PGIBUG_A,view_buffer, &
     int(ubound(view_buffer,1),c_size_t),source,tag_opt,status_out%status)
   if( present(status) ) status = status_out
 end subroutine
 
 !---------------------------------------------------------------------------------------
 
-function isend_${ctype}$_r${rank}$(this,buffer,dest,tag) result(request)
+function isend_${dtype}$_r${rank}$(this,buffer,dest,tag) result(request)
   !! Non-blocking send of ```buffer``` to MPI rank ```dest``` with given ```tag```
   !!   An MPI request will be returned
 
@@ -1013,15 +1022,16 @@ function isend_${ctype}$_r${rank}$(this,buffer,dest,tag) result(request)
   integer(c_int32_t), intent(in) :: tag
     !! MPI tag
 
-  ${ftype}$, pointer :: view_buffer(:)
-  view_buffer  => array_view1d(buffer)
-  request = fckit__mpi__isend_${ctype}$(this%CPTR_PGIBUG_A,view_buffer, &
+  ${btype}$, pointer :: view_buffer(:)
+  ${btype}$ :: mold
+  view_buffer  => array_view1d(buffer,mold)
+  request = fckit__mpi__isend_${dtype}$(this%CPTR_PGIBUG_A,view_buffer, &
     int(ubound(view_buffer,1),c_size_t),dest,tag)
 end function
 
 !---------------------------------------------------------------------------------------
 
-function ireceive_${ctype}$_r${rank}$(this,buffer,source,tag) result(request)
+function ireceive_${dtype}$_r${rank}$(this,buffer,source,tag) result(request)
   !! Non-blocking receive of ```buffer``` from MPI rank ```source``` with optional ```tag```
   !!   An MPI request will be returned
 
@@ -1040,14 +1050,15 @@ function ireceive_${ctype}$_r${rank}$(this,buffer,source,tag) result(request)
     !! MPI tag
 
   integer(c_int32_t) :: tag_opt
-  ${ftype}$, pointer :: view_buffer(:)
+  ${btype}$, pointer :: view_buffer(:)
+  ${btype}$ :: mold
   if( present(tag) ) then
     tag_opt = tag
   else
     tag_opt = fckit__mpi__anytag(this%CPTR_PGIBUG_A)
   endif
-  view_buffer  => array_view1d(buffer)
-  request = fckit__mpi__ireceive_${ctype}$(this%CPTR_PGIBUG_A,view_buffer, &
+  view_buffer  => array_view1d(buffer,mold)
+  request = fckit__mpi__ireceive_${dtype}$(this%CPTR_PGIBUG_A,view_buffer, &
     int(ubound(view_buffer,1),c_size_t),source,tag_opt)
 end function
 
