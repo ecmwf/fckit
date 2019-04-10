@@ -261,6 +261,7 @@ TEST(test_configuration_json_file)
   type(fckit_Configuration), allocatable :: records(:)
   type(fckit_Configuration) :: location
   character (len=:), allocatable :: name, company, street, city
+  character (len=:), allocatable :: variables(:)
   integer :: age
   integer :: jrec
   logical :: logval
@@ -272,7 +273,8 @@ TEST(test_configuration_json_file)
   ! Write a json file
   OPEN (UNIT=9 , FILE="fctest_configuration.json", STATUS='REPLACE')
   write(9,'(A)') '{"location":{"city":"Reading","company":"ECMWF","street":"Shinfield Road"},'//&
-  &'"records":[{"age":42,"name":"Anne"},{"age":36,"name":"Bob"}],"trueval": true ,"falseval":false}'
+  &'"records":[{"age":42,"name":"Anne"},{"age":36,"name":"Bob"}],"trueval": true ,"falseval":false,'//&
+  &'"variables":["u","o3","co2"]}'
   CLOSE(9)
 
   config = fckit_YAMLConfiguration( fckit_PathName("fctest_configuration.json") )
@@ -317,6 +319,11 @@ TEST(test_configuration_json_file)
 
   if( config%get("falseval",logval) ) then
     FCTEST_CHECK( .not. logval )
+  endif
+
+  if( config%get("variables",variables) ) then
+    write(0,*) "variables: ", variables
+    if( allocated(variables) ) deallocate(variables)
   endif
 
   write(0,*) "config%owners() = ", config%owners()
