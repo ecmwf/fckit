@@ -221,7 +221,9 @@ subroutine test_shared_ptr_safer( final_auto )
   if( .not. final_auto ) then
     write(0,*) "manual final , owners = ", obj1%owners()
     call obj1%final()
+    FCTEST_CHECK_EQUAL( obj2%owners(), 2 )
     call obj2%final()
+    FCTEST_CHECK_EQUAL( obj3%owners(), 1 )
     call obj3%final()
   endif
 
