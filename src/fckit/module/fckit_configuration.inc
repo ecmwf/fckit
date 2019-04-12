@@ -407,6 +407,23 @@ end function
 !-------------------------------------------------------------------------------
 
 !-------------------------------------------------------------------------------
+! int32 c_fckit_configuration_get_array_string (const Configuration* This, const c
+!   har* name, char* &value, size_t& size, size_t* &offsets, size_t& numelem)
+!-------------------------------------------------------------------------------
+function c_fckit_configuration_get_array_string( This, name, value, size, offsets, numelem) bind&
+  &(C,name="c_fckit_configuration_get_array_string")
+    use iso_c_binding, only: c_char, c_ptr, c_int32_t, c_size_t
+    integer(c_int32_t) :: c_fckit_configuration_get_array_string
+    type(c_ptr), value :: This
+    character(c_char), dimension(*) :: name
+    type(c_ptr) :: value
+    integer(c_size_t) :: size
+    type(c_ptr) :: offsets
+    integer(c_size_t) :: numelem
+end function
+!----------------------------------------------------------------------
+
+!-------------------------------------------------------------------------------
 ! int32 c_fckit_configuration_has (const Configuration* This, const char *name)
 !-------------------------------------------------------------------------------
 function c_fckit_configuration_has( This, name ) bind(C,name="c_fckit_configura&
