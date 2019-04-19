@@ -15,6 +15,8 @@
 #include "eckit/log/CodeLocation.h"
 #include "eckit/mpi/Comm.h"
 
+#include "fckit/fckit.h"
+
 using eckit::mpi::Comm;
 using int32  = std::int32_t;
 using int64  = std::int64_t;
@@ -69,19 +71,31 @@ void fckit__mpi__setCommDefault_name( const char* name ) {
 }
 
 void fckit__mpi__comm_set_default( Comm* comm ) {
+#if ECKIT_IMPROVED_MPI
     eckit::mpi::setCommDefault( comm->name().c_str() );
+#else
+    throw eckit::NotImplemented( "eckit::mpi::Comm::name() not implemented in used version of eckit", Here() );
+#endif
 }
 
 void fckit__mpi__comm_name( Comm* comm, char*& name, int32& size ) {
+#if ECKIT_IMPROVED_MPI
     std::string s = ( comm ? comm->name() : eckit::mpi::comm().name() );
     size          = int32( s.size() ) + 1;
     name          = new char[size];
     std::strcpy( name, s.c_str() );
+#else
+    throw eckit::NotImplemented( "eckit::mpi::Comm::name() not implemented in used version of eckit", Here() );
+#endif
 }
 
 void fckit__mpi__comm_delete( Comm* comm ) {
     if ( comm ) {
+#if ECKIT_IMPROVED_MPI
         eckit::mpi::deleteComm( comm->name().c_str() );
+#else
+        throw eckit::NotImplemented( "eckit::mpi::deleteComm() not implemented in used version of eckit", Here() );
+#endif
     }
 }
 

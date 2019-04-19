@@ -656,6 +656,7 @@ TEST( test_blocking_send_receive_int64_rank1 )
 END_TEST
 
 TEST( test_split_comm_delete )
+#if ECKIT_IMPROVED_MPI
   use fckit_mpi_module
   use, intrinsic :: iso_c_binding
   implicit none
@@ -683,7 +684,7 @@ TEST( test_split_comm_delete )
     enddo
 
   endif
-
+#endif
 END_TEST
 
 END_TESTSUITE

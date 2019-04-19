@@ -89,6 +89,18 @@ if( HAVE_ECKIT AND NOT ECKIT_HAVE_MPI )
   ecbuild_warn("ecKit has been compiled without MPI. This causes fckit to not be able to run parallel executables.")
 endif()
 
+if( ECKIT_VERSION VERSION_LESS "0.25" )
+  set( ECKIT_IMPROVED_MPI 0 )
+  if( HAVE_ECKIT )
+    ecbuild_warn( "eckit version does not allow support for" 
+                  "- fckit_mpi_comm%set_default()"
+                  "- fckit_mpi_comm%name()"
+                  "- fckit_mpi_comm%delete()" )
+  endif()
+else()
+  set( ECKIT_IMPROVED_MPI 1 )
+endif()
+
 ################################################################################################
 # export package info
 
