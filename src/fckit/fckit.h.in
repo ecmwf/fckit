@@ -53,7 +53,7 @@ Following is to workaround PGI bug which prevents the use of function c_ptr()
 #define XLBUG_FCKIT_14 1
 #if 0
 Following is to workaround XL bug where allocate( character(len=xxx,kind=c_char ) :: string )
-doesn't compile
+does not compile
 #endif
 #if XLBUG_FCKIT_14
 #define FCKIT_ALLOCATE_CHARACTER( VARIABLE, SIZE ) allocate( character(len=(SIZE)) :: VARIABLE )
