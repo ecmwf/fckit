@@ -20,6 +20,16 @@ TESTSUITE_FINALIZE
   call fckit_main%final()
 END_TESTSUITE_FINALIZE
 
+TEST( test_default_comm )
+  use fckit_module
+  use, intrinsic :: iso_c_binding
+  implicit none
+
+  write(0,*) "test_default_comm"
+  write(0,*) "default size:", fckit_mpi%size()
+  write(0,*) "default rank:", fckit_mpi%rank()
+END_TEST
+
 TEST( test_comm )
   use fckit_module
   use, intrinsic :: iso_c_binding
@@ -39,7 +49,6 @@ TEST( test_comm )
   comm = fckit_mpi_comm("self")
   FCTEST_CHECK_EQUAL( comm%size(), 1 )
   FCTEST_CHECK_EQUAL( comm%rank(), 0 )
-
 END_TEST
 
 
@@ -644,6 +653,38 @@ TEST( test_blocking_send_receive_int64_rank1 )
 
   endif
 
+END_TEST
+
+TEST( test_split_comm_delete )
+#if ECKIT_IMPROVED_MPI
+  use fckit_mpi_module
+  use, intrinsic :: iso_c_binding
+  implicit none
+  type(fckit_mpi_comm) :: world  ! a handle for the world comm
+  type(fckit_mpi_comm) :: split  ! a handle for the split comm
+  integer :: i, j
+
+  world = fckit_mpi_comm("world")
+  if( mod(world%size(),2) == 0 ) then
+
+    do i=1,10
+        split = world%split( merge(1,2,world%rank()<world%size()/2), "split" )
+        FCTEST_CHECK_EQUAL( split%size(),  world%size()/2 )
+        FCTEST_CHECK      ( split%rank() < split%size() )
+
+        ! Set the default communicator to "split" ( a typical use case )
+        call split%set_default()
+
+        FCTEST_CHECK_EQUAL( fckit_mpi%name(), "split" )
+        FCTEST_CHECK_EQUAL( fckit_mpi%size(), split%size() )
+
+        ! We cannot delete split if it is set as default, so set the default back to world first
+        call world%set_default()
+        call split%delete()
+    enddo
+
+  endif
+#endif
 END_TEST
 
 END_TESTSUITE

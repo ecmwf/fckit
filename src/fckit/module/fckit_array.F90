@@ -54,6 +54,7 @@ interface array_view1d
   module procedure array_view1d_logical_r2
   module procedure array_view1d_logical_r3
   module procedure array_view1d_logical_r4
+  module procedure array_view1d_logical_r0_mold_int32
   module procedure array_view1d_logical_r1_mold_int32
   module procedure array_view1d_logical_r2_mold_int32
   module procedure array_view1d_logical_r3_mold_int32
@@ -158,9 +159,10 @@ end function
 ! view interface
 ! =============================================================================
 
-function array_view1d_int32_r0(scalar) result( view )
+function array_view1d_int32_r0(scalar,mold) result( view )
   use, intrinsic :: iso_c_binding
   integer(c_int32_t), intent(in), target :: scalar
+  integer(c_int32_t), intent(in), optional :: mold
   type(c_ptr) :: array_c_ptr
   integer(c_int32_t), pointer :: view(:)
   nullify(view)
@@ -170,9 +172,10 @@ end function
 
 ! =============================================================================
 
-function array_view1d_int32_r1(array) result( view )
+function array_view1d_int32_r1(array,mold) result( view )
   use, intrinsic :: iso_c_binding
   integer(c_int32_t), intent(in), target :: array(:)
+  integer(c_int32_t), intent(in), optional :: mold
   type(c_ptr) :: array_c_ptr
   integer(c_int32_t), pointer :: view(:)
   nullify(view)
@@ -186,9 +189,10 @@ end function
 
 ! =============================================================================
 
-function array_view1d_int32_r2(array) result( view )
+function array_view1d_int32_r2(array,mold) result( view )
   use, intrinsic :: iso_c_binding
   integer(c_int32_t), intent(in), target :: array(:,:)
+  integer(c_int32_t), intent(in), optional :: mold
   type(c_ptr) :: array_c_ptr
   integer(c_int32_t), pointer :: view(:)
   nullify(view)
@@ -202,9 +206,10 @@ end function
 
 ! =============================================================================
 
-function array_view1d_int32_r3(array) result( view )
+function array_view1d_int32_r3(array,mold) result( view )
   use, intrinsic :: iso_c_binding
   integer(c_int32_t), intent(in), target :: array(:,:,:)
+  integer(c_int32_t), intent(in), optional :: mold
   type(c_ptr) :: array_c_ptr
   integer(c_int32_t), pointer :: view(:)
   nullify(view)
@@ -218,9 +223,10 @@ end function
 
 ! =============================================================================
 
-function array_view1d_int32_r4(array) result( view )
+function array_view1d_int32_r4(array,mold) result( view )
   use, intrinsic :: iso_c_binding
   integer(c_int32_t), intent(in), target :: array(:,:,:,:)
+  integer(c_int32_t), intent(in), optional :: mold
   type(c_ptr) :: array_c_ptr
   integer(c_int32_t), pointer :: view(:)
   nullify(view)
@@ -234,9 +240,10 @@ end function
 
 ! =============================================================================
 
-function array_view1d_int64_r0(scalar) result( view )
+function array_view1d_int64_r0(scalar,mold) result( view )
   use, intrinsic :: iso_c_binding
   integer(c_int64_t), intent(in), target :: scalar
+  integer(c_int64_t), intent(in), optional :: mold
   type(c_ptr) :: array_c_ptr
   integer(c_int64_t), pointer :: view(:)
   nullify(view)
@@ -246,9 +253,10 @@ end function
 
 ! =============================================================================
 
-function array_view1d_int64_r1(array) result( view )
+function array_view1d_int64_r1(array,mold) result( view )
   use, intrinsic :: iso_c_binding
   integer(c_int64_t), intent(in), target :: array(:)
+  integer(c_int64_t), intent(in), optional :: mold
   type(c_ptr) :: array_c_ptr
   integer(c_int64_t), pointer :: view(:)
   nullify(view)
@@ -262,9 +270,10 @@ end function
 
 ! =============================================================================
 
-function array_view1d_int64_r2(array) result( view )
+function array_view1d_int64_r2(array,mold) result( view )
   use, intrinsic :: iso_c_binding
   integer(c_int64_t), intent(in), target :: array(:,:)
+  integer(c_int64_t), intent(in), optional :: mold
   type(c_ptr) :: array_c_ptr
   integer(c_int64_t), pointer :: view(:)
   nullify(view)
@@ -278,9 +287,10 @@ end function
 
 ! =============================================================================
 
-function array_view1d_int64_r3(array) result( view )
+function array_view1d_int64_r3(array,mold) result( view )
   use, intrinsic :: iso_c_binding
   integer(c_int64_t), intent(in), target :: array(:,:,:)
+  integer(c_int64_t), intent(in), optional :: mold
   type(c_ptr) :: array_c_ptr
   integer(c_int64_t), pointer :: view(:)
   nullify(view)
@@ -294,9 +304,10 @@ end function
 
 ! =============================================================================
 
-function array_view1d_int64_r4(array) result( view )
+function array_view1d_int64_r4(array,mold) result( view )
   use, intrinsic :: iso_c_binding
   integer(c_int64_t), intent(in), target :: array(:,:,:,:)
+  integer(c_int64_t), intent(in), optional :: mold
   type(c_ptr) :: array_c_ptr
   integer(c_int64_t), pointer :: view(:)
   nullify(view)
@@ -310,9 +321,10 @@ end function
 
 ! =============================================================================
 
-function array_view1d_real32_r0(scalar) result( view )
+function array_view1d_real32_r0(scalar,mold) result( view )
   use, intrinsic :: iso_c_binding
   real(c_float), intent(in), target :: scalar
+  real(c_float), intent(in), optional :: mold
   type(c_ptr) :: array_c_ptr
   real(c_float), pointer :: view(:)
   nullify(view)
@@ -322,9 +334,10 @@ end function
 
 ! =============================================================================
 
-function array_view1d_real32_r1(array) result( view )
+function array_view1d_real32_r1(array,mold) result( view )
   use, intrinsic :: iso_c_binding
   real(c_float), intent(in), target :: array(:)
+  real(c_float), intent(in), optional :: mold
   type(c_ptr) :: array_c_ptr
   real(c_float), pointer :: view(:)
   nullify(view)
@@ -338,9 +351,10 @@ end function
 
 ! =============================================================================
 
-function array_view1d_real32_r2(array) result( view )
+function array_view1d_real32_r2(array,mold) result( view )
   use, intrinsic :: iso_c_binding
   real(c_float), intent(in), target :: array(:,:)
+  real(c_float), intent(in), optional :: mold
   type(c_ptr) :: array_c_ptr
   real(c_float), pointer :: view(:)
   nullify(view)
@@ -354,9 +368,10 @@ end function
 
 ! =============================================================================
 
-function array_view1d_real32_r3(array) result( view )
+function array_view1d_real32_r3(array,mold) result( view )
   use, intrinsic :: iso_c_binding
   real(c_float), intent(in), target :: array(:,:,:)
+  real(c_float), intent(in), optional :: mold
   type(c_ptr) :: array_c_ptr
   real(c_float), pointer :: view(:)
   nullify(view)
@@ -370,9 +385,10 @@ end function
 
 ! =============================================================================
 
-function array_view1d_real32_r4(array) result( view )
+function array_view1d_real32_r4(array,mold) result( view )
   use, intrinsic :: iso_c_binding
   real(c_float), intent(in), target :: array(:,:,:,:)
+  real(c_float), intent(in), optional :: mold
   type(c_ptr) :: array_c_ptr
   real(c_float), pointer :: view(:)
   nullify(view)
@@ -386,9 +402,10 @@ end function
 
 ! =============================================================================
 
-function array_view1d_real64_r0(scalar) result( view )
+function array_view1d_real64_r0(scalar,mold) result( view )
   use, intrinsic :: iso_c_binding
   real(c_double), intent(in), target :: scalar
+  real(c_double), intent(in), optional :: mold
   type(c_ptr) :: array_c_ptr
   real(c_double), pointer :: view(:)
   nullify(view)
@@ -398,9 +415,10 @@ end function
 
 ! =============================================================================
 
-function array_view1d_real64_r1(array) result( view )
+function array_view1d_real64_r1(array,mold) result( view )
   use, intrinsic :: iso_c_binding
   real(c_double), intent(in), target :: array(:)
+  real(c_double), intent(in), optional :: mold
   type(c_ptr) :: array_c_ptr
   real(c_double), pointer :: view(:)
   nullify(view)
@@ -414,9 +432,10 @@ end function
 
 ! =============================================================================
 
-function array_view1d_real64_r2(array) result( view )
+function array_view1d_real64_r2(array,mold) result( view )
   use, intrinsic :: iso_c_binding
   real(c_double), intent(in), target :: array(:,:)
+  real(c_double), intent(in), optional :: mold
   type(c_ptr) :: array_c_ptr
   real(c_double), pointer :: view(:)
   nullify(view)
@@ -430,9 +449,10 @@ end function
 
 ! =============================================================================
 
-function array_view1d_real64_r3(array) result( view )
+function array_view1d_real64_r3(array,mold) result( view )
   use, intrinsic :: iso_c_binding
   real(c_double), intent(in), target :: array(:,:,:)
+  real(c_double), intent(in), optional :: mold
   type(c_ptr) :: array_c_ptr
   real(c_double), pointer :: view(:)
   nullify(view)
@@ -446,9 +466,10 @@ end function
 
 ! =============================================================================
 
-function array_view1d_real64_r4(array) result( view )
+function array_view1d_real64_r4(array,mold) result( view )
   use, intrinsic :: iso_c_binding
   real(c_double), intent(in), target :: array(:,:,:,:)
+  real(c_double), intent(in), optional :: mold
   type(c_ptr) :: array_c_ptr
   real(c_double), pointer :: view(:)
   nullify(view)
@@ -540,7 +561,7 @@ end function
 
 function array_view1d_logical_r0_mold_int32(scalar,mold) result( view )
   use, intrinsic :: iso_c_binding
-  logical, intent(in), target :: scalar
+  logical, intent(in)  :: scalar
   integer(c_int32_t), intent(in) :: mold
   type(c_ptr) :: array_c_ptr
   integer(c_int32_t), pointer :: view(:)
@@ -1154,3 +1175,4 @@ end function
 ! =============================================================================
 
 end module
+

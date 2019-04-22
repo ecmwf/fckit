@@ -6,6 +6,8 @@
 ! granted to it by virtue of its status as an intergovernmental organisation nor
 ! does it submit to any jurisdiction.
 
+#include "fckit/fckit.h"
+
 module fckit_main_module
   !! author: Willem Deconinck
   !!
@@ -206,7 +208,7 @@ subroutine main_name(name)
   integer(c_size_t) :: name_size
   integer(c_int32_t) :: error_code
   error_code = fckit__main_name(name_c_ptr,name_size)
-  allocate(character(kind=c_char,len=name_size) :: name )
+  FCKIT_ALLOCATE_CHARACTER(name,name_size)
   name = c_ptr_to_string(name_c_ptr)
   call c_ptr_free(name_c_ptr)
 end subroutine
@@ -220,7 +222,7 @@ subroutine displayname(name)
   integer(c_size_t) :: name_size
   integer(c_int32_t) :: error_code
   error_code = fckit__main_displayname(name_c_ptr,name_size)
-  allocate(character(kind=c_char,len=name_size) :: name )
+  FCKIT_ALLOCATE_CHARACTER(name,name_size)
   name = c_ptr_to_string(name_c_ptr)
   call c_ptr_free(name_c_ptr)
 end subroutine

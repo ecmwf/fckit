@@ -9,10 +9,13 @@
  */
 
 #include <cstdint>
+#include <cstring>
 #include <sstream>
 #include "eckit/exception/Exceptions.h"
 #include "eckit/log/CodeLocation.h"
 #include "eckit/mpi/Comm.h"
+
+#include "fckit/fckit.h"
 
 using eckit::mpi::Comm;
 using int32  = std::int32_t;
@@ -65,6 +68,42 @@ void fckit__mpi__setCommDefault_int( int32 comm ) {
 
 void fckit__mpi__setCommDefault_name( const char* name ) {
     eckit::mpi::setCommDefault( name );
+}
+
+void fckit__mpi__comm_set_default( Comm* comm ) {
+#if ECKIT_IMPROVED_MPI
+    eckit::mpi::setCommDefault( comm->name().c_str() );
+#else
+    throw eckit::NotImplemented( "eckit::mpi::Comm::name() not implemented in used version of eckit", Here() );
+#endif
+}
+
+void fckit__mpi__comm_name( Comm* comm, char*& name, int32& size ) {
+#if ECKIT_IMPROVED_MPI
+    std::string s = ( comm ? comm->name() : eckit::mpi::comm().name() );
+    size          = int32( s.size() ) + 1;
+    name          = new char[size];
+    std::strcpy( name, s.c_str() );
+#else
+    throw eckit::NotImplemented( "eckit::mpi::Comm::name() not implemented in used version of eckit", Here() );
+#endif
+}
+
+void fckit__mpi__comm_delete( Comm* comm ) {
+    if ( comm ) {
+#if ECKIT_IMPROVED_MPI
+        eckit::mpi::deleteComm( comm->name().c_str() );
+#else
+        throw eckit::NotImplemented( "eckit::mpi::deleteComm() not implemented in used version of eckit", Here() );
+#endif
+    }
+}
+
+Comm* fckit__mpi__comm_split( Comm* comm, int32 colour, const char* name ) {
+    if ( comm )
+        return &( comm->split( colour, name ) );
+    else
+        return &( eckit::mpi::comm().split( colour, name ) );
 }
 
 int fckit__mpi__comm_communicator( const Comm* comm ) {
@@ -263,7 +302,7 @@ void fckit__mpi__allgatherv_real64( const Comm* comm, const double* in, double* 
 }
 
 void fckit__mpi__allgatherv_logical( const Comm* comm, const int32* in, int32* out, size_t sendcount, int32* recvcounts,
-                                   int32* displs ) {
+                                     int32* displs ) {
     if ( comm )
         comm->allGatherv( in, in + sendcount, out, recvcounts, displs );
     else
@@ -429,7 +468,7 @@ void fckit__mpi__receive_real64( const Comm* comm, double* buffer, size_t count,
 }
 
 void fckit__mpi__receive_logical( const Comm* comm, int32* buffer, size_t count, int32 source, int32 tag,
-                                int32* status ) {
+                                  int32* status ) {
     eckit::mpi::Status _status;
     if ( comm )
         _status = comm->receive( buffer, count, source, tag );
@@ -531,7 +570,7 @@ void fckit__mpi__alltoallv_real64( const Comm* comm, const double* in, int32* sc
 }
 
 void fckit__mpi__alltoallv_int64( const Comm* comm, const int64* in, int32* scounts, int32* sdispl, int64* out,
-                                   int32* rcounts, int32* rdispl ) {
+                                  int32* rcounts, int32* rdispl ) {
     if ( comm )
         comm->allToAllv( in, scounts, sdispl, out, rcounts, rdispl );
     else
@@ -539,7 +578,7 @@ void fckit__mpi__alltoallv_int64( const Comm* comm, const int64* in, int32* scou
 }
 
 void fckit__mpi__alltoallv_int32( const Comm* comm, const int32* in, int32* scounts, int32* sdispl, int32* out,
-                                   int32* rcounts, int32* rdispl ) {
+                                  int32* rcounts, int32* rdispl ) {
     if ( comm )
         comm->allToAllv( in, scounts, sdispl, out, rcounts, rdispl );
     else
@@ -547,7 +586,7 @@ void fckit__mpi__alltoallv_int32( const Comm* comm, const int32* in, int32* scou
 }
 
 void fckit__mpi__alltoallv_logical( const Comm* comm, const int32* in, int32* scounts, int32* sdispl, int32* out,
-                                   int32* rcounts, int32* rdispl ) {
+                                    int32* rcounts, int32* rdispl ) {
     if ( comm )
         comm->allToAllv( in, scounts, sdispl, out, rcounts, rdispl );
     else

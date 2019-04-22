@@ -50,6 +50,19 @@ Following is to workaround PGI bug which prevents the use of function c_ptr()
 #define PGIBUG_ATLAS_197_DEBUG 0
 #endif
 
+#define XLBUG_FCKIT_14 1
+#if 0
+Following is to workaround XL bug where allocate( character(len=xxx,kind=c_char ) :: string )
+does not compile
+#endif
+#if XLBUG_FCKIT_14
+#define FCKIT_ALLOCATE_CHARACTER( VARIABLE, SIZE ) allocate( character(len=(SIZE)) :: VARIABLE )
+#else
+#define FCKIT_ALLOCATE_CHARACTER( VARIABLE, SIZE ) allocate( character(len=(SIZE),kind=c_char) :: VARIABLE )
+#endif
+
+#define ECKIT_IMPROVED_MPI @ECKIT_IMPROVED_MPI@
+
 #if 0
 // clang-format on
 #endif

@@ -221,7 +221,9 @@ subroutine test_shared_ptr_safer( final_auto )
   if( .not. final_auto ) then
     write(0,*) "manual final , owners = ", obj1%owners()
     call obj1%final()
+    FCTEST_CHECK_EQUAL( obj2%owners(), 2 )
     call obj2%final()
+    FCTEST_CHECK_EQUAL( obj3%owners(), 1 )
     call obj3%final()
   endif
 
@@ -587,7 +589,9 @@ TEST( test_shared_object_allocatable_list_auto_manual )
   write(0,'(A)') "-------------------------------------------------------------"
   write(0,'(A)')
 #else
+#ifndef __ibmxl__
 #warning test_shared_object_allocatable_list_auto_manual disabled
+#endif
 #endif
 END_TEST
 
@@ -606,7 +610,9 @@ TEST( test_shared_object_allocatable_list_manual_auto )
   write(0,'(A)') "-------------------------------------------------------------"
   write(0,'(A)')
 #else
+#ifndef __ibmxl__
 #warning test_shared_object_allocatable_list_manual_auto disabled
+#endif
 #endif
 END_TEST
 
@@ -625,7 +631,9 @@ TEST( test_shared_object_allocatable_list_manual_manual )
   write(0,'(A)') "-------------------------------------------------------------"
   write(0,'(A)')
 #else
+#ifndef __ibmxl__
 #warning test_shared_object_allocatable_list_manual_manual disabled
+#endif
 #endif
 END_TEST
 

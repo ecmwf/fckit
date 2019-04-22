@@ -102,7 +102,7 @@ function str(this)
   integer(c_size_t) :: str_size
   type(c_ptr) :: str_cptr
   errcode = c_fckit_buffer_str(this%CPTR_PGIBUG_B,str_cptr,str_size)
-  allocate(character(kind=c_char,len=str_size) :: str )
+  FCKIT_ALLOCATE_CHARACTER(str,str_size)
   str = c_ptr_to_string(str_cptr)
   call c_ptr_free(str_cptr)
 end function

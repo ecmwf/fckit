@@ -6,6 +6,8 @@
 ! granted to it by virtue of its status as an intergovernmental organisation nor
 ! does it submit to any jurisdiction.
 
+#include "fckit/fckit.h"
+
 module fckit_exception_module
   !! author: Willem Deconinck
   !!
@@ -192,7 +194,7 @@ function what()
   integer(c_int32_t) :: error_code
 
   error_code = fckit__exception_what(what_c_ptr,what_size)
-  allocate(character(kind=c_char,len=what_size) :: what )
+  FCKIT_ALLOCATE_CHARACTER(what,what_size)
   what = c_ptr_to_string(what_c_ptr)
   call c_ptr_free(what_c_ptr)
 end function
@@ -228,7 +230,7 @@ function location_file() result(file)
   integer(c_int32_t) :: error_code
 
   error_code = fckit__exception_file(file_c_ptr,file_size)
-  allocate(character(kind=c_char,len=file_size) :: file )
+  FCKIT_ALLOCATE_CHARACTER(file,file_size)
   file = c_ptr_to_string(file_c_ptr)
   call c_ptr_free(file_c_ptr)
 end function
@@ -261,7 +263,7 @@ function location_function() result(function)
   integer(c_int32_t) :: error_code
 
   error_code = fckit__exception_function(function_c_ptr,function_size)
-  allocate(character(kind=c_char,len=function_size) :: function )
+  FCKIT_ALLOCATE_CHARACTER(function,function_size)
   function = c_ptr_to_string(function_c_ptr)
   call c_ptr_free(function_c_ptr)
 end function
@@ -282,7 +284,7 @@ function callstack()
   integer(c_int32_t) :: error_code
 
   error_code = fckit__exception_callstack(callstack_c_ptr,callstack_size)
-  allocate(character(kind=c_char,len=callstack_size) :: callstack )
+  FCKIT_ALLOCATE_CHARACTER(callstack,callstack_size)
   callstack = c_ptr_to_string(callstack_c_ptr)
   call c_ptr_free(callstack_c_ptr)
 end function
