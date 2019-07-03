@@ -237,6 +237,20 @@ int32 c_fckit_configuration_get_string( const Configuration* This, const char* n
     return true;
 }
 
+int32 c_fckit_configuration_get_string_element (const Configuration* This, const char* name, size_t& index, char* &value, size_t& size) {
+    vector<std::string> v;
+    if( ! This->get(string(name),v) ) {
+        value = NULL;
+        return false;
+    }
+    ASSERT(index < v.size());
+    string s = v[index];
+    size = s.size()+1;
+    value = new char[size];
+    strcpy(value,s.c_str());
+    return true;
+}
+
 int32 c_fckit_configuration_get_array_int32 (const Configuration* This, const char* name, int32* &value, size_t& size) {
     vector<int32> v;
     if( ! This->get(string(name),v) )
@@ -280,6 +294,11 @@ int32 c_fckit_configuration_get_array_double (const Configuration* This, const c
 
 int32 c_fckit_configuration_has (const Configuration* This, const char *name) {
     return This->has( string(name) );
+}
+
+int32 c_fckit_configuration_get_size (const Configuration* This, const char *name) {
+    const std::vector < std::string > data(This->getStringVector( string(name) ));
+    return data.size();
 }
 
 void c_fckit_configuration_json(const Configuration* This, char* &json, size_t &size) {

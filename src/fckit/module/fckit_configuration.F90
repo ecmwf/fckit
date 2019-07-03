@@ -77,6 +77,14 @@ contains
     !!```fortran
     !! if( .not. fckit_configuration%has('levels') ) call abort()
     !!```
+  procedure, private :: get_size
+    !! Function that returns the size of a name in the configuration
+    !!
+    !!#### Example usage:
+    !!
+    !!```fortran
+    !! nlev = fckit_configuration%get_size('levels')
+    !!```
 
   procedure, private :: set_config
   procedure, private :: set_config_list
@@ -134,16 +142,18 @@ contains
 
   procedure, private :: get_config
   procedure, private :: get_config_list
+  procedure, private :: get_logical
   procedure, private :: get_int32
   procedure, private :: get_int64
-  procedure, private :: get_logical
   procedure, private :: get_real32
   procedure, private :: get_real64
   procedure, private :: get_string
+  procedure, private :: get_array_logical
   procedure, private :: get_array_int32
   procedure, private :: get_array_int64
   procedure, private :: get_array_real32
   procedure, private :: get_array_real64
+  procedure, private :: get_array_string
 
   !----------------------------------------------------------------------------
   !> Function that gets a name-value configuration
@@ -191,29 +201,33 @@ contains
   generic, public :: get => &
     get_config, &
     get_config_list, &
+    get_logical, &
     get_int32, &
     get_int64, &
-    get_logical, &
     get_real32, &
     get_real64, &
     get_string, &
+    get_array_logical, &
     get_array_int32, &
     get_array_int64, &
     get_array_real32, &
-    get_array_real64
+    get_array_real64, &
+    get_array_string
 
     procedure, private :: get_config_or_die
     procedure, private :: get_config_list_or_die
+    procedure, private :: get_logical_or_die
     procedure, private :: get_int32_or_die
     procedure, private :: get_int64_or_die
-    procedure, private :: get_logical_or_die
     procedure, private :: get_real32_or_die
     procedure, private :: get_real64_or_die
     procedure, private :: get_string_or_die
+    procedure, private :: get_array_logical_or_die
     procedure, private :: get_array_int32_or_die
     procedure, private :: get_array_int64_or_die
     procedure, private :: get_array_real32_or_die
     procedure, private :: get_array_real64_or_die
+    procedure, private :: get_array_string_or_die
 
     !----------------------------------------------------------------------------
     !> Subroutine that gets a name-value configuration, and throws exception
@@ -247,16 +261,18 @@ contains
     generic :: get_or_die => &
       get_config_or_die, &
       get_config_list_or_die, &
+      get_logical_or_die, &
       get_int32_or_die, &
       get_int64_or_die, &
-      get_logical_or_die, &
       get_real32_or_die, &
       get_real64_or_die, &
       get_string_or_die, &
+      get_array_logical_or_die, &
       get_array_int32_or_die, &
       get_array_int64_or_die, &
       get_array_real32_or_die, &
-      get_array_real64_or_die
+      get_array_real64_or_die, &
+      get_array_string_or_die
 
   procedure :: json
     !! Return a json string corresponding to this configuration
@@ -400,6 +416,14 @@ function has(this, name) result(value)
   end if
 end function
 
+function get_size(this, name) result(value)
+  use fckit_c_interop_module, only : c_str
+  class(fckit_Configuration), intent(inout) :: this
+  character(kind=c_char,len=*), intent(in) :: name
+  integer(c_int32_t) :: value
+  value =  c_fckit_configuration_get_size(this%c_ptr(), c_str(name) )
+end function
+
 subroutine set_config(this, name, value)
   use fckit_c_interop_module, only : c_str
   class(fckit_Configuration), intent(inout) :: this
@@ -510,6 +534,7 @@ subroutine set_array_real64(this, name, value)
   real(c_double), intent(in) :: value(:)
   call c_fckit_configuration_set_array_double(this%c_ptr(), c_str(name), value, size(value,kind=c_size_t) )
 end subroutine
+
 
 function get_config(this, name, value) result(found)
   use fckit_c_interop_module, only : c_str
@@ -697,6 +722,46 @@ subroutine get_string_or_die(this,name,value)
   if( .not. this%get(name,value) ) call throw_configuration_not_found(name)
 end subroutine
 
+function get_array_logical(this, name, value) result(found)
+  use, intrinsic :: iso_c_binding, only : c_f_pointer
+  use fckit_c_interop_module, only : c_str, c_ptr_free
+  logical :: found
+  class(fckit_Configuration), intent(in) :: this
+  character(kind=c_char,len=*), intent(in) :: name
+  logical, allocatable, intent(inout) :: value(:)
+  type(c_ptr) :: value_cptr
+  integer(c_int32_t), pointer :: value_fptr(:)
+  integer(c_size_t) :: j, value_size
+  integer(c_int32_t), allocatable :: value_int(:)
+  integer(c_int32_t) :: found_int
+  found_int = c_fckit_configuration_get_array_int32(this%c_ptr(), c_str(name), &
+   & value_cptr, value_size )
+  if (found_int ==1 ) then
+    call c_f_pointer(value_cptr,value_fptr,(/value_size/))
+    allocate(value_int(value_size))
+    value_int(:) = value_fptr(:)
+    if( allocated(value) ) deallocate(value)
+    allocate(value(value_size))
+    do j = 1, value_size
+      if (value_int(j) > 0) then
+        value(j) = .True.
+      else
+        value(j) = .False.
+      end if
+    end do
+    call c_ptr_free(value_cptr)
+  endif
+  found = .False.
+  if (found_int == 1) found = .True.
+end function
+
+subroutine get_array_logical_or_die(this,name,value)
+  class(fckit_Configuration), intent(in) :: this
+  character(kind=c_char,len=*), intent(in) :: name
+  logical, allocatable, intent(inout) :: value(:)
+  if( .not. this%get(name,value) ) call throw_configuration_not_found(name)
+end subroutine
+
 function get_array_int32(this, name, value) result(found)
   use, intrinsic :: iso_c_binding, only : c_f_pointer
   use fckit_c_interop_module, only : c_str, c_ptr_free
@@ -819,6 +884,46 @@ subroutine get_array_real64_or_die(this,name,value)
   character(kind=c_char,len=*), intent(in) :: name
   real(c_double), allocatable, intent(inout) :: value(:)
   if( .not. this%get(name,value) ) call throw_configuration_not_found(name)
+end subroutine
+
+
+function get_array_string(this, name, length, value) result(found)
+  use, intrinsic :: iso_c_binding, only : c_f_pointer
+  use fckit_c_interop_module, only : c_str, c_ptr_to_string, c_ptr_free
+  logical :: found
+  class(fckit_Configuration), intent(in) :: this
+  character(kind=c_char,len=*), intent(in) :: name
+  integer(c_size_t), intent(in) :: length
+  character(kind=c_char,len=length), allocatable, intent(inout) :: value(:)
+  type(c_ptr) :: value_cptr
+  integer(c_int32_t), allocatable :: found_int(:)
+  integer(c_size_t) :: j, value_size, char_size
+
+  type(c_ptr), dimension(size(value,kind=c_size_t)) :: stringPtr
+  character(kind=c_char,len=length), dimension(size(value,kind=c_size_t)), target :: stringArray
+  found = .False.
+  value_size = c_fckit_configuration_get_size(this%c_ptr(), c_str(name) )
+  if (value_size > 0) then
+    if( allocated(value) ) deallocate(value)
+    allocate(value(value_size))
+    allocate(found_int(value_size))
+    do j = 1, value_size
+      found_int(j) = c_fckit_configuration_get_string_element(this%c_ptr(),c_str(name),j-1,value_cptr,char_size)
+      if( found_int(j) == 1 ) then
+        value(j) = c_ptr_to_string(value_cptr)
+        call c_ptr_free(value_cptr)
+      end if
+    end do
+    if (all(found_int == 1)) found = .True.
+  end if
+end function
+
+subroutine get_array_string_or_die(this,name,length,value)
+  class(fckit_Configuration), intent(in) :: this
+  character(kind=c_char,len=*), intent(in) :: name
+  integer(c_size_t), intent(in) :: length
+  character(kind=c_char,len=length), allocatable, intent(inout) :: value(:)
+  if( .not. this%get(name,length,value) ) call throw_configuration_not_found(name)
 end subroutine
 
 function json(this) result(jsonstr)
