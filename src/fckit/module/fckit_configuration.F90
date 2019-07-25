@@ -77,7 +77,7 @@ contains
     !!```fortran
     !! if( .not. fckit_configuration%has('levels') ) call abort()
     !!```
-  procedure, private :: get_size
+  procedure, public :: get_size
     !! Function that returns the size of a name in the configuration
     !!
     !!#### Example usage:
@@ -404,7 +404,7 @@ end function
 
 function has(this, name) result(value)
   use fckit_c_interop_module, only : c_str
-  class(fckit_Configuration), intent(inout) :: this
+  class(fckit_Configuration), intent(in) :: this
   character(kind=c_char,len=*), intent(in) :: name
   logical :: value
   integer(c_int32_t) :: value_int
@@ -418,7 +418,7 @@ end function
 
 function get_size(this, name) result(val)
   use fckit_c_interop_module, only : c_str
-  class(fckit_Configuration), intent(inout) :: this
+  class(fckit_Configuration), intent(in) :: this
   character(kind=c_char,len=*), intent(in) :: name
   integer(c_int32_t) :: val
   val =  c_fckit_configuration_get_size(this%c_ptr(), c_str(name) )
