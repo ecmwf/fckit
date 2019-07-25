@@ -99,6 +99,19 @@ end subroutine
 !-------------------------------------------------------------------------------
 
 !-------------------------------------------------------------------------------
+! void c_fckit_configuration_set_bool (Configuration* This, const char* name,
+!                                       int32 value)
+!-------------------------------------------------------------------------------
+subroutine c_fckit_configuration_set_bool( This, name, value ) bind(C,name="c_&
+ &fckit_configuration_set_bool")
+   use iso_c_binding, only: c_int32_t, c_ptr, c_char
+   type(c_ptr), value :: This
+   character(c_char), dimension(*) :: name
+   integer(c_int32_t), value :: value
+end subroutine
+!-------------------------------------------------------------------------------
+
+                                               !-------------------------------------------------------------------------------
 ! void c_fckit_configuration_set_int32 (Configuration* This, const char* name,
 !                                       int32 value)
 !-------------------------------------------------------------------------------
@@ -249,6 +262,20 @@ end function
 !-------------------------------------------------------------------------------
 
 !-------------------------------------------------------------------------------
+! int32 c_fckit_configuration_get_bool (const Configuration* This, const char*
+!   name, int32& value)
+!-------------------------------------------------------------------------------
+function c_fckit_configuration_get_bool( This, name, value ) bind(C,name="c_fc&
+  &kit_configuration_get_bool")
+    use iso_c_binding, only: c_char, c_ptr, c_int32_t
+    integer(c_int32_t) :: c_fckit_configuration_get_bool
+    type(c_ptr), value :: This
+    character(c_char), dimension(*) :: name
+    integer(c_int32_t) :: value
+end function
+!-------------------------------------------------------------------------------
+
+!-------------------------------------------------------------------------------
 ! int32 c_fckit_configuration_get_int32 (const Configuration* This, const char*
 !   name, int32& value)
 !-------------------------------------------------------------------------------
@@ -394,6 +421,23 @@ function c_fckit_configuration_get_array_double( This, name, value, size ) bind&
     integer(c_size_t) :: size
 end function
 !-------------------------------------------------------------------------------
+
+!-------------------------------------------------------------------------------
+! int32 c_fckit_configuration_get_array_string (const Configuration* This, const c
+!   har* name, char* &value, size_t& size, size_t* &offsets, size_t& numelem)
+!-------------------------------------------------------------------------------
+function c_fckit_configuration_get_array_string( This, name, value, size, offsets, numelem) bind&
+  &(C,name="c_fckit_configuration_get_array_string")
+    use iso_c_binding, only: c_char, c_ptr, c_int32_t, c_size_t
+    integer(c_int32_t) :: c_fckit_configuration_get_array_string
+    type(c_ptr), value :: This
+    character(c_char), dimension(*) :: name
+    type(c_ptr) :: value
+    integer(c_size_t) :: size
+    type(c_ptr) :: offsets
+    integer(c_size_t) :: numelem
+end function
+!----------------------------------------------------------------------
 
 !-------------------------------------------------------------------------------
 ! int32 c_fckit_configuration_has (const Configuration* This, const char *name)

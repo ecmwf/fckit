@@ -8,6 +8,10 @@ granted to it by virtue of its status as an intergovernmental organisation nor
 does it submit to any jurisdiction.
 #endif
 
+#if 0
+// clang-format off
+#endif
+
 #ifndef FCKIT_H
 #define FCKIT_H
 
@@ -31,5 +35,36 @@ does it submit to any jurisdiction.
 #define FCKIT_SUPPRESS_UNUSED( X ) \
 associate( unused_ => X ); \
 end associate
+
+#define PGIBUG_ATLAS_197 1
+#if 0
+Following is to workaround PGI bug which prevents the use of function c_ptr()
+#endif
+#if PGIBUG_ATLAS_197
+#define CPTR_PGIBUG_A cpp_object_ptr
+#define CPTR_PGIBUG_B shared_object_%cpp_object_ptr
+#define PGIBUG_ATLAS_197_DEBUG 0
+#else
+#define CPTR_PGIBUG_A c_ptr()
+#define CPTR_PGIBUG_B c_ptr()
+#define PGIBUG_ATLAS_197_DEBUG 0
+#endif
+
+#define XLBUG_FCKIT_14 1
+#if 0
+Following is to workaround XL bug where allocate( character(len=xxx,kind=c_char ) :: string )
+does not compile
+#endif
+#if XLBUG_FCKIT_14
+#define FCKIT_ALLOCATE_CHARACTER( VARIABLE, SIZE ) allocate( character(len=(SIZE)) :: VARIABLE )
+#else
+#define FCKIT_ALLOCATE_CHARACTER( VARIABLE, SIZE ) allocate( character(len=(SIZE),kind=c_char) :: VARIABLE )
+#endif
+
+#define ECKIT_IMPROVED_MPI @ECKIT_IMPROVED_MPI@
+
+#if 0
+// clang-format on
+#endif
 
 #endif

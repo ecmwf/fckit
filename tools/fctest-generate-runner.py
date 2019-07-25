@@ -8,6 +8,7 @@
 
 from argparse import ArgumentParser
 import re
+import os
 
 parser = ArgumentParser()
 parser.add_argument('-i', '--input', type=str, help='input source file')
@@ -18,7 +19,7 @@ test_names = []
 testsuite = "tests"
 init = False
 finalize = False
-source_in = args.input
+source_in = os.path.abspath(args.input)
 source_out = args.output
 
 with open(source_in,'r') as file:

@@ -15,7 +15,6 @@ function( fctest_generate_runner )
   cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
 
   get_filename_component(base ${_PAR_FILENAME} NAME_WE)
-  set(base_abs ${CMAKE_CURRENT_SOURCE_DIR}/${base})
   set(outfile ${CMAKE_CURRENT_BINARY_DIR}/${base}_main.F90)
   set(${_PAR_OUTPUT} ${outfile} PARENT_SCOPE)
 
@@ -26,8 +25,10 @@ function( fctest_generate_runner )
 
   add_custom_command(
     OUTPUT ${outfile}
-    COMMAND ${FCTEST_GENERATOR} -i ${CMAKE_CURRENT_SOURCE_DIR}/${_PAR_FILENAME} -o ${outfile}
-    DEPENDS ${_depends} )
+    COMMAND ${FCTEST_GENERATOR} -i ${_PAR_FILENAME} -o ${outfile}
+    DEPENDS ${_depends}
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    COMMENT "[fctest] Generating test driver ${base}_main.F90")
 
   set_source_files_properties(${outfile} PROPERTIES GENERATED TRUE)
 
@@ -35,17 +36,8 @@ endfunction()
 
 function( add_fctest )
 
-if( NOT (CMAKE_VERSION VERSION_LESS 3.4 ) )
-  set( _cmake_supports_checking_for_TEST TRUE )
-  cmake_policy( SET CMP0064 NEW )
-endif()
-
-if( CMAKE_VERSION VERSION_LESS 3.1 )
-  ecbuild_deprecate( "add_fctest is better supported with CMake > 3.1 (have ${CMAKE_VERSION})" )
-endif()
-
-
-if( NOT (CMAKE_VERSION VERSION_LESS 3.1) )
+cmake_minimum_required( VERSION 3.6 )
+cmake_policy( SET CMP0064 NEW ) # Recognize ``TEST`` as operator for the ``if()`` command. (introduced in CMake version 3.4)
 
   ecbuild_add_test( ${ARGV} )
 
@@ -56,50 +48,60 @@ if( NOT (CMAKE_VERSION VERSION_LESS 3.1) )
   cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}" ${_FIRST_ARG} ${ARGN} )
 
   if( TARGET ${_PAR_TARGET} )
-      get_property( test_sources TARGET ${_PAR_TARGET} PROPERTY SOURCES )
+      get_target_property( test_sources ${_PAR_TARGET} SOURCES )
       list( GET test_sources 0 TESTSUITE )
-      list( REMOVE_ITEM test_sources ${TESTSUITE} )
+
+      get_filename_component( extension ${TESTSUITE} EXT )
+      get_filename_component( base ${TESTSUITE} NAME_WE )
+
+    ### Preprocess files with extension ".fypp.F90"      
+      fckit_target_preprocess_fypp( ${_PAR_TARGET} )
+
+    ### Remove TESTSUITE from target
+      get_target_property( test_sources ${_PAR_TARGET} SOURCES )
+      set( match_regex "${base}.F90")
+      set( match_found FALSE )
+      foreach( source ${test_sources} )
+        if( ${source} MATCHES "${match_regex}" )
+          if( match_found ) 
+            message( FATAL_ERROR "Second match found for ${match_regex} in fctest ${_PAR_TARGET}" )
+          endif()
+          set( match_found TRUE )
+          set( TESTSUITE ${source} )
+          list( FILTER test_sources EXCLUDE REGEX ${source} )
+        endif()
+      endforeach()
+      if( NOT match_found )
+        message( FATAL_ERROR "No match found for ${match_regex} in fctest ${_PAR_TARGET}" )
+      endif()
       set_property( TARGET ${_PAR_TARGET} PROPERTY SOURCES ${test_sources} )
+
+    ### Add TESTRUNNER generated from TESTSUITE
       fctest_generate_runner(
           OUTPUT TESTRUNNER
           FILENAME ${TESTSUITE} )
+      target_sources( ${_PAR_TARGET} PUBLIC ${TESTRUNNER} )
+
+    ### Add dependencies
       target_include_directories( ${_PAR_TARGET} PUBLIC ${FCKIT_INCLUDE_DIRS} )
       target_link_libraries( ${_PAR_TARGET} fckit )
-      if( _cmake_supports_checking_for_TEST )
-        if( TEST ${_PAR_TARGET} )
-          set_property( TEST ${_PAR_TARGET} APPEND PROPERTY LABELS "fortran" )
-        endif()
+      if( TEST ${_PAR_TARGET} )
+        set_property( TEST ${_PAR_TARGET} APPEND PROPERTY LABELS "fortran" )
       endif()
-      target_sources( ${_PAR_TARGET} PUBLIC ${TESTRUNNER} )
+
+    ### Add compile flags
+      list( APPEND _properties COMPILE_FLAGS COMPILE_DEFINITIONS )
+      foreach( _prop ${_properties} )
+          if( NOT ORIGINAL_TESTSUITE )
+            set( ORIGINAL_TESTSUITE ${TESTSUITE} )
+          endif()
+          get_source_file_property( TESTSUITE_PROPERTY ${ORIGINAL_TESTSUITE} ${_prop} )
+          if( TESTSUITE_PROPERTY )
+              set_source_files_properties( ${TESTRUNNER} PROPERTIES ${_prop} ${TESTSUITE_PROPERTY} )
+          endif()
+      endforeach()
+
       add_custom_target( ${_PAR_TARGET}_testsuite SOURCES ${TESTSUITE} )
-
   endif()
-
-else()
-
-  set( options           )
-  set( single_value_args TARGET )
-  set( multi_value_args SOURCES LIBS LABELS )
-
-  cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
-
-  include_directories( ${FCKIT_INCLUDE_DIRS} )
-
-  list( GET _PAR_SOURCES 0 TESTSUITE )
-  list( REMOVE_ITEM _PAR_SOURCES ${TESTSUITE})
-
-  list( APPEND _PAR_LIBS fckit )
-
-  fctest_generate_runner( OUTPUT TESTRUNNER
-                          FILENAME ${TESTSUITE}
-                          DEPENDS ${_PAR_LIBS} )
-
-  set( _PAR_LABELS fortran ${_PAR_LABELS} )
-  ecbuild_add_test( TARGET ${_PAR_TARGET} ${_PAR_UNPARSED_ARGUMENTS}
-                    SOURCES ${TESTRUNNER} ${_PAR_SOURCES}
-                    LIBS ${_PAR_LIBS}
-                    LABELS ${_PAR_LABELS} )
-
-endif()
 
 endfunction()

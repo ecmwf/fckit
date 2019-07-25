@@ -149,7 +149,7 @@ function c_str_to_string(s) result(string)
      i = i + 1
   enddo
   nchars = i - 1  ! Exclude null character from Fortran string
-  allocate(character(kind=c_char,len=nchars) :: string)
+  FCKIT_ALLOCATE_CHARACTER(string,nchars)
   do i=1,nchars
     string(i:i) = s(i)
   enddo

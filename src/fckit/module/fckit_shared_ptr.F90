@@ -9,11 +9,19 @@
 #include "fckit/fckit.h"
 
 module fckit_shared_ptr_module
+
+#if FCKIT_HAVE_ECKIT
 use fckit_refcount_module, only : &
   & fckit_refcount, &
   & fckit_refcount_interface, &
   & fckit_external, &
   & fckit_owned
+#else
+use fckit_refcount_module, only : &
+  & fckit_refcount, &
+  & fckit_refcount_interface, &
+  & fckit_external
+#endif
 implicit none
 private
 
@@ -25,7 +33,10 @@ public fckit_make_shared
 public fckit_refcount
 public fckit_refcount_interface
 public fckit_external
+
+#if FCKIT_HAVE_ECKIT
 public fckit_owned
+#endif
 
 !========================================================================
 
@@ -67,10 +78,24 @@ end type
 CONTAINS
 !========================================================================
 
+subroutine deallocate_shared_ptr( shared_ptr )
+  use fckit_final_module, only: fckit_final
+  class(*), pointer :: shared_ptr
+#ifndef __ibmxl__
+  deallocate(shared_ptr)
+#else
+  ! FCKIT-17: Runtime error when deallocating unlimited polymorphic pointer
+  !  MEMORY LEAK!!!
+  ! IBM XL COMPILER AT RUNTIME GIVES ERROR:
+  !     1525-109 Error encountered while attempting to deallocate a data object.
+  !     The program will stop.
+#endif
+end subroutine
+
 subroutine fckit_finalise( shared_ptr )
   use fckit_final_module, only: fckit_final
   class(*), pointer :: shared_ptr
-  select type(shared_ptr)
+  select type( shared_ptr)
     class is(fckit_final)
 #if FCKIT_FINAL_DEBUGGING
       write(0,*) "fckit_final%final()"
@@ -126,7 +151,7 @@ subroutine fckit_shared_ptr__final(this)
       write(0,*) " + call fckit_finalise(this%shared_ptr_)"
 #endif
       call fckit_finalise(this%shared_ptr_)
-      deallocate(this%shared_ptr_)
+      call deallocate_shared_ptr(this%shared_ptr_)
       deallocate(this%refcount_)
     endif
   endif

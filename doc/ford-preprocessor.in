@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+length=$(($#-1))
+args_except_file=${@:1:$length}
+
+file=${@: -1}
+
+if [ ${file: -5} == ".fypp" ]; then
+  mkdir -p ford_tmp
+  fypp_outfile=ford_tmp/$(basename "$file" .fypp).F90
+  @CMAKE_CURRENT_SOURCE_DIR@/../tools/fckit-fypp.py $@  $fypp_outfile
+  gfortran -E $args_except_file $fypp_outfile
+  rm -rf ford_tmp
+else
+  gfortran -E $@
+fi

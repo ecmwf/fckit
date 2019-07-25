@@ -20,6 +20,16 @@ TESTSUITE_FINALIZE
   call fckit_main%final()
 END_TESTSUITE_FINALIZE
 
+TEST( test_default_comm )
+  use fckit_module
+  use, intrinsic :: iso_c_binding
+  implicit none
+
+  write(0,*) "test_default_comm"
+  write(0,*) "default size:", fckit_mpi%size()
+  write(0,*) "default rank:", fckit_mpi%rank()
+END_TEST
+
 TEST( test_comm )
   use fckit_module
   use, intrinsic :: iso_c_binding
@@ -39,7 +49,6 @@ TEST( test_comm )
   comm = fckit_mpi_comm("self")
   FCTEST_CHECK_EQUAL( comm%size(), 1 )
   FCTEST_CHECK_EQUAL( comm%rank(), 0 )
-
 END_TEST
 
 
@@ -99,7 +108,7 @@ TEST( test_allreduce )
 
   FCKIT_SUPPRESS_UNUSED( real64_r1 )
   FCKIT_SUPPRESS_UNUSED( res_real64_r1 )
-  FCKIT_SUPPRESS_UNUSED( res_int32_r3 ) 
+  FCKIT_SUPPRESS_UNUSED( res_int32_r3 )
   FCKIT_SUPPRESS_UNUSED( res_real32_r2 )
   FCKIT_SUPPRESS_UNUSED( real32_r2 )
 
@@ -252,7 +261,7 @@ TEST( test_allgather )
   use, intrinsic ::iso_c_binding
   implicit none
   type(fckit_mpi_comm) :: comm
-  real(c_double)  :: real64, real64_r1(2)    
+  real(c_double)  :: real64, real64_r1(2)
   real(c_double), allocatable :: res_real64(:), res_real64_r1(:)
   real(c_double), allocatable :: real64v_r1(:), res_real64v_r1(:)
   real(c_float)   :: real32, real32_r1(2)
@@ -265,7 +274,7 @@ TEST( test_allgather )
   integer(c_long), allocatable :: res_int64(:),  res_int64_r1(:)
   integer(c_long), allocatable :: int64v_r1(:),  res_int64v_r1(:)
   integer, allocatable :: recvcounts(:), displs(:)
-  
+
   write(0,*) "test_allgather"
   comm = fckit_mpi_comm("world")
 
@@ -326,7 +335,7 @@ TEST( test_allgather )
   deallocate(res_real64_r1)
 
   allocate(recvcounts(comm%size()),displs(comm%size()))
-  
+
   allocate(int32v_r1(comm%rank()+1))
   int32v_r1 = comm%rank()
   recvcounts(1) = 1
@@ -340,7 +349,7 @@ TEST( test_allgather )
   FCTEST_CHECK_EQUAL(minval(res_int32v_r1),0)
   FCTEST_CHECK_EQUAL(maxval(res_int32v_r1),comm%size()-1)
   deallocate(int32v_r1,res_int32v_r1)
-  
+
   allocate(int64v_r1(comm%size()-comm%rank()))
   int64v_r1 = comm%rank()
   recvcounts(1) = comm%size()
@@ -368,7 +377,7 @@ TEST( test_allgather )
   FCTEST_CHECK_EQUAL(minval(res_real32v_r1),real(0,c_float))
   FCTEST_CHECK_EQUAL(maxval(res_real32v_r1),real(comm%size()-1,c_float))
   deallocate(real32v_r1,res_real32v_r1)
-  
+
   allocate(real64v_r1(comm%size()-comm%rank()))
   real64v_r1 = comm%rank()
   recvcounts(1) = comm%size()
@@ -382,7 +391,7 @@ TEST( test_allgather )
   FCTEST_CHECK_EQUAL(minval(res_real64v_r1),real(0,c_double))
   FCTEST_CHECK_EQUAL(maxval(res_real64v_r1),real(comm%size()-1,c_double))
   deallocate(real64v_r1,res_real64v_r1)
-  
+
   deallocate(recvcounts,displs)
 
 END_TEST
@@ -528,5 +537,154 @@ TEST( test_blocking_send_receive )
 
 END_TEST
 
+TEST( test_blocking_send_receive_real64_rank1 )
+  use fckit_mpi_module
+  use, intrinsic :: iso_c_binding
+  implicit none
+  type(fckit_mpi_comm) :: comm
+  type(fckit_mpi_status) :: status
+  integer :: tag=99
+  real(c_double)  :: send_real64(2), recv_real64(2)
+
+  write(0,*) "test_blocking_send_receive_rank1"
+  comm = fckit_mpi_comm("world")
+
+  send_real64 = [ 0._c_double , 0._c_double ]
+
+  if(comm%rank()==0) then
+
+    send_real64 = [ 0.1_c_double , 0.1_c_double ]
+    call comm%send(send_real64,comm%size()-1,tag)
+
+    send_real64 = [ 0.2_c_double , 0.2_c_double ]
+    call comm%send(send_real64,comm%size()-1,tag+1)
+
+  endif
+  if( comm%rank()==comm%size()-1) then
+
+    call comm%receive(recv_real64,0,tag,status)
+    FCTEST_CHECK_CLOSE(recv_real64, ( [0.1_c_double,0.1_c_double] ),1.e-9_c_double)
+    FCTEST_CHECK_EQUAL(status%source(), 0)
+    FCTEST_CHECK_EQUAL(status%tag(), tag)
+    FCTEST_CHECK_EQUAL(status%error(), 0)
+
+    call comm%receive(recv_real64,0,tag=comm%anytag(),status=status)
+    FCTEST_CHECK_EQUAL(status%tag(), tag+1)
+    FCTEST_CHECK_CLOSE(recv_real64, ( [0.2_c_double,0.2_c_double] ),1.e-9_c_double)
+
+  endif
+
+END_TEST
+
+
+TEST( test_blocking_send_receive_int32_rank1 )
+  use fckit_mpi_module
+  use, intrinsic :: iso_c_binding
+  implicit none
+  type(fckit_mpi_comm) :: comm
+  type(fckit_mpi_status) :: status
+  integer :: tag=99
+  integer(c_int32_t)  :: send(2), recv(2)
+
+  write(0,*) "test_blocking_send_receive_int32_rank1"
+  comm = fckit_mpi_comm("world")
+
+  send = [ 0_c_int32_t , 0_c_int32_t ]
+
+  if(comm%rank()==0) then
+
+    send = [ 1_c_int32_t , 2_c_int32_t ]
+    call comm%send(send,comm%size()-1,tag)
+
+    send = [ 3_c_int32_t , 4_c_int32_t ]
+    call comm%send(send,comm%size()-1,tag+1)
+
+  endif
+  if( comm%rank()==comm%size()-1) then
+
+    call comm%receive(recv,0,tag,status)
+    FCTEST_CHECK_EQUAL(recv, ( [1_c_int32_t,2_c_int32_t] ) )
+    FCTEST_CHECK_EQUAL(status%source(), 0)
+    FCTEST_CHECK_EQUAL(status%tag(), tag)
+    FCTEST_CHECK_EQUAL(status%error(), 0)
+
+    call comm%receive(recv,0,tag=comm%anytag(),status=status)
+    FCTEST_CHECK_EQUAL(status%tag(), tag+1)
+    FCTEST_CHECK_EQUAL(recv, ( [3_c_int32_t,4_c_int32_t] ) )
+
+  endif
+
+END_TEST
+
+TEST( test_blocking_send_receive_int64_rank1 )
+  use fckit_mpi_module
+  use, intrinsic :: iso_c_binding
+  implicit none
+  type(fckit_mpi_comm) :: comm
+  type(fckit_mpi_status) :: status
+  integer :: tag=99
+  integer(c_int64_t)  :: send(2), recv(2)
+
+  write(0,*) "test_blocking_send_receive_int64_rank1"
+  comm = fckit_mpi_comm("world")
+
+  send = [ 0_c_int64_t , 0_c_int64_t ]
+
+  if(comm%rank()==0) then
+
+    send = [ 1_c_int64_t , 2_c_int64_t ]
+    call comm%send(send,comm%size()-1,tag)
+
+    send = [ 3_c_int64_t , 4_c_int64_t ]
+    call comm%send(send,comm%size()-1,tag+1)
+
+  endif
+  if( comm%rank()==comm%size()-1) then
+
+    call comm%receive(recv,0,tag,status)
+    FCTEST_CHECK_EQUAL(recv, ( [1_c_int64_t,2_c_int64_t] ) )
+    FCTEST_CHECK_EQUAL(status%source(), 0)
+    FCTEST_CHECK_EQUAL(status%tag(), tag)
+    FCTEST_CHECK_EQUAL(status%error(), 0)
+
+    call comm%receive(recv,0,tag=comm%anytag(),status=status)
+    FCTEST_CHECK_EQUAL(status%tag(), tag+1)
+    FCTEST_CHECK_EQUAL(recv, ( [3_c_int64_t,4_c_int64_t] ) )
+
+  endif
+
+END_TEST
+
+TEST( test_split_comm_delete )
+#if ECKIT_IMPROVED_MPI
+  use fckit_mpi_module
+  use, intrinsic :: iso_c_binding
+  implicit none
+  type(fckit_mpi_comm) :: world  ! a handle for the world comm
+  type(fckit_mpi_comm) :: split  ! a handle for the split comm
+  integer :: i, j
+
+  world = fckit_mpi_comm("world")
+  if( mod(world%size(),2) == 0 ) then
+
+    do i=1,10
+        split = world%split( merge(1,2,world%rank()<world%size()/2), "split" )
+        FCTEST_CHECK_EQUAL( split%size(),  world%size()/2 )
+        FCTEST_CHECK      ( split%rank() < split%size() )
+
+        ! Set the default communicator to "split" ( a typical use case )
+        call split%set_default()
+
+        FCTEST_CHECK_EQUAL( fckit_mpi%name(), "split" )
+        FCTEST_CHECK_EQUAL( fckit_mpi%size(), split%size() )
+
+        ! We cannot delete split if it is set as default, so set the default back to world first
+        call world%set_default()
+        call split%delete()
+    enddo
+
+  endif
+#endif
+END_TEST
 
 END_TESTSUITE
