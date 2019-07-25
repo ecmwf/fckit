@@ -11,8 +11,13 @@
 module fckit_shared_object_module
 use fckit_object_module, only : fckit_object
 use fckit_c_interop_module, only : fckit_c_deleter, fckit_c_nodeleter
+#if FCKIT_HAVE_ECKIT
 use fckit_shared_ptr_module, only : fckit_shared_ptr, fckit_refcount_interface, &
  & fckit_owned
+#else
+use fckit_shared_ptr_module, only : fckit_shared_ptr, fckit_refcount_interface
+#endif
+
 implicit none
 private
 
@@ -22,12 +27,13 @@ private
 public :: fckit_shared_object
 public :: fckit_c_deleter
 public :: fckit_c_nodeleter
+#if FCKIT_HAVE_ECKIT
 public :: fckit_owned
-
+#endif
 !========================================================================
 
 type, extends(fckit_shared_ptr) :: fckit_shared_object
-  class(fckit_object), pointer, private  :: shared_object_ => null()
+  class(fckit_object), pointer, public  :: shared_object_ => null()
 contains
 
   procedure, public :: shared_ptr_cast
@@ -128,7 +134,7 @@ function fckit_shared_object_c_ptr(this) result(cptr)
   use, intrinsic :: iso_c_binding, only : c_ptr
   type(c_ptr) :: cptr
   class(fckit_shared_object) :: this
-  cptr = this%shared_object_%c_ptr()
+  cptr = this%CPTR_PGIBUG_B
 end function
 
 end module

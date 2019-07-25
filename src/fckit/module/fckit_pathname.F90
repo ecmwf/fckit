@@ -6,6 +6,8 @@
 ! granted to it by virtue of its status as an intergovernmental organisation nor
 ! does it submit to any jurisdiction.
 
+#include "fckit/fckit.h"
+
 module fckit_pathname_module
   !! Module holding the [[fckit_pathname_module:fckit_pathname(type)]] type
   !! for strong typing of file paths
@@ -54,7 +56,7 @@ function fckit_pathname__str(this) result(str)
   class(fckit_pathname) :: this
   integer(c_int32_t) :: i, nchars
   nchars = size(this%string)
-  allocate(character(kind=c_char,len=nchars) :: str)
+  FCKIT_ALLOCATE_CHARACTER(str,nchars)
   do i=1,nchars
     str(i:i) = this%string(i)
   enddo

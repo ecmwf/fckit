@@ -6,14 +6,9 @@
 # granted to it by virtue of its status as an intergovernmental organisation nor
 # does it submit to any jurisdiction.
 
-add_custom_target( fctest_includes SOURCES
-       fctest.h
-       ../../tools/fctest_generate_runner.py )
-
-install( FILES ../../tools/fctest_generate_runner.py DESTINATION libexec )
-
 configure_file(fckit.h.in  fckit.h)
-install( FILES ${CMAKE_CURRENT_BINARY_DIR}/fckit.h DESTINATION ${INSTALL_INCLUDE_DIR}/fckit )
+install( FILES ${CMAKE_CURRENT_BINARY_DIR}/fckit.h DESTINATION include/fckit )
+set( source_files_properties fckit.h.in PROPERTIES HEADER_FILE_ONLY TRUE )
 
 set( FCKIT_HAVE_ECKIT 0 )
 if( HAVE_ECKIT )
@@ -24,7 +19,7 @@ if( HAVE_ECKIT )
       module/fckit_configuration.F90
       module/fckit_configuration.cc
       module/fckit_mpi.cc
-      module/fckit_mpi.F90
+      module/fckit_mpi.fypp
       module/fckit_main.cc
       module/fckit_main.F90
       module/fckit_exception.F90
@@ -35,6 +30,7 @@ if( HAVE_ECKIT )
       module/fckit_log.F90
       module/fckit_buffer.cc
       module/fckit_buffer.F90
+      module/fckit_owned.cc
       module/fckit_owned_object.F90
       module/fckit_geometry.cc
       module/fckit_geometry.F90
@@ -46,7 +42,6 @@ if( HAVE_ECKIT )
       Main.cc
       Log.h
       Log.cc
-      Log.F90
   )
 endif()
 
@@ -76,13 +71,15 @@ endif()
 ecbuild_add_library( TARGET     fckit
                      LINKER_LANGUAGE ${FCKIT_LINKER_LANGUAGE}
                      SOURCES
+                                fckit.h.in
+                                fctest.h
                                 fctest.F90
+                                Log.F90
                                 module/fckit_array.F90
                                 module/fckit_C_interop.cc
                                 module/fckit_C_interop.F90
                                 module/fckit_object.F90
                                 module/fckit_final.F90
-                                module/fckit_owned.cc
                                 module/fckit_refcount.F90
                                 module/fckit_shared_ptr.F90
                                 module/fckit_shared_object.F90
@@ -90,8 +87,6 @@ ecbuild_add_library( TARGET     fckit
                      PRIVATE_INCLUDES
                                 ${ECKIT_INCLUDE_DIRS}
                                 ${CMAKE_CURRENT_BINARY_DIR}
-                     LIBS
-                                ${ECKIT_LIBRARIES}
 
                      DEFINITIONS
                                 ${FCKIT_DEFINITIONS}
@@ -101,7 +96,19 @@ ecbuild_add_library( TARGET     fckit
                                 Log.h
                                 Main.h
 
-                     HEADER_DESTINATION  ${INSTALL_INCLUDE_DIR}/fckit
+                     HEADER_DESTINATION  include/fckit
 
                      TYPE ${fckit_type}
                     )
+
+target_include_directories( fckit PUBLIC 
+    $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src>
+    $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/src>
+    $<BUILD_INTERFACE:${CMAKE_Fortran_MODULE_DIRECTORY}>
+    $<INSTALL_INTERFACE:include>
+    $<INSTALL_INTERFACE:module/fckit>
+)
+
+target_link_libraries( fckit PUBLIC ${ECKIT_LIBRARIES} )
+
+fckit_target_preprocess_fypp( fckit )

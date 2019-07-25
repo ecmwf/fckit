@@ -69,6 +69,8 @@ add_fctest( TARGET  fckit_test_broadcast_file
 
 endif()
 
+if( HAVE_TESTS )
+
 ecbuild_add_test( TARGET  fckit_test_configuration_cpp
             LINKER_LANGUAGE Fortran
             SOURCES
@@ -77,9 +79,9 @@ ecbuild_add_test( TARGET  fckit_test_configuration_cpp
             DEFINITIONS ${FCKIT_DEFINITIONS}
             INCLUDES ${ECKIT_INCLUDE_DIRS}
             CONDITION HAVE_ECKIT
-            LIBS    fckit )
+            LIBS    fckit  eckit eckit_mpi )
 
-if( HAVE_TESTS )
+if( HAVE_ECKIT )
   if( NOT (CMAKE_VERSION VERSION_LESS 3.1) )
     set_property( TEST fckit_test_configuration_cpp APPEND PROPERTY LABELS "fortran" )
   endif()
@@ -91,16 +93,25 @@ ecbuild_add_test( TARGET fckit_test_cpp
   INCLUDES ${ECKIT_INCLUDE_DIRS}
   ENVIRONMENT "DEBUG=1"
   CONDITION HAVE_ECKIT
-  LIBS fckit )
+  LIBS fckit eckit eckit_mpi )
 
 if( CMAKE_Fortran_COMPILER_ID MATCHES "PGI" )
   set( NO_MAIN "-Mnomain" )
 elseif( CMAKE_Fortran_COMPILER_ID MATCHES "Intel" )
   set( NO_MAIN "-nofor-main" )
 endif()
-if( HAVE_TESTS )
+if( HAVE_ECKIT )
   if( NO_MAIN )
     set_target_properties(fckit_test_configuration_cpp PROPERTIES LINK_FLAGS ${NO_MAIN} )
     set_target_properties(fckit_test_cpp               PROPERTIES LINK_FLAGS ${NO_MAIN} )
   endif()
 endif()
+
+add_fctest( TARGET fckit_test_fypp 
+  LINKER_LANGUAGE Fortran
+  SOURCES test_fypp.fypp
+  LIBS fckit
+)
+
+endif()
+
