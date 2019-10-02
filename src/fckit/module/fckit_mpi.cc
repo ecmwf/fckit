@@ -382,6 +382,13 @@ int fckit__mpi__anysource( const Comm* comm ) {
         return eckit::mpi::comm().anySource();
 }
 
+int fckit__mpi__info_null( const Comm* comm ) {
+    if ( comm )
+        return comm->infoNull();
+    else
+        return eckit::mpi::comm().infoNull();
+}
+
 void fckit__mpi__send_int32( const Comm* comm, int32* buffer, size_t count, int32 dest, int32 tag ) {
     if ( comm )
         comm->send( buffer, count, dest, tag );

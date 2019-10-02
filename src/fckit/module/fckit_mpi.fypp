@@ -189,6 +189,9 @@ contains
   procedure, public :: anysource
     !! anysource
 
+  procedure, public :: info_null
+    !! info_null
+
   @:begin_interface( allreduce )
   @:generate_interfaces( allreduce )
   @:generate_interfaces( allreduce_inplace )
@@ -250,7 +253,6 @@ contains
     !! Minloc operator that can be passed to collective method
   procedure, public, nopass :: maxloc         => fckit_mpi_maxloc
     !! Maxloc operator that can be passed to collective method
-
 endtype
 
 type(fckit_mpi_comm) :: fckit_mpi
@@ -514,6 +516,11 @@ interface
     integer(c_int32_t), dimension(*) :: status
   end subroutine
 
+  function fckit__mpi__info_null(comm) bind(c)
+    use, intrinsic :: iso_c_binding, only : c_int32_t, c_ptr
+    integer(c_int32_t) fckit__mpi__info_null
+    type(c_ptr), value :: comm
+  end function
 end interface
 
 !========================================================================
@@ -705,6 +712,15 @@ function anysource(this)
   integer(c_int32_t) :: anysource
   class(fckit_mpi_comm), intent(in) :: this
   anysource = fckit__mpi__anysource(this%CPTR_PGIBUG_A)
+end function
+
+!---------------------------------------------------------------------------------------
+
+function info_null(this)
+  use, intrinsic :: iso_c_binding, only : c_int32_t
+  integer(c_int32_t) :: info_null
+  class(fckit_mpi_comm), intent(in) :: this
+  info_null = fckit__mpi__info_null(this%CPTR_PGIBUG_A)
 end function
 
 !---------------------------------------------------------------------------------------
