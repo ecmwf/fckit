@@ -48,8 +48,11 @@ else()
 endif()
 
 if( CMAKE_Fortran_COMPILER_ID MATCHES "PGI" )
-  # Bug tested with pgi/17.7 and pgi/17.10 requires fckit to be compiled statically
-  set( fckit_type STATIC )
+  # Bug tested with pgi/17.7 (fixed pgi/19.4) requires fckit to be compiled statically
+  if( ${CMAKE_Fortran_COMPILER_VERSION} VERSION_LESS 19.4 )
+      ecbuild_warn( "Bug in pgi < 19.4 requires fckit to be compiled statically" )
+      set( fckit_type STATIC )
+  endif()
 
   # Turn off all compiler warnings for reason :
   #   PGF90-W-0435-Array declared with zero size
