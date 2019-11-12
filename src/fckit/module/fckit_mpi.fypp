@@ -261,6 +261,7 @@ type(fckit_mpi_comm) :: fckit_mpi
 
 interface fckit_mpi_comm
   module procedure comm_constructor
+  module procedure comm_wrap_ptr
   module procedure comm_wrap
 end interface
 
@@ -625,6 +626,13 @@ function comm_constructor(name) result(this)
   endif
 end function
 
+function comm_wrap_ptr(comm) result(this)
+  use, intrinsic :: iso_c_binding, only: c_ptr
+  type(fckit_mpi_comm) :: this
+  type(c_ptr), intent(in) :: comm
+  call this%reset_c_ptr( comm )
+end function
+
 function comm_wrap(comm) result(this)
   use, intrinsic :: iso_c_binding , only: c_int32_t
   type(fckit_mpi_comm) :: this
@@ -756,7 +764,7 @@ subroutine allgather_${dtype}$_r0(this,in,out)
   ${ftype}$, intent(inout) :: out(:)
   ${btype}$, pointer :: view_in(:)
   ${btype}$, pointer :: view_out(:)
-  ${btype}$ :: mold 
+  ${btype}$ :: mold
   view_in => array_view1d(in,mold)
   view_out => array_view1d(out,mold)
   call fckit__mpi__allgather_${dtype}$(this%c_ptr(),view_in(1),view_out)
@@ -948,7 +956,7 @@ subroutine allreduce_${dtype}$_r${rank}$(this,in,out,operation)
 
   use, intrinsic :: iso_c_binding
   use fckit_array_module, only: array_view1d
-  
+
   class(fckit_mpi_comm), intent(in) :: this
     !! This communicator
   ${ftype}$, intent(in)    :: in${dim[rank]}$
@@ -973,7 +981,7 @@ subroutine allreduce_inplace_${dtype}$_r${rank}$(this,inout,operation)
 
   use, intrinsic :: iso_c_binding
   use fckit_array_module, only: array_view1d
-  
+
   class(fckit_mpi_comm), intent(in) :: this
     !! This communicator
   ${ftype}$, intent(inout) :: inout${dim[rank]}$
@@ -1004,7 +1012,7 @@ subroutine broadcast_${dtype}$_r${rank}$(this,buffer,root)
     !! MPI rank to broadcast from
 
   ${btype}$, pointer :: view_buffer(:)
-  ${btype}$ :: mold 
+  ${btype}$ :: mold
   view_buffer  => array_view1d(buffer,mold)
   call fckit__mpi__broadcast_${dtype}$(this%CPTR_PGIBUG_A,view_buffer, &
     int(ubound(view_buffer,1),c_size_t),int(root,c_size_t))
@@ -1041,7 +1049,7 @@ subroutine receive_${dtype}$_r${rank}$(this,buffer,source,tag,status)
 
   use, intrinsic :: iso_c_binding
   use fckit_array_module, only: array_view1d
-  
+
   class(fckit_mpi_comm), intent(in) :: this
     !! This communicator
   ${ftype}$, intent(inout) :: buffer${dim[rank]}$
@@ -1076,7 +1084,7 @@ function isend_${dtype}$_r${rank}$(this,buffer,dest,tag) result(request)
 
   use, intrinsic :: iso_c_binding
   use fckit_array_module, only: array_view1d
-  
+
   integer(c_int32_t) :: request
     !! Returned MPI request
   class(fckit_mpi_comm), intent(in) :: this
