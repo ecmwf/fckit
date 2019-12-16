@@ -1005,7 +1005,7 @@ subroutine send_${dtype}$_r${rank}$(this,buffer,dest,tag)
 
   class(fckit_mpi_comm), intent(in) :: this
     !! This communicator
-  ${ftype}$, intent(inout) :: buffer${dim[rank]}$
+  ${ftype}$, intent(in) :: buffer${dim[rank]}$
     !! Buffer to be sent
   integer(c_int32_t), intent(in) :: dest
     !! Destination MPI rank
@@ -1066,7 +1066,7 @@ function isend_${dtype}$_r${rank}$(this,buffer,dest,tag) result(request)
     !! Returned MPI request
   class(fckit_mpi_comm), intent(in) :: this
     !! This communicator
-  ${ftype}$, intent(inout) :: buffer${dim[rank]}$
+  ${ftype}$, intent(in) :: buffer${dim[rank]}$
     !! Buffer to be sent
   integer(c_int32_t), intent(in) :: dest
     !! Destination MPI rank
