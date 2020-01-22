@@ -115,3 +115,5 @@ add_fctest( TARGET fckit_test_fypp
 
 endif()
 
+add_subdirectory( test_downstream_fypp )
+

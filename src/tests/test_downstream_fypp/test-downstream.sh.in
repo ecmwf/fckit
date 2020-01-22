@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+
+# Description:
+#   Build downstream example projects 
+#   each individually with make/install
+#
+# Usage:
+#   test-individual.sh [CMAKE_ARGUMENTS]
+
+SOURCE=@CMAKE_CURRENT_SOURCE_DIR@/downstream
+BUILD=@CMAKE_CURRENT_BINARY_DIR@/downstream
+
+# Error handling
+function test_failed {
+  EXIT_CODE=$?
+  { set +ex; } 2>/dev/null
+  if [ $EXIT_CODE -ne 0 ]; then
+    echo "+++++++++++++++++"
+    echo "Test failed"
+    echo "+++++++++++++++++"
+  fi
+  exit $EXIT_CODE
+}
+trap test_failed EXIT
+set -e -o pipefail
+set -x
+
+# Start with clean build
+rm -rf $BUILD
+
+export fckit_DIR=@PROJECT_BINARY_DIR@
+
+# Build
+mkdir -p $BUILD && cd $BUILD
+cmake $SOURCE \
+  -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+  -DCMAKE_MODULE_PATH=@ECBUILD_MACROS_DIR@ \
+  -DECBUILD_2_COMPAT=OFF \
+  -DECBUILD_COMPILE_FLAGS=@CMAKE_CURRENT_SOURCE_DIR@/compile_flags.cmake \
+  "$@"
+
+make VERBOSE=1
+
+bin/main
+
+{ set +ex; } 2>/dev/null
+echo "+++++++++++++++++"
+echo "Test passed"
+echo "+++++++++++++++++"
