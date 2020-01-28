@@ -124,6 +124,18 @@ function( fckit_preprocess_fypp_sources output )
 
     set_source_files_properties(${outfile} PROPERTIES GENERATED TRUE)
 
+    ### Extra stuff required to add correct flags
+    # ecbuild 3.2 compatible properties that need to be transferred from .fypp files to .F90
+    foreach( _prop COMPILE_FLAGS
+                   COMPILE_FLAGS_${CMAKE_BUILD_TYPE_CAPS}
+                   OVERRIDE_COMPILE_FLAGS
+                   OVERRIDE_COMPILE_FLAGS_${CMAKE_BUILD_TYPE_CAPS} )
+      get_source_file_property( ${filename}_${_prop} ${filename} ${_prop} )
+      if( ${filename}_${_prop} )
+        set_source_files_properties(${outfile} PROPERTIES ${_prop} ${${filename}_${_prop}} )
+      endif()
+    endforeach()
+
   endforeach()
 
   # Append to output and set in parent scope
@@ -136,9 +148,9 @@ endfunction()
 
 
 ##############################################################################################
-# fckit_preprocess_fypp_sources( target
-#                                [FYPP_ARGS arg1 [arg2]... ]
-#                                [DEPENDS dep1 [dep2]... ] )
+# fckit_target_preprocess_fypp( target
+#                               [FYPP_ARGS arg1 [arg2]... ]
+#                               [DEPENDS dep1 [dep2]... ] )
 #    Purpose:
 #        Preprocess source files in the target with the extensions
 #        {.fypp, .fypp.F90, .F90.fypp}
@@ -213,6 +225,18 @@ function( fckit_target_preprocess_fypp _PAR_TARGET )
       )
 
       target_sources( ${_PAR_TARGET} PRIVATE ${preprocessed_sources} )
+
+      ### Extra stuff required to add correct flags
+      if( COMMAND ecbuild_target_flags )
+        list( APPEND ${_PAR_TARGET}_fortran_srcs ${preprocessed_sources} )
+        list( APPEND ${_PAR_TARGET}_Fortran_srcs ${preprocessed_sources} )
+        ecbuild_target_flags( ${_PAR_TARGET} "" "" "")
+          # Currently it is not possible to add flags that were added within
+          # ecbuild_add_library( ... FFLAGS <FFLAGS CFLAGS <CFLAGS> CXXFLAGS <CXXFLAGS> )
+          # until ecbuild exports these variables
+          # Therefore 3 empty strings for these.
+          # Luckily this is a very tiny use case
+      endif()
 
 ### BUG WORKAROUND for CMake < 3.12
 #   CMake seems to not add the "-fPIC -h PIC" flags for the Cray compiler when the target

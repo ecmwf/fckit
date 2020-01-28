@@ -1,0 +1,45 @@
+module downstream
+implicit none
+public
+
+contains
+
+subroutine print_downstream_compile_flags()
+use fckit_module
+#ifdef DOWNSTREAM_COMPILE_FLAGS
+call fckit_log%info("DOWNSTREAM_COMPILE_FLAGS                = "//trim(DOWNSTREAM_COMPILE_FLAGS))
+#else
+call fckit_log%info("DOWNSTREAM_COMPILE_FLAGS                = Not specified")
+#endif
+
+#ifdef DOWNSTREAM_Fortran_FLAGS
+call fckit_log%info("DOWNSTREAM_Fortran_FLAGS                = "//trim(DOWNSTREAM_Fortran_FLAGS))
+#else
+call fckit_log%info("DOWNSTREAM_Fortran_FLAGS                = Not specified")
+#endif
+
+#ifdef DOWNSTREAM_Fortran_FLAGS_RELWITHDEBINFO
+call fckit_log%info("DOWNSTREAM_Fortran_FLAGS_RELWITHDEBINFO = "//trim(DOWNSTREAM_Fortran_FLAGS_RELWITHDEBINFO))
+#else
+call fckit_log%info("DOWNSTREAM_Fortran_FLAGS_RELWITHDEBINFO = Not specified")
+#endif
+
+end subroutine
+
+subroutine assert_downstream_compile_flags()
+use fckit_module
+#ifndef DOWNSTREAM_COMPILE_FLAGS
+call fckit_exception%abort("DOWNSTREAM_COMPILE_FLAGS are missing")
+#endif 
+
+#ifndef DOWNSTREAM_Fortran_FLAGS
+call fckit_exception%abort("DOWNSTREAM_Fortran_FLAGS are missing")
+#endif
+
+#ifndef DOWNSTREAM_Fortran_FLAGS_RELWITHDEBINFO
+call fckit_exception%abort("DOWNSTREAM_Fortran_FLAGS_RELWITHDEBINFO are missing")
+#endif
+
+end subroutine
+
+end module
