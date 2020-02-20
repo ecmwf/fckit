@@ -59,6 +59,18 @@ add_fctest( TARGET  fckit_test_configuration
             CONDITION HAVE_ECKIT
             LIBS    fckit)
 
+add_fctest( TARGET  fckit_test_configuration_fails
+            LINKER_LANGUAGE Fortran
+            DEFINITIONS ${FCKIT_DEFINITIONS}
+            SOURCES test_configuration_fails.F90
+            DEFINITIONS ${FCKIT_DEFINITIONS}
+            CONDITION HAVE_ECKIT
+            LIBS    fckit)
+if( HAVE_TESTS )
+    set_tests_properties( fckit_test_configuration_fails PROPERTIES
+    PASS_REGULAR_EXPRESSION "Could not find \"missing\" in Configuration")
+endif()
+
 add_fctest( TARGET  fckit_test_broadcast_file
             LINKER_LANGUAGE Fortran
             SOURCES test_broadcast_file.F90

@@ -41,8 +41,12 @@ public fckit_owned
 !========================================================================
 
 type :: fckit_shared_ptr
-  class(*), pointer, private :: shared_ptr_ => null()
+  class(*), pointer, private :: shared_ptr_ ! => null()
   class(fckit_refcount), pointer , private :: refcount_ => null()
+
+  logical, private :: is_null_ = .true.
+    ! Compiler bug for gcc > 7 : we may not default assign shared_ptr_ to null()
+    ! Instead we use this `is_null` variable (See JIRA issue FCKIT-21)
 
   logical, private :: return_value = .false.
     ! This variable should not be necessary,
@@ -90,6 +94,7 @@ subroutine deallocate_shared_ptr( shared_ptr )
   !     1525-109 Error encountered while attempting to deallocate a data object.
   !     The program will stop.
 #endif
+  nullify( shared_ptr )
 end subroutine
 
 subroutine fckit_finalise( shared_ptr )
@@ -127,7 +132,7 @@ end subroutine
 subroutine fckit_shared_ptr__final(this)
   class(fckit_shared_ptr), intent(inout) :: this
 
-  if( .not. associated(this%shared_ptr_) ) then
+  if( this%is_null_ ) then
 #if FCKIT_FINAL_DEBUGGING
     write(0,*) "fckit_shared_ptr__final  (uninitialised --> no-op)"
 #endif
@@ -161,9 +166,10 @@ end subroutine
 
 subroutine clear_shared_ptr(obj_out)
   class(fckit_shared_ptr), intent(inout) :: obj_out
-  if( associated( obj_out%shared_ptr_ ) ) then
+  if( .not. obj_out%is_null_ ) then
     nullify(obj_out%shared_ptr_)
     nullify(obj_out%refcount_)
+    obj_out%is_null_ = .true.
   endif
 end subroutine
 
@@ -176,7 +182,7 @@ end subroutine
 subroutine reset_shared_ptr(obj_out,obj_in)
   class(fckit_shared_ptr), intent(inout) :: obj_out
   class(fckit_shared_ptr), intent(in)    :: obj_in
-  if( .not. associated( obj_in%shared_ptr_) ) then
+  if( obj_in%is_null_ ) then
     write(0,*) "ERROR! obj_in was not initialised"
   endif
 #if FCKIT_FINAL_DEBUGGING
@@ -184,9 +190,14 @@ subroutine reset_shared_ptr(obj_out,obj_in)
     write(0,*) "obj_in is a return value"
   endif
 #endif
-  if( .not. associated( obj_out%shared_ptr_, obj_in%shared_ptr_ ) ) then
+
+if( obj_out%is_null_ ) then
+  nullify( obj_out%shared_ptr_ ) ! so that we can check association
+endif
+
+if( .not. associated( obj_out%shared_ptr_, obj_in%shared_ptr_ ) ) then
 #if FCKIT_FINAL_DEBUGGING
-    if( .not. associated( obj_out%shared_ptr_ ) ) then
+    if( obj_out%is_null_ ) then
       write(0,*) "reset_shared_ptr of uninitialised"
     else
       write(0,*) "reset_shared_ptr of initialised"
@@ -195,6 +206,7 @@ subroutine reset_shared_ptr(obj_out,obj_in)
     call obj_out%final()
     obj_out%shared_ptr_ => obj_in%shared_ptr_
     obj_out%refcount_   => obj_in%refcount_
+    obj_out%is_null_ = .not. associated( obj_out%shared_ptr_ )
     if( obj_out%shared_ptr_cast() ) then
       call obj_out%attach()
     else
@@ -211,14 +223,14 @@ end subroutine
 
 subroutine attach(this)
   class(fckit_shared_ptr), intent(inout) :: this
-  if( associated(this%shared_ptr_) ) then
+  if( .not. this%is_null_ ) then
     call this%refcount_%attach()
   endif
 end subroutine
 
 subroutine detach(this)
   class(fckit_shared_ptr), intent(inout) :: this
-  if( associated(this%shared_ptr_) ) then
+  if( .not. this%is_null_ ) then
     call this%refcount_%detach()
   endif
 end subroutine
@@ -227,7 +239,7 @@ function owners(this)
   use, intrinsic :: iso_c_binding, only : c_int32_t
   integer(c_int32_t) :: owners
   class(fckit_shared_ptr), intent(in) :: this
-  if( associated( this%shared_ptr_) ) then
+  if( .not. this%is_null_ ) then
     owners = this%refcount_%owners()
   else
     owners = 0
@@ -299,6 +311,7 @@ subroutine share( this, ptr, refcount )
     opt_refcount => fckit_external()
   endif
   this%shared_ptr_ => ptr
+  this%is_null_ = .not. associated( this%shared_ptr_ )
   call opt_refcount(this%refcount_, this%shared_ptr_)
   call this%refcount_%attach()
 #if FCKIT_FINAL_DEBUGGING

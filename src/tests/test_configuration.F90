@@ -6,26 +6,7 @@
 ! granted to it by virtue of its status as an intergovernmental organisation nor
 ! does it submit to any jurisdiction.
 
-
-! This File contains Unit Tests for testing the
-! C++ / Fortran Interfaces to the Mesh Datastructure
-! @author Willem Deconinck
-
 #include "fckit/fctest.h"
-
-#if (defined(__GFORTRAN__) && __GNUC__ >= 7 )
-#define COMPILER_BUGS 1
-#endif
-#ifndef COMPILER_BUGS
-#define COMPILER_BUGS 0
-#endif
-
-#if COMPILER_BUGS
-#define NO_COMPILER_BUGS 0
-#warning Some tests disabled due to gfortran 7 and 8 compiler bug. Only one TEST at a time may be compiled.
-#else
-#define NO_COMPILER_BUGS 1
-#endif
 
 ! -----------------------------------------------------------------------------
 
@@ -198,7 +179,6 @@ END_TEST
 
 TEST(test_configuration_json_string)
 #if 1
-#if NO_COMPILER_BUGS
   use fckit_configuration_module
   use fckit_log_module
 
@@ -244,7 +224,6 @@ TEST(test_configuration_json_string)
 #endif
 
   write(0,*) "~~~~~~~~~~~~~~~ SCOPE END ~~~~~~~~~~~~~~~~"
-#endif
 #else
 #warning Test "test_configuration_json_string" disabled
 #endif
@@ -252,7 +231,6 @@ END_TEST
 
 TEST(test_configuration_json_file)
 #if 1
-#if NO_COMPILER_BUGS
   use fckit_configuration_module
   use fckit_pathname_module
   use fckit_log_module
@@ -331,7 +309,6 @@ TEST(test_configuration_json_file)
   call config%final()
 #endif
   write(0,*) "~~~~~~~~~~~~~~~ SCOPE END ~~~~~~~~~~~~~~~~"
-#endif
 #else
 #warning Test "test_configuration_json_file" disabled
 #endif

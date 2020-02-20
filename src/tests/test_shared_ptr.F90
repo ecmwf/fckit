@@ -571,7 +571,7 @@ TEST( test_shared_object_allocatable_list_auto_auto )
 END_TEST
 
 TEST( test_shared_object_allocatable_list_auto_manual )
-#if 0
+#if 1
   write(0,'(A)') "-------------------------------------------------------------"
   write(0,'(A)') "TEST     test_shared_object_allocatable_list_auto_manual"
   call reset_counters()
@@ -617,7 +617,7 @@ TEST( test_shared_object_allocatable_list_manual_auto )
 END_TEST
 
 TEST( test_shared_object_allocatable_list_manual_manual )
-#if 0
+#if 1
   write(0,'(A)') "-------------------------------------------------------------"
   write(0,'(A)') "TEST     test_shared_object_allocatable_list_manual_manual"
   call reset_counters()
@@ -749,7 +749,7 @@ END_TEST
 ! -----------------------------------------------------------------------------
 
 subroutine test_shared_object_automatic_list( final_auto )
-
+#if 1
   logical :: final_auto
   type(ObjectCXX) :: list(2)
 
@@ -770,6 +770,7 @@ subroutine test_shared_object_automatic_list( final_auto )
 
   write(0,'(A)') "~~~~~~~~~~~~~~~ END SCOPE ~~~~~~~~~~~~~~~"
   call end_scope()
+#endif
 end subroutine
 
 TEST( test_shared_object_automatic_list_auto )
