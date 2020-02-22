@@ -18,7 +18,7 @@ module fckit_configuration_module
   !!
   !! The [[fckit_configuration_module:fckit_YAMLConfiguration(interface)]] constructor
   !! for [[fckit_configuration_module:fckit_configuration(type)]] can create the
-  !! configuration from a JSON file
+  !! configuration from a YAML file
 
 use, intrinsic :: iso_c_binding, only : c_ptr, c_int32_t, c_int64_t, c_float, c_double, c_size_t, c_char
 use fckit_shared_object_module, only : fckit_shared_object, fckit_c_deleter, fckit_c_nodeleter
@@ -283,8 +283,8 @@ interface fckit_configuration
 end interface
 
 interface fckit_YAMLConfiguration
-  module procedure ctor_from_jsonfile
-  module procedure ctor_from_jsonstr
+  module procedure ctor_from_yaml_file
+  module procedure ctor_from_yamlstr
   module procedure ctor_from_buffer
 end interface
 
@@ -361,16 +361,16 @@ function ctor_from_cptr(cptr,own) result(this)
 end function
 
 
-function ctor_from_jsonstr(json) result(this)
+function ctor_from_yamlstr(yaml) result(this)
   use fckit_c_interop_module, only : c_str
   type(fckit_Configuration) :: this
-  character(kind=c_char,len=*), intent(in) :: json
-  call this%reset_c_ptr( c_fckit_configuration_new_from_json(c_str(json)), &
+  character(kind=c_char,len=*), intent(in) :: yaml
+  call this%reset_c_ptr( c_fckit_configuration_new_from_yaml(c_str(yaml)), &
     & fckit_c_deleter(c_fckit_configuration_delete) )
   call this%return()
 end function
 
-function ctor_from_jsonfile(path) result(this)
+function ctor_from_yaml_file(path) result(this)
   use fckit_c_interop_module, only : c_str
   type(fckit_Configuration) :: this
   type(fckit_pathname), intent(in) :: path

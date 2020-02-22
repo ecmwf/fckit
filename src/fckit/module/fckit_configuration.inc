@@ -29,13 +29,13 @@ end function
 !-------------------------------------------------------------------------------
 
 !-------------------------------------------------------------------------------
-! Configuration* c_fckit_configuration_new_from_json (const char* json)
+! Configuration* c_fckit_configuration_new_from_yaml (const char* yaml)
 !-------------------------------------------------------------------------------
-function c_fckit_configuration_new_from_json( json ) bind(C,name="c_fckit_confi&
-  &guration_new_from_json")
+function c_fckit_configuration_new_from_yaml( yaml ) bind(C,name="c_fckit_confi&
+  &guration_new_from_yaml")
     use iso_c_binding, only: c_ptr, c_char
-    type(c_ptr) :: c_fckit_configuration_new_from_json
-    character(c_char), dimension(*) :: json
+    type(c_ptr) :: c_fckit_configuration_new_from_yaml
+    character(c_char), dimension(*) :: yaml
 end function
 !-------------------------------------------------------------------------------
 
