@@ -35,7 +35,7 @@ TEST( test_configuration )
 
   type(fckit_Configuration) :: config
   type(fckit_Configuration) :: nested
-  type(fckit_Configuration) :: list(2)
+  type(fckit_Configuration), allocatable :: list(:)
   logical :: found
   logical :: logval
   integer :: intval
@@ -73,10 +73,12 @@ TEST( test_configuration )
   call config%set("logical_true",.True.)
   call config%set("logical_false",.False.)
 
+
   nested = fckit_Configuration()
   call nested%set("n1",11)
   call nested%set("n2",12)
 
+  allocate( list(2) )
   do j=1,2
     list(j) = fckit_Configuration()
     call list(j)%set("l1",21)
@@ -93,6 +95,7 @@ enddo
 #if ! FCKIT_HAVE_FINAL
   call nested%final()
 #endif
+
 
   ! --------------------- JSON ------------------
 
@@ -314,25 +317,6 @@ TEST(test_configuration_json_file)
 #endif
 END_TEST
 
-TEST(test_throw)
-!! ENABLE TO TEST IF THROW WILL WORK
-
-#if 0
-  use fckit_configuration_module
-  type(fckit_Configuration) :: config
-
-  integer :: missing_value
-
-  write(0,*) "~~~~~~~~~~~~~~ SCOPE BEGIN ~~~~~~~~~~~~~~~"
-
-  config = fckit_Configuration()
-
-  call config%get_or_die("missing",missing_value)
-
-  call config%final()
-  write(0,*) "~~~~~~~~~~~~~~~ SCOPE END ~~~~~~~~~~~~~~~~"
-#endif
-END_TEST
 ! -----------------------------------------------------------------------------
 
 END_TESTSUITE
