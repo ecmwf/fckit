@@ -10,26 +10,19 @@
 # FCKIT
 
 cmake_minimum_required( VERSION 3.6 FATAL_ERROR )
+if( POLICY CMP0074 )
+  cmake_policy( SET CMP0074 NEW )
+  # This policy allows to search for packages with <package>_ROOT variables
+  #                        (only supported with CMake 3.12 and above)
+  # This policy can be removed once cmake_minimum_required( VERSION 3.12 ) is used
+endif()
 
-set( ENABLE_OS_TESTS            OFF   CACHE BOOL " " )
-set( ENABLE_LARGE_FILE_SUPPORT  OFF   CACHE BOOL " " )
+find_package( ecbuild 3.0.0 REQUIRED )
 
-project( fckit C CXX Fortran )
-
-set( CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/../ecbuild/cmake")
-set( ECBUILD_DEFAULT_BUILD_TYPE Release )
-
-include( ecbuild_system NO_POLICY_SCOPE )
-
-ecbuild_requires_macro_version( 2.7 )
+project( fckit LANGUAGES C CXX Fortran )
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
-################################################################################################
-# project
-
-ecbuild_declare_project()
 
 ################################################################################################
 # options & dependencies
@@ -43,8 +36,13 @@ ecbuild_check_fortran( FEATURES finalization )
 
 set( FEATURE_FINAL_DEFAULT ON )
 if( CMAKE_Fortran_COMPILER_ID MATCHES "PGI" )
-  # Compilation works, but runtime segmentation faults occur (tested with pgi/17.7)
-  set( FEATURE_FINAL_DEFAULT OFF )
+  if( ${CMAKE_Fortran_COMPILER_VERSION} VERSION_LESS 19.10 )
+    # Compilation works, but runtime segmentation faults occur (tested with pgi/17.7)
+    set( FEATURE_FINAL_DEFAULT OFF )
+  else()
+    list( APPEND FCKIT_QUARANTAINED_TESTS fckit_test_shared_ptr )
+    # deallocation of list of shared_ptr only seems to deallocate first entry
+  endif()
 endif()
 
 ecbuild_add_option( FEATURE FINAL
@@ -52,9 +50,7 @@ ecbuild_add_option( FEATURE FINAL
                     DEFAULT ${FEATURE_FINAL_DEFAULT}
                     CONDITION EC_HAVE_Fortran_FINALIZATION )
 
-set( FCKIT_HAVE_FINAL 0 )
-if( ENABLE_FINAL )
-    set( FCKIT_HAVE_FINAL 1 )
+if( fckit_HAVE_FINAL )
     include( final-support )
     check_final_support()
     ecbuild_info( "FCKIT_HAVE_FINAL [1]")
@@ -67,8 +63,8 @@ if( ENABLE_FINAL )
     ecbuild_info( "  FCKIT_FINAL_BROKEN_FOR_ALLOCATABLE_ARRAY = ${FCKIT_FINAL_BROKEN_FOR_ALLOCATABLE_ARRAY}")
     ecbuild_info( "  FCKIT_FINAL_BROKEN_FOR_AUTOMATIC_ARRAY   = ${FCKIT_FINAL_BROKEN_FOR_AUTOMATIC_ARRAY}")
 endif()
-if( NOT FCKIT_HAVE_FINAL )
-    ecbuild_info( "FCKIT_HAVE_FINAL [0]")
+if( NOT fckit_HAVE_FINAL )
+    ecbuild_info( "fckit_HAVE_FINAL [0]")
     set( FCKIT_FINAL_FUNCTION_RESULT              0 )
     set( FCKIT_FINAL_UNINITIALIZED_LOCAL          0 )
     set( FCKIT_FINAL_UNINITIALIZED_INTENT_OUT     0 )
@@ -79,25 +75,33 @@ if( NOT FCKIT_HAVE_FINAL )
     set( FCKIT_FINAL_BROKEN_FOR_AUTOMATIC_ARRAY   0 )
 endif()
 
+ecbuild_find_package( NAME eckit VERSION 0.21.0 QUIET )
 ecbuild_add_option( FEATURE ECKIT
                     DESCRIPTION "Wrap ecKit functionality"
-                    REQUIRED_PACKAGES "PROJECT eckit VERSION 0.21.0" )
-
-ecbuild_add_cxx11_flags()
-
-set( FCKIT_HAVE_ECKIT_MPI_PARALLEL 0 )
-if( HAVE_ECKIT )
-  if( NOT ECKIT_HAVE_MPI )
-    ecbuild_warn("ecKit has been compiled without MPI. This causes fckit to not be able to run parallel executables.")
-    set( FCKIT_HAVE_ECKIT_MPI_PARALLEL 0 )
-  else()
-    set( FCKIT_HAVE_ECKIT_MPI_PARALLEL 1 )
-  endif()
+                    CONDITION eckit_FOUND )
+if( NOT fckit_HAVE_ECKIT )
+    ecbuild_warn("ecKit could not be found. This disables various fckit features such as MPI, Configuration, Logging")
 endif()
 
-if( ECKIT_VERSION VERSION_LESS "0.25" )
+## MPI
+set( fckit_HAVE_ECKIT_MPI_PARALLEL 0 )
+if( fckit_HAVE_ECKIT )
+  if( NOT ECKIT_HAVE_MPI )
+    set( fckit_HAVE_ECKIT_MPI_PARALLEL 0 )
+    set( HAVE_MPI 0 )
+  else()
+    set( fckit_HAVE_ECKIT_MPI_PARALLEL 1 )
+    set( HAVE_MPI 1 )
+  endif()
+endif()
+set( fckit_HAVE_MPI ${HAVE_MPI} )
+if( fckit_HAVE_ECKIT AND NOT fckit_HAVE_MPI )
+  ecbuild_warn("ecKit has been compiled without MPI. This causes fckit to not be able to run parallel executables.")
+endif()
+
+if( eckit_VERSION VERSION_LESS "0.25" )
   set( ECKIT_IMPROVED_MPI 0 )
-  if( HAVE_ECKIT )
+  if( fckit_HAVE_ECKIT )
     ecbuild_warn( "eckit version does not allow support for" 
                   "- fckit_mpi_comm%set_default()"
                   "- fckit_mpi_comm%name()"
@@ -110,10 +114,6 @@ endif()
 ################################################################################################
 # export package info
 
-list( APPEND FCKIT_INCLUDE_DIRS
-    ${CMAKE_CURRENT_SOURCE_DIR}/src
-    ${CMAKE_CURRENT_BINARY_DIR}/src
-    ${CMAKE_Fortran_MODULE_DIRECTORY})
 set( FCKIT_LIBRARIES  fckit )
 
 ################################################################################################
@@ -124,7 +124,6 @@ set( FCTEST_GENERATOR ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/tools/fct
 include( fckit_preprocess_fypp )
 include( add_fctest )
 
-set( HAVE_FCTEST 1)
 add_subdirectory( src )
 add_subdirectory( doc )
 

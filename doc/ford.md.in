@@ -1,7 +1,7 @@
 project: fcKit
 project_website: https://software.ecmwf.int/wiki/display/FCKIT
 project_github: https://github.com/ecmwf/fckit
-version: @FCKIT_VERSION@
+version: @fckit_VERSION@
 summary: Fortran support library
 author: ECMWF
 author_website: www.ecmwf.int

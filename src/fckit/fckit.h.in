@@ -15,12 +15,12 @@ does it submit to any jurisdiction.
 #ifndef FCKIT_H
 #define FCKIT_H
 
-#define FCKIT_GIT_SHA1      "@FCKIT_GIT_SHA1@"
-#define FCKIT_VERSION       "@FCKIT_VERSION@"
+#define FCKIT_GIT_SHA1      "@fckit_GIT_SHA1@"
+#define FCKIT_VERSION       "@fckit_VERSION@"
 
-#define FCKIT_HAVE_ECKIT                           @FCKIT_HAVE_ECKIT@
-#define FCKIT_HAVE_ECKIT_MPI_PARALLEL              @FCKIT_HAVE_ECKIT_MPI_PARALLEL@
-#define FCKIT_HAVE_FINAL                           @FCKIT_HAVE_FINAL@
+#define FCKIT_HAVE_ECKIT                           @fckit_HAVE_ECKIT@
+#define FCKIT_HAVE_ECKIT_MPI_PARALLEL              @fckit_HAVE_ECKIT_MPI_PARALLEL@
+#define FCKIT_HAVE_FINAL                           @fckit_HAVE_FINAL@
 #define FCKIT_FINAL_FUNCTION_RESULT                @FCKIT_FINAL_FUNCTION_RESULT@
 #define FCKIT_FINAL_UNINITIALIZED_LOCAL            @FCKIT_FINAL_UNINITIALIZED_LOCAL@
 #define FCKIT_FINAL_UNINITIALIZED_INTENT_OUT       @FCKIT_FINAL_UNINITIALIZED_INTENT_OUT@
