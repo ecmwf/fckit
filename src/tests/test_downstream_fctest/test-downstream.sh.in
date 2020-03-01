@@ -7,8 +7,8 @@
 # Usage:
 #   test-individual.sh [CMAKE_ARGUMENTS]
 
-SOURCE=@CMAKE_CURRENT_SOURCE_DIR@/downstream
-BUILD=@CMAKE_CURRENT_BINARY_DIR@/downstream
+SOURCE=@PROJECT_SOURCE_DIR@/doc/fctest_examples
+BUILD=@CMAKE_CURRENT_BINARY_DIR@/build
 
 # Error handling
 function test_failed {
@@ -36,12 +36,11 @@ mkdir -p $BUILD && cd $BUILD
 cmake $SOURCE \
   -DCMAKE_BUILD_TYPE=RelWithDebInfo \
   -DECBUILD_2_COMPAT=OFF \
-  -DECBUILD_COMPILE_FLAGS=@CMAKE_CURRENT_SOURCE_DIR@/compile_flags.cmake \
   "$@"
 
 make VERBOSE=1
 
-bin/main
+ctest -VV
 
 { set +ex; } 2>/dev/null
 echo "+++++++++++++++++"

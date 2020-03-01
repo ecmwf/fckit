@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 
-FCKIT_VERSION_STR="@FCKIT_VERSION_STR@"
-FCKIT_VERSION="@FCKIT_VERSION@"
+FCKIT_VERSION_STR="@fckit_VERSION_STR@"
+FCKIT_VERSION="@fckit_VERSION@"
 
-FCKIT_MAJOR_VERSION=@FCKIT_MAJOR_VERSION@
-FCKIT_MINOR_VERSION=@FCKIT_MINOR_VERSION@
-FCKIT_PATCH_VERSION=@FCKIT_PATCH_VERSION@
+FCKIT_MAJOR_VERSION=@fckit_VERSION_MAJOR@
+FCKIT_MINOR_VERSION=@fckit_VERSION_MINOR@
+FCKIT_PATCH_VERSION=@fckit_VERSION_PATCH@
 
-FCKIT_GIT_SHA1="@FCKIT_GIT_SHA1@"
+FCKIT_GIT_SHA1="@fckit_GIT_SHA1@"
 
 #################################################################
 # Commands
@@ -21,7 +21,7 @@ usage()
 
 version()
 {
-  echo "${FCKIT_VERSION}"
+  echo "${fckit_VERSION}"
 }
 
 print_feature()
@@ -38,7 +38,7 @@ print_feature()
 
 info()
 {
-  echo "fckit version (${FCKIT_VERSION}), git-sha1 ${FCKIT_GIT_SHA1}"
+  echo "fckit version (${fckit_VERSION}), git-sha1 ${fckit_GIT_SHA1}"
   echo ""
   echo "Build:"
   echo "  build type      : @CMAKE_BUILD_TYPE@"
@@ -52,13 +52,13 @@ info()
   echo "    flags         : @EC_Fortran_FLAGS@"
   echo ""
   echo "Features:"
-  echo "  MPI             : $(print_feature @ECKIT_HAVE_MPI@)"
-  echo "  final           : $(print_feature @FCKIT_HAVE_FINAL@)"
-  echo "  eckit           : $(print_feature @FCKIT_HAVE_ECKIT@)"
+  echo "  MPI             : $(print_feature @eckit_HAVE_MPI@)"
+  echo "  final           : $(print_feature @fckit_HAVE_FINAL@)"
+  echo "  eckit           : $(print_feature @fckit_HAVE_ECKIT@)"
   echo ""
   echo "Dependencies: "
-  if [ -n "@FCKIT_HAVE_ECKIT@" ]; then
-  echo "  eckit version (@ECKIT_VERSION@), git-sha1 $(short_gitsha1 @ECKIT_GIT_SHA1@)"
+  if [ -n "@fckit_HAVE_ECKIT@" ]; then
+  echo "  eckit version (@eckit_VERSION@), git-sha1 $(short_gitsha1 @eckit_GIT_SHA1@)"
   else
   echo "  None"
   fi
@@ -66,7 +66,7 @@ info()
 
 gitsha1()
 {
-  echo "${FCKIT_GIT_SHA1}"
+  echo "${fckit_GIT_SHA1}"
 }
 
 short_gitsha1()

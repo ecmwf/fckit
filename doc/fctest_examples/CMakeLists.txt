@@ -6,7 +6,15 @@
 # granted to it by virtue of its status as an intergovernmental organisation nor
 # does it submit to any jurisdiction.
 
-if( HAVE_FCTEST )
+cmake_minimum_required( VERSION 3.6 FATAL_ERROR )
+
+find_package( ecbuild 3.0.0 REQUIRED )
+
+project( fctest_examples VERSION 0.0.0 LANGUAGES Fortran )
+
+ecbuild_enable_fortran( REQUIRED MODULE_DIRECTORY ${PROJECT_BINARY_DIR}/module )
+
+find_package( fckit REQUIRED )
 
 ecbuild_add_library( TARGET fctest_example_lib
                      SOURCES fctest_example_lib.F90
@@ -19,7 +27,5 @@ add_fctest( TARGET fctest_example_simple
 
 add_fctest( TARGET fctest_example_with_fixture
             LINKER_LANGUAGE Fortran
-            SOURCES fctest_example_with_fixture.F90
-           )
+            SOURCES fctest_example_with_fixture.F90 )
 
-endif()

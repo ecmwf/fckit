@@ -190,7 +190,7 @@ function( fckit_target_preprocess_fypp _PAR_TARGET )
         set( source_files_properties ${source} PROPERTIES HEADER_FILE_ONLY TRUE )
       endforeach()
 
-### BUG WORKAROUND (tested upto 3.13.2)
+### BUG WORKAROUND (tested upto CMake 3.13.2)
 #   Even though source files to be preprocessed with final extension .F90 have just been
 #   declared as HEADER_FILE_ONLY, CMake still tries to compile these files.
 #   This does not happen for files ending with other extensions ( .fypp )

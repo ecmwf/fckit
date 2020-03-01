@@ -6,26 +6,23 @@
 # granted to it by virtue of its status as an intergovernmental organisation nor
 # does it submit to any jurisdiction.
 
-if( HAVE_FCTEST )
+cmake_policy( SET CMP0064 NEW ) # Recognize ``TEST`` as operator for the ``if()`` command. (introduced in CMake version 3.4)
 
 add_fctest( TARGET  fckit_test_array
             LINKER_LANGUAGE Fortran
             SOURCES test_array.F90
-            DEFINITIONS ${FCKIT_DEFINITIONS}
             LIBS    fckit)
 
 add_fctest( TARGET  fckit_test_resource
             LINKER_LANGUAGE Fortran
             SOURCES test_resource.F90
             ARGS    -integer 10 -long 5000000000 -float 0.123456 -double 0.1234567890123456789 -string "hello world"
-            DEFINITIONS ${FCKIT_DEFINITIONS}
             CONDITION HAVE_ECKIT
             LIBS    fckit)
 
 add_fctest( TARGET  fckit_test_log
             LINKER_LANGUAGE Fortran
             SOURCES test_log.F90
-            DEFINITIONS ${FCKIT_DEFINITIONS}
             CONDITION HAVE_ECKIT
             LIBS    fckit)
 
@@ -40,10 +37,8 @@ add_fctest( TARGET  fckit_test_mpi
             LINKER_LANGUAGE Fortran
             SOURCES test_mpi.F90
             MPI 4
-            DEFINITIONS ${FCKIT_DEFINITIONS}
-            CONDITION HAVE_ECKIT AND ECKIT_HAVE_MPI
+            CONDITION HAVE_MPI
             LIBS    fckit)
-
 
 add_fctest( TARGET  fckit_test_abort
             LINKER_LANGUAGE Fortran
@@ -53,38 +48,44 @@ add_fctest( TARGET  fckit_test_abort
 
 add_fctest( TARGET  fckit_test_configuration
             LINKER_LANGUAGE Fortran
-            DEFINITIONS ${FCKIT_DEFINITIONS}
             SOURCES test_configuration.F90
-            DEFINITIONS ${FCKIT_DEFINITIONS}
             CONDITION HAVE_ECKIT
             LIBS    fckit)
+
+add_fctest( TARGET  fckit_test_configuration_fails
+            LINKER_LANGUAGE Fortran
+            SOURCES test_configuration_fails.F90
+            CONDITION HAVE_ECKIT
+            LIBS    fckit)
+if( TEST fckit_test_configuration_fails )
+    set_tests_properties( fckit_test_configuration_fails PROPERTIES
+    PASS_REGULAR_EXPRESSION "Could not find \"missing\" in Configuration")
+endif()
 
 add_fctest( TARGET  fckit_test_broadcast_file
             LINKER_LANGUAGE Fortran
             SOURCES test_broadcast_file.F90
             MPI 4
-            DEFINITIONS ${FCKIT_DEFINITIONS}
-            CONDITION HAVE_ECKIT AND ECKIT_HAVE_MPI
+            CONDITION HAVE_MPI
             LIBS    fckit)
 
-endif()
-
-if( HAVE_TESTS )
+add_fctest( TARGET fckit_test_fypp
+  LINKER_LANGUAGE Fortran
+  SOURCES test_fypp.fypp
+  LIBS fckit
+)
 
 ecbuild_add_test( TARGET  fckit_test_configuration_cpp
             LINKER_LANGUAGE Fortran
             SOURCES
             test_configuration.cc
             test_configuration_fortcode.F90
-            DEFINITIONS ${FCKIT_DEFINITIONS}
             INCLUDES ${ECKIT_INCLUDE_DIRS}
             CONDITION HAVE_ECKIT
             LIBS    fckit  eckit eckit_mpi )
 
-if( HAVE_ECKIT )
-  if( NOT (CMAKE_VERSION VERSION_LESS 3.1) )
-    set_property( TEST fckit_test_configuration_cpp APPEND PROPERTY LABELS "fortran" )
-  endif()
+if( TEST fckit_test_configuration_cpp )
+  set_property( TEST fckit_test_configuration_cpp APPEND PROPERTY LABELS "fortran" )
 endif()
 
 ecbuild_add_test( TARGET fckit_test_cpp
@@ -95,25 +96,28 @@ ecbuild_add_test( TARGET fckit_test_cpp
   CONDITION HAVE_ECKIT
   LIBS fckit eckit eckit_mpi )
 
+### Fix linking for C++ test executables linked with Fortran linker
 if( CMAKE_Fortran_COMPILER_ID MATCHES "PGI" )
   set( NO_MAIN "-Mnomain" )
 elseif( CMAKE_Fortran_COMPILER_ID MATCHES "Intel" )
   set( NO_MAIN "-nofor-main" )
 endif()
-if( HAVE_ECKIT )
-  if( NO_MAIN )
-    set_target_properties(fckit_test_configuration_cpp PROPERTIES LINK_FLAGS ${NO_MAIN} )
-    set_target_properties(fckit_test_cpp               PROPERTIES LINK_FLAGS ${NO_MAIN} )
-  endif()
+if( NO_MAIN )
+  foreach( _test fckit_test_configuration_cpp fckit_test_cpp )
+    if( TEST ${_test} )
+      set_target_properties(${_test} PROPERTIES LINK_FLAGS ${NO_MAIN} )
+    endif()
+  endforeach()
 endif()
 
-add_fctest( TARGET fckit_test_fypp 
-  LINKER_LANGUAGE Fortran
-  SOURCES test_fypp.fypp
-  LIBS fckit
-)
+### Quarantaine tests if requested
+foreach( _test ${FCKIT_QUARANTAINED_TESTS} )
+    if( TEST ${_test} )
+      set_tests_properties( ${_test} PROPERTIES WILL_FAIL 1 )
+      ecbuild_warn("Test ${_test} is quarantained (shows as passed)")
+    endif()
+endforeach()
 
-endif()
-
+### Test downstream find_package(fckit) projects
 add_subdirectory( test_downstream_fypp )
-
+add_subdirectory( test_downstream_fctest )

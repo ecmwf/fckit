@@ -6,26 +6,7 @@
 ! granted to it by virtue of its status as an intergovernmental organisation nor
 ! does it submit to any jurisdiction.
 
-
-! This File contains Unit Tests for testing the
-! C++ / Fortran Interfaces to the Mesh Datastructure
-! @author Willem Deconinck
-
 #include "fckit/fctest.h"
-
-#if (defined(__GFORTRAN__) && __GNUC__ >= 7 )
-#define COMPILER_BUGS 1
-#endif
-#ifndef COMPILER_BUGS
-#define COMPILER_BUGS 0
-#endif
-
-#if COMPILER_BUGS
-#define NO_COMPILER_BUGS 0
-#warning Some tests disabled due to gfortran 7 and 8 compiler bug. Only one TEST at a time may be compiled.
-#else
-#define NO_COMPILER_BUGS 1
-#endif
 
 ! -----------------------------------------------------------------------------
 
@@ -54,7 +35,7 @@ TEST( test_configuration )
 
   type(fckit_Configuration) :: config
   type(fckit_Configuration) :: nested
-  type(fckit_Configuration) :: list(2)
+  type(fckit_Configuration), allocatable :: list(:)
   logical :: found
   logical :: logval
   integer :: intval
@@ -92,10 +73,12 @@ TEST( test_configuration )
   call config%set("logical_true",.True.)
   call config%set("logical_false",.False.)
 
+
   nested = fckit_Configuration()
   call nested%set("n1",11)
   call nested%set("n2",12)
 
+  allocate( list(2) )
   do j=1,2
     list(j) = fckit_Configuration()
     call list(j)%set("l1",21)
@@ -112,6 +95,7 @@ enddo
 #if ! FCKIT_HAVE_FINAL
   call nested%final()
 #endif
+
 
   ! --------------------- JSON ------------------
 
@@ -198,7 +182,6 @@ END_TEST
 
 TEST(test_configuration_json_string)
 #if 1
-#if NO_COMPILER_BUGS
   use fckit_configuration_module
   use fckit_log_module
 
@@ -244,7 +227,6 @@ TEST(test_configuration_json_string)
 #endif
 
   write(0,*) "~~~~~~~~~~~~~~~ SCOPE END ~~~~~~~~~~~~~~~~"
-#endif
 #else
 #warning Test "test_configuration_json_string" disabled
 #endif
@@ -252,7 +234,6 @@ END_TEST
 
 TEST(test_configuration_json_file)
 #if 1
-#if NO_COMPILER_BUGS
   use fckit_configuration_module
   use fckit_pathname_module
   use fckit_log_module
@@ -331,31 +312,11 @@ TEST(test_configuration_json_file)
   call config%final()
 #endif
   write(0,*) "~~~~~~~~~~~~~~~ SCOPE END ~~~~~~~~~~~~~~~~"
-#endif
 #else
 #warning Test "test_configuration_json_file" disabled
 #endif
 END_TEST
 
-TEST(test_throw)
-!! ENABLE TO TEST IF THROW WILL WORK
-
-#if 0
-  use fckit_configuration_module
-  type(fckit_Configuration) :: config
-
-  integer :: missing_value
-
-  write(0,*) "~~~~~~~~~~~~~~ SCOPE BEGIN ~~~~~~~~~~~~~~~"
-
-  config = fckit_Configuration()
-
-  call config%get_or_die("missing",missing_value)
-
-  call config%final()
-  write(0,*) "~~~~~~~~~~~~~~~ SCOPE END ~~~~~~~~~~~~~~~~"
-#endif
-END_TEST
 ! -----------------------------------------------------------------------------
 
 END_TESTSUITE

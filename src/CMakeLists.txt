@@ -8,9 +8,8 @@
 
 add_subdirectory(fckit)
 add_subdirectory(apps)
-add_subdirectory(fctest_examples)
 add_subdirectory(tests)
 
-if ( ENABLE_SANDBOX )
+if ( HAVE_SANDBOX )
   add_subdirectory(sandbox)
 endif()

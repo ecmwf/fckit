@@ -108,6 +108,7 @@ public :: fckit_mpi_min
 public :: fckit_mpi_max
 public :: fckit_mpi_minloc
 public :: fckit_mpi_maxloc
+public :: fckit_mpi_info_null
 
 !========================================================================
 
@@ -251,6 +252,9 @@ contains
   procedure, public, nopass :: maxloc         => fckit_mpi_maxloc
     !! Maxloc operator that can be passed to collective method
 
+  procedure, public, nopass :: info_null      => fckit_mpi_info_null
+    !! Maxloc operator that can be passed to collective method
+
 endtype
 
 type(fckit_mpi_comm) :: fckit_mpi
@@ -387,6 +391,11 @@ interface
   function fckit__mpi__maxloc() bind(c)
     use, intrinsic :: iso_c_binding, only : c_int32_t
     integer(c_int32_t) :: fckit__mpi__maxloc
+  end function
+
+  function fckit__mpi__mpi_info_null() bind(c)
+    use, intrinsic :: iso_c_binding, only : c_int32_t
+    integer(c_int32_t) :: fckit__mpi__mpi_info_null
   end function
 
 #:for dtype,ftype,btype in types
@@ -554,6 +563,12 @@ function fckit_mpi_maxloc() result(code)
   use, intrinsic :: iso_c_binding, only : c_int32_t
   integer(c_int32_t) :: code
   code = fckit__mpi__maxloc()
+end function
+
+function fckit_mpi_info_null()
+  use, intrinsic :: iso_c_binding, only : c_int32_t
+  integer(c_int32_t) :: fckit_mpi_info_null
+  fckit_mpi_info_null = fckit__mpi__mpi_info_null()
 end function
 
 !---------------------------------------------------------------------------------------

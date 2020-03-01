@@ -27,7 +27,7 @@
 #else
 #include "eckit/log/JSON.h"
 #endif
-#include "eckit/parser/JSONParser.h"
+//#include "eckit/parser/JSONParser.h"
 
 using eckit::CodeLocation;
 using eckit::Configuration;
@@ -68,9 +68,9 @@ Configuration* c_fckit_configuration_new() {
     return new LocalConfiguration();
 }
 
-Configuration* c_fckit_configuration_new_from_json( const char* json ) {
+Configuration* c_fckit_configuration_new_from_yaml( const char* yaml ) {
     stringstream s;
-    s << json;
+    s << yaml;
     return new YAMLConfiguration( s );
 }
 
@@ -314,22 +314,22 @@ int32 c_fckit_configuration_get_array_double( const Configuration* This, const c
     return true;
 }
 
-int32 c_fckit_configuration_get_array_string( const Configuration* This, const char* name, char*& value,
-                                              size_t& size, size_t*& offsets, size_t& numelem) {
+int32 c_fckit_configuration_get_array_string( const Configuration* This, const char* name, char*& value, size_t& size,
+                                              size_t*& offsets, size_t& numelem ) {
     vector<string> s;
-    if( !This->get( string( name ), s ) ) {
+    if ( !This->get( string( name ), s ) ) {
         return false;
     }
     numelem = s.size();
     offsets = new size_t[numelem];
-    size = 0;
-    for( size_t j = 0; j < numelem; ++j ) {
-      offsets[j] = size;
-      size += s[j].size();
+    size    = 0;
+    for ( size_t j = 0; j < numelem; ++j ) {
+        offsets[j] = size;
+        size += s[j].size();
     }
     value = new char[size];
-    for( size_t j=0; j < numelem; ++j ) {
-      strcpy(&value[offsets[j]], s[j].c_str());
+    for ( size_t j = 0; j < numelem; ++j ) {
+        strcpy( &value[offsets[j]], s[j].c_str() );
     }
     return true;
 }

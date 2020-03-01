@@ -6,10 +6,11 @@
 # granted to it by virtue of its status as an intergovernmental organisation nor
 # does it submit to any jurisdiction.
 
+find_package(FORD QUIET)
 ecbuild_add_option(
   FEATURE DOCS
   DESCRIPTION "Generate reference documentation"
-  REQUIRED_PACKAGES "FORD QUIET" )
+  CONDITION FORD_FOUND )
 
 if( HAVE_DOCS )
 
@@ -27,7 +28,7 @@ if( HAVE_DOCS )
   list( APPEND FORD_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${FORDFILE}.in ${CMAKE_CURRENT_SOURCE_DIR}/${FORDPREPROCESSOR}.in )
 
   add_custom_command(OUTPUT "ford/index.html"
-  	COMMAND ${FORD_EXECUTABLE} --debug "${CMAKE_CURRENT_BINARY_DIR}/${FORDFILE}"
+    COMMAND ${FORD_EXECUTABLE} --debug "${CMAKE_CURRENT_BINARY_DIR}/${FORDFILE}"
     WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
     DEPENDS ${FORD_DEPENDS}
     COMMENT "Building HTML documentation for ${CMAKE_PROJECT_NAME} using FORD (${CMAKE_CURRENT_BINARY_DIR}/ford/index.html)" )
