@@ -100,6 +100,10 @@ cmake_policy( SET CMP0064 NEW ) # Recognize ``TEST`` as operator for the ``if()`
               set_source_files_properties( ${TESTRUNNER} PROPERTIES ${_prop} ${TESTSUITE_PROPERTY} )
           endif()
       endforeach()
+      if(${CMAKE_Fortran_COMPILER_ID} MATCHES GNU)
+          #Disable developer-only pre-processor warnings when not compiling for Debug configurations
+          target_compile_options(${_PAR_TARGET} PRIVATE $<$<NOT:$<CONFIG:Debug>>:-Wno-cpp>)
+      endif()
 
       add_custom_target( ${_PAR_TARGET}_testsuite SOURCES ${TESTSUITE} )
   endif()
