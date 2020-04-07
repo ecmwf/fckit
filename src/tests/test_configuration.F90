@@ -51,12 +51,16 @@ TEST( test_configuration )
 #if 1
   use fckit_configuration_module
   use fckit_log_module
+  use, intrinsic :: iso_c_binding, only : c_size_t
 
+  integer(c_size_t), parameter :: strlen = 10
   type(fckit_Configuration) :: config
   type(fckit_Configuration) :: nested
   type(fckit_Configuration) :: list(2)
   logical :: found
   logical :: logval
+  character(len=strlen), allocatable :: arrayset(:)
+  character(len=strlen), allocatable :: arrayget(:)
   integer :: intval
   integer :: j
 
@@ -82,6 +86,7 @@ TEST( test_configuration )
   !   p1: 1
   !   p2: 2
   !   logical : True
+  !   array_of_strings: string1, string2, string3
   ! }
 
   config = fckit_Configuration()
@@ -112,6 +117,12 @@ enddo
 #if ! FCKIT_HAVE_FINAL
   call nested%final()
 #endif
+
+  allocate( arrayset(3) )
+  arrayset(1) = "string1"
+  arrayset(2) = "string2"
+  arrayset(3) = "string3"
+  call config%set("array_of_strings",arrayset)
 
   ! --------------------- JSON ------------------
 
@@ -175,6 +186,12 @@ enddo
   write(0,*) "deallocate alist... done"
 
   call anested%final()
+
+  found = config%get("array_of_strings",strlen,arrayget)
+  FCTEST_CHECK( found )
+  FCTEST_CHECK_EQUAL( arrayget(1) , "string1" )
+  FCTEST_CHECK_EQUAL( arrayget(2) , "string2" )
+  FCTEST_CHECK_EQUAL( arrayget(3) , "string3" )
 
   ! There is a reported PGI/16.7 bug that makes this test segfault here.
   ! PGI/17.1 has this bug fixed.

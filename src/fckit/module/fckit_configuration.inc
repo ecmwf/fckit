@@ -177,6 +177,21 @@ end subroutine
 !-------------------------------------------------------------------------------
 
 !-------------------------------------------------------------------------------
+! void c_fckit_configuration_set_array_string (Configuration* This, const char* n
+!   ame, const char* value, size_t size)
+!-------------------------------------------------------------------------------
+subroutine c_fckit_configuration_set_array_string( This, name, value, length, size ) bin&
+  &d(C,name="c_fckit_configuration_set_array_string")
+    use iso_c_binding, only: c_int32_t, c_size_t, c_ptr, c_char
+    type(c_ptr), value :: This
+    character(c_char), dimension(*) :: name
+    character(c_char), dimension(*) :: value
+    integer(c_size_t), value :: length
+    integer(c_size_t), value :: size
+end subroutine
+!-------------------------------------------------------------------------------
+
+!-------------------------------------------------------------------------------
 ! void c_fckit_configuration_set_array_int32 (Configuration* This, const char* n
 !   ame, int32 value[], size_t size)
 !-------------------------------------------------------------------------------

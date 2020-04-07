@@ -153,6 +153,20 @@ void c_fckit_configuration_set_string( Configuration* This, const char* name, co
         throw NotLocalConfiguration( Here() );
 }
 
+void c_fckit_configuration_set_array_string( Configuration* This, const char* name, const char* value, size_t length, size_t size ) {
+    ASSERT( This != nullptr );
+    vector<string> v;
+    for (size_t jj = 0; jj < size; ++jj ) {
+      char str[length];
+      strncpy( str, value + jj*length, length );
+      v.push_back( string( str ) );
+    }
+    if ( LocalConfiguration* local = dynamic_cast<LocalConfiguration*>( This ) )
+        local->set( string( name ), v );
+    else
+        throw NotLocalConfiguration( Here() );
+}
+
 void c_fckit_configuration_set_array_int32( Configuration* This, const char* name, int32 value[], size_t size ) {
     ASSERT( This != nullptr );
     vector<int32> v;
