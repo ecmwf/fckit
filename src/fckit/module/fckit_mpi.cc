@@ -9,15 +9,18 @@
  */
 
 #include <cstdint>
-
 #include <cstring>
 #include <sstream>
-#include "eckit/exception/Exceptions.h"
-#include "eckit/log/CodeLocation.h"
-#include "eckit/log/Log.h"
-#include "eckit/mpi/Comm.h"
 
 #include "fckit/fckit.h"
+
+#include "eckit/exception/Exceptions.h"
+#include "eckit/log/CodeLocation.h"
+#include "eckit/mpi/Comm.h"
+#if FCKIT_HAVE_ECKIT_MPI_PARALLEL
+#include "eckit/mpi/Parallel.h"
+// Note that this also exports "mpi.h" transitively
+#endif
 
 using eckit::mpi::Comm;
 using int32  = std::int32_t;
@@ -382,13 +385,6 @@ int fckit__mpi__anysource( const Comm* comm ) {
         return eckit::mpi::comm().anySource();
 }
 
-int fckit__mpi__info_null( const Comm* comm ) {
-    if ( comm )
-        return comm->infoNull();
-    else
-        return eckit::mpi::comm().infoNull();
-}
-
 void fckit__mpi__send_int32( const Comm* comm, int32* buffer, size_t count, int32 dest, int32 tag ) {
     if ( comm )
         comm->send( buffer, count, dest, tag );
@@ -612,6 +608,14 @@ void fckit__mpi__wait( const Comm* comm, int32 request, int32* status ) {
     status[0] = _status.source();
     status[1] = _status.tag();
     status[2] = _status.error();
+}
+
+int32 fckit__mpi__mpi_info_null() {
+#if FCKIT_HAVE_ECKIT_MPI_PARALLEL
+    return MPI_Info_c2f( MPI_INFO_NULL );
+#else
+    return 0;
+#endif
 }
 
 }  // extern "C"

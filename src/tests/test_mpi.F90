@@ -687,4 +687,14 @@ TEST( test_split_comm_delete )
 #endif
 END_TEST
 
+TEST( test_mpi_info_null )
+  use fckit_mpi_module
+  use, intrinsic :: iso_c_binding
+  implicit none
+  integer(c_int32_t) :: mpi_info_null
+  mpi_info_null = fckit_mpi_info_null()
+  mpi_info_null = fckit_mpi%info_null()
+END_TEST
+
+
 END_TESTSUITE

@@ -10,9 +10,7 @@ configure_file(fckit.h.in  fckit.h)
 install( FILES ${CMAKE_CURRENT_BINARY_DIR}/fckit.h DESTINATION include/fckit )
 set( source_files_properties fckit.h.in PROPERTIES HEADER_FILE_ONLY TRUE )
 
-set( FCKIT_HAVE_ECKIT 0 )
 if( HAVE_ECKIT )
-  set( FCKIT_HAVE_ECKIT 1 )
   list( APPEND eckit_required_src
       module/fckit.F90
       module/fckit_pathname.F90
@@ -43,6 +41,7 @@ if( HAVE_ECKIT )
       Log.h
       Log.cc
   )
+  set( eckit_required_libs eckit eckit_mpi eckit_geometry )
 endif()
 
 if( BUILD_SHARED_LIBS )
@@ -52,8 +51,11 @@ else()
 endif()
 
 if( CMAKE_Fortran_COMPILER_ID MATCHES "PGI" )
-  # Bug tested with pgi/17.7 and pgi/17.10 requires fckit to be compiled statically
-  set( fckit_type STATIC )
+  # Bug tested with pgi/17.7 (fixed pgi/19.4) requires fckit to be compiled statically
+  if( ${CMAKE_Fortran_COMPILER_VERSION} VERSION_LESS 19.4 )
+      ecbuild_warn( "Bug in pgi < 19.4 requires fckit to be compiled statically" )
+      set( fckit_type STATIC )
+  endif()
 
   # Turn off all compiler warnings for reason :
   #   PGF90-W-0435-Array declared with zero size
@@ -61,54 +63,49 @@ if( CMAKE_Fortran_COMPILER_ID MATCHES "PGI" )
   set_source_files_properties( module/fckit_array.F90  PROPERTIES COMPILE_FLAGS "-w" )
 endif()
 
-if( HAVE_ECKIT )
-  # We need the C++ linker for the error handling to work
-  # Otherwise death by recursion in function "fckit_terminate"
-  # when uncaught exceptions are encountered
-  set( FCKIT_LINKER_LANGUAGE CXX )
-endif()
 
-ecbuild_add_library( TARGET     fckit
-                     LINKER_LANGUAGE ${FCKIT_LINKER_LANGUAGE}
-                     SOURCES
-                                fckit.h.in
-                                fctest.h
-                                fctest.F90
-                                Log.F90
-                                module/fckit_array.F90
-                                module/fckit_C_interop.cc
-                                module/fckit_C_interop.F90
-                                module/fckit_object.F90
-                                module/fckit_final.F90
-                                module/fckit_refcount.F90
-                                module/fckit_shared_ptr.F90
-                                module/fckit_shared_object.F90
-                                ${eckit_required_src}
-                     PRIVATE_INCLUDES
-                                ${ECKIT_INCLUDE_DIRS}
-                                ${CMAKE_CURRENT_BINARY_DIR}
+ecbuild_add_library( 
+    TARGET     fckit
+    LINKER_LANGUAGE CXX
+        # We need the C++ linker for the error handling to work
+        # Otherwise death by recursion in function "fckit_terminate"
+        # when uncaught exceptions are encountered
+    SOURCES
+               fctest.h
+               fctest.F90
+               Log.F90
+               module/fckit_array.F90
+               module/fckit_C_interop.cc
+               module/fckit_C_interop.F90
+               module/fckit_object.F90
+               module/fckit_final.F90
+               module/fckit_refcount.F90
+               module/fckit_shared_ptr.F90
+               module/fckit_shared_object.F90
+               ${eckit_required_src}
+    PRIVATE_INCLUDES
+               ${ECKIT_INCLUDE_DIRS}
+               ${CMAKE_CURRENT_BINARY_DIR}
 
-                     DEFINITIONS
-                                ${FCKIT_DEFINITIONS}
+    INSTALL_HEADERS_LIST
+               fctest.h
+               Log.h
+               Main.h
 
-                     INSTALL_HEADERS_LIST
-                                fctest.h
-                                Log.h
-                                Main.h
+    HEADER_DESTINATION  include/fckit
 
-                     HEADER_DESTINATION  include/fckit
+    PUBLIC_INCLUDES
+        $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src>
+        $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/src>
+        $<BUILD_INTERFACE:${CMAKE_Fortran_MODULE_DIRECTORY}>
+        $<INSTALL_INTERFACE:include>
+        $<INSTALL_INTERFACE:module/fckit>
 
-                     TYPE ${fckit_type}
-                    )
+    PRIVATE_LIBS
+       ${eckit_required_libs}
 
-target_include_directories( fckit PUBLIC 
-    $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src>
-    $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/src>
-    $<BUILD_INTERFACE:${CMAKE_Fortran_MODULE_DIRECTORY}>
-    $<INSTALL_INTERFACE:include>
-    $<INSTALL_INTERFACE:module/fckit>
+    TYPE ${fckit_type}
+
 )
-
-target_link_libraries( fckit PUBLIC ${ECKIT_LIBRARIES} )
 
 fckit_target_preprocess_fypp( fckit )

@@ -9,9 +9,7 @@
  */
 
 #include "fckit/Log.h"
-
 #include <algorithm>
-
 #include "eckit/exception/Exceptions.h"
 #include "eckit/log/CallbackTarget.h"
 #include "eckit/log/FileTarget.h"
@@ -19,7 +17,6 @@
 #include "eckit/log/PrefixTarget.h"
 #include "eckit/log/TimeStampTarget.h"
 #include "eckit/runtime/Main.h"
-
 #include "fckit/Libfckit.h"
 
 using eckit::Channel;

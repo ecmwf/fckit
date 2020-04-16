@@ -108,6 +108,7 @@ public :: fckit_mpi_min
 public :: fckit_mpi_max
 public :: fckit_mpi_minloc
 public :: fckit_mpi_maxloc
+public :: fckit_mpi_info_null
 
 !========================================================================
 
@@ -189,9 +190,6 @@ contains
   procedure, public :: anysource
     !! anysource
 
-  procedure, public :: info_null
-    !! info_null
-
   @:begin_interface( allreduce )
   @:generate_interfaces( allreduce )
   @:generate_interfaces( allreduce_inplace )
@@ -253,6 +251,10 @@ contains
     !! Minloc operator that can be passed to collective method
   procedure, public, nopass :: maxloc         => fckit_mpi_maxloc
     !! Maxloc operator that can be passed to collective method
+
+  procedure, public, nopass :: info_null      => fckit_mpi_info_null
+    !! Maxloc operator that can be passed to collective method
+
 endtype
 
 type(fckit_mpi_comm) :: fckit_mpi
@@ -392,6 +394,11 @@ interface
     integer(c_int32_t) :: fckit__mpi__maxloc
   end function
 
+  function fckit__mpi__mpi_info_null() bind(c)
+    use, intrinsic :: iso_c_binding, only : c_int32_t
+    integer(c_int32_t) :: fckit__mpi__mpi_info_null
+  end function
+
 #:for dtype,ftype,btype in types
   subroutine fckit__mpi__allreduce_${dtype}$(comm,in,out,count,operation) bind(c)
     use, intrinsic :: iso_c_binding
@@ -517,11 +524,6 @@ interface
     integer(c_int32_t), dimension(*) :: status
   end subroutine
 
-  function fckit__mpi__info_null(comm) bind(c)
-    use, intrinsic :: iso_c_binding, only : c_int32_t, c_ptr
-    integer(c_int32_t) fckit__mpi__info_null
-    type(c_ptr), value :: comm
-  end function
 end interface
 
 !========================================================================
@@ -562,6 +564,12 @@ function fckit_mpi_maxloc() result(code)
   use, intrinsic :: iso_c_binding, only : c_int32_t
   integer(c_int32_t) :: code
   code = fckit__mpi__maxloc()
+end function
+
+function fckit_mpi_info_null()
+  use, intrinsic :: iso_c_binding, only : c_int32_t
+  integer(c_int32_t) :: fckit_mpi_info_null
+  fckit_mpi_info_null = fckit__mpi__mpi_info_null()
 end function
 
 !---------------------------------------------------------------------------------------
@@ -724,15 +732,6 @@ end function
 
 !---------------------------------------------------------------------------------------
 
-function info_null(this)
-  use, intrinsic :: iso_c_binding, only : c_int32_t
-  integer(c_int32_t) :: info_null
-  class(fckit_mpi_comm), intent(in) :: this
-  info_null = fckit__mpi__info_null(this%CPTR_PGIBUG_A)
-end function
-
-!---------------------------------------------------------------------------------------
-
 subroutine barrier(this)
   class(fckit_mpi_comm), intent(in) :: this
   call fckit__mpi__barrier(this%CPTR_PGIBUG_A)
@@ -765,7 +764,7 @@ subroutine allgather_${dtype}$_r0(this,in,out)
   ${ftype}$, intent(inout) :: out(:)
   ${btype}$, pointer :: view_in(:)
   ${btype}$, pointer :: view_out(:)
-  ${btype}$ :: mold
+  ${btype}$ :: mold 
   view_in => array_view1d(in,mold)
   view_out => array_view1d(out,mold)
   call fckit__mpi__allgather_${dtype}$(this%c_ptr(),view_in(1),view_out)
@@ -957,7 +956,7 @@ subroutine allreduce_${dtype}$_r${rank}$(this,in,out,operation)
 
   use, intrinsic :: iso_c_binding
   use fckit_array_module, only: array_view1d
-
+  
   class(fckit_mpi_comm), intent(in) :: this
     !! This communicator
   ${ftype}$, intent(in)    :: in${dim[rank]}$
@@ -982,7 +981,7 @@ subroutine allreduce_inplace_${dtype}$_r${rank}$(this,inout,operation)
 
   use, intrinsic :: iso_c_binding
   use fckit_array_module, only: array_view1d
-
+  
   class(fckit_mpi_comm), intent(in) :: this
     !! This communicator
   ${ftype}$, intent(inout) :: inout${dim[rank]}$
@@ -1013,7 +1012,7 @@ subroutine broadcast_${dtype}$_r${rank}$(this,buffer,root)
     !! MPI rank to broadcast from
 
   ${btype}$, pointer :: view_buffer(:)
-  ${btype}$ :: mold
+  ${btype}$ :: mold 
   view_buffer  => array_view1d(buffer,mold)
   call fckit__mpi__broadcast_${dtype}$(this%CPTR_PGIBUG_A,view_buffer, &
     int(ubound(view_buffer,1),c_size_t),int(root,c_size_t))
@@ -1050,7 +1049,7 @@ subroutine receive_${dtype}$_r${rank}$(this,buffer,source,tag,status)
 
   use, intrinsic :: iso_c_binding
   use fckit_array_module, only: array_view1d
-
+  
   class(fckit_mpi_comm), intent(in) :: this
     !! This communicator
   ${ftype}$, intent(inout) :: buffer${dim[rank]}$
@@ -1085,12 +1084,12 @@ function isend_${dtype}$_r${rank}$(this,buffer,dest,tag) result(request)
 
   use, intrinsic :: iso_c_binding
   use fckit_array_module, only: array_view1d
-
+  
   integer(c_int32_t) :: request
     !! Returned MPI request
   class(fckit_mpi_comm), intent(in) :: this
     !! This communicator
-  ${ftype}$, intent(inout) :: buffer${dim[rank]}$
+  ${ftype}$, intent(in) :: buffer${dim[rank]}$
     !! Buffer to be sent
   integer(c_int32_t), intent(in) :: dest
     !! Destination MPI rank

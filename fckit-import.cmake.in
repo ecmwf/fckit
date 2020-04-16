@@ -6,7 +6,7 @@
 # granted to it by virtue of its status as an intergovernmental organisation nor
 # does it submit to any jurisdiction.
 
-if( @PNAME@_IS_BUILD_DIR_EXPORT )
+if( @PROJECT_NAME@_IS_BUILD_DIR_EXPORT )
   set( FCTEST_GENERATOR @PYTHON_EXECUTABLE@ @CMAKE_CURRENT_SOURCE_DIR@/tools/fctest-generate-runner.py )
   set( FYPP @CMAKE_CURRENT_SOURCE_DIR@/tools/fckit-eval.sh @PYTHON_EXECUTABLE@ @CMAKE_CURRENT_SOURCE_DIR@/tools/fckit-fypp.py )
 else()
@@ -18,3 +18,19 @@ endif()
 @FCKIT_PREPROCESS_FYPP@
 
 @ADD_FCTEST@
+
+set( fckit_HAVE_ECKIT @fckit_HAVE_ECKIT@ )
+set( fckit_ECKIT_FOUND 0 )
+if( fckit_HAVE_ECKIT )
+  set( fckit_ECKIT_FOUND 1 )
+
+  # Following Required when "ECBUILD_2_COMPAT=OFF" and static linking is used
+  include( CMakeFindDependencyMacro )
+  find_dependency( eckit HINTS ${CMAKE_CURRENT_LIST_DIR}/../eckit @eckit_DIR@ @eckit_BINARY_DIR@ )
+endif()
+
+if( fckit_FIND_REQUIRED_ECKIT AND NOT fckit_ECKIT_FOUND )
+  message( FATAL_ERROR "fckit was not compiled with ECKIT enabled" )
+endif()
+
+set( FCKIT_LIBRARIES @FCKIT_LIBRARIES@ )

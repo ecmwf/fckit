@@ -6,26 +6,7 @@
 ! granted to it by virtue of its status as an intergovernmental organisation nor
 ! does it submit to any jurisdiction.
 
-
-! This File contains Unit Tests for testing the
-! C++ / Fortran Interfaces to the Mesh Datastructure
-! @author Willem Deconinck
-
 #include "fckit/fctest.h"
-
-#if (defined(__GFORTRAN__) && __GNUC__ >= 7 )
-#define COMPILER_BUGS 1
-#endif
-#ifndef COMPILER_BUGS
-#define COMPILER_BUGS 0
-#endif
-
-#if COMPILER_BUGS
-#define NO_COMPILER_BUGS 0
-#warning Some tests disabled due to gfortran 7 and 8 compiler bug. Only one TEST at a time may be compiled.
-#else
-#define NO_COMPILER_BUGS 1
-#endif
 
 ! -----------------------------------------------------------------------------
 
@@ -51,16 +32,12 @@ TEST( test_configuration )
 #if 1
   use fckit_configuration_module
   use fckit_log_module
-  use, intrinsic :: iso_c_binding, only : c_size_t
 
-  integer(c_size_t), parameter :: strlen = 10
   type(fckit_Configuration) :: config
   type(fckit_Configuration) :: nested
-  type(fckit_Configuration) :: list(2)
+  type(fckit_Configuration), allocatable :: list(:)
   logical :: found
   logical :: logval
-  character(len=strlen), allocatable :: arrayset(:)
-  character(len=strlen), allocatable :: arrayget(:)
   integer :: intval
   integer :: j
 
@@ -86,7 +63,6 @@ TEST( test_configuration )
   !   p1: 1
   !   p2: 2
   !   logical : True
-  !   array_of_strings: string1, string2, string3
   ! }
 
   config = fckit_Configuration()
@@ -97,10 +73,12 @@ TEST( test_configuration )
   call config%set("logical_true",.True.)
   call config%set("logical_false",.False.)
 
+
   nested = fckit_Configuration()
   call nested%set("n1",11)
   call nested%set("n2",12)
 
+  allocate( list(2) )
   do j=1,2
     list(j) = fckit_Configuration()
     call list(j)%set("l1",21)
@@ -118,11 +96,6 @@ enddo
   call nested%final()
 #endif
 
-  allocate( arrayset(3) )
-  arrayset(1) = "string1"
-  arrayset(2) = "string2"
-  arrayset(3) = "string3"
-  call config%set("array_of_strings",arrayset)
 
   ! --------------------- JSON ------------------
 
@@ -187,12 +160,6 @@ enddo
 
   call anested%final()
 
-  found = config%get("array_of_strings",strlen,arrayget)
-  FCTEST_CHECK( found )
-  FCTEST_CHECK_EQUAL( arrayget(1) , "string1" )
-  FCTEST_CHECK_EQUAL( arrayget(2) , "string2" )
-  FCTEST_CHECK_EQUAL( arrayget(3) , "string3" )
-
   ! There is a reported PGI/16.7 bug that makes this test segfault here.
   ! PGI/17.1 has this bug fixed.
 
@@ -215,7 +182,6 @@ END_TEST
 
 TEST(test_configuration_json_string)
 #if 1
-#if NO_COMPILER_BUGS
   use fckit_configuration_module
   use fckit_log_module
 
@@ -261,7 +227,6 @@ TEST(test_configuration_json_string)
 #endif
 
   write(0,*) "~~~~~~~~~~~~~~~ SCOPE END ~~~~~~~~~~~~~~~~"
-#endif
 #else
 #warning Test "test_configuration_json_string" disabled
 #endif
@@ -269,8 +234,6 @@ END_TEST
 
 TEST(test_configuration_json_file)
 #if 1
-#if NO_COMPILER_BUGS
-  use, intrinsic :: iso_c_binding, only : c_char, c_size_t
   use fckit_configuration_module
   use fckit_pathname_module
   use fckit_log_module
@@ -279,8 +242,7 @@ TEST(test_configuration_json_file)
   type(fckit_Configuration), allocatable :: records(:)
   type(fckit_Configuration) :: location
   character (len=:), allocatable :: name, company, street, city
-  character (kind=c_char,len=10), allocatable :: variables(:)
-  integer(c_size_t) :: length=10
+  character (len=:), allocatable :: variables(:)
   integer :: age
   integer :: jrec
   logical :: logval
@@ -340,42 +302,21 @@ TEST(test_configuration_json_file)
     FCTEST_CHECK( .not. logval )
   endif
 
-  allocate(variables(3))
-  if( config%get("variables",length,variables) ) then
+  if( config%get("variables",variables) ) then
     write(0,*) "variables: ", variables
+    if( allocated(variables) ) deallocate(variables)
   endif
-  if( allocated(variables) ) deallocate(variables)
 
   write(0,*) "config%owners() = ", config%owners()
 #if ! FCKIT_HAVE_FINAL
   call config%final()
 #endif
   write(0,*) "~~~~~~~~~~~~~~~ SCOPE END ~~~~~~~~~~~~~~~~"
-#endif
 #else
 #warning Test "test_configuration_json_file" disabled
 #endif
 END_TEST
 
-TEST(test_throw)
-!! ENABLE TO TEST IF THROW WILL WORK
-
-#if 0
-  use fckit_configuration_module
-  type(fckit_Configuration) :: config
-
-  integer :: missing_value
-
-  write(0,*) "~~~~~~~~~~~~~~ SCOPE BEGIN ~~~~~~~~~~~~~~~"
-
-  config = fckit_Configuration()
-
-  call config%get_or_die("missing",missing_value)
-
-  call config%final()
-  write(0,*) "~~~~~~~~~~~~~~~ SCOPE END ~~~~~~~~~~~~~~~~"
-#endif
-END_TEST
 ! -----------------------------------------------------------------------------
 
 END_TESTSUITE

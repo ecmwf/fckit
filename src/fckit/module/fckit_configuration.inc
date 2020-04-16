@@ -29,13 +29,13 @@ end function
 !-------------------------------------------------------------------------------
 
 !-------------------------------------------------------------------------------
-! Configuration* c_fckit_configuration_new_from_json (const char* json)
+! Configuration* c_fckit_configuration_new_from_yaml (const char* yaml)
 !-------------------------------------------------------------------------------
-function c_fckit_configuration_new_from_json( json ) bind(C,name="c_fckit_confi&
-  &guration_new_from_json")
+function c_fckit_configuration_new_from_yaml( yaml ) bind(C,name="c_fckit_confi&
+  &guration_new_from_yaml")
     use iso_c_binding, only: c_ptr, c_char
-    type(c_ptr) :: c_fckit_configuration_new_from_json
-    character(c_char), dimension(*) :: json
+    type(c_ptr) :: c_fckit_configuration_new_from_yaml
+    character(c_char), dimension(*) :: yaml
 end function
 !-------------------------------------------------------------------------------
 
@@ -356,22 +356,6 @@ function c_fckit_configuration_get_string( This, name, value, size ) bind(C,nam&
     integer(c_int32_t) :: c_fckit_configuration_get_string
     type(c_ptr), value :: This
     character(c_char), dimension(*) :: name
-    type(c_ptr) :: value
-    integer(c_size_t) :: size
-end function
-!-------------------------------------------------------------------------------
-
-!-------------------------------------------------------------------------------
-! int32 c_fckit_configuration_get_string_element( const Configuration* This, const char*
-!   name, size_t index, char* &value, size_t &size)
-!-------------------------------------------------------------------------------
-function c_fckit_configuration_get_string_element( This, name, index, value, size ) bind(C,nam&
-  &e="c_fckit_configuration_get_string_element")
-    use iso_c_binding, only: c_char, c_ptr, c_int32_t, c_size_t
-    integer(c_int32_t) :: c_fckit_configuration_get_string_element
-    type(c_ptr), value :: This
-    character(c_char), dimension(*) :: name
-    integer(c_size_t) :: index
     type(c_ptr) :: value
     integer(c_size_t) :: size
 end function

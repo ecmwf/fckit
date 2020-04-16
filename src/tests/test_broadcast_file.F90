@@ -8,21 +8,6 @@
 
 #include "fckit/fctest.h"
 
-#if (defined(__GFORTRAN__) && __GNUC__ >= 7 )
-#define COMPILER_BUGS 1
-#endif
-#ifndef COMPILER_BUGS
-#define COMPILER_BUGS 0
-#endif
-
-#if COMPILER_BUGS
-#define NO_COMPILER_BUGS 0
-#warning Some tests disabled due to gfortran 7 compiler bug. Only one TEST at a time may be compiled.
-#else
-#define NO_COMPILER_BUGS 1
-#endif
-
-
 TESTSUITE( test_broadcast_file )
 
 TESTSUITE_INIT
@@ -47,7 +32,6 @@ END_TESTSUITE_FINALIZE
 
 TEST( broadcast_file_inline )
 #if 1
-#if NO_COMPILER_BUGS
   use fckit_module
   implicit none
   type(fckit_mpi_comm) :: comm
@@ -60,7 +44,6 @@ TEST( broadcast_file_inline )
   call config%final()
 #endif
   write(0,*) "~~~~~~~~~~~~~~~ SCOPE END ~~~~~~~~~~~~~~~~"
-#endif
 #else
 #warning test broadcast_file_inline disabled
 #endif
