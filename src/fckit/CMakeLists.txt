@@ -41,7 +41,7 @@ if( HAVE_ECKIT )
       Log.h
       Log.cc
   )
-  set( eckit_required_libs eckit eckit_mpi eckit_geometry )
+  set( eckit_required_libs eckit eckit_geometry eckit_mpi )
 endif()
 
 if( BUILD_SHARED_LIBS )
