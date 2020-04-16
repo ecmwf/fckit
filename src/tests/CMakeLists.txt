@@ -26,6 +26,18 @@ add_fctest( TARGET  fckit_test_log
             CONDITION HAVE_ECKIT
             LIBS    fckit)
 
+add_fctest( TARGET  fckit_test_geometry
+            LINKER_LANGUAGE Fortran
+            SOURCES test_geometry.F90
+            CONDITION HAVE_ECKIT
+            LIBS    fckit)
+
+add_fctest( TARGET  fckit_test_kdtree
+            LINKER_LANGUAGE Fortran
+            SOURCES test_kdtree.F90
+            CONDITION HAVE_ECKIT
+            LIBS    fckit)
+
 add_fctest( TARGET  fckit_test_shared_ptr
             LINKER_LANGUAGE Fortran
             SOURCES
