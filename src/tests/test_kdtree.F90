@@ -35,8 +35,8 @@ TEST( test_kdtree )
   integer(c_int32_t), parameter :: n = 2
   real(c_double), dimension(n), parameter :: lon = (/-0.950855,-105.27494/)
   real(c_double), dimension(n), parameter :: lat = (/51.41981,39.977837/)
-  real(c_double), parameter :: lonp = 1.9809309
-  real(c_double), parameter :: latp = 44.2201877
+  real(c_double), parameter :: lonp = 1.973143
+  real(c_double), parameter :: latp = 44.218458
   integer(c_int32_t), parameter :: nn = 2
   real(c_double), parameter :: r = 1.0
   type(kdtree) :: kd
