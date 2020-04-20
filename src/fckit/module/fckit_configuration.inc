@@ -177,6 +177,21 @@ end subroutine
 !-------------------------------------------------------------------------------
 
 !-------------------------------------------------------------------------------
+! void c_fckit_configuration_set_array_string (Configuration* This, const char* n
+!   ame, const char* value, size_t size)
+!-------------------------------------------------------------------------------
+subroutine c_fckit_configuration_set_array_string( This, name, value, length, size ) bin&
+  &d(C,name="c_fckit_configuration_set_array_string")
+    use iso_c_binding, only: c_int32_t, c_size_t, c_ptr, c_char
+    type(c_ptr), value :: This
+    character(c_char), dimension(*) :: name
+    character(c_char), dimension(*) :: value
+    integer(c_size_t), value :: length
+    integer(c_size_t), value :: size
+end subroutine
+!-------------------------------------------------------------------------------
+
+!-------------------------------------------------------------------------------
 ! void c_fckit_configuration_set_array_int32 (Configuration* This, const char* n
 !   ame, int32 value[], size_t size)
 !-------------------------------------------------------------------------------
@@ -435,6 +450,17 @@ function c_fckit_configuration_has( This, name ) bind(C,name="c_fckit_configura&
 end function
 !-------------------------------------------------------------------------------
 
+!-------------------------------------------------------------------------------
+! int32 c_fckit_configuration_get_size (const Configuration* This, const char *name)
+!-------------------------------------------------------------------------------
+function c_fckit_configuration_get_size( This, name ) bind(C,name="c_fckit_configura&
+  &tion_get_size")
+    use iso_c_binding, only: c_char, c_ptr, c_int32_t
+    integer(c_int32_t) :: c_fckit_configuration_get_size
+    type(c_ptr), value :: This
+    character(c_char), dimension(*) :: name
+end function
+!-------------------------------------------------------------------------------
 
 !-------------------------------------------------------------------------------
 ! void c_fckit_configuration_json(const Configuration* This, char* &json, int &s
