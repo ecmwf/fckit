@@ -163,8 +163,8 @@ void c_fckit_configuration_set_array_string( Configuration* This, const char* na
     ASSERT( This != nullptr );
     vector<string> v;
     for (size_t jj = 0; jj < size; ++jj ) {
-      char str[length];
-      strncpy( str, value + jj*length, length );
+      char str[length+1];
+      int n = snprintf( str, sizeof(str), "%s", value + jj*length);
       v.push_back( string( str ) );
     }
     if ( LocalConfiguration* local = dynamic_cast<LocalConfiguration*>( This ) )
