@@ -36,11 +36,6 @@ void fckit__sphere_xyz2lonlat(const double & x, const double & y, const double &
   lat = lonlat[1];
 }
 
-struct TreeTrait {
-    typedef eckit::geometry::Point3 Point;
-    typedef double                  Payload;
-};
-
 } // extern "C"
 
 } // namespace fckit
