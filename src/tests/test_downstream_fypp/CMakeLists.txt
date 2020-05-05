@@ -13,6 +13,11 @@ if( HAVE_TESTS AND HAVE_ECKIT )
   if( CMAKE_TOOLCHAIN_FILE )
     list( APPEND _test_args "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}" )
   endif()
+  foreach( lang C CXX Fortran )
+    if( CMAKE_${lang}_COMPILER )
+      list( APPEND _test_args "-DCMAKE_${lang}_COMPILER=${CMAKE_${lang}_COMPILER}" )
+    endif()
+  endforeach()
 
   add_test( NAME fckit_test_downstream_fypp
             COMMAND ${CMAKE_CURRENT_BINARY_DIR}/test-downstream.sh ${_test_args} )
