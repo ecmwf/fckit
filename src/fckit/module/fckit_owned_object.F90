@@ -157,14 +157,14 @@ subroutine fckit_owned_object__delete( this )
   procedure(fckit_c_deleter_interface), pointer :: deleter
   FCKIT_WRITE_LOC
   FCKIT_WRITE_DEBUG "fckit_owned_object__delete"
-  if( c_associated( this%CPTR_PGIBUG_A ) ) then
+  if( c_associated( this%cpp_object_ptr ) ) then
     if( c_associated( this%deleter ) ) then
       call c_f_procpointer( this%deleter, deleter )
-      call deleter( this%CPTR_PGIBUG_A )
-      this%CPTR_PGIBUG_A = c_null_ptr
+      call deleter( this%cpp_object_ptr )
+      this%cpp_object_ptr = c_null_ptr
     endif
   endif
-  this%CPTR_PGIBUG_A = c_null_ptr
+  this%cpp_object_ptr = c_null_ptr
 end subroutine
 
 subroutine fckit_owned_object__final(this)
@@ -234,7 +234,7 @@ subroutine assignment_operator(this,other)
 subroutine attach(this)
   class(fckit_owned_object), intent(inout) :: this
   if( .not. this%is_null() ) then
-    call fckit__Owned__attach(this%CPTR_PGIBUG_A)
+    call fckit__Owned__attach(this%cpp_object_ptr)
     FCKIT_WRITE_LOC
     FCKIT_WRITE_DEBUG "attach"
   endif
@@ -243,7 +243,7 @@ end subroutine
 subroutine detach(this)
   class(fckit_owned_object), intent(inout) :: this
   if( .not. this%is_null() ) then
-    call fckit__Owned__detach(this%CPTR_PGIBUG_A)
+    call fckit__Owned__detach(this%cpp_object_ptr)
     FCKIT_WRITE_LOC
     FCKIT_WRITE_DEBUG "detach"
   endif
@@ -255,7 +255,7 @@ function owners(this)
   if( this%is_null() ) then
     owners = 0
   else
-    owners = fckit__Owned__owners(this%CPTR_PGIBUG_A)
+    owners = fckit__Owned__owners(this%cpp_object_ptr)
   endif
 end function
 
@@ -327,7 +327,7 @@ function fckit_owned_object__c_ptr(this)
   use, intrinsic :: iso_c_binding, only: c_ptr
   type(c_ptr) :: fckit_owned_object__c_ptr
   class(fckit_owned_object), intent(in) :: this
-  fckit_owned_object__c_ptr = this%CPTR_PGIBUG_A
+  fckit_owned_object__c_ptr = this%cpp_object_ptr
 end function
 
 
@@ -335,7 +335,7 @@ function is_null(this)
   use, intrinsic :: iso_c_binding, only: c_associated
   logical :: is_null
   class(fckit_owned_object) :: this
-  if( c_associated( this%CPTR_PGIBUG_A ) ) then
+  if( c_associated( this%cpp_object_ptr ) ) then
     is_null = .False.
   else
     is_null = .True.
@@ -346,14 +346,14 @@ logical function equal(obj1,obj2)
   use fckit_c_interop_module, only : c_ptr_compare_equal
   class(fckit_owned_object), intent(in) :: obj1
   class(fckit_owned_object), intent(in) :: obj2
-  equal = c_ptr_compare_equal(obj1%CPTR_PGIBUG_A,obj2%CPTR_PGIBUG_A)
+  equal = c_ptr_compare_equal(obj1%cpp_object_ptr,obj2%cpp_object_ptr)
 end function
 
 logical function not_equal(obj1,obj2)
   use fckit_c_interop_module, only : c_ptr_compare_equal
   class(fckit_owned_object), intent(in) :: obj1
   class(fckit_owned_object), intent(in) :: obj2
-  if( c_ptr_compare_equal(obj1%CPTR_PGIBUG_A,obj2%CPTR_PGIBUG_A) ) then
+  if( c_ptr_compare_equal(obj1%cpp_object_ptr,obj2%cpp_object_ptr) ) then
     not_equal = .False.
   else
     not_equal = .True.
@@ -367,7 +367,7 @@ subroutine reset_c_ptr(this,cptr,deleter)
   type(c_ptr), optional :: cptr
   type(c_funptr), optional :: deleter
   if( present(cptr) ) then
-    this%CPTR_PGIBUG_A = cptr
+    this%cpp_object_ptr = cptr
     call this%attach()
 
     if( present(deleter) ) then
@@ -377,7 +377,7 @@ subroutine reset_c_ptr(this,cptr,deleter)
     endif
 
   else
-    this%CPTR_PGIBUG_A = c_null_ptr
+    this%cpp_object_ptr = c_null_ptr
     this%deleter = c_null_funptr
   endif
 

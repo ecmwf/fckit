@@ -40,7 +40,10 @@ contains
 
   procedure, public :: reset_c_ptr
 
-  !procedure, public  :: c_ptr => fckit_shared_object_c_ptr
+#if !PGIBUG_ATLAS_197_DEBUG
+  procedure, public  :: c_ptr => fckit_shared_object_c_ptr
+#endif
+
   procedure, private :: fckit_shared_object_c_ptr
 
   procedure, public :: is_null
@@ -134,7 +137,7 @@ function fckit_shared_object_c_ptr(this) result(cptr)
   use, intrinsic :: iso_c_binding, only : c_ptr
   type(c_ptr) :: cptr
   class(fckit_shared_object) :: this
-  cptr = this%CPTR_PGIBUG_B
+  cptr = this%shared_object_%CPTR_PGIBUG_A
 end function
 
 end module

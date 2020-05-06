@@ -37,18 +37,23 @@ does it submit to any jurisdiction.
 associate( unused_ => X ); \
 end associate
 
-#define PGIBUG_ATLAS_197 1
+#define PGIBUG_ATLAS_197 @PGIBUG_ATLAS_197@
 #if 0
 Following is to workaround PGI bug which prevents the use of function c_ptr()
+PGI bug present from version 17.10, fixed since version 19.4
 #endif
 #if PGIBUG_ATLAS_197
 #define CPTR_PGIBUG_A cpp_object_ptr
 #define CPTR_PGIBUG_B shared_object_%cpp_object_ptr
-#define PGIBUG_ATLAS_197_DEBUG 0
 #else
 #define CPTR_PGIBUG_A c_ptr()
 #define CPTR_PGIBUG_B c_ptr()
+#endif
+
 #define PGIBUG_ATLAS_197_DEBUG 0
+#if 0
+When above PGIBUG_ATLAS_197_DEBUG==1 then the c_ptr() member functions are disabled from compilation,
+to detect possible dangerous use cases when the PGI bug ATLAS-197 is present.
 #endif
 
 #define XLBUG_FCKIT_14 1

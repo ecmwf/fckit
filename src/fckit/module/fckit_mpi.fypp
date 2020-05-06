@@ -767,7 +767,7 @@ subroutine allgather_${dtype}$_r0(this,in,out)
   ${btype}$ :: mold
   view_in => array_view1d(in,mold)
   view_out => array_view1d(out,mold)
-  call fckit__mpi__allgather_${dtype}$(this%c_ptr(),view_in(1),view_out)
+  call fckit__mpi__allgather_${dtype}$(this%CPTR_PGIBUG_A,view_in(1),view_out)
 end subroutine
 
 !---------------------------------------------------------------------------------------
@@ -839,7 +839,7 @@ subroutine allgather_${dtype}$_r${rank}$(this,in,out,sendcount)
   view_out => array_view1d(out,mold)
   view_rc => array_view1d(recvcounts)
   view_dp => array_view1d(displs)
-  call fckit__mpi__allgatherv_${dtype}$(this%c_ptr(),view_in,view_out,int(sendcount,c_size_t),view_rc,view_dp)
+  call fckit__mpi__allgatherv_${dtype}$(this%CPTR_PGIBUG_A,view_in,view_out,int(sendcount,c_size_t),view_rc,view_dp)
   deallocate(recvcounts,displs)
 end subroutine
 
@@ -860,7 +860,7 @@ subroutine allgatherv_${dtype}$_r${rank}$(this,in,out,sendcount,recvcounts,displ
   view_out => array_view1d(out,mold)
   view_rc => array_view1d(recvcounts)
   view_dp => array_view1d(displs)
-  call fckit__mpi__allgatherv_${dtype}$(this%c_ptr(),view_in,view_out,int(sendcount,c_size_t),view_rc,view_dp)
+  call fckit__mpi__allgatherv_${dtype}$(this%CPTR_PGIBUG_A,view_in,view_out,int(sendcount,c_size_t),view_rc,view_dp)
 end subroutine
 
 !---------------------------------------------------------------------------------------
@@ -883,7 +883,7 @@ subroutine alltoallv_${dtype}$_r${rank}$(this,in,scounts,sdispl,out,rcounts,rdis
   view_sd => array_view1d(sdispl)
   view_rc => array_view1d(rcounts)
   view_rd => array_view1d(rdispl)
-  call fckit__mpi__alltoallv_${dtype}$(this%c_ptr(),view_in,view_sc,view_sd,view_out,view_rc,view_rd)
+  call fckit__mpi__alltoallv_${dtype}$(this%CPTR_PGIBUG_A,view_in,view_sc,view_sd,view_out,view_rc,view_rd)
 end subroutine
 
 !---------------------------------------------------------------------------------------
@@ -916,7 +916,7 @@ subroutine broadcast_string(this,buffer,root)
      enddo
      c_string(len(buffer)+1) = c_null_char
   endif
-  call fckit__mpi__broadcast_string(this%c_ptr(),c_string,int(len(buffer)+1,c_size_t),int(root,c_size_t))
+  call fckit__mpi__broadcast_string(this%CPTR_PGIBUG_A,c_string,int(len(buffer)+1,c_size_t),int(root,c_size_t))
   do j=1,len(buffer)
      buffer(j:j) = c_string(j)
   enddo
