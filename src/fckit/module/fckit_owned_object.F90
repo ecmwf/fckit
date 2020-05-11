@@ -88,10 +88,6 @@ contains
   procedure, public :: consumed
 end type
 
-interface fckit_owned_object
-  module procedure fckit_owned_object_constructor
-end interface
-
 !========================================================================
 
 private :: c_ptr
@@ -299,20 +295,6 @@ subroutine consumed(this)
   call consumed_object%final()
 end subroutine
 
-
-
-
-function fckit_owned_object_constructor( cptr, deleter ) result(this)
-  use, intrinsic :: iso_c_binding, only : c_ptr, c_funptr
-  type(fckit_owned_object) :: this
-  type(c_ptr) :: cptr
-  type(c_funptr), optional :: deleter
-  if( present(deleter) ) then
-    call this%reset_c_ptr( cptr, deleter )
-  else
-    call this%reset_c_ptr( cptr )
-  endif
-end function
 
 function fckit_owned_object__c_ptr(this)
   use, intrinsic :: iso_c_binding, only: c_ptr
