@@ -37,6 +37,15 @@ TEST( allocate_different_types )
   ${ftype}$, allocatable :: var_${dtype}$_${rank}$(${dim[rank]}$)
   #:endfor
   #:endfor
+
+  #:for rank  in ranks
+  #:for dtype,ftype in types
+  if( allocated( var_${dtype}$_${rank}$ ) ) then
+    write(0,*) "suppress warning"
+  endif
+  #:endfor
+  #:endfor
+
 END_TEST
 
 TEST( test_macros )

@@ -166,10 +166,10 @@ contains
   procedure, public :: communicator
     !! Fortran MPI communicator handle
 
-  procedure, public :: size
+  procedure, public :: size => fckit_mpi__size
     !! Number of MPI tasks participating in this communicator
 
-  procedure, public :: rank
+  procedure, public :: rank => fckit_mpi__rank
     !! Rank of this MPI task in this communicator
 
   procedure, public :: barrier
@@ -181,7 +181,7 @@ contains
   procedure, public :: delete
     !! Delete communicator ( throws error if this is also the default )
 
-  procedure, public :: abort
+  procedure, public :: abort => fckit_mpi__abort
     !! MPI Abort
 
   procedure, public :: anytag
@@ -696,7 +696,7 @@ end function
 
 !---------------------------------------------------------------------------------------
 
-function rank(this)
+function fckit_mpi__rank(this) result(rank)
   use, intrinsic :: iso_c_binding, only : c_int32_t
   integer(c_int32_t) :: rank
   class(fckit_mpi_comm), intent(in) :: this
@@ -705,7 +705,7 @@ end function
 
 !---------------------------------------------------------------------------------------
 
-function size(this)
+function fckit_mpi__size(this) result(size)
   use, intrinsic :: iso_c_binding, only : c_int32_t
   integer(c_int32_t) :: size
   class(fckit_mpi_comm), intent(in) :: this
@@ -739,7 +739,7 @@ end subroutine
 
 !---------------------------------------------------------------------------------------
 
-subroutine abort(this,error_code)
+subroutine fckit_mpi__abort(this,error_code)
   use, intrinsic :: iso_c_binding, only : c_int32_t
   class(fckit_mpi_comm), intent(in) :: this
   integer(c_int32_t), intent(in), optional :: error_code
@@ -783,6 +783,7 @@ subroutine allgatherv_${dtype}$_r0(this,in,out,dummy)
   FCKIT_SUPPRESS_UNUSED( this )
   FCKIT_SUPPRESS_UNUSED( in )
   FCKIT_SUPPRESS_UNUSED( out )
+  FCKIT_SUPPRESS_UNUSED( dummy )
 end subroutine
 
 !---------------------------------------------------------------------------------------

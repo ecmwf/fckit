@@ -88,7 +88,7 @@ contains
   procedure, public :: consumed
 end type
 
-interface fckit_object
+interface fckit_owned_object
   module procedure fckit_owned_object_constructor
 end interface
 
@@ -291,15 +291,6 @@ subroutine assignment_operator_hook(this, other)
   FCKIT_SUPPRESS_UNUSED( other )
 end subroutine
 
-
-subroutine bad_cast(message)
-  character(len=*), optional :: message
-  if( present(message) ) then
-    write(0,'("ERROR: bad_cast -- ",A)') message
-  else
-    write(0,'("ERROR: bad cast")')
-  endif
-end subroutine
 
 subroutine consumed(this)
   class(fckit_owned_object), intent(in) :: this

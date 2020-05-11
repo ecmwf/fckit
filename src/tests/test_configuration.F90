@@ -195,6 +195,7 @@ TEST(test_configuration_json_string)
 
   write(0,*) "~~~~~~~~~~~~~~ SCOPE BEGIN ~~~~~~~~~~~~~~~"
 
+  allocate( character(len=256) :: json )
   json='{"records":['//&
    &       '{"name":"Joe",   "age":30},'//&
    &       '{"name":"Alison","age":43}' //&
@@ -241,8 +242,8 @@ TEST(test_configuration_json_file)
   type(fckit_Configuration) :: config
   type(fckit_Configuration), allocatable :: records(:)
   type(fckit_Configuration) :: location
-  character (len=:), allocatable :: name, company, street, city
-  character (len=:), allocatable :: variables(:)
+  character(len=:), allocatable :: name, company, street, city
+  character(len=:), allocatable :: variables(:)
   integer :: age
   integer :: jrec
   logical :: logval

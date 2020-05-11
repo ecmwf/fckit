@@ -21,6 +21,8 @@ public :: c_ptr_to_loc
 public :: get_c_commandline_arguments
 public :: c_str_to_string
 public :: c_ptr_to_string
+public :: copy_c_ptr_to_string
+public :: copy_c_str_to_string
 public :: c_str
 public :: c_str_no_trim
 public :: c_str_right_trim
@@ -157,6 +159,37 @@ end function
 
 ! =============================================================================
 
+subroutine copy_c_str_to_string(s,string)
+  use, intrinsic :: iso_c_binding
+  character(kind=c_char,len=1), intent(in) :: s(*)
+  character(len=:), allocatable :: string
+  integer i, nchars
+  i = 1
+  do
+     if (s(i) == c_null_char) exit
+     i = i + 1
+  enddo
+  nchars = i - 1  ! Exclude null character from Fortran string
+  FCKIT_ALLOCATE_CHARACTER(string,nchars)
+  do i=1,nchars
+    string(i:i) = s(i)
+  enddo
+end subroutine
+
+! =============================================================================
+
+subroutine copy_c_ptr_to_string(cptr,string)
+  use, intrinsic :: iso_c_binding
+  type(c_ptr), intent(in) :: cptr
+  character(kind=c_char,len=:), allocatable :: string
+  character(kind=c_char), dimension(:), pointer  :: s
+  integer(c_int), parameter :: MAX_STR_LEN = 255
+  call c_f_pointer ( cptr , s, (/MAX_STR_LEN/) )
+  call copy_c_str_to_string( s, string )
+end subroutine
+
+! =============================================================================
+
 function c_ptr_to_string(cptr) result(string)
   use, intrinsic :: iso_c_binding
   type(c_ptr), intent(in) :: cptr
@@ -164,7 +197,7 @@ function c_ptr_to_string(cptr) result(string)
   character(kind=c_char), dimension(:), pointer  :: s
   integer(c_int), parameter :: MAX_STR_LEN = 255
   call c_f_pointer ( cptr , s, (/MAX_STR_LEN/) )
-  string = c_str_to_string(s)
+  call copy_c_str_to_string( s, string )
 end function
 
 ! =============================================================================

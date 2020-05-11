@@ -73,6 +73,7 @@ private :: fckit_refcount_interface
 CONTAINS
 !========================================================================
 
+#if FCKIT_FINAL_NOT_INHERITING
 FCKIT_FINAL subroutine fckit_shared_object__final_auto(this)
   type(fckit_shared_object), intent(inout) :: this
 #if FCKIT_FINAL_DEBUGGING
@@ -83,6 +84,7 @@ FCKIT_FINAL subroutine fckit_shared_object__final_auto(this)
 #endif
   FCKIT_SUPPRESS_UNUSED( this )
 end subroutine
+#endif
 
 function shared_ptr_cast(this) result(success)
   class(fckit_shared_object) :: this

@@ -8,13 +8,15 @@
 
 ! Callback function, used from C++ side
 subroutine fckit_write_to_fortran_unit(unit,msg_cptr) bind(C)
-  use, intrinsic :: iso_c_binding, only: c_int32_t, c_ptr, c_char
-  use fckit_c_interop_module, only : c_ptr_to_string
+  use, intrinsic :: iso_c_binding, only: c_int32_t, c_ptr, c_char, c_associated
+  use fckit_c_interop_module, only : copy_c_ptr_to_string
   integer(c_int32_t), value, intent(in) :: unit
   type(c_ptr), value, intent(in) :: msg_cptr
   character(kind=c_char,len=:), allocatable :: msg
-  msg = c_ptr_to_string(msg_cptr)
-  write(unit,'(A)') msg
+  if( c_associated(msg_cptr) ) then
+    call copy_c_ptr_to_string( msg_cptr, msg )
+    write(unit,'(A)') msg
+  endif
 end subroutine
 
 function fckit_fortranunit_stdout() result(stdout) bind(C)

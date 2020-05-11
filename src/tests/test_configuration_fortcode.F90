@@ -7,10 +7,10 @@
 ! does it submit to any jurisdiction.
 
 function c_get_a( conf_cptr ) result(a) bind(c)
-    use, intrinsic :: iso_c_binding, only : c_ptr
+    use, intrinsic :: iso_c_binding, only : c_ptr, c_int
     use fckit_configuration_module
     implicit none
-    integer :: a
+    integer(c_int) :: a
     type(c_ptr), value :: conf_cptr
     type(fckit_configuration) :: conf
     write(0,*) "c_get_a ..."

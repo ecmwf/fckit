@@ -341,6 +341,7 @@ subroutine deallocate_fckit_configuration( array )
   endif
 end subroutine
 
+#if FCKIT_FINAL_NOT_INHERITING
 FCKIT_FINAL subroutine fckit_configuration__final_auto(this)
   type(fckit_configuration), intent(inout) :: this
 #if FCKIT_FINAL_DEBUGGING
@@ -351,6 +352,7 @@ FCKIT_FINAL subroutine fckit_configuration__final_auto(this)
 #endif
   FCKIT_SUPPRESS_UNUSED( this )
 end subroutine
+#endif
 
 function ctor() result(this)
   type(fckit_Configuration) :: this
@@ -593,7 +595,7 @@ function get_config_list(this, name, value) result(found)
   type(c_ptr), pointer :: value_cptrs(:)
   integer(c_size_t) :: value_list_size
   integer(c_int32_t) :: found_int
-  integer(c_int32_t) :: j
+  integer(c_size_t) :: j
   call deallocate_fckit_configuration(value)
   value_list_cptr = c_null_ptr
   found_int = c_fckit_configuration_get_config_list(this%CPTR_PGIBUG_B, c_str(name), &
@@ -926,7 +928,7 @@ function get_array_string(this,name,value) result(found)
   integer(c_int32_t) :: found_int
   integer(c_size_t) :: maxelemlen
   integer(c_size_t) :: elemlen
-  integer :: j
+  integer(c_size_t) :: j
   character(len=:), allocatable :: flatvalue
   found_int =   c_fckit_configuration_get_array_string(this%CPTR_PGIBUG_B, c_str(name), &
    & value_cptr, value_size, offsets_cptr, value_numelem)

@@ -6,6 +6,8 @@
 ! granted to it by virtue of its status as an intergovernmental organisation nor
 ! does it submit to any jurisdiction.
 
+#include "fckit.h"
+
 module fckit_array_module
 use, intrinsic :: iso_c_binding, only: c_int32_t, c_int64_t, c_float, c_double
 implicit none
@@ -168,6 +170,7 @@ function array_view1d_int32_r0(scalar,mold) result( view )
   nullify(view)
   array_c_ptr = c_loc_int32(scalar)
   call c_f_pointer ( array_c_ptr , view , (/1/) )
+  FCKIT_SUPPRESS_UNUSED(mold)
 end function
 
 ! =============================================================================
@@ -185,6 +188,7 @@ function array_view1d_int32_r1(array,mold) result( view )
   else
     view => zero_length_array_int32
   endif
+  FCKIT_SUPPRESS_UNUSED(mold)
 end function
 
 ! =============================================================================
@@ -202,6 +206,7 @@ function array_view1d_int32_r2(array,mold) result( view )
   else
     view => zero_length_array_int32
   endif
+  FCKIT_SUPPRESS_UNUSED(mold)
 end function
 
 ! =============================================================================
@@ -219,6 +224,7 @@ function array_view1d_int32_r3(array,mold) result( view )
   else
     view => zero_length_array_int32
   endif
+  FCKIT_SUPPRESS_UNUSED(mold)
 end function
 
 ! =============================================================================
@@ -236,6 +242,7 @@ function array_view1d_int32_r4(array,mold) result( view )
   else
     view => zero_length_array_int32
   endif
+  FCKIT_SUPPRESS_UNUSED(mold)
 end function
 
 ! =============================================================================
@@ -249,6 +256,7 @@ function array_view1d_int64_r0(scalar,mold) result( view )
   nullify(view)
   array_c_ptr = c_loc_int64(scalar)
   call c_f_pointer ( array_c_ptr , view , (/1/) )
+  FCKIT_SUPPRESS_UNUSED(mold)
 end function
 
 ! =============================================================================
@@ -266,6 +274,7 @@ function array_view1d_int64_r1(array,mold) result( view )
   else
     view => zero_length_array_int64
   endif
+  FCKIT_SUPPRESS_UNUSED(mold)
 end function
 
 ! =============================================================================
@@ -283,6 +292,7 @@ function array_view1d_int64_r2(array,mold) result( view )
   else
     view => zero_length_array_int64
   endif
+  FCKIT_SUPPRESS_UNUSED(mold)
 end function
 
 ! =============================================================================
@@ -300,6 +310,7 @@ function array_view1d_int64_r3(array,mold) result( view )
   else
     view => zero_length_array_int64
   endif
+  FCKIT_SUPPRESS_UNUSED(mold)
 end function
 
 ! =============================================================================
@@ -317,6 +328,7 @@ function array_view1d_int64_r4(array,mold) result( view )
   else
     view => zero_length_array_int64
   endif
+  FCKIT_SUPPRESS_UNUSED(mold)
 end function
 
 ! =============================================================================
@@ -330,6 +342,7 @@ function array_view1d_real32_r0(scalar,mold) result( view )
   nullify(view)
   array_c_ptr = c_loc_real32(scalar)
   call c_f_pointer ( array_c_ptr , view , (/1/) )
+  FCKIT_SUPPRESS_UNUSED(mold)
 end function
 
 ! =============================================================================
@@ -347,6 +360,7 @@ function array_view1d_real32_r1(array,mold) result( view )
   else
     view => zero_length_array_real32
   endif
+  FCKIT_SUPPRESS_UNUSED(mold)
 end function
 
 ! =============================================================================
@@ -364,6 +378,7 @@ function array_view1d_real32_r2(array,mold) result( view )
   else
     view => zero_length_array_real32
   endif
+  FCKIT_SUPPRESS_UNUSED(mold)
 end function
 
 ! =============================================================================
@@ -381,6 +396,7 @@ function array_view1d_real32_r3(array,mold) result( view )
   else
     view => zero_length_array_real32
   endif
+  FCKIT_SUPPRESS_UNUSED(mold)
 end function
 
 ! =============================================================================
@@ -398,6 +414,7 @@ function array_view1d_real32_r4(array,mold) result( view )
   else
     view => zero_length_array_real32
   endif
+  FCKIT_SUPPRESS_UNUSED(mold)
 end function
 
 ! =============================================================================
@@ -411,6 +428,7 @@ function array_view1d_real64_r0(scalar,mold) result( view )
   nullify(view)
   array_c_ptr = c_loc_real64(scalar)
   call c_f_pointer ( array_c_ptr , view , (/1/) )
+  FCKIT_SUPPRESS_UNUSED(mold)
 end function
 
 ! =============================================================================
@@ -428,6 +446,7 @@ function array_view1d_real64_r1(array,mold) result( view )
   else
     view => zero_length_array_real64
   endif
+  FCKIT_SUPPRESS_UNUSED(mold)
 end function
 
 ! =============================================================================
@@ -445,6 +464,7 @@ function array_view1d_real64_r2(array,mold) result( view )
   else
     view => zero_length_array_real64
   endif
+  FCKIT_SUPPRESS_UNUSED(mold)
 end function
 
 ! =============================================================================
@@ -462,6 +482,7 @@ function array_view1d_real64_r3(array,mold) result( view )
   else
     view => zero_length_array_real64
   endif
+  FCKIT_SUPPRESS_UNUSED(mold)
 end function
 
 ! =============================================================================
@@ -479,6 +500,7 @@ function array_view1d_real64_r4(array,mold) result( view )
   else
     view => zero_length_array_real64
   endif
+  FCKIT_SUPPRESS_UNUSED(mold)
 end function
 
 ! =============================================================================
@@ -568,6 +590,7 @@ function array_view1d_logical_r0_mold_int32(scalar,mold) result( view )
   nullify(view)
   array_c_ptr = c_loc_logical(scalar)
   call c_f_pointer ( array_c_ptr , view , (/1/) )
+  FCKIT_SUPPRESS_UNUSED(mold)
 end function
 
 ! =============================================================================
@@ -585,6 +608,7 @@ function array_view1d_logical_r1_mold_int32(array,mold) result( view )
   else
     view => zero_length_array_int32
   endif
+  FCKIT_SUPPRESS_UNUSED(mold)
 end function
 
 ! =============================================================================
@@ -602,6 +626,7 @@ function array_view1d_logical_r2_mold_int32(array,mold) result( view )
   else
     view => zero_length_array_int32
   endif
+  FCKIT_SUPPRESS_UNUSED(mold)
 end function
 
 ! =============================================================================
@@ -619,6 +644,7 @@ function array_view1d_logical_r3_mold_int32(array,mold) result( view )
   else
     view => zero_length_array_int32
   endif
+  FCKIT_SUPPRESS_UNUSED(mold)
 end function
 
 ! =============================================================================
@@ -636,6 +662,7 @@ function array_view1d_logical_r4_mold_int32(array,mold) result( view )
   else
     view => zero_length_array_int32
   endif
+  FCKIT_SUPPRESS_UNUSED(mold)
 end function
 
 ! =============================================================================
@@ -647,7 +674,7 @@ function array_stride_int32_r1_dim(arr,dim) result( stride )
   integer(c_int32_t) :: dim
   integer(c_int32_t) :: stride
   stride = 1
-  if (dim == 1 .AND. ubound(arr,1) > 1) stride = (loc(arr(2))-loc(arr(1)))/4
+  if (dim == 1 .AND. ubound(arr,1) > 1) stride = int(loc(arr(2))-loc(arr(1)),c_int32_t)/int(4,c_int32_t)
 end function
 
 ! =============================================================================
@@ -659,8 +686,8 @@ function array_stride_int32_r2_dim(arr,dim) result( stride )
   integer(c_int32_t) :: stride
   stride = 1
   if( size(arr) > 0 ) then
-    if (dim == 1 .AND. ubound(arr,1) > 1) stride = (loc(arr(2,1))-loc(arr(1,1)))/4
-    if (dim == 2 .AND. ubound(arr,1) > 1) stride = (loc(arr(1,2))-loc(arr(1,1)))/4
+    if (dim == 1 .AND. ubound(arr,1) > 1) stride = int(loc(arr(2,1))-loc(arr(1,1)),c_int32_t)/int(4,c_int32_t)
+    if (dim == 2 .AND. ubound(arr,1) > 1) stride = int(loc(arr(1,2))-loc(arr(1,1)),c_int32_t)/int(4,c_int32_t)
   else
     stride = 0
   endif
@@ -675,9 +702,9 @@ function array_stride_int32_r3_dim(arr,dim) result( stride )
   integer(c_int32_t) :: stride
   stride = 1
   if( size(arr) > 0 ) then
-    if (dim == 1 .AND. ubound(arr,1) > 1) stride = (loc(arr(2,1,1))-loc(arr(1,1,1)))/4
-    if (dim == 2 .AND. ubound(arr,2) > 1) stride = (loc(arr(1,2,1))-loc(arr(1,1,1)))/4
-    if (dim == 3 .AND. ubound(arr,3) > 1) stride = (loc(arr(1,1,2))-loc(arr(1,1,1)))/4
+    if (dim == 1 .AND. ubound(arr,1) > 1) stride = int(loc(arr(2,1,1))-loc(arr(1,1,1)),c_int32_t)/int(4,c_int32_t)
+    if (dim == 2 .AND. ubound(arr,2) > 1) stride = int(loc(arr(1,2,1))-loc(arr(1,1,1)),c_int32_t)/int(4,c_int32_t)
+    if (dim == 3 .AND. ubound(arr,3) > 1) stride = int(loc(arr(1,1,2))-loc(arr(1,1,1)),c_int32_t)/int(4,c_int32_t)
   else
     stride = 0
   endif
@@ -692,10 +719,10 @@ function array_stride_int32_r4_dim(arr,dim) result( stride )
   integer(c_int32_t) :: stride
   stride = 1
   if( size(arr) > 0 ) then
-    if (dim == 1 .AND. ubound(arr,1) > 1) stride = (loc(arr(2,1,1,1))-loc(arr(1,1,1,1)))/4
-    if (dim == 2 .AND. ubound(arr,2) > 1) stride = (loc(arr(1,2,1,1))-loc(arr(1,1,1,1)))/4
-    if (dim == 3 .AND. ubound(arr,3) > 1) stride = (loc(arr(1,1,2,1))-loc(arr(1,1,1,1)))/4
-    if (dim == 4 .AND. ubound(arr,4) > 1) stride = (loc(arr(1,1,1,2))-loc(arr(1,1,1,1)))/4
+    if (dim == 1 .AND. ubound(arr,1) > 1) stride = int(loc(arr(2,1,1,1))-loc(arr(1,1,1,1)),c_int32_t)/int(4,c_int32_t)
+    if (dim == 2 .AND. ubound(arr,2) > 1) stride = int(loc(arr(1,2,1,1))-loc(arr(1,1,1,1)),c_int32_t)/int(4,c_int32_t)
+    if (dim == 3 .AND. ubound(arr,3) > 1) stride = int(loc(arr(1,1,2,1))-loc(arr(1,1,1,1)),c_int32_t)/int(4,c_int32_t)
+    if (dim == 4 .AND. ubound(arr,4) > 1) stride = int(loc(arr(1,1,1,2))-loc(arr(1,1,1,1)),c_int32_t)/int(4,c_int32_t)
   else
     stride = 0
   endif
@@ -709,7 +736,7 @@ function array_stride_int64_r1_dim(arr,dim) result( stride )
   integer(c_int32_t) :: dim
   integer(c_int32_t) :: stride
   stride = 1
-  if (dim == 1 .AND. ubound(arr,1) > 1) stride = (loc(arr(2))-loc(arr(1)))/4
+  if (dim == 1 .AND. ubound(arr,1) > 1) stride = int(loc(arr(2))-loc(arr(1)),c_int32_t)/int(4,c_int32_t)
 end function
 
 ! =============================================================================
@@ -721,8 +748,8 @@ function array_stride_int64_r2_dim(arr,dim) result( stride )
   integer(c_int32_t) :: stride
   stride = 1
   if( size(arr) > 0 ) then
-    if (dim == 1 .AND. ubound(arr,1) > 1) stride = (loc(arr(2,1))-loc(arr(1,1)))/4
-    if (dim == 2 .AND. ubound(arr,1) > 1) stride = (loc(arr(1,2))-loc(arr(1,1)))/4
+    if (dim == 1 .AND. ubound(arr,1) > 1) stride = int(loc(arr(2,1))-loc(arr(1,1)),c_int32_t)/int(4,c_int32_t)
+    if (dim == 2 .AND. ubound(arr,1) > 1) stride = int(loc(arr(1,2))-loc(arr(1,1)),c_int32_t)/int(4,c_int32_t)
   else
     stride = 0
   endif
@@ -737,9 +764,9 @@ function array_stride_int64_r3_dim(arr,dim) result( stride )
   integer(c_int32_t) :: stride
   stride = 1
   if( size(arr) > 0 ) then
-    if (dim == 1 .AND. ubound(arr,1) > 1) stride = (loc(arr(2,1,1))-loc(arr(1,1,1)))/4
-    if (dim == 2 .AND. ubound(arr,2) > 1) stride = (loc(arr(1,2,1))-loc(arr(1,1,1)))/4
-    if (dim == 3 .AND. ubound(arr,3) > 1) stride = (loc(arr(1,1,2))-loc(arr(1,1,1)))/4
+    if (dim == 1 .AND. ubound(arr,1) > 1) stride = int(loc(arr(2,1,1))-loc(arr(1,1,1)),c_int32_t)/int(4,c_int32_t)
+    if (dim == 2 .AND. ubound(arr,2) > 1) stride = int(loc(arr(1,2,1))-loc(arr(1,1,1)),c_int32_t)/int(4,c_int32_t)
+    if (dim == 3 .AND. ubound(arr,3) > 1) stride = int(loc(arr(1,1,2))-loc(arr(1,1,1)),c_int32_t)/int(4,c_int32_t)
   else
     stride = 0
   endif
@@ -754,10 +781,10 @@ function array_stride_int64_r4_dim(arr,dim) result( stride )
   integer(c_int32_t) :: stride
   stride = 1
   if( size(arr) > 0 ) then
-    if (dim == 1 .AND. ubound(arr,1) > 1) stride = (loc(arr(2,1,1,1))-loc(arr(1,1,1,1)))/4
-    if (dim == 2 .AND. ubound(arr,2) > 1) stride = (loc(arr(1,2,1,1))-loc(arr(1,1,1,1)))/4
-    if (dim == 3 .AND. ubound(arr,3) > 1) stride = (loc(arr(1,1,2,1))-loc(arr(1,1,1,1)))/4
-    if (dim == 4 .AND. ubound(arr,4) > 1) stride = (loc(arr(1,1,1,2))-loc(arr(1,1,1,1)))/4
+    if (dim == 1 .AND. ubound(arr,1) > 1) stride = int(loc(arr(2,1,1,1))-loc(arr(1,1,1,1)),c_int32_t)/int(4,c_int32_t)
+    if (dim == 2 .AND. ubound(arr,2) > 1) stride = int(loc(arr(1,2,1,1))-loc(arr(1,1,1,1)),c_int32_t)/int(4,c_int32_t)
+    if (dim == 3 .AND. ubound(arr,3) > 1) stride = int(loc(arr(1,1,2,1))-loc(arr(1,1,1,1)),c_int32_t)/int(4,c_int32_t)
+    if (dim == 4 .AND. ubound(arr,4) > 1) stride = int(loc(arr(1,1,1,2))-loc(arr(1,1,1,1)),c_int32_t)/int(4,c_int32_t)
   else
     stride = 0
   endif
@@ -772,7 +799,7 @@ function array_stride_real32_r1_dim(arr,dim) result( stride )
   integer(c_int32_t) :: stride
   stride = 1
   if( size(arr) > 0 ) then
-    if (dim == 1 .AND. ubound(arr,1) > 1) stride = (loc(arr(2))-loc(arr(1)))/4
+    if (dim == 1 .AND. ubound(arr,1) > 1) stride = int(loc(arr(2))-loc(arr(1)),c_int32_t)/int(4,c_int32_t)
   else
     stride = 0
   endif
@@ -787,8 +814,8 @@ function array_stride_real32_r2_dim(arr,dim) result( stride )
   integer(c_int32_t) :: stride
   stride = 1
   if( size(arr) > 0 ) then
-    if (dim == 1 .AND. ubound(arr,1) > 1) stride = (loc(arr(2,1))-loc(arr(1,1)))/4
-    if (dim == 2 .AND. ubound(arr,2) > 1) stride = (loc(arr(1,2))-loc(arr(1,1)))/4
+    if (dim == 1 .AND. ubound(arr,1) > 1) stride = int(loc(arr(2,1))-loc(arr(1,1)),c_int32_t)/int(4,c_int32_t)
+    if (dim == 2 .AND. ubound(arr,2) > 1) stride = int(loc(arr(1,2))-loc(arr(1,1)),c_int32_t)/int(4,c_int32_t)
   else
     stride = 0
   endif
@@ -803,9 +830,9 @@ function array_stride_real32_r3_dim(arr,dim) result( stride )
   integer(c_int32_t) :: stride
   stride = 1
   if( size(arr) > 0 ) then
-    if (dim == 1 .AND. ubound(arr,1) > 1) stride = (loc(arr(2,1,1))-loc(arr(1,1,1)))/4
-    if (dim == 2 .AND. ubound(arr,2) > 1) stride = (loc(arr(1,2,1))-loc(arr(1,1,1)))/4
-    if (dim == 3 .AND. ubound(arr,3) > 1) stride = (loc(arr(1,1,2))-loc(arr(1,1,1)))/4
+    if (dim == 1 .AND. ubound(arr,1) > 1) stride = int(loc(arr(2,1,1))-loc(arr(1,1,1)),c_int32_t)/int(4,c_int32_t)
+    if (dim == 2 .AND. ubound(arr,2) > 1) stride = int(loc(arr(1,2,1))-loc(arr(1,1,1)),c_int32_t)/int(4,c_int32_t)
+    if (dim == 3 .AND. ubound(arr,3) > 1) stride = int(loc(arr(1,1,2))-loc(arr(1,1,1)),c_int32_t)/int(4,c_int32_t)
   else
     stride = 0
   endif
@@ -820,10 +847,10 @@ function array_stride_real32_r4_dim(arr,dim) result( stride )
   integer(c_int32_t) :: stride
   stride = 1
   if( size(arr) > 0 ) then
-    if (dim == 1 .AND. ubound(arr,1) > 1) stride = (loc(arr(2,1,1,1))-loc(arr(1,1,1,1)))/4
-    if (dim == 2 .AND. ubound(arr,2) > 1) stride = (loc(arr(1,2,1,1))-loc(arr(1,1,1,1)))/4
-    if (dim == 3 .AND. ubound(arr,3) > 1) stride = (loc(arr(1,1,2,1))-loc(arr(1,1,1,1)))/4
-    if (dim == 4 .AND. ubound(arr,4) > 1) stride = (loc(arr(1,1,1,2))-loc(arr(1,1,1,1)))/4
+    if (dim == 1 .AND. ubound(arr,1) > 1) stride = int(loc(arr(2,1,1,1))-loc(arr(1,1,1,1)),c_int32_t)/int(4,c_int32_t)
+    if (dim == 2 .AND. ubound(arr,2) > 1) stride = int(loc(arr(1,2,1,1))-loc(arr(1,1,1,1)),c_int32_t)/int(4,c_int32_t)
+    if (dim == 3 .AND. ubound(arr,3) > 1) stride = int(loc(arr(1,1,2,1))-loc(arr(1,1,1,1)),c_int32_t)/int(4,c_int32_t)
+    if (dim == 4 .AND. ubound(arr,4) > 1) stride = int(loc(arr(1,1,1,2))-loc(arr(1,1,1,1)),c_int32_t)/int(4,c_int32_t)
   else
     stride = 0
   endif
@@ -838,7 +865,7 @@ function array_stride_real64_r1_dim(arr,dim) result( stride )
   integer(c_int32_t) :: stride
   stride = 1
   if( size(arr) > 0 ) then
-    if (dim == 1 .AND. ubound(arr,1) > 1) stride = (loc(arr(2))-loc(arr(1)))/8
+    if (dim == 1 .AND. ubound(arr,1) > 1) stride = int(loc(arr(2))-loc(arr(1)),c_int32_t)/int(8,c_int32_t)
   else
     stride = 0
   endif
@@ -853,8 +880,8 @@ function array_stride_real64_r2_dim(arr,dim) result( stride )
   integer(c_int32_t) :: stride
   stride = 1
   if( size(arr)>0 ) then
-    if (dim == 1 .AND. ubound(arr,1) > 1) stride = (loc(arr(2,1))-loc(arr(1,1)))/8
-    if (dim == 2 .AND. ubound(arr,2) > 1) stride = (loc(arr(1,2))-loc(arr(1,1)))/8
+    if (dim == 1 .AND. ubound(arr,1) > 1) stride = int(loc(arr(2,1))-loc(arr(1,1)),c_int32_t)/int(8,c_int32_t)
+    if (dim == 2 .AND. ubound(arr,2) > 1) stride = int(loc(arr(1,2))-loc(arr(1,1)),c_int32_t)/int(8,c_int32_t)
   else
     stride = 0
   endif
@@ -869,9 +896,9 @@ function array_stride_real64_r3_dim(arr,dim) result( stride )
   integer(c_int32_t) :: stride
   stride = 1
   if( size(arr)>0 ) then
-    if (dim == 1 .AND. ubound(arr,1) > 1) stride = (loc(arr(2,1,1))-loc(arr(1,1,1)))/8
-    if (dim == 2 .AND. ubound(arr,2) > 1) stride = (loc(arr(1,2,1))-loc(arr(1,1,1)))/8
-    if (dim == 3 .AND. ubound(arr,3) > 1) stride = (loc(arr(1,1,2))-loc(arr(1,1,1)))/8
+    if (dim == 1 .AND. ubound(arr,1) > 1) stride = int(loc(arr(2,1,1))-loc(arr(1,1,1)),c_int32_t)/int(8,c_int32_t)
+    if (dim == 2 .AND. ubound(arr,2) > 1) stride = int(loc(arr(1,2,1))-loc(arr(1,1,1)),c_int32_t)/int(8,c_int32_t)
+    if (dim == 3 .AND. ubound(arr,3) > 1) stride = int(loc(arr(1,1,2))-loc(arr(1,1,1)),c_int32_t)/int(8,c_int32_t)
   else
     stride = 0
   endif
@@ -886,10 +913,10 @@ function array_stride_real64_r4_dim(arr,dim) result( stride )
   integer(c_int32_t) :: stride
   stride = 1
   if( size(arr)>0 ) then
-    if (dim == 1 .AND. ubound(arr,1) > 1) stride = (loc(arr(2,1,1,1))-loc(arr(1,1,1,1)))/8
-    if (dim == 2) stride = (loc(arr(1,2,1,1))-loc(arr(1,1,1,1)))/8
-    if (dim == 3) stride = (loc(arr(1,1,2,1))-loc(arr(1,1,1,1)))/8
-    if (dim == 4) stride = (loc(arr(1,1,1,2))-loc(arr(1,1,1,1)))/8
+    if (dim == 1 .AND. ubound(arr,1) > 1) stride = int(loc(arr(2,1,1,1))-loc(arr(1,1,1,1)),c_int32_t)/int(8,c_int32_t)
+    if (dim == 2) stride = int(loc(arr(1,2,1,1))-loc(arr(1,1,1,1)),c_int32_t)/int(8,c_int32_t)
+    if (dim == 3) stride = int(loc(arr(1,1,2,1))-loc(arr(1,1,1,1)),c_int32_t)/int(8,c_int32_t)
+    if (dim == 4) stride = int(loc(arr(1,1,1,2))-loc(arr(1,1,1,1)),c_int32_t)/int(8,c_int32_t)
   else
     stride = 0
   endif
@@ -904,7 +931,7 @@ function array_stride_logical_r1_dim(arr,dim) result( stride )
   integer(c_int32_t) :: stride
   stride = 1
   if( size(arr) > 0 ) then
-    if (dim == 1 .AND. ubound(arr,1) > 1) stride = (loc(arr(2))-loc(arr(1)))/4
+    if (dim == 1 .AND. ubound(arr,1) > 1) stride = int(loc(arr(2))-loc(arr(1)),c_int32_t)/int(4,c_int32_t)
   else
     stride = 0
   endif
@@ -919,8 +946,8 @@ function array_stride_logical_r2_dim(arr,dim) result( stride )
   integer(c_int32_t) :: stride
   stride = 1
   if( size(arr)>0 ) then
-    if (dim == 1 .AND. ubound(arr,1) > 1) stride = (loc(arr(2,1))-loc(arr(1,1)))/4
-    if (dim == 2 .AND. ubound(arr,2) > 1) stride = (loc(arr(1,2))-loc(arr(1,1)))/4
+    if (dim == 1 .AND. ubound(arr,1) > 1) stride = int(loc(arr(2,1))-loc(arr(1,1)),c_int32_t)/int(4,c_int32_t)
+    if (dim == 2 .AND. ubound(arr,2) > 1) stride = int(loc(arr(1,2))-loc(arr(1,1)),c_int32_t)/int(4,c_int32_t)
   else
     stride = 0
   endif
@@ -935,9 +962,9 @@ function array_stride_logical_r3_dim(arr,dim) result( stride )
   integer(c_int32_t) :: stride
   stride = 1
   if( size(arr)>0 ) then
-    if (dim == 1 .AND. ubound(arr,1) > 1) stride = (loc(arr(2,1,1))-loc(arr(1,1,1)))/4
-    if (dim == 2 .AND. ubound(arr,2) > 1) stride = (loc(arr(1,2,1))-loc(arr(1,1,1)))/4
-    if (dim == 3 .AND. ubound(arr,3) > 1) stride = (loc(arr(1,1,2))-loc(arr(1,1,1)))/4
+    if (dim == 1 .AND. ubound(arr,1) > 1) stride = int(loc(arr(2,1,1))-loc(arr(1,1,1)),c_int32_t)/int(4,c_int32_t)
+    if (dim == 2 .AND. ubound(arr,2) > 1) stride = int(loc(arr(1,2,1))-loc(arr(1,1,1)),c_int32_t)/int(4,c_int32_t)
+    if (dim == 3 .AND. ubound(arr,3) > 1) stride = int(loc(arr(1,1,2))-loc(arr(1,1,1)),c_int32_t)/int(4,c_int32_t)
   else
     stride = 0
   endif
@@ -952,10 +979,10 @@ function array_stride_logical_r4_dim(arr,dim) result( stride )
   integer(c_int32_t) :: stride
   stride = 1
   if( size(arr)>0 ) then
-    if (dim == 1 .AND. ubound(arr,1) > 1) stride = (loc(arr(2,1,1,1))-loc(arr(1,1,1,1)))/4
-    if (dim == 2) stride = (loc(arr(1,2,1,1))-loc(arr(1,1,1,1)))/4
-    if (dim == 3) stride = (loc(arr(1,1,2,1))-loc(arr(1,1,1,1)))/4
-    if (dim == 4) stride = (loc(arr(1,1,1,2))-loc(arr(1,1,1,1)))/4
+    if (dim == 1 .AND. ubound(arr,1) > 1) stride = int(loc(arr(2,1,1,1))-loc(arr(1,1,1,1)),c_int32_t)/int(4,c_int32_t)
+    if (dim == 2) stride = int(loc(arr(1,2,1,1))-loc(arr(1,1,1,1)),c_int32_t)/int(4,c_int32_t)
+    if (dim == 3) stride = int(loc(arr(1,1,2,1))-loc(arr(1,1,1,1)),c_int32_t)/int(4,c_int32_t)
+    if (dim == 4) stride = int(loc(arr(1,1,1,2))-loc(arr(1,1,1,1)),c_int32_t)/int(4,c_int32_t)
   else
     stride = 0
   endif
