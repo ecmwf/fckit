@@ -275,7 +275,7 @@ int32 c_fckit_configuration_get_string( const Configuration* This, const char* n
         return false;
     }
     size  = s.size() + 1;
-    value = new char[size];
+    value = new char[size + 1];
     strcpy( value, s.c_str() );
     return true;
 }
@@ -342,7 +342,7 @@ int32 c_fckit_configuration_get_array_string( const Configuration* This, const c
         offsets[j] = size;
         size += s[j].size();
     }
-    value = new char[size];
+    value = new char[size + 1];
     for ( size_t j = 0; j < numelem; ++j ) {
         strcpy( &value[offsets[j]], s[j].c_str() );
     }
