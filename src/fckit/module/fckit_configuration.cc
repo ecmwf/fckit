@@ -275,7 +275,7 @@ int32 c_fckit_configuration_get_string( const Configuration* This, const char* n
         return false;
     }
     size  = s.size() + 1;
-    value = new char[size + 1];
+    value = new char[size];
     strcpy( value, s.c_str() );
     return true;
 }
