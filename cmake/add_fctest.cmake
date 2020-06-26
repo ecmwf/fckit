@@ -83,7 +83,7 @@ cmake_policy( SET CMP0064 NEW ) # Recognize ``TEST`` as operator for the ``if()`
       target_sources( ${_PAR_TARGET} PUBLIC ${TESTRUNNER} )
 
     ### Add dependencies
-      target_include_directories( ${_PAR_TARGET} PUBLIC ${FCKIT_INCLUDE_DIRS} )
+      target_include_directories( ${_PAR_TARGET} PUBLIC ${FCKIT_INCLUDE_DIRS} "/" )
       target_link_libraries( ${_PAR_TARGET} fckit )
       if( TEST ${_PAR_TARGET} )
         set_property( TEST ${_PAR_TARGET} APPEND PROPERTY LABELS "fortran" )
