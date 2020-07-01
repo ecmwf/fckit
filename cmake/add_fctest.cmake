@@ -83,7 +83,6 @@ cmake_policy( SET CMP0064 NEW ) # Recognize ``TEST`` as operator for the ``if()`
       target_sources( ${_PAR_TARGET} PUBLIC ${TESTRUNNER} )
 
     ### Add dependencies
-      target_include_directories( ${_PAR_TARGET} PUBLIC ${FCKIT_INCLUDE_DIRS} "/" )
       target_link_libraries( ${_PAR_TARGET} fckit )
       if( TEST ${_PAR_TARGET} )
         set_property( TEST ${_PAR_TARGET} APPEND PROPERTY LABELS "fortran" )
@@ -104,6 +103,13 @@ cmake_policy( SET CMP0064 NEW ) # Recognize ``TEST`` as operator for the ``if()`
           #Disable developer-only pre-processor warnings when not compiling for Debug configurations
           target_compile_options(${_PAR_TARGET} PRIVATE $<$<NOT:$<CONFIG:Debug>>:-Wno-cpp>)
       endif()
+
+    ### Workaround Flang issue, not able to include absolute path. Adding -I/ seems a workaround
+      # but results in warning for other compilers (intel)
+      if( ${CMAKE_Fortran_COMPILER_ID} MATCHES Flang )
+        target_include_directories( ${_PAR_TARGET} PUBLIC ${FCKIT_INCLUDE_DIRS} "/" )
+      endif()
+      
 
       add_custom_target( ${_PAR_TARGET}_testsuite SOURCES ${TESTSUITE} )
   endif()
