@@ -159,6 +159,21 @@ void c_fckit_configuration_set_string( Configuration* This, const char* name, co
         throw NotLocalConfiguration( Here() );
 }
 
+void c_fckit_configuration_set_array_string( Configuration* This, const char* name, const char* value, size_t length,
+                                             size_t size ) {
+    ASSERT( This != nullptr );
+    vector<string> v;
+    for ( size_t jj = 0; jj < size; ++jj ) {
+        char str[length + 1];
+        ASSERT( snprintf( str, sizeof( str ), "%s", value + jj * length ) >= 0 );
+        v.push_back( string( str ) );
+    }
+    if ( LocalConfiguration* local = dynamic_cast<LocalConfiguration*>( This ) )
+        local->set( string( name ), v );
+    else
+        throw NotLocalConfiguration( Here() );
+}
+
 void c_fckit_configuration_set_array_int32( Configuration* This, const char* name, int32 value[], size_t size ) {
     ASSERT( This != nullptr );
     vector<int32> v;
@@ -327,16 +342,19 @@ int32 c_fckit_configuration_get_array_string( const Configuration* This, const c
         offsets[j] = size;
         size += s[j].size();
     }
-    value = new char[size];
+    value = new char[size + 1];
     for ( size_t j = 0; j < numelem; ++j ) {
         strcpy( &value[offsets[j]], s[j].c_str() );
     }
     return true;
 }
 
-
 int32 c_fckit_configuration_has( const Configuration* This, const char* name ) {
-    return This->has( string( name ) );
+    return This->has( name );
+}
+
+int32 c_fckit_configuration_get_size( const Configuration* This, const char* name ) {
+    return This->getStringVector( name ).size();
 }
 
 void c_fckit_configuration_json( const Configuration* This, char*& json, size_t& size ) {

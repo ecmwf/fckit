@@ -21,6 +21,7 @@ find_package( ecbuild 3.0.0 REQUIRED )
 
 project( fckit LANGUAGES C CXX Fortran )
 
+set(CMAKE_DIRECTORY_LABELS "fckit")
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -35,7 +36,11 @@ ecbuild_enable_fortran( REQUIRED MODULE_DIRECTORY ${PROJECT_BINARY_DIR}/module )
 ecbuild_check_fortran( FEATURES finalization )
 
 set( FEATURE_FINAL_DEFAULT ON )
+set( PGIBUG_ATLAS_197 0 )
 if( CMAKE_Fortran_COMPILER_ID MATCHES "PGI" )
+  if( ${CMAKE_Fortran_COMPILER_VERSION} VERSION_LESS 19.4 )
+      set( PGIBUG_ATLAS_197 1 )
+  endif()
   if( ${CMAKE_Fortran_COMPILER_VERSION} VERSION_LESS 19.10 )
     # Compilation works, but runtime segmentation faults occur (tested with pgi/17.7)
     set( FEATURE_FINAL_DEFAULT OFF )

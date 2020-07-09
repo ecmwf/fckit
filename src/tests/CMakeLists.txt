@@ -51,6 +51,11 @@ add_fctest( TARGET  fckit_test_configuration
             SOURCES test_configuration.F90
             CONDITION HAVE_ECKIT
             LIBS    fckit)
+if( TEST fckit_test_configuration )
+  if( NOT CMAKE_VERSION VERSION_LESS 3.15 ) # support for COMPILE_LANG_AND_ID generator expression
+    target_compile_options( fckit_test_configuration PRIVATE $<$<COMPILE_LANG_AND_ID:Fortran,GNU>:-Wno-uninitialized> )
+  endif()
+endif()
 
 add_fctest( TARGET  fckit_test_configuration_fails
             LINKER_LANGUAGE Fortran

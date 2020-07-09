@@ -69,7 +69,7 @@ contains
     !! call fckit_exception%throw("I have my reasons",___FILE___,___LINE___)
     !!```
 
-  procedure, public, nopass :: abort
+  procedure, public, nopass :: abort => fckit_exception__abort
     !! Throw the ```eckit::Abort``` exception
     !!
     !!####Example usage
@@ -131,7 +131,7 @@ end subroutine
 
 !------------------------------------------------------------------------------
 
-subroutine abort( what, file, line, function )
+subroutine fckit_exception__abort( what, file, line, function )
   use, intrinsic :: iso_c_binding, only : c_char, c_int32_t
   use fckit_c_interop_module, only : c_str
 
@@ -155,13 +155,17 @@ subroutine abort( what, file, line, function )
   character(kind=c_char,len=:), allocatable :: opt_function
 
   if( present(what) ) then
+    allocate( character(len=len_trim(what)) :: opt_what )
     opt_what = what
   else
+    allocate( character(len=0) :: opt_what )
     opt_what = ""
   endif
   if( present(file) ) then
+    allocate( character(len=len_trim(file)) :: opt_file )
     opt_file = file
   else
+    allocate( character(len=0) :: opt_file )
     opt_file = ""
   endif
   if( present(line) ) then
@@ -170,8 +174,10 @@ subroutine abort( what, file, line, function )
     opt_line = 0
   endif
   if( present(function) ) then
+    allocate( character(len=len_trim(function)) :: opt_function )
     opt_function = function
   else
+    allocate( character(len=0) :: opt_function )
     opt_function = ""
   endif
 
@@ -306,8 +312,10 @@ subroutine throw( what, file, line, function )
   character(kind=c_char,len=:), allocatable :: opt_function
 
   if( present(file) ) then
+    allocate( character(len=len_trim(file)) :: opt_file )
     opt_file = file
   else
+    allocate( character(len=0) :: opt_file )
     opt_file = ""
   endif
   if( present(line) ) then
@@ -316,8 +324,10 @@ subroutine throw( what, file, line, function )
     opt_line = 0
   endif
   if( present(function) ) then
+    allocate( character(len=len_trim(function)) :: opt_function )
     opt_function = function
   else
+    allocate( character(len=0) :: opt_function )
     opt_function = ""
   endif
 

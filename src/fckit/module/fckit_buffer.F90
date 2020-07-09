@@ -109,6 +109,7 @@ end function
 
 !========================================================================
 
+#if FCKIT_FINAL_NOT_INHERITING
 FCKIT_FINAL subroutine fckit_buffer__final_auto(this)
   type(fckit_buffer), intent(inout) :: this
 #if FCKIT_FINAL_DEBUGGING
@@ -119,5 +120,6 @@ FCKIT_FINAL subroutine fckit_buffer__final_auto(this)
 #endif
   FCKIT_SUPPRESS_UNUSED( this )
 end subroutine
+#endif
 
 end module

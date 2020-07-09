@@ -103,7 +103,7 @@ TEST( test_allreduce )
   type(fckit_mpi_comm) :: comm
   real(c_double)  :: real64, res_real64, real64_r1(2),      res_real64_r1(2)
   real(c_float)   :: real32, res_real32, real32_r2(3,2),    res_real32_r2(3,2)
-  integer(c_int32_t) :: int32,  res_int32,  int32_r3(4,3,2),   res_int32_r3(4,3,2), j
+  integer(c_int32_t) :: int32,  res_int32, res_int32_r3(4,3,2), j
   integer(c_long) :: int64,  res_int64,  int64_r4(4,3,2,2), res_int64_r4(4,3,2,2), check_prod, check_sum
 
   FCKIT_SUPPRESS_UNUSED( real64_r1 )
@@ -662,7 +662,7 @@ TEST( test_split_comm_delete )
   implicit none
   type(fckit_mpi_comm) :: world  ! a handle for the world comm
   type(fckit_mpi_comm) :: split  ! a handle for the split comm
-  integer :: i, j
+  integer :: i
 
   world = fckit_mpi_comm("world")
   if( mod(world%size(),2) == 0 ) then

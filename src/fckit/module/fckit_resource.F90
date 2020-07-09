@@ -102,7 +102,7 @@ subroutine resource_get_int64(resource_str,default_value,value)
   integer(c_int64_t), intent(in) :: default_value
   integer(c_int64_t), intent(out) :: value
   integer(c_int32_t) :: error_code
-  error_code = fckit__resource_int64(c_str(resource_str),default_value,value)
+  error_code = int(fckit__resource_int64(c_str(resource_str),default_value,value),c_int32_t)
 end subroutine
 
 subroutine resource_get_real32(resource_str,default_value,value)

@@ -68,7 +68,7 @@ contains
   procedure, nopass, public :: reset
     !! Reset all log channels (No more logging)
 
-  procedure, nopass, public :: flush
+  procedure, nopass, public :: flush => fckit_log__flush
     !! Flush all log channels (empty buffers)
 
   procedure, nopass, public :: add_stdout
@@ -315,7 +315,7 @@ subroutine reset()
   call fckit__log_reset()
 end subroutine
 
-subroutine flush()
+subroutine fckit_log__flush()
   call fckit__log_flush()
 end subroutine
 

@@ -40,7 +40,10 @@ contains
 
   procedure, public :: reset_c_ptr
 
-  !procedure, public  :: c_ptr => fckit_shared_object_c_ptr
+#if !PGIBUG_ATLAS_197_DEBUG
+  procedure, public  :: c_ptr => fckit_shared_object_c_ptr
+#endif
+
   procedure, private :: fckit_shared_object_c_ptr
 
   procedure, public :: is_null
@@ -70,6 +73,7 @@ private :: fckit_refcount_interface
 CONTAINS
 !========================================================================
 
+#if FCKIT_FINAL_NOT_INHERITING
 FCKIT_FINAL subroutine fckit_shared_object__final_auto(this)
   type(fckit_shared_object), intent(inout) :: this
 #if FCKIT_FINAL_DEBUGGING
@@ -80,6 +84,7 @@ FCKIT_FINAL subroutine fckit_shared_object__final_auto(this)
 #endif
   FCKIT_SUPPRESS_UNUSED( this )
 end subroutine
+#endif
 
 function shared_ptr_cast(this) result(success)
   class(fckit_shared_object) :: this
@@ -134,7 +139,7 @@ function fckit_shared_object_c_ptr(this) result(cptr)
   use, intrinsic :: iso_c_binding, only : c_ptr
   type(c_ptr) :: cptr
   class(fckit_shared_object) :: this
-  cptr = this%CPTR_PGIBUG_B
+  cptr = this%shared_object_%CPTR_PGIBUG_A
 end function
 
 end module

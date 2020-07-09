@@ -110,6 +110,7 @@ subroutine allocate_fckit_external(refcount,shared_ptr)
   class(fckit_refcount), pointer, intent(inout) :: refcount
   class(*), target, intent(in) :: shared_ptr
   allocate( fckit_refcount_external::refcount )
+  FCKIT_SUPPRESS_UNUSED( shared_ptr )
 end subroutine
 
 function fckit_external() result(funptr)
