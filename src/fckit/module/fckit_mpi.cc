@@ -612,8 +612,16 @@ void fckit__mpi__wait( const Comm* comm, int32 request, int32* status ) {
 
 int32 fckit__mpi__mpi_info_null() {
 #if FCKIT_HAVE_ECKIT_MPI_PARALLEL
-    return MPI_Info_c2f( MPI_INFO_NULL );
+    int mpi_initialized;
+    if ( MPI_Initialized( &mpi_initialized ) == MPI_SUCCESS ) {
+        if ( mpi_initialized ) {
+            return MPI_Info_c2f( MPI_INFO_NULL );
+        }
+    }
+    // The case when eckit is compiled with MPI support, but using "serial" MPI backend
+    return 0;
 #else
+    // The case when eckit is not compiled with MPI support
     return 0;
 #endif
 }
