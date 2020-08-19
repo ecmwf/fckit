@@ -67,8 +67,6 @@ does not compile
 #define FCKIT_ALLOCATE_CHARACTER( VARIABLE, SIZE ) allocate( character(len=(SIZE),kind=c_char) :: VARIABLE )
 #endif
 
-#define ECKIT_IMPROVED_MPI @ECKIT_IMPROVED_MPI@
-
 #if 0
 // clang-format on
 #endif

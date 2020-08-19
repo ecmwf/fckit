@@ -70,7 +70,7 @@ Simply add following line to your project's CMakeLists.txt
 ```
 ecbuild_add_option( FEATURE FCTEST  DEFAULT ${ENABLE_TESTS}
                     DESCRIPTION "Fortran Unit Testing Framework"
-                    REQUIRED_PACKAGES "PROJECT fckit" )
+                    REQUIRED_PACKAGES "NAME fckit" )
 ```
 
 See src/examples folder how to add and create the unit-tests.

@@ -9,15 +9,9 @@
 ############################################################################################
 # FCKIT
 
-cmake_minimum_required( VERSION 3.6 FATAL_ERROR )
-if( POLICY CMP0074 )
-  cmake_policy( SET CMP0074 NEW )
-  # This policy allows to search for packages with <package>_ROOT variables
-  #                        (only supported with CMake 3.12 and above)
-  # This policy can be removed once cmake_minimum_required( VERSION 3.12 ) is used
-endif()
+cmake_minimum_required( VERSION 3.12 FATAL_ERROR )
 
-find_package( ecbuild 3.0.0 REQUIRED )
+find_package( ecbuild 3.0.0 REQUIRED HINTS ${CMAKE_CURRENT_SOURCE_DIR} )
 
 project( fckit LANGUAGES C CXX Fortran )
 
@@ -80,7 +74,7 @@ if( NOT fckit_HAVE_FINAL )
     set( FCKIT_FINAL_BROKEN_FOR_AUTOMATIC_ARRAY   0 )
 endif()
 
-ecbuild_find_package( NAME eckit VERSION 0.21.0 QUIET )
+ecbuild_find_package( NAME eckit VERSION 1.5 QUIET )
 ecbuild_add_option( FEATURE ECKIT
                     DESCRIPTION "Wrap ecKit functionality"
                     CONDITION eckit_FOUND )
@@ -91,29 +85,17 @@ endif()
 ## MPI
 set( fckit_HAVE_ECKIT_MPI_PARALLEL 0 )
 if( fckit_HAVE_ECKIT )
-  if( NOT ECKIT_HAVE_MPI )
-    set( fckit_HAVE_ECKIT_MPI_PARALLEL 0 )
-    set( HAVE_MPI 0 )
-  else()
+  if( eckit_HAVE_MPI OR ECKIT_HAVE_MPI )
     set( fckit_HAVE_ECKIT_MPI_PARALLEL 1 )
     set( HAVE_MPI 1 )
+  else()
+    set( fckit_HAVE_ECKIT_MPI_PARALLEL 0 )
+    set( HAVE_MPI 0 )
   endif()
 endif()
 set( fckit_HAVE_MPI ${HAVE_MPI} )
 if( fckit_HAVE_ECKIT AND NOT fckit_HAVE_MPI )
   ecbuild_warn("ecKit has been compiled without MPI. This causes fckit to not be able to run parallel executables.")
-endif()
-
-if( eckit_VERSION VERSION_LESS "0.25" )
-  set( ECKIT_IMPROVED_MPI 0 )
-  if( fckit_HAVE_ECKIT )
-    ecbuild_warn( "eckit version does not allow support for" 
-                  "- fckit_mpi_comm%set_default()"
-                  "- fckit_mpi_comm%name()"
-                  "- fckit_mpi_comm%delete()" )
-  endif()
-else()
-  set( ECKIT_IMPROVED_MPI 1 )
 endif()
 
 ################################################################################################
