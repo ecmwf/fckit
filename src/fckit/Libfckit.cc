@@ -11,7 +11,6 @@
 #include <algorithm>
 #include <string>
 
-#include "eckit/eckit_version.h"
 #include "fckit/Libfckit.h"
 #include "fckit/fckit.h"
 

@@ -76,31 +76,19 @@ void fckit__mpi__setCommDefault_name( const char* name ) {
 }
 
 void fckit__mpi__comm_set_default( Comm* comm ) {
-#if ECKIT_IMPROVED_MPI
     eckit::mpi::setCommDefault( comm->name().c_str() );
-#else
-    throw eckit::NotImplemented( "eckit::mpi::Comm::name() not implemented in used version of eckit", Here() );
-#endif
 }
 
 void fckit__mpi__comm_name( Comm* comm, char*& name, int32& size ) {
-#if ECKIT_IMPROVED_MPI
     std::string s = ( comm ? comm->name() : eckit::mpi::comm().name() );
     size          = int32( s.size() ) + 1;
     name          = new char[size];
     std::strcpy( name, s.c_str() );
-#else
-    throw eckit::NotImplemented( "eckit::mpi::Comm::name() not implemented in used version of eckit", Here() );
-#endif
 }
 
 void fckit__mpi__comm_delete( Comm* comm ) {
     if ( comm ) {
-#if ECKIT_IMPROVED_MPI
         eckit::mpi::deleteComm( comm->name().c_str() );
-#else
-        throw eckit::NotImplemented( "eckit::mpi::deleteComm() not implemented in used version of eckit", Here() );
-#endif
     }
 }
 
@@ -612,8 +600,16 @@ void fckit__mpi__wait( const Comm* comm, int32 request, int32* status ) {
 
 int32 fckit__mpi__mpi_info_null() {
 #if FCKIT_HAVE_ECKIT_MPI_PARALLEL
-    return MPI_Info_c2f( MPI_INFO_NULL );
+    int mpi_initialized;
+    if ( MPI_Initialized( &mpi_initialized ) == MPI_SUCCESS ) {
+        if ( mpi_initialized ) {
+            return MPI_Info_c2f( MPI_INFO_NULL );
+        }
+    }
+    // The case when eckit is compiled with MPI support, but using "serial" MPI backend
+    return 0;
 #else
+    // The case when eckit is not compiled with MPI support
     return 0;
 #endif
 }
