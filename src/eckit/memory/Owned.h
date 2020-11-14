@@ -25,25 +25,21 @@ namespace eckit {
 /// Reference counting objects
 /// Subclass from this class to use a SharedPtr class
 
-template < typename LOCK >
-class OwnedT : private NonCopyable,
-               public LOCK {
+template <typename LOCK>
+class OwnedT : private NonCopyable, public LOCK {
 
-public: // methods
-
+public:  // methods
     OwnedT() : count_(0) {}
 
     virtual ~OwnedT() {}
 
-    void attach() const
-    {
+    void attach() const {
         LOCK::lock();
         count_++;
         LOCK::unlock();
     }
 
-    void detach() const
-    {
+    void detach() const {
         LOCK::lock();
         --count_;
         LOCK::unlock();
@@ -51,19 +47,17 @@ public: // methods
 
     size_t owners() const { return count_; }
 
-private: // members
-
+private:  // members
     mutable size_t count_;
-
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
 /// Owned object without thread lockable resource
-typedef OwnedT< memory::detail::ThreadedLock >  OwnedLock;
+typedef OwnedT<memory::detail::ThreadedLock> OwnedLock;
 
 /// Owned object with thread lockable resource
-typedef OwnedT< memory::detail::NoLock >  OwnedNoLock;
+typedef OwnedT<memory::detail::NoLock> OwnedNoLock;
 
 /// Default Owned type
 /// Same as OwnedNoLock
@@ -71,6 +65,6 @@ typedef OwnedNoLock Owned;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif
