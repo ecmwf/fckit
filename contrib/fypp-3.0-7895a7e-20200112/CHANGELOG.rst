@@ -9,12 +9,30 @@ Unreleased
 Added
 -----
 
+
+Changed
+-------
+
+
+Fixed
+-----
+
+
+3.0
+===
+
+Added
+-----
+
 * Implement variable keyword argument in macros.
 
 * Add block / contains / endblock construct as alternative for call / nextarg /
   endcall.
   
 * Escaping of preprocessor comments
+
+* Possibility of specifying character encoding for file I/O with UTF-8 as
+  default.
 
 
 Changed
