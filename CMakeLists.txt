@@ -135,6 +135,6 @@ file(READ ${CMAKE_CURRENT_SOURCE_DIR}/cmake/fckit_preprocess_fypp.cmake FCKIT_PR
 set( install_permissions OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE )
 install( FILES tools/fctest-generate-runner.py DESTINATION libexec PERMISSIONS ${install_permissions} )
 install( FILES tools/fckit-eval.sh DESTINATION libexec PERMISSIONS ${install_permissions} )
-install( FILES contrib/fypp-679566c-20190108/bin/fypp DESTINATION libexec RENAME fckit-fypp.py PERMISSIONS ${install_permissions} )
+install( FILES contrib/fypp-3.0-7895a7e-20200112/bin/fypp DESTINATION libexec RENAME fckit-fypp.py PERMISSIONS ${install_permissions} )
 
 ecbuild_install_project( NAME fckit )
