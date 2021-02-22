@@ -17,6 +17,10 @@ TESTSUITE(fctest_fckit_configuration_fails)
 TESTSUITE_INIT
   use fckit_module
   call fckit_main%init()
+
+  ! With Apple Silicon (M1), using Apple clang 12.0.0 for C++ and Homebrew GCC 10.2.0_4 for Fortran
+  ! it appears that the Fortran needs to trap the C++ exceptions via SIGTRAP
+  call fckit_signal%set_handler( fckit_signal%SIGTRAP() )
 END_TESTSUITE_INIT
 
 ! -----------------------------------------------------------------------------

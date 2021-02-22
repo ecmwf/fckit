@@ -93,6 +93,11 @@ interface
     integer(c_int32_t) :: signum
   end function
 
+  !int fckit__SIGTRAP ()
+  function fckit__SIGTRAP() result(signum) bind(c,name="fckit__SIGTRAP")
+    use iso_c_binding, only: c_int32_t
+    integer(c_int32_t) :: signum
+  end function
 end interface
 
 #endif
