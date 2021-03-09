@@ -11,7 +11,7 @@
 
 cmake_minimum_required( VERSION 3.12 FATAL_ERROR )
 
-find_package( ecbuild 3.0.0 REQUIRED HINTS ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/../ecbuild )
+find_package( ecbuild 3.4 REQUIRED HINTS ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/../ecbuild )
 
 project( fckit LANGUAGES C CXX Fortran )
 
@@ -74,7 +74,7 @@ if( NOT fckit_HAVE_FINAL )
     set( FCKIT_FINAL_BROKEN_FOR_AUTOMATIC_ARRAY   0 )
 endif()
 
-ecbuild_find_package( NAME eckit VERSION 1.5 QUIET )
+ecbuild_find_package( NAME eckit VERSION 1.14 QUIET )
 ecbuild_add_option( FEATURE ECKIT
                     DESCRIPTION "Wrap ecKit functionality"
                     CONDITION eckit_FOUND )
@@ -135,6 +135,6 @@ file(READ ${CMAKE_CURRENT_SOURCE_DIR}/cmake/fckit_preprocess_fypp.cmake FCKIT_PR
 set( install_permissions OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE )
 install( FILES tools/fctest-generate-runner.py DESTINATION libexec PERMISSIONS ${install_permissions} )
 install( FILES tools/fckit-eval.sh DESTINATION libexec PERMISSIONS ${install_permissions} )
-install( FILES contrib/fypp-679566c-20190108/bin/fypp DESTINATION libexec RENAME fckit-fypp.py PERMISSIONS ${install_permissions} )
+install( FILES contrib/fypp-3.0-7895a7e-20200112/bin/fypp DESTINATION libexec RENAME fckit-fypp.py PERMISSIONS ${install_permissions} )
 
 ecbuild_install_project( NAME fckit )

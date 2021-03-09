@@ -147,5 +147,9 @@ int32 fckit__SIGSEGV() {
 int32 fckit__SIGILL() {
     return SIGILL;
 }
+int32 fckit__SIGTRAP() {
+    return SIGTRAP;
+}
+
 
 }  // extern "C"

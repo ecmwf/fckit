@@ -29,7 +29,7 @@ set -x
 rm -rf $BUILD
 
 export fckit_DIR=@PROJECT_BINARY_DIR@
-export ecbuild_DIR=@ecbuild_MACROS_DIR@/../lib/cmake/ecbuild
+export ecbuild_DIR=@ecbuild_DIR@
 
 # Build
 mkdir -p $BUILD && cd $BUILD

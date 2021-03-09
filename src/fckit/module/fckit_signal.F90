@@ -87,6 +87,7 @@ contains
   procedure, nopass, public :: SIGILL  !! Return code for Illegal
   procedure, nopass, public :: SIGSEGV !! Return code for Segmentation violation
   procedure, nopass, public :: SIGFPE  !! Return code for Floating Point Exception
+  procedure, nopass, public :: SIGTRAP !! Return code for Trap/Breakpoint
 end type
 
 type(fckit_signal_type), save :: fckit_signal
@@ -194,6 +195,13 @@ function SIGFPE() result(signum)
   integer(c_int32_t) :: signum
   signum = fckit__SIGFPE()
 end function
+
+function SIGTRAP() result(signum)
+  use, intrinsic :: iso_c_binding, only : c_int32_t
+  integer(c_int32_t) :: signum
+  signum = fckit__SIGTRAP()
+end function
+
 
 !------------------------------------------------------------------------------
 

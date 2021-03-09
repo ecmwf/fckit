@@ -11,7 +11,7 @@ with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
 setup(
     name='fypp',
 
-    version='2.1.1',
+    version='3.0',
 
     description='Python powered Fortran preprocessor',
     long_description=long_description,
@@ -44,6 +44,8 @@ setup(
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
     ],
 
     keywords='fortran metaprogramming pre-processor',
