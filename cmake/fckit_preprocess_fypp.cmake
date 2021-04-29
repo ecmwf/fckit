@@ -219,19 +219,16 @@ function( fckit_target_preprocess_fypp _PAR_TARGET )
       fckit_target_append_fypp_args( args ${_PAR_TARGET} )
 
       if( _PAR_NO_LINE_NUMBERING )
-        fckit_preprocess_fypp_sources( preprocessed_sources
-            SOURCES ${sources_to_be_preprocessed}
-            NO_LINE_NUMBERING
-            FYPP_ARGS ${_PAR_FYPP_ARGS} ${args}
-            DEPENDS ${preprocessed_depends} ${_PAR_DEPENDS}
-        )
-      else()
-        fckit_preprocess_fypp_sources( preprocessed_sources
-            SOURCES ${sources_to_be_preprocessed}
-            FYPP_ARGS ${_PAR_FYPP_ARGS} ${args}
-            DEPENDS ${preprocessed_depends} ${_PAR_DEPENDS}
-        )
+          set( _NO_LINE_NUMBERING NO_LINE_NUMBERING )
       endif()
+
+      fckit_preprocess_fypp_sources( preprocessed_sources
+          SOURCES ${sources_to_be_preprocessed}
+          ${_NO_LINE_NUMBERING}
+          FYPP_ARGS ${_PAR_FYPP_ARGS} ${args}
+          DEPENDS ${preprocessed_depends} ${_PAR_DEPENDS}
+      )
+
       target_sources( ${_PAR_TARGET} PRIVATE ${preprocessed_sources} )
 
       ### Extra stuff required to add correct flags
