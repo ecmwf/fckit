@@ -218,8 +218,13 @@ function( fckit_target_preprocess_fypp _PAR_TARGET )
 
       fckit_target_append_fypp_args( args ${_PAR_TARGET} )
 
+      if( _PAR_NO_LINE_NUMBERING )
+          set( _NO_LINE_NUMBERING NO_LINE_NUMBERING )
+      endif()
+
       fckit_preprocess_fypp_sources( preprocessed_sources
           SOURCES ${sources_to_be_preprocessed}
+          ${_NO_LINE_NUMBERING}
           FYPP_ARGS ${_PAR_FYPP_ARGS} ${args}
           DEPENDS ${preprocessed_depends} ${_PAR_DEPENDS}
       )
