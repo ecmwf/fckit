@@ -16,3 +16,5 @@ module unload metview
 module unload netcdf4
 
 module load cmake/3.16.5
+module load python3/3.8.8-01
+
