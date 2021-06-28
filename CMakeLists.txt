@@ -22,7 +22,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 ################################################################################################
 # options & dependencies
 
-ecbuild_find_python( REQUIRED NO_LIBS )
+ecbuild_find_python( VERSION 3.6 REQUIRED NO_LIBS )
 
 ### Fortran ...
 ecbuild_enable_fortran( REQUIRED MODULE_DIRECTORY ${PROJECT_BINARY_DIR}/module )
