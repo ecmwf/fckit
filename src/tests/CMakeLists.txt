@@ -103,7 +103,7 @@ ecbuild_add_test( TARGET fckit_test_cpp
   LIBS fckit eckit eckit_mpi )
 
 ### Fix linking for C++ test executables linked with Fortran linker
-if( CMAKE_Fortran_COMPILER_ID MATCHES "PGI" )
+if( CMAKE_Fortran_COMPILER_ID MATCHES "PGI|NVHPC" )
   set( NO_MAIN "-Mnomain" )
 elseif( CMAKE_Fortran_COMPILER_ID MATCHES "Intel" )
   set( NO_MAIN "-nofor-main" )
