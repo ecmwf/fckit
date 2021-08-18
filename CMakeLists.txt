@@ -22,7 +22,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 ################################################################################################
 # options & dependencies
 
-ecbuild_find_python( REQUIRED NO_LIBS )
+ecbuild_find_python( VERSION 3.4 REQUIRED NO_LIBS )
 
 ### Fortran ...
 ecbuild_enable_fortran( REQUIRED MODULE_DIRECTORY ${PROJECT_BINARY_DIR}/module )
@@ -31,7 +31,7 @@ ecbuild_check_fortran( FEATURES finalization )
 
 set( FEATURE_FINAL_DEFAULT ON )
 set( PGIBUG_ATLAS_197 0 )
-if( CMAKE_Fortran_COMPILER_ID MATCHES "PGI" )
+if( CMAKE_Fortran_COMPILER_ID MATCHES "PGI|NVHPC" )
   if( ${CMAKE_Fortran_COMPILER_VERSION} VERSION_LESS 19.4 )
       set( PGIBUG_ATLAS_197 1 )
   endif()
