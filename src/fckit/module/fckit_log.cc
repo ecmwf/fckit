@@ -39,6 +39,10 @@ void fckit__log_info( char* msg, int32 newl, int32 flush ) {
     fckit__log( &Log::info(), msg, newl, flush );
 }
 
+void fckit__log_verbose( char* msg, int32 newl, int32 flush ) {
+    fckit__log( &Log::verbose(), msg, newl, flush );
+}
+
 void fckit__log_warning( char* msg, int32 newl, int32 flush ) {
     fckit__log( &Log::warning(), msg, newl, flush );
 }
@@ -81,6 +85,10 @@ void fckit__log_flush() {
 
 Channel* fckit__log_info_channel() {
     return &Log::info();
+}
+
+Channel* fckit__log_verbose_channel() {
+    return &Log::verbose();
 }
 
 Channel* fckit__log_warning_channel() {

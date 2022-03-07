@@ -71,6 +71,10 @@ int32 fckit__main_debug() {
     return fckit::Log::debug() != 0;
 }
 
+int32 fckit__main_verbose() {
+    return fckit::Log::verbose() != 0;
+}
+
 int32 fckit__main_name( char*& name, size_t& size ) {
     std::string v = fckit::Main::instance().name();
     size          = v.size();

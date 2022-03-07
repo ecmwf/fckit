@@ -25,6 +25,13 @@ interface
     integer(c_int32_t), value :: newl
     integer(c_int32_t), value :: flush
   end subroutine
+  ! void fckit__log_verbose(char *msg, int newl, int flush)
+  subroutine fckit__log_verbose(msg,newl,flush) bind(c)
+    use, intrinsic :: iso_c_binding , only : c_char, c_int32_t
+    character(kind=c_char), dimension(*) :: msg
+    integer(c_int32_t), value :: newl
+    integer(c_int32_t), value :: flush
+  end subroutine
   ! void fckit__log_warning(char *msg, int newl, int flush)
   subroutine fckit__log_warning(msg,newl,flush) bind(c)
     use, intrinsic :: iso_c_binding , only : c_char, c_int32_t
@@ -74,6 +81,10 @@ interface
   function fckit__log_info_channel() bind(c)
     use, intrinsic :: iso_c_binding, only : c_ptr
     type(c_ptr) :: fckit__log_info_channel
+  end function
+  function fckit__log_verbose_channel() bind(c)
+    use, intrinsic :: iso_c_binding, only : c_ptr
+    type(c_ptr) :: fckit__log_verbose_channel
   end function
   function fckit__log_warning_channel() bind(c)
     use, intrinsic :: iso_c_binding, only : c_ptr

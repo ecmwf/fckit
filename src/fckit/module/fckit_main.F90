@@ -199,6 +199,15 @@ function debug()
   if( debug_int==1 ) debug = .true.
 end function
 
+function verbose()
+  use, intrinsic :: iso_c_binding, only : c_int32_t
+  logical :: verbose
+  integer(c_int32_t) :: verbose_int
+  verbose_int = fckit__main_verbose()
+  verbose = .false.
+  if( verbose_int==1 .OR. debug() ) verbose = .true.
+end function
+
 subroutine main_name(name)
   use, intrinsic :: iso_c_binding
   use fckit_c_interop_module

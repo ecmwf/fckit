@@ -39,6 +39,7 @@ type, FORD_PRIVATE :: fckit_log_type
     !!    (W) --> warning
     !!    (E) --> error
     !!    (D) --> debug
+    !!    (V) --> verbose
 
   integer(c_int32_t) :: TIMESTAMP = 2
     !! Style for logging with prefix that contains time stamp and taskID
@@ -47,6 +48,7 @@ type, FORD_PRIVATE :: fckit_log_type
     !!    <taskID> <TIME> (W) --> warning
     !!    <taskID> <TIME> (E) --> error
     !!    <taskID> <TIME> (D) --> debug
+    !!    <taskID> <TIME> (V) --> verbose
 
 contains
 
@@ -55,6 +57,9 @@ contains
 
   procedure, nopass, public :: info
     !! Log to info channel
+
+  procedure, nopass, public :: verbose
+    !! Log to verbose channel
 
   procedure, nopass, public :: warning
     !! Log to warning channel
@@ -96,6 +101,9 @@ contains
   procedure, nopass, public :: info_channel
     !! Return the info [[fckit_logchannel(type)]]
 
+  procedure, nopass, public :: verbose_channel
+    !! Return the verbose [[fckit_logchannel(type)]]
+
   procedure, nopass, public :: warning_channel
     !! Return the warning [[fckit_logchannel(type)]]
 
@@ -118,7 +126,7 @@ type(fckit_log_type) :: log
 !------------------------------------------------------------------------------
 
 type, extends(fckit_object) :: fckit_logchannel
-  !! Log channel (any of info, warning, error, debug)
+  !! Log channel (any of info, verbose, warning, error, debug)
   !!
   !! Wraps ```eckit::Channel```. This channel can be passed as
   !! arguments to functions that expect a ```std::ostream``` to log to.
@@ -164,6 +172,24 @@ subroutine info(msg,newl,flush)
   opt_newl  = 1 ; if( present(newl) ) then; if( .not.  newl ) opt_newl  = 0; endif
   opt_flush = 1 ; if( present(flush)) then; if( .not. flush ) opt_flush = 0; endif
   call fckit__log_info(c_str_right_trim(msg),opt_newl,opt_flush)
+end subroutine
+
+
+subroutine verbose(msg,newl,flush)
+  use, intrinsic :: iso_c_binding
+  use fckit_c_interop_module, only : c_str_right_trim
+  character(kind=c_char,len=*), intent(in) :: msg
+    !! Message to be logged
+  logical, intent(in), optional :: newl
+    !! Add newline character (```\n```) after message.
+    !! Default ```.true.```
+  logical, intent(in), optional :: flush
+    !! Flush channel after message.
+    !! Default ```.true.```
+  integer(c_int32_t) :: opt_newl, opt_flush
+  opt_newl  = 1 ; if( present(newl) ) then; if( .not.  newl ) opt_newl  = 0; endif
+  opt_flush = 1 ; if( present(flush)) then; if( .not. flush ) opt_flush = 0; endif
+  call fckit__log_verbose(c_str_right_trim(msg),opt_newl,opt_flush)
 end subroutine
 
 
@@ -322,6 +348,12 @@ end subroutine
 function info_channel() result(channel)
   type(fckit_logchannel) :: channel
   call channel%reset_c_ptr( fckit__log_info_channel() )
+end function
+
+
+function verbose_channel() result(channel)
+  type(fckit_logchannel) :: channel
+  call channel%reset_c_ptr( fckit__log_verbose_channel() )
 end function
 
 

@@ -51,6 +51,11 @@ interface
     integer(c_int32_t) :: debug
   end function
 
+  function fckit__main_verbose() result(verbose) bind(c)
+    use iso_c_binding, only : c_int32_t
+    integer(c_int32_t) :: verbose
+  end function
+
   !int32 fckit__main_name (char* &name, size_t &name_size)
   function fckit__main_name(name,name_size) result(error_code) bind(c)
     use iso_c_binding, only: c_int32_t, c_size_t, c_ptr
