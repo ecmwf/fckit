@@ -100,7 +100,8 @@ LogTarget* createStyleTarget( LogTarget* target, Log::Style style, const char* p
 void Log::addFortranUnit( int unit, Style style, const char* ) {
     LogTarget* funit = new FortranUnitTarget( unit );
     info().addTarget( createStyleTarget( funit, style, "(I)" ) );
-    verbose().addTarget( createStyleTarget( funit, style, "(V)" ) );
+    if ( Main::instance().verbose() )
+        verbose().addTarget( createStyleTarget( funit, style, "(V)" ) );
     warning().addTarget( createStyleTarget( funit, style, "(W)" ) );
     error().addTarget( createStyleTarget( funit, style, "(E)" ) );
     if ( Main::instance().debug() )
@@ -110,7 +111,8 @@ void Log::addFortranUnit( int unit, Style style, const char* ) {
 void Log::setFortranUnit( int unit, Style style, const char* ) {
     LogTarget* funit = new FortranUnitTarget( unit );
     info().setTarget( createStyleTarget( funit, style, "(I)" ) );
-    verbose().setTarget( createStyleTarget( funit, style, "(V)" ) );
+    if ( Main::instance().verbose() )
+        verbose().setTarget( createStyleTarget( funit, style, "(V)" ) );
     warning().setTarget( createStyleTarget( funit, style, "(W)" ) );
     error().setTarget( createStyleTarget( funit, style, "(E)" ) );
     if ( Main::instance().debug() )
@@ -121,7 +123,8 @@ void Log::setFortranUnit( int unit, Style style, const char* ) {
 void Log::addFile( const char* path, Style style, const char* ) {
     LogTarget* file = new eckit::FileTarget( path );
     info().addTarget( createStyleTarget( file, style, "(I)" ) );
-    verbose().addTarget( createStyleTarget( file, style, "(V)" ) );
+    if ( Main::instance().verbose() )
+        verbose().addTarget( createStyleTarget( file, style, "(V)" ) );
     warning().addTarget( createStyleTarget( file, style, "(W)" ) );
     error().addTarget( createStyleTarget( file, style, "(E)" ) );
     if ( Main::instance().debug() )
@@ -131,7 +134,8 @@ void Log::addFile( const char* path, Style style, const char* ) {
 void Log::setFile( const char* path, Style style, const char* ) {
     LogTarget* file = new eckit::FileTarget( path );
     info().setTarget( createStyleTarget( file, style, "(I)" ) );
-    verbose().setTarget( createStyleTarget( file, style, "(V)" ) );
+    if ( Main::instance().verbose() )
+        verbose().setTarget( createStyleTarget( file, style, "(V)" ) );
     warning().setTarget( createStyleTarget( file, style, "(W)" ) );
     error().setTarget( createStyleTarget( file, style, "(E)" ) );
     if ( Main::instance().debug() )
