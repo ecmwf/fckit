@@ -101,6 +101,7 @@ private :: fckit_buffer
 public :: fckit_mpi
 public :: fckit_mpi_comm
 public :: fckit_mpi_status
+public :: fckit_mpi_addComm
 public :: fckit_mpi_setCommDefault
 public :: fckit_mpi_sum
 public :: fckit_mpi_prod
@@ -115,6 +116,12 @@ public :: fckit_mpi_info_null
 interface fckit_mpi_setCommDefault
   module procedure fckit_mpi_setCommDefault_int
   module procedure fckit_mpi_setCommDefault_name
+end interface
+
+!========================================================================
+
+interface fckit_mpi_addComm
+  module procedure fckit_mpi_addComm_name_int
 end interface
 
 !========================================================================
@@ -350,6 +357,13 @@ interface
   subroutine fckit__mpi__comm_set_default(comm) bind(c,name="fckit__mpi__comm_set_default")
     use, intrinsic :: iso_c_binding, only : c_ptr
     type(c_ptr), value :: comm
+  end subroutine
+
+  ! void fckit__mpi__addComm_name_int(const char* name, int comm)
+  subroutine fckit__mpi__addComm_name_int(name,comm) bind(c,name="fckit__mpi__addComm_name_int")
+    use, intrinsic :: iso_c_binding, only : c_char, c_int32_t
+    character(kind=c_char), dimension(*) :: name
+    integer(c_int32_t), value :: comm
   end subroutine
 
   subroutine fckit__mpi__comm_delete(comm) bind(c,name="fckit__mpi__comm_delete")
@@ -610,6 +624,16 @@ subroutine fckit_mpi_setCommDefault_name(name)
   use fckit_c_interop_module, only : c_str
   character(kind=c_char,len=*), intent(in), optional :: name
   call fckit__mpi__setCommDefault_name(c_str(name))
+end subroutine
+
+!---------------------------------------------------------------------------------------
+
+subroutine fckit_mpi_addComm_name_int(name,comm)
+  use, intrinsic :: iso_c_binding, only : c_char, c_int32_t
+  use fckit_c_interop_module, only : c_str
+  character(kind=c_char,len=*), intent(in), optional :: name
+  integer(c_int32_t), intent(in) :: comm
+  call fckit__mpi__addComm_name_int(c_str(name),comm)
 end subroutine
 
 !---------------------------------------------------------------------------------------

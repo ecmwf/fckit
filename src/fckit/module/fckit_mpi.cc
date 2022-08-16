@@ -61,6 +61,17 @@ const Comm* fckit__mpi__comm_wrap( int32 comm ) {
     return &eckit::mpi::comm( name.c_str() );
 }
 
+void fckit__mpi__addComm_int( int32 comm ) {
+    std::ostringstream s;
+    s << "fort." << comm;
+    std::string name = s.str();
+    eckit::mpi::addComm( name.c_str(), comm );
+}
+
+void fckit__mpi__addComm_name_int( const char* name, int32 comm ) {
+    eckit::mpi::addComm( name, comm );
+}
+
 void fckit__mpi__setCommDefault_int( int32 comm ) {
     std::ostringstream s;
     s << "fort." << comm;
