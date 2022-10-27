@@ -125,12 +125,19 @@ FCKIT_FINAL subroutine fckit_shared_ptr__final_auto(this)
     return
   endif
 #endif
-
-  call this%final()
+  if( .not. this%is_null_ ) then
+    if( this%owners() > 0 ) then
+      call this%final()
+    endif
+  endif
 end subroutine
 
 subroutine fckit_shared_ptr__final(this)
   class(fckit_shared_ptr), intent(inout) :: this
+
+#if FCKIT_FINAL_DEBUGGING
+    write(0,*) "fckit_shared_ptr__final"
+#endif
 
   if( this%is_null_ ) then
 #if FCKIT_FINAL_DEBUGGING
@@ -146,7 +153,7 @@ subroutine fckit_shared_ptr__final(this)
   endif
 #endif
 
-  if( this%owners() > 0 ) then
+  if( this%owners() >= 0 ) then
 #if FCKIT_FINAL_DEBUGGING
     write(0,'(A,I0)') " fckit_shared_ptr__final  , owners = ", this%owners()
 #endif
