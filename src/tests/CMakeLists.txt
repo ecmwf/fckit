@@ -65,7 +65,7 @@ add_fctest( TARGET  fckit_test_configuration_fails
 if( TEST fckit_test_configuration_fails )
     set_tests_properties( fckit_test_configuration_fails PROPERTIES
         PASS_REGULAR_EXPRESSION "Could not find \"missing\" in Configuration"
-        TIMEOUT 5 )
+        TIMEOUT 20 )
 endif()
 
 add_fctest( TARGET  fckit_test_broadcast_file

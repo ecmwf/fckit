@@ -52,7 +52,7 @@ TEST( test_comm )
 END_TEST
 
 
-TEST( test_add_comm )
+TEST( test_self_comm )
   use fckit_module
   use, intrinsic :: iso_c_binding
   implicit none
@@ -69,6 +69,24 @@ TEST( test_add_comm )
 
 END_TEST
 
+TEST( test_add_comm )
+  use fckit_mpi_module
+  use, intrinsic :: iso_c_binding
+  implicit none
+  integer :: fcomm_self
+  type(fckit_mpi_comm) :: comm_self, comm2
+
+  comm_self = fckit_mpi_comm("self")
+  fcomm_self = comm_self%communicator()
+
+  call fckit_mpi_addComm("another_self",fcomm_self)
+
+  comm2 = fckit_mpi_comm("another_self")
+
+  FCTEST_CHECK_EQUAL( comm2%size(), 1 )
+  FCTEST_CHECK_EQUAL( comm2%rank(), 0 )
+
+END_TEST
 
 
 TEST( test_set_comm_default )
