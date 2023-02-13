@@ -51,15 +51,17 @@ endfunction()
 # fckit_preprocess_fypp_sources( output
 #                                [SOURCES file1 [file2]... ]
 #                                [FYPP_ARGS arg1 [arg2]... ]
+#                                [FYPP_ARGS_EXCLUDE arg1 [arg2]... ]
 #                                [DEPENDS dep1 [dep2]... ] )
 #    Purpose:
 #        Preprocess source files with fypp
 #
 #    Arguments:
-#        output                         Append preprocessed source files to this list
-#        [SOURCES file1 [file2]... ]    List of source files to append
-#        [FYPP_ARGS arg1 [arg2]...]     Arguments passed to fypp
-#        [DEPENDS dep1 [dep2]... ]      Dependencies before processing files
+#        output                              Append preprocessed source files to this list
+#        [SOURCES file1 [file2]... ]         List of source files to append
+#        [FYPP_ARGS arg1 [arg2]...]          Arguments passed to fypp
+#        [FYPP_ARGS_EXCLUDE arg1 [arg2]...]  Arguments excluded from being passed to fypp; accepts bash-compatible regex
+#        [DEPENDS dep1 [dep2]... ]           Dependencies before processing files
 #
 #    Notes:
 #        The include flags and compile flags of targets with the DEPENDS argument
@@ -69,10 +71,14 @@ function( fckit_preprocess_fypp_sources output )
 
   set( options NO_LINE_NUMBERING )
   set( single_value_args "" )
-  set( multi_value_args SOURCES FYPP_ARGS DEPENDS )
+  set( multi_value_args SOURCES FYPP_ARGS FYPP_ARGS_EXCLUDE DEPENDS )
   cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
 
   unset( outfiles )
+
+  list( APPEND _PAR_FYPP_ARGS_EXCLUDE ${FCKIT_FYPP_ARGS_EXCLUDE})
+  list( APPEND _PAR_FYPP_ARGS_EXCLUDE "-D[[:space:]]?.*=([0-9])+L" )
+  list( JOIN   _PAR_FYPP_ARGS_EXCLUDE "," _PAR_FYPP_ARGS_EXCLUDE )
 
   foreach( filename ${_PAR_SOURCES} )
 
@@ -118,7 +124,7 @@ function( fckit_preprocess_fypp_sources output )
 
     add_custom_command(
       OUTPUT ${outfile}
-      COMMAND ${FYPP} ${args} ${CMAKE_CURRENT_SOURCE_DIR}/${filename} ${outfile}
+      COMMAND ${CMAKE_COMMAND} -E env FCKIT_EVAL_ARGS_EXCLUDE="${_PAR_FYPP_ARGS_EXCLUDE}" ${FYPP} ${args} ${CMAKE_CURRENT_SOURCE_DIR}/${filename} ${outfile}
       DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${filename} ${_PAR_DEPENDS} 
       COMMENT "[fypp] Preprocessor generating ${short_outfile}" )
 
@@ -150,15 +156,17 @@ endfunction()
 ##############################################################################################
 # fckit_target_preprocess_fypp( target
 #                               [FYPP_ARGS arg1 [arg2]... ]
+#                               [FYPP_ARGS_EXCLUDE arg1 [arg2]... ]
 #                               [DEPENDS dep1 [dep2]... ] )
 #    Purpose:
 #        Preprocess source files in the target with the extensions
 #        {.fypp, .fypp.F90, .F90.fypp}
 #
 #    Arguments:
-#        target                         Preprocess all files from this target
-#        [FYPP_ARGS arg1 [arg2]...]     Arguments passed to fypp
-#        [DEPENDS dep1 [dep2]... ]      Dependencies before processing files
+#        target                               Preprocess all files from this target
+#        [FYPP_ARGS arg1 [arg2]...]           Arguments passed to fypp
+#        [FYPP_ARGS_EXCLUDE arg1 [arg2]... ]  Arguments excluded from being passed to fypp; accepts bash-compatible regex
+#        [DEPENDS dep1 [dep2]... ]            Dependencies before processing files
 #
 #    Notes:
 #        The include flags and compile flags of current target and targets
@@ -169,7 +177,7 @@ function( fckit_target_preprocess_fypp _PAR_TARGET )
 
   set( options NO_LINE_NUMBERING )
   set( single_value_args "" )
-  set( multi_value_args FYPP_ARGS DEPENDS )
+  set( multi_value_args FYPP_ARGS FYPP_ARGS_EXCLUDE DEPENDS )
   cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
 
   if( TARGET ${_PAR_TARGET} )
@@ -226,6 +234,7 @@ function( fckit_target_preprocess_fypp _PAR_TARGET )
           SOURCES ${sources_to_be_preprocessed}
           ${_NO_LINE_NUMBERING}
           FYPP_ARGS ${_PAR_FYPP_ARGS} ${args}
+          FYPP_ARGS_EXCLUDE ${_PAR_FYPP_ARGS_EXCLUDE}
           DEPENDS ${preprocessed_depends} ${_PAR_DEPENDS}
       )
 
