@@ -104,4 +104,12 @@ ecbuild_add_library(
 
 )
 
+ecbuild_warn_var(CMAKE_CXX_STANDARD_LIBRARIES)
+ecbuild_warn_var(CMAKE_Fortran_STANDARD_LIBRARIES)
+ecbuild_warn_var(CMAKE_CXX_IMPLICIT_LIBRARIES)
+ecbuild_warn_var(CMAKE_Fortran_IMPLICIT_LIBRARIES)
+ecbuild_warn_var(ECBUILD_CXX_IMPLICIT_LINK_LIBRARIES)
+ecbuild_warn_var(ECBUILD_Fortran_IMPLICIT_LINK_LIBRARIES)
+ecbuild_warn_var(ECBUILD_IMPLICIT_LINK_LIBRARIES)
+
 fckit_target_preprocess_fypp( fckit )
