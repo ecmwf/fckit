@@ -601,7 +601,7 @@ function get_config_list(this, name, value) result(found)
   found_int = c_fckit_configuration_get_config_list(this%CPTR_PGIBUG_B, c_str(name), &
     & value_list_cptr, value_list_size)
   found = .False.
-  if( found_int == 1 .and. value_list_size > 0) then
+  if( found_int == 1 ) then
     found = .true.
     call c_f_pointer(value_list_cptr,value_cptrs,(/value_list_size/))
     allocate(value(value_list_size))
