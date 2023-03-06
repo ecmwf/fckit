@@ -601,7 +601,7 @@ function get_config_list(this, name, value) result(found)
   found_int = c_fckit_configuration_get_config_list(this%CPTR_PGIBUG_B, c_str(name), &
     & value_list_cptr, value_list_size)
   found = .False.
-  if( found_int == 1 ) then
+  if( found_int == 1 .and. value_list_size > 0) then
     found = .true.
     call c_f_pointer(value_list_cptr,value_cptrs,(/value_list_size/))
     allocate(value(value_list_size))
@@ -731,7 +731,7 @@ function get_string(this, name, value) result(found)
   integer(c_int32_t) :: found_int
   integer(c_size_t) :: value_size
   found_int = c_fckit_configuration_get_string(this%CPTR_PGIBUG_B,c_str(name),value_cptr,value_size)
-  if( found_int == 1 ) then
+  if( found_int == 1 .and. value_size > 0) then
     if( allocated(value) ) deallocate(value)
     FCKIT_ALLOCATE_CHARACTER(value,value_size)
     value = c_ptr_to_string(value_cptr)
@@ -762,7 +762,7 @@ function get_array_logical(this, name, value) result(found)
   integer(c_int32_t) :: found_int
   found_int = c_fckit_configuration_get_array_int32(this%CPTR_PGIBUG_B, c_str(name), &
    & value_cptr, value_size )
-  if (found_int ==1 ) then
+  if( found_int == 1 .and. value_size > 0) then
     call c_f_pointer(value_cptr,value_fptr,(/value_size/))
     allocate(value_int(value_size))
     value_int(:) = value_fptr(:)
@@ -801,7 +801,7 @@ function get_array_int32(this, name, value) result(found)
   integer(c_int32_t) :: found_int
   found_int = c_fckit_configuration_get_array_int32(this%CPTR_PGIBUG_B, c_str(name), &
    & value_cptr, value_size )
-  if (found_int ==1 ) then
+  if( found_int == 1 .and. value_size > 0) then
     call c_f_pointer(value_cptr,value_fptr,(/value_size/))
     if( allocated(value) ) deallocate(value)
     allocate(value(value_size))
@@ -832,7 +832,7 @@ function get_array_int64(this, name, value) result(found)
   integer(c_int32_t) :: found_int
   found_int = c_fckit_configuration_get_array_int64(this%CPTR_PGIBUG_B, c_str(name), &
    & value_cptr, value_size )
-  if (found_int == 1) then
+  if( found_int == 1 .and. value_size > 0) then
     call c_f_pointer(value_cptr,value_fptr,(/value_size/))
     if( allocated(value) ) deallocate(value)
     allocate(value(value_size))
@@ -863,7 +863,7 @@ function get_array_real32(this, name, value) result(found)
   integer(c_int32_t) :: found_int
   found_int = c_fckit_configuration_get_array_float(this%CPTR_PGIBUG_B, c_str(name), &
    & value_cptr, value_size )
-  if (found_int == 1 ) then
+  if( found_int == 1 .and. value_size > 0) then
     call c_f_pointer(value_cptr,value_fptr,(/value_size/))
     if( allocated(value) ) deallocate(value)
     allocate(value(value_size))
@@ -894,7 +894,7 @@ function get_array_real64(this, name, value) result(found)
   integer(c_int32_t) :: found_int
   found_int = c_fckit_configuration_get_array_double(this%CPTR_PGIBUG_B, c_str(name), &
    & value_cptr, value_size )
-  if (found_int == 1) then
+  if( found_int == 1 .and. value_size > 0) then
     call c_f_pointer(value_cptr,value_fptr,(/value_size/))
     if( allocated(value) ) deallocate(value)
     allocate(value(value_size))
@@ -932,7 +932,7 @@ function get_array_string(this,name,value) result(found)
   character(len=:), allocatable :: flatvalue
   found_int =   c_fckit_configuration_get_array_string(this%CPTR_PGIBUG_B, c_str(name), &
    & value_cptr, value_size, offsets_cptr, value_numelem)
-  if( found_int == 1 ) then
+  if( found_int == 1 .and. value_size > 0) then
     ! Get flat character array
     allocate(character(len=value_size) :: flatvalue )
     flatvalue = c_ptr_to_string(value_cptr)
