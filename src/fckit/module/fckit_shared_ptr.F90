@@ -99,8 +99,17 @@ end subroutine
 
 subroutine fckit_finalise( shared_ptr )
   use fckit_final_module, only: fckit_final
+  use fckit_object_module, only: fckit_object
   class(*), pointer :: shared_ptr
   select type( shared_ptr)
+#ifdef _CRAYFTN
+  ! Cray compiler cce/14 has problem with typebound procedure if it is using 'class'
+  type is(fckit_object)
+#if FCKIT_FINAL_DEBUGGING
+      write(0,*) "fckit_object%final()"
+#endif
+      call shared_ptr%final()
+#endif
     class is(fckit_final)
 #if FCKIT_FINAL_DEBUGGING
       write(0,*) "fckit_final%final()"

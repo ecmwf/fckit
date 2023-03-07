@@ -33,7 +33,13 @@ public :: fckit_owned
 !========================================================================
 
 type, extends(fckit_shared_ptr) :: fckit_shared_object
+#ifdef _CRAYFTN
+  ! Cray compiler cce/14 has problem with typebound procedure if it is using 'class'
+  type(fckit_object), pointer, public  :: shared_object_ => null()
+#else
   class(fckit_object), pointer, public  :: shared_object_ => null()
+#endif
+
 contains
 
   procedure, public :: shared_ptr_cast
