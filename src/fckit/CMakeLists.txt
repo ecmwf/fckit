@@ -30,6 +30,10 @@ if( HAVE_ECKIT )
       module/fckit_buffer.F90
       module/fckit_owned.cc
       module/fckit_owned_object.F90
+      module/fckit_map.cc
+      module/fckit_map.F90
+      module/fckit_tensor.cc
+      module/fckit_tensor.F90
       Libfckit.h
       Libfckit.cc
       Main.h
