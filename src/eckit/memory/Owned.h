@@ -29,7 +29,8 @@ template <typename LOCK>
 class OwnedT : private NonCopyable, public LOCK {
 
 public:  // methods
-    OwnedT() : count_(0) {}
+    OwnedT() :
+        count_(0) {}
 
     virtual ~OwnedT() {}
 
