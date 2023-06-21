@@ -1,0 +1,7 @@
+build:
+  modules:
+    - ninja
+  dependencies:
+    - ecmwf/ecbuild@develop
+    - ecmwf/eckit@develop
+  parallel: 64
