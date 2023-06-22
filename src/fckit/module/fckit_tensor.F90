@@ -45,7 +45,7 @@ contains
   procedure, nopass :: layout_colmajor => fckit_tensor_layout_colmajor
 
 #if FCKIT_FINAL_NOT_INHERITING
-  final :: fckit_tensor__final_auto
+  final :: fckit_tensor_real32__final_auto
 #endif
 end type fckit_tensor_real32
 
@@ -69,7 +69,7 @@ contains
   procedure, nopass :: layout_colmajor => fckit_tensor_layout_colmajor
 
 #if FCKIT_FINAL_NOT_INHERITING
-  final :: fckit_tensor__final_auto
+  final :: fckit_tensor_real64__final_auto
 #endif
 end type fckit_tensor_real64
 
