@@ -46,6 +46,22 @@ add_fctest( TARGET  fckit_test_abort
             CONDITION HAVE_ECKIT
             LIBS    fckit)
 
+add_fctest( TARGET  fckit_test_map
+            LINKER_LANGUAGE Fortran
+            SOURCES test_map.F90
+            CONDITION HAVE_ECKIT
+            LIBS    fckit)            
+
+add_fctest( TARGET  fckit_test_tensor
+            LINKER_LANGUAGE Fortran
+            SOURCES 
+              test_tensor.F90
+              test_tensor.cc
+            INCLUDES ${ECKIT_INCLUDE_DIRS}
+            CONDITION HAVE_ECKIT
+            LIBS  eckit fckit)            
+
+
 add_fctest( TARGET  fckit_test_configuration
             LINKER_LANGUAGE Fortran
             SOURCES test_configuration.F90
