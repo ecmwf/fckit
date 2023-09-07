@@ -143,6 +143,11 @@ end subroutine
 
 subroutine fckit_shared_ptr__final(this)
   class(fckit_shared_ptr), intent(inout) :: this
+  call type_final(this)
+end subroutine
+
+subroutine type_final(this)
+  type(fckit_shared_ptr), intent(inout) :: this
 
 #if FCKIT_FINAL_DEBUGGING
     write(0,*) "fckit_shared_ptr__final"
@@ -182,6 +187,15 @@ end subroutine
 
 subroutine clear_shared_ptr(obj_out)
   class(fckit_shared_ptr), intent(inout) :: obj_out
+  if( .not. obj_out%is_null_ ) then
+    nullify(obj_out%shared_ptr_)
+    nullify(obj_out%refcount_)
+    obj_out%is_null_ = .true.
+  endif
+end subroutine
+
+subroutine type_clear_shared_ptr(obj_out)
+  type(fckit_shared_ptr), intent(inout) :: obj_out
   if( .not. obj_out%is_null_ ) then
     nullify(obj_out%shared_ptr_)
     nullify(obj_out%refcount_)
