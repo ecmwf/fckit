@@ -31,7 +31,7 @@ does it submit to any jurisdiction.
 #define FCKIT_FINAL_BROKEN_FOR_AUTOMATIC_ARRAY     @FCKIT_FINAL_BROKEN_FOR_AUTOMATIC_ARRAY@
 
 #define FCKIT_FINAL impure elemental
-#define FCKIT_FINAL_DEBUGGING 0
+#define FCKIT_FINAL_DEBUGGING 1
 
 #define FCKIT_SUPPRESS_UNUSED( X ) \
 associate( unused_ => X ); \

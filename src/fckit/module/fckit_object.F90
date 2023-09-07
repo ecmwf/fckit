@@ -170,14 +170,23 @@ subroutine final( this )
   use fckit_c_interop_module, only : fckit_c_deleter_interface
   class(fckit_object), intent(inout) :: this
   procedure(fckit_c_deleter_interface), pointer :: deleter
+#if FCKIT_FINAL_DEBUGGING
+  write(0,*) "fckit_object_module.F90 @ ", __LINE__, ": BEGIN"
+#endif
   if( c_associated( this%cpp_object_ptr ) ) then
     if( c_associated( this%deleter ) ) then
       call c_f_procpointer( this%deleter, deleter )
+#if FCKIT_FINAL_DEBUGGING
+      write(0,*) "fckit_object_module.F90 @ ", __LINE__, ": call deleter( ", loc(this%cpp_object_ptr), ")"
+#endif
       call deleter( this%cpp_object_ptr )
       this%cpp_object_ptr = c_null_ptr
     endif
   endif
   this%cpp_object_ptr = c_null_ptr
+#if FCKIT_FINAL_DEBUGGING
+  write(0,*) "fckit_object_module.F90 @ ", __LINE__, ": END"
+#endif
 end subroutine
 
 FCKIT_FINAL subroutine fckit_object_final_auto( this )
