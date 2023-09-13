@@ -154,7 +154,7 @@ FCKIT_FINAL subroutine fckit_owned_object__final_auto(this)
   FCKIT_WRITE_LOC
   FCKIT_WRITE_DEBUG "this%final() address:",c_ptr_to_loc(this%cpp_object_ptr)
 #endif
-  call this%final()
+  call type_final(this)
   endif
 #if FCKIT_FINAL_DEBUGGING
   FCKIT_WRITE_LOC
@@ -263,7 +263,7 @@ end subroutine
 subroutine assignment_operator(this,other)
   class(fckit_owned_object), intent(inout) :: this
   class(fckit_owned_object), intent(in)    :: other
-  if( other%is_null() ) then
+  if( type_is_null(other) ) then
     write(0,*) "ERROR! other was not initialised"
   endif
 #if FCKIT_FINAL_DEBUGGING
@@ -274,7 +274,7 @@ subroutine assignment_operator(this,other)
 #endif
   if( this /= other ) then
 #if FCKIT_FINAL_DEBUGGING
-    if( this%is_null() ) then
+    if( type_is_null(this) ) then
       FCKIT_WRITE_LOC
       FCKIT_WRITE_DEBUG "assignment_operator of uninitialised"
     else
@@ -283,7 +283,7 @@ subroutine assignment_operator(this,other)
     endif
 #endif
     call this%final()
-    call this%reset_c_ptr( other%CPTR_PGIBUG_A, other%deleter )
+    call this%reset_c_ptr( other%cpp_object_ptr, other%deleter )
 #if FCKIT_FINAL_DEBUGGING
     FCKIT_WRITE_LOC
     FCKIT_WRITE_DEBUG "  \-> owners ", this%owners()
@@ -371,21 +371,21 @@ subroutine return(this)
 #if FCKIT_FINAL_FUNCTION_RESULT
   ! Cray example
   ! final will be called, which will detach, so attach first
-  if( this%owners() == 0 ) then
+  if( type_owners(this) == 0 ) then
 #if FCKIT_FINAL_DEBUGGING
     FCKIT_WRITE_LOC
     FCKIT_WRITE_DEBUG "return --> attach"
 #endif
-    call this%attach()
+    call type_attach(this)
   endif
 #else
   ! final will not be called, so detach manually
-  if( this%owners() > 0 ) then
+  if( type_owners(this) > 0 ) then
 #if FCKIT_FINAL_DEBUGGING
     FCKIT_WRITE_LOC
     FCKIT_WRITE_DEBUG "return --> detach"
 #endif
-    call this%detach()
+    call type_detach(this)
   endif
 #endif
 #if FCKIT_FINAL_DEBUGGING
@@ -478,7 +478,7 @@ subroutine reset_c_ptr(this,cptr,deleter)
   type(c_funptr), optional :: deleter
   if( present(cptr) ) then
     this%cpp_object_ptr = cptr
-    call this%attach()
+    call type_attach(this)
 
     if( present(deleter) ) then
       this%deleter = deleter

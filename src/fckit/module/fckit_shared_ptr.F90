@@ -205,7 +205,7 @@ end subroutine
 
 subroutine clear(obj_out)
   class(fckit_shared_ptr), intent(inout) :: obj_out
-  call obj_out%clear_shared_ptr()
+  call type_clear_shared_ptr(obj_out)
 end subroutine
 
 
