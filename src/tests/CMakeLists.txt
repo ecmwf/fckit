@@ -33,6 +33,15 @@ add_fctest( TARGET  fckit_test_shared_ptr
               test_shared_ptr.cc
             LIBS    fckit)
 
+add_fctest( TARGET  fckit_test_owned_object
+            LINKER_LANGUAGE Fortran
+            SOURCES
+              test_owned_object.F90
+              test_owned_object.cc
+            LIBS    fckit eckit
+            CONDITION HAVE_ECKIT
+          )
+
 add_fctest( TARGET  fckit_test_mpi
             LINKER_LANGUAGE Fortran
             SOURCES test_mpi.F90
