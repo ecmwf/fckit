@@ -127,28 +127,18 @@ CONTAINS
 !========================================================================
 
 FCKIT_FINAL subroutine fckit_owned_object__final_auto(this)
-#ifdef _CRAYFTN
-  use, intrinsic :: iso_c_binding, only : c_loc, c_null_ptr
-#endif
   type(fckit_owned_object), intent(inout) :: this
 #if FCKIT_FINAL_DEBUGGING
   FCKIT_WRITE_LOC
   write(0,'(A,I0)') "BEGIN fckit_owned_object__final_auto    address: ", c_ptr_to_loc(this%cpp_object_ptr)
 #endif
-  ! Guard necessary for Cray compiler...
-  ! ... when "this" has already been deallocated, and then
-  ! fckit_owned_object__final_auto is called...
-#ifdef _CRAYFTN
-  if( c_loc(this) == c_null_ptr ) then
+
+if (this%return_value) then
 #if FCKIT_FINAL_DEBUGGING
     FCKIT_WRITE_LOC
-    write(0,'(A)') "_CRAYFTN not calling final()"
-    FCKIT_WRITE_LOC
-    write(0,'(A,I0)') "END fckit_owned_object__final_auto    address:", c_ptr_to_loc(this%cpp_object_ptr)
+    write(0,'(A)') "Applying return-value-optimisation during assignment_operator, this%final not called"
 #endif
-    return
-  endif
-#endif
+else
 
 #if FCKIT_ENABLE_CRAY_WORKAROUND
   if( .not. type_is_null(this) ) then
@@ -165,6 +155,9 @@ FCKIT_FINAL subroutine fckit_owned_object__final_auto(this)
 #else
   call this%final()
 #endif
+
+  endif
+
 endif
 #if FCKIT_FINAL_DEBUGGING
   FCKIT_WRITE_LOC
@@ -210,7 +203,8 @@ subroutine fckit_owned_object__final(this)
   if( this%return_value ) then
     FCKIT_WRITE_LOC
     write(0,'(A,I0,A,I0,A)') "fckit_owned_object__final on return value, owners = ", type_owners(this), "    address: ", &
-    & loc(this%cpp_object_ptr)
+    & loc(this%cpp_object_ptr), " Not applying final() due to return-value-optimisation"
+    return
   endif
 #endif
 
@@ -245,12 +239,6 @@ subroutine assignment_operator(this,other)
 #endif
     write(0,*) "ERROR! other was not initialised"
   endif
-#if FCKIT_FINAL_DEBUGGING
-  if( other%return_value ) then
-    FCKIT_WRITE_LOC
-    write(0,'(A)') "other is a return value"
-  endif
-#endif
   if( this /= other ) then
 #if FCKIT_FINAL_DEBUGGING
 #if FCKIT_ENABLE_CRAY_WORKAROUND
@@ -266,7 +254,16 @@ subroutine assignment_operator(this,other)
     endif
 #endif
     call this%final()
-    call this%reset_c_ptr( other%cpp_object_ptr, other%deleter )
+    if( other%return_value ) then
+#if FCKIT_FINAL_DEBUGGING
+      FCKIT_WRITE_LOC
+      write(0,'(A)') "    rhs is a return value, not attaching again"
+#endif
+      this%cpp_object_ptr = other%cpp_object_ptr
+      this%deleter = other%deleter
+    else
+      call this%reset_c_ptr( other%cpp_object_ptr, other%deleter )
+    endif
 #if FCKIT_FINAL_DEBUGGING
     FCKIT_WRITE_LOC
     write(0,'(A,I0)') "  \-> owners ", this%owners()
@@ -315,31 +312,8 @@ function owners(this)
 end function
 
 subroutine return(this)
-  !! Transfer ownership to left hand side of "assignment(=)"
   class(fckit_owned_object), intent(inout) :: this
-#if FCKIT_FINAL_FUNCTION_RESULT
-  ! Cray example
-  ! final will be called, which will detach, so attach first
-  if( type_owners(this) == 0 ) then
-#if FCKIT_FINAL_DEBUGGING
-    FCKIT_WRITE_LOC
-    write(0,'(A)') "return --> attach"
-#endif
-    call type_attach(this)
-  endif
-#else
-  ! final will not be called, so detach manually
-  if( type_owners(this) > 0 ) then
-#if FCKIT_FINAL_DEBUGGING
-    FCKIT_WRITE_LOC
-    write(0,'(A)') "return --> detach"
-#endif
-    call type_detach(this)
-  endif
-#endif
-#if FCKIT_FINAL_DEBUGGING
   this%return_value = .true.
-#endif
 end subroutine
 
 subroutine assignment_operator_hook(this, other)
