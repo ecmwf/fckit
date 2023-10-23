@@ -8,9 +8,10 @@
 
 #include "fckit/fckit.h"
 
+#define FCKIT_ENABLE_CRAY_WORKAROUND 1
+
 #if FCKIT_FINAL_DEBUGGING
 #define FCKIT_WRITE_LOC write(0,'(A,I0,A)',advance='NO') "fckit_owned_object.F90 @ ",__LINE__,'  : '
-#define FCKIT_WRITE_DEBUG write(0,*)
 #endif
 
 module fckit_owned_object_module
@@ -132,7 +133,7 @@ FCKIT_FINAL subroutine fckit_owned_object__final_auto(this)
   type(fckit_owned_object), intent(inout) :: this
 #if FCKIT_FINAL_DEBUGGING
   FCKIT_WRITE_LOC
-  FCKIT_WRITE_DEBUG "BEGIN fckit_owned_object__final_auto    address:", c_ptr_to_loc(this%cpp_object_ptr)
+  write(0,'(A,I0)') "BEGIN fckit_owned_object__final_auto    address: ", c_ptr_to_loc(this%cpp_object_ptr)
 #endif
   ! Guard necessary for Cray compiler...
   ! ... when "this" has already been deallocated, and then
@@ -141,24 +142,33 @@ FCKIT_FINAL subroutine fckit_owned_object__final_auto(this)
   if( c_loc(this) == c_null_ptr ) then
 #if FCKIT_FINAL_DEBUGGING
     FCKIT_WRITE_LOC
-    FCKIT_WRITE_DEBUG "_CRAYFTN not calling final()"
+    write(0,'(A)') "_CRAYFTN not calling final()"
     FCKIT_WRITE_LOC
-    FCKIT_WRITE_DEBUG "END fckit_owned_object__final_auto    address:", c_ptr_to_loc(this%cpp_object_ptr)
+    write(0,'(A,I0)') "END fckit_owned_object__final_auto    address:", c_ptr_to_loc(this%cpp_object_ptr)
 #endif
     return
   endif
 #endif
 
+#if FCKIT_ENABLE_CRAY_WORKAROUND
+  if( .not. type_is_null(this) ) then
+#else
   if( .not. this%is_null() ) then
-#if FCKIT_FINAL_DEBUGGING
-  FCKIT_WRITE_LOC
-  FCKIT_WRITE_DEBUG "this%final() address:",c_ptr_to_loc(this%cpp_object_ptr)
 #endif
-  call type_final(this)
-  endif
 #if FCKIT_FINAL_DEBUGGING
   FCKIT_WRITE_LOC
-  FCKIT_WRITE_DEBUG "END fckit_owned_object__final_auto    address:", c_ptr_to_loc(this%cpp_object_ptr)
+  write(0,'(A,I0)') "this%final() address:",c_ptr_to_loc(this%cpp_object_ptr)
+#endif
+
+#if FCKIT_ENABLE_CRAY_WORKAROUND
+  call type_final(this)
+#else
+  call this%final()
+#endif
+endif
+#if FCKIT_FINAL_DEBUGGING
+  FCKIT_WRITE_LOC
+  write(0,'(A,I0)') "END fckit_owned_object__final_auto    address:", c_ptr_to_loc(this%cpp_object_ptr)
 #endif
 end subroutine
 
@@ -169,7 +179,7 @@ subroutine fckit_owned_object__delete( this )
   procedure(fckit_c_deleter_interface), pointer :: deleter
 #if FCKIT_FINAL_DEBUGGING
   FCKIT_WRITE_LOC
-  FCKIT_WRITE_DEBUG "fckit_owned_object__delete"
+  write(0,'(A)') "fckit_owned_object__delete"
 #endif
   if( c_associated( this%cpp_object_ptr ) ) then
     if( c_associated( this%deleter ) ) then
@@ -186,12 +196,12 @@ subroutine fckit_owned_object__final(this)
 
 #if FCKIT_FINAL_DEBUGGING
   FCKIT_WRITE_LOC
-  FCKIT_WRITE_DEBUG "fckit_owned_object__final address BEGIN: ", c_ptr_to_loc(this%cpp_object_ptr)
+  write(0,'(A,I0)') "fckit_owned_object__final address BEGIN: ", c_ptr_to_loc(this%cpp_object_ptr)
 #endif
   if( this%is_null() ) then
 #if FCKIT_FINAL_DEBUGGING
     FCKIT_WRITE_LOC
-    FCKIT_WRITE_DEBUG "fckit_owned_object__final  (uninitialised --> no-op),  address: ", c_ptr_to_loc(this%cpp_object_ptr)
+    write(0,'(A,I0)') "fckit_owned_object__final  (uninitialised --> no-op),  address: ", c_ptr_to_loc(this%cpp_object_ptr)
 #endif
     return
   endif
@@ -199,14 +209,16 @@ subroutine fckit_owned_object__final(this)
 #if FCKIT_FINAL_DEBUGGING
   if( this%return_value ) then
     FCKIT_WRITE_LOC
-    FCKIT_WRITE_DEBUG "fckit_owned_object__final on return value, owners = ", type_owners(this), "    address: ", loc(this%cpp_object_ptr)
+    write(0,'(A,I0,A,I0,A)') "fckit_owned_object__final on return value, owners = ", type_owners(this), "    address: ", &
+    & loc(this%cpp_object_ptr)
   endif
 #endif
 
   if( this%owners() > 0 ) then
 #if FCKIT_FINAL_DEBUGGING
     FCKIT_WRITE_LOC
-    FCKIT_WRITE_DEBUG "fckit_owned_object__final  , owners = ", type_owners(this), "   address: ", c_ptr_to_loc(this%cpp_object_ptr)
+    write(0,'(A,I0,A,I0)') "fckit_owned_object__final  , owners = ", type_owners(this), "   address: ", &
+      & c_ptr_to_loc(this%cpp_object_ptr)
 #endif
     call this%detach()
     if( this%owners() == 0 ) then
@@ -215,83 +227,54 @@ subroutine fckit_owned_object__final(this)
   endif
 #if FCKIT_FINAL_DEBUGGING
   FCKIT_WRITE_LOC
-  FCKIT_WRITE_DEBUG "fckit_owned_object__final  , owners = ", type_owners(this), "    address: ", c_ptr_to_loc(this%cpp_object_ptr)
+  write(0,'(A,I0,A,I0)') "fckit_owned_object__final  , owners = ", type_owners(this), "    address: ", &
+    & c_ptr_to_loc(this%cpp_object_ptr)
 #endif
   call this%reset_c_ptr()
 end subroutine
 
-subroutine type_final(this)
-  type(fckit_owned_object), intent(inout) :: this
-
-#if FCKIT_FINAL_DEBUGGING
-  FCKIT_WRITE_LOC
-  FCKIT_WRITE_DEBUG "fckit_owned_object__final address BEGIN: ", c_ptr_to_loc(this%cpp_object_ptr)
-#endif
-  if( type_is_null(this) ) then
-#if FCKIT_FINAL_DEBUGGING
-    FCKIT_WRITE_LOC
-    FCKIT_WRITE_DEBUG "fckit_owned_object__final  (uninitialised --> no-op),  address: ", c_ptr_to_loc(this%cpp_object_ptr)
-#endif
-    return
-  endif
-
-#if FCKIT_FINAL_DEBUGGING
-  if( this%return_value ) then
-    FCKIT_WRITE_LOC
-    FCKIT_WRITE_DEBUG "fckit_owned_object__final on return value, owners = ", type_owners(this), "    address: ", loc(this%cpp_object_ptr)
-  endif
-#endif
-
-  if( type_owners(this) > 0 ) then
-#if FCKIT_FINAL_DEBUGGING
-    FCKIT_WRITE_LOC
-    FCKIT_WRITE_DEBUG "fckit_owned_object__final  , owners = ", type_owners(this), "   address: ", c_ptr_to_loc(this%cpp_object_ptr)
-#endif
-    call type_detach(this)
-    if( type_owners(this) == 0 ) then
-      call fckit_owned_object__delete(this)
-    endif
-  endif
-#if FCKIT_FINAL_DEBUGGING
-  FCKIT_WRITE_LOC
-  FCKIT_WRITE_DEBUG "fckit_owned_object__final  , owners = ", type_owners(this), "    address: ", c_ptr_to_loc(this%cpp_object_ptr)
-#endif
-  call type_reset_c_ptr(this)
-end subroutine
 
 
 subroutine assignment_operator(this,other)
   class(fckit_owned_object), intent(inout) :: this
   class(fckit_owned_object), intent(in)    :: other
+#if FCKIT_ENABLE_CRAY_WORKAROUND
   if( type_is_null(other) ) then
+#else
+  if( other%is_null() ) then
+#endif
     write(0,*) "ERROR! other was not initialised"
   endif
 #if FCKIT_FINAL_DEBUGGING
   if( other%return_value ) then
     FCKIT_WRITE_LOC
-    FCKIT_WRITE_DEBUG "other is a return value"
+    write(0,'(A)') "other is a return value"
   endif
 #endif
   if( this /= other ) then
 #if FCKIT_FINAL_DEBUGGING
+#if FCKIT_ENABLE_CRAY_WORKAROUND
     if( type_is_null(this) ) then
+#else
+    if( this%is_null() ) then
+#endif
       FCKIT_WRITE_LOC
-      FCKIT_WRITE_DEBUG "assignment_operator of uninitialised"
+      write(0,'(A)') "assignment_operator of uninitialised"
     else
       FCKIT_WRITE_LOC
-      FCKIT_WRITE_DEBUG "assignment_operator of initialised"
+      write(0,'(A)') "assignment_operator of initialised"
     endif
 #endif
     call this%final()
     call this%reset_c_ptr( other%cpp_object_ptr, other%deleter )
 #if FCKIT_FINAL_DEBUGGING
     FCKIT_WRITE_LOC
-    FCKIT_WRITE_DEBUG "  \-> owners ", this%owners()
+    write(0,'(A,I0)') "  \-> owners ", this%owners()
 #endif
   else
 #if FCKIT_FINAL_DEBUGGING
     FCKIT_WRITE_LOC
-    FCKIT_WRITE_DEBUG "assignment_operator ( obj_out = obj_in )"
+    write(0,'(A)') "assignment_operator ( obj_out = obj_in )"
 #endif
   endif
   call this%assignment_operator_hook(other)
@@ -303,25 +286,11 @@ subroutine attach(this)
     call fckit__Owned__attach(this%cpp_object_ptr)
 #if FCKIT_FINAL_DEBUGGING
     FCKIT_WRITE_LOC
-    FCKIT_WRITE_DEBUG "attach"
+    write(0,'(A)') "attach"
 #endif
   endif
 end subroutine
 
-subroutine type_attach(this)
-  type(fckit_owned_object), intent(inout) :: this
-#if FCKIT_FINAL_DEBUGGING
-  FCKIT_WRITE_LOC
-  FCKIT_WRITE_DEBUG "attach  address:",c_ptr_to_loc(this%cpp_object_ptr)
-#endif
-  if( .not. type_is_null(this) ) then
-    call fckit__Owned__attach(this%cpp_object_ptr)
-#if FCKIT_FINAL_DEBUGGING
-    FCKIT_WRITE_LOC
-    FCKIT_WRITE_DEBUG "attach  address:",c_ptr_to_loc(this%cpp_object_ptr)
-#endif
-  endif
-end subroutine
 
 subroutine detach(this)
   class(fckit_owned_object), intent(inout) :: this
@@ -329,21 +298,11 @@ subroutine detach(this)
     call fckit__Owned__detach(this%cpp_object_ptr)
 #if FCKIT_FINAL_DEBUGGING
     FCKIT_WRITE_LOC
-    FCKIT_WRITE_DEBUG "detach"
+    write(0,'(A)') "detach"
 #endif
   endif
 end subroutine
 
-subroutine type_detach(this)
-  type(fckit_owned_object), intent(inout) :: this
-  if( .not. type_is_null(this) ) then
-    call fckit__Owned__detach(this%cpp_object_ptr)
-#if FCKIT_FINAL_DEBUGGING
-    FCKIT_WRITE_LOC
-    FCKIT_WRITE_DEBUG "detach"
-#endif
-  endif
-end subroutine
 
 function owners(this)
   integer(c_int32_t) :: owners
@@ -352,16 +311,6 @@ function owners(this)
     owners = 0
   else
     owners = fckit__Owned__owners(this%cpp_object_ptr)
-  endif
-end function
-
-function type_owners(this)
-  integer(c_int32_t) :: type_owners
-  type(fckit_owned_object), intent(in) :: this
-  if( type_is_null(this) ) then
-    type_owners = 0
-  else
-    type_owners = fckit__Owned__owners(this%cpp_object_ptr)
   endif
 end function
 
@@ -374,7 +323,7 @@ subroutine return(this)
   if( type_owners(this) == 0 ) then
 #if FCKIT_FINAL_DEBUGGING
     FCKIT_WRITE_LOC
-    FCKIT_WRITE_DEBUG "return --> attach"
+    write(0,'(A)') "return --> attach"
 #endif
     call type_attach(this)
   endif
@@ -383,7 +332,7 @@ subroutine return(this)
   if( type_owners(this) > 0 ) then
 #if FCKIT_FINAL_DEBUGGING
     FCKIT_WRITE_LOC
-    FCKIT_WRITE_DEBUG "return --> detach"
+    write(0,'(A)') "return --> detach"
 #endif
     call type_detach(this)
   endif
@@ -392,7 +341,6 @@ subroutine return(this)
   this%return_value = .true.
 #endif
 end subroutine
-
 
 subroutine assignment_operator_hook(this, other)
   class(fckit_owned_object) :: this
@@ -429,17 +377,6 @@ function is_null(this)
   endif
 end function
 
-function type_is_null(this)
-  use, intrinsic :: iso_c_binding, only: c_associated
-  logical :: type_is_null
-  type(fckit_owned_object) :: this
-  if( c_associated( this%cpp_object_ptr ) ) then
-          type_is_null = .False.
-  else
-          type_is_null = .True.
-  endif
-end function
-
 
 logical function equal(obj1,obj2)
   use fckit_c_interop_module, only : c_ptr_compare_equal
@@ -447,6 +384,7 @@ logical function equal(obj1,obj2)
   class(fckit_owned_object), intent(in) :: obj2
   equal = c_ptr_compare_equal(obj1%cpp_object_ptr,obj2%cpp_object_ptr)
 end function
+
 
 logical function not_equal(obj1,obj2)
   use fckit_c_interop_module, only : c_ptr_compare_equal
@@ -459,26 +397,23 @@ logical function not_equal(obj1,obj2)
   endif
 end function
 
-logical function type_not_equal(obj1,obj2)
-  use fckit_c_interop_module, only : c_ptr_compare_equal
-  type(fckit_owned_object), intent(in) :: obj1
-  type(fckit_owned_object), intent(in) :: obj2
-  if( c_ptr_compare_equal(obj1%cpp_object_ptr,obj2%cpp_object_ptr) ) then
-    type_not_equal = .False.
-  else
-    type_not_equal = .True.
-  endif
-end function
 
 subroutine reset_c_ptr(this,cptr,deleter)
-  use, intrinsic :: iso_c_binding, only: c_ptr, c_funptr, c_null_funptr
   use fckit_c_interop_module
   class(fckit_owned_object) :: this
   type(c_ptr), optional :: cptr
   type(c_funptr), optional :: deleter
   if( present(cptr) ) then
     this%cpp_object_ptr = cptr
+#if FCKIT_ENABLE_CRAY_WORKAROUND
     call type_attach(this)
+#else
+#if FCKIT_FINAL_DEBUGGING
+    FCKIT_WRITE_LOC
+    write(0,'(A)') "reset_c_ptr -> attach"
+#endif
+    call this%attach()
+#endif
 
     if( present(deleter) ) then
       this%deleter = deleter
@@ -493,8 +428,112 @@ subroutine reset_c_ptr(this,cptr,deleter)
 
 end subroutine
 
+
+#if FCKIT_ENABLE_CRAY_WORKAROUND || FCKIT_FINAL_DEBUGGING
+function type_owners(this)
+  integer(c_int32_t) :: type_owners
+  type(fckit_owned_object), intent(in) :: this
+  if( type_is_null(this) ) then
+    type_owners = 0
+  else
+    type_owners = fckit__Owned__owners(this%cpp_object_ptr)
+  endif
+end function
+
+
+function type_is_null(this)
+  use, intrinsic :: iso_c_binding, only: c_associated
+  logical :: type_is_null
+  type(fckit_owned_object) :: this
+  if( c_associated( this%cpp_object_ptr ) ) then
+          type_is_null = .False.
+  else
+          type_is_null = .True.
+  endif
+end function
+#endif
+
+#if FCKIT_ENABLE_CRAY_WORKAROUND
+
+subroutine type_final(this)
+  type(fckit_owned_object), intent(inout) :: this
+
+#if FCKIT_FINAL_DEBUGGING
+  FCKIT_WRITE_LOC
+  write(0,'(A,I0)') "fckit_owned_object__final address BEGIN: ", c_ptr_to_loc(this%cpp_object_ptr)
+#endif
+  if( type_is_null(this) ) then
+#if FCKIT_FINAL_DEBUGGING
+    FCKIT_WRITE_LOC
+    write(0,'(A,I0,A,I0)') "fckit_owned_object__final  (uninitialised --> no-op),  address: ", c_ptr_to_loc(this%cpp_object_ptr)
+#endif
+    return
+  endif
+
+#if FCKIT_FINAL_DEBUGGING
+  if( this%return_value ) then
+    FCKIT_WRITE_LOC
+    write(0,'(A,I0,A,I0)') "fckit_owned_object__final on return value, owners = ", type_owners(this), "    address: ", loc(this%cpp_object_ptr)
+  endif
+#endif
+
+  if( type_owners(this) > 0 ) then
+#if FCKIT_FINAL_DEBUGGING
+    FCKIT_WRITE_LOC
+    write(0,'(A,I0,A,I0)') "fckit_owned_object__final  , owners = ", type_owners(this), "   address: ", c_ptr_to_loc(this%cpp_object_ptr)
+#endif
+    call type_detach(this)
+    if( type_owners(this) == 0 ) then
+      call fckit_owned_object__delete(this)
+    endif
+  endif
+#if FCKIT_FINAL_DEBUGGING
+  FCKIT_WRITE_LOC
+  write(0,'(A,I0,A,I0)') "fckit_owned_object__final  , owners = ", type_owners(this), "    address: ", c_ptr_to_loc(this%cpp_object_ptr)
+#endif
+  call type_reset_c_ptr(this)
+end subroutine
+
+subroutine type_attach(this)
+  type(fckit_owned_object), intent(inout) :: this
+#if FCKIT_FINAL_DEBUGGING
+  FCKIT_WRITE_LOC
+  write(0,'(A,I0)') "attach  address:",c_ptr_to_loc(this%cpp_object_ptr)
+#endif
+  if( .not. type_is_null(this) ) then
+    call fckit__Owned__attach(this%cpp_object_ptr)
+#if FCKIT_FINAL_DEBUGGING
+    FCKIT_WRITE_LOC
+    write(0,'(A,I0)') "attach  address:",c_ptr_to_loc(this%cpp_object_ptr)
+#endif
+  endif
+end subroutine
+
+subroutine type_detach(this)
+  type(fckit_owned_object), intent(inout) :: this
+  if( .not. type_is_null(this) ) then
+    call fckit__Owned__detach(this%cpp_object_ptr)
+#if FCKIT_FINAL_DEBUGGING
+    FCKIT_WRITE_LOC
+    write(0,'(A)') "detach"
+#endif
+  endif
+end subroutine
+
+
+
+logical function type_not_equal(obj1,obj2)
+  use fckit_c_interop_module, only : c_ptr_compare_equal
+  type(fckit_owned_object), intent(in) :: obj1
+  type(fckit_owned_object), intent(in) :: obj2
+  if( c_ptr_compare_equal(obj1%cpp_object_ptr,obj2%cpp_object_ptr) ) then
+    type_not_equal = .False.
+  else
+    type_not_equal = .True.
+  endif
+end function
+
 subroutine type_reset_c_ptr(this,cptr,deleter)
-  use, intrinsic :: iso_c_binding, only: c_ptr, c_funptr, c_null_funptr
   use fckit_c_interop_module
   type(fckit_owned_object) :: this
   type(c_ptr), optional :: cptr
@@ -515,6 +554,6 @@ subroutine type_reset_c_ptr(this,cptr,deleter)
   endif
 
 end subroutine
-
+#endif
 
 end module
