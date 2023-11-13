@@ -57,7 +57,7 @@ TYPE, extends(fckit_owned_object) :: test_Grid
 contains
 
 #if FCKIT_FINAL_NOT_INHERITING
-  final :: atlas_Grid__final_auto
+  final :: test_Grid__final_auto
 #endif
 
 END TYPE test_Grid
@@ -104,7 +104,7 @@ contains
 ! Destructor
 
 #if FCKIT_FINAL_NOT_INHERITING
-ATLAS_FINAL subroutine test_Grid__final_auto(this)
+impure elemental subroutine test_Grid__final_auto(this)
   type(test_Grid), intent(inout) :: this
 #if FCKIT_FINAL_NOT_PROPAGATING
   call this%final()
@@ -112,7 +112,7 @@ ATLAS_FINAL subroutine test_Grid__final_auto(this)
   FCKIT_SUPPRESS_UNUSED( this )
 end subroutine
 
-ATLAS_FINAL subroutine test_StructuredGrid__final_auto(this)
+impure elemental subroutine test_StructuredGrid__final_auto(this)
   type(test_StructuredGrid), intent(inout) :: this
 #if FCKIT_FINAL_NOT_PROPAGATING
   call this%final()
