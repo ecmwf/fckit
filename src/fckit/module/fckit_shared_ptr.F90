@@ -8,6 +8,11 @@
 
 #include "fckit/fckit.h"
 
+#if FCKIT_FINAL_DEBUGGING
+#define FCKIT_WRITE_LOC write(0,'(A,I0,A)',advance='NO') "fckit_shared_ptr.F90 @ ",__LINE__,'  : '
+#endif
+
+
 module fckit_shared_ptr_module
 
 #if FCKIT_HAVE_ECKIT
@@ -119,27 +124,26 @@ subroutine fckit_finalise( shared_ptr )
 end subroutine
 
 FCKIT_FINAL subroutine fckit_shared_ptr__final_auto(this)
-#ifdef _CRAYFTN
-  use, intrinsic :: iso_c_binding, only : c_loc, c_null_ptr
-#endif
   type(fckit_shared_ptr), intent(inout) :: this
 #if FCKIT_FINAL_DEBUGGING
+  FCKIT_WRITE_LOC
   write(0,*) "fckit_shared_ptr__final_auto"
 #endif
-  ! Guard necessary for Cray compiler...
-  ! ... when "this" has already been deallocated, and then
-  ! fckit_shared_ptr__final_auto is called...
-#ifdef _CRAYFTN
-  if( c_loc(this) == c_null_ptr ) then
-    return
-  endif
+
+  if (this%return_value) then
+#if FCKIT_FINAL_DEBUGGING
+    FCKIT_WRITE_LOC
+    write(0,'(A)') "Applying return-value-optimisation during assignment_operator, this%final not called"
 #endif
-  if( .not. this%is_null_ ) then
-    if( this%owners() > 0 ) then
-      call this%final()
+  else
+    if( .not. this%is_null_ ) then
+      if( this%owners() > 0 ) then
+        call this%final()
+      endif
     endif
   endif
 end subroutine
+
 
 subroutine fckit_shared_ptr__final(this)
   class(fckit_shared_ptr), intent(inout) :: this
@@ -220,9 +224,6 @@ subroutine reset_shared_ptr(obj_out,obj_in)
     write(0,*) "ERROR! obj_in was not initialised"
   endif
 #if FCKIT_FINAL_DEBUGGING
-  if( obj_in%return_value ) then
-    write(0,*) "obj_in is a return value"
-  endif
 #endif
 
   if( obj_out%is_null_ ) then
@@ -241,8 +242,16 @@ subroutine reset_shared_ptr(obj_out,obj_in)
     obj_out%shared_ptr_ => obj_in%shared_ptr_
     obj_out%refcount_   => obj_in%refcount_
     obj_out%is_null_ = .not. associated( obj_out%shared_ptr_ )
+
     if( obj_out%shared_ptr_cast() ) then
-      call obj_out%attach()
+      if( obj_in%return_value ) then
+#if FCKIT_FINAL_DEBUGGING
+        FCKIT_WRITE_LOC
+        write(0,'(A)') "    rhs is a return value, not attaching again"
+#endif
+      else
+        call obj_out%attach()
+      endif
     else
       call obj_out%clear()
       call bad_cast()
@@ -283,27 +292,7 @@ end function
 subroutine return(this)
   !! Transfer ownership to left hand side of "assignment(=)"
   class(fckit_shared_ptr), intent(inout) :: this
-#if FCKIT_FINAL_FUNCTION_RESULT
-  ! Cray example
-  ! final will be called, which will detach, so attach first
-  if( this%owners() == 0 ) then
-#if FCKIT_FINAL_DEBUGGING
-        write(0,*) "return --> attach"
-#endif
-    call this%attach()
-  endif
-#else
-  ! final will not be called, so detach manually
-  if( this%owners() > 0 ) then
-#if FCKIT_FINAL_DEBUGGING
-    write(0,*) "return --> detach"
-#endif
-    call this%detach()
-  endif
-#endif
-#if FCKIT_FINAL_DEBUGGING
   this%return_value = .true.
-#endif
 end subroutine
 
 function get_shared_ptr(this) result(shared_ptr)
