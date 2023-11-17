@@ -7,6 +7,7 @@
 ! does it submit to any jurisdiction.
 
 #include "fckit/fckit.h"
+#define FCKIT_WRITE_LOC write(0,'(A,I0,A)',advance='NO') "fckit_object.F90 @ ",__LINE__,'  : '
 
 module fckit_object_module
   !! Provides abstract base class [[fckit_object_module:fckit_object(type)]]
@@ -35,9 +36,7 @@ type, extends(fckit_final) :: fckit_object
   type(c_funptr), private :: deleter = c_null_funptr
     !! Internal C pointer
 
-  logical, private :: dummy = .false.
-    ! This variable should not be necessary,
-    ! but seems to overcome compiler issues (gfortran 5.3, 6.3)
+  logical, private :: return_value = .false.
 
 contains
 
@@ -72,6 +71,10 @@ contains
 #if FCKIT_HAVE_FINAL
   final :: fckit_object_final_auto
 #endif
+
+  procedure, private :: assignment_operator
+  generic, public :: assignment(=) => assignment_operator
+  procedure, public :: return
 
 end type
 
@@ -110,6 +113,15 @@ function fckit_object__c_ptr(this)
   fckit_object__c_ptr = this%cpp_object_ptr
 end function
 
+subroutine assignment_operator(this,other)
+  class(fckit_object), intent(inout) :: this
+  class(fckit_object), intent(in)    :: other
+  call this%final()
+  this%cpp_object_ptr = other%cpp_object_ptr
+  this%deleter = other%deleter
+  this%return_value = .false.
+end subroutine
+
 subroutine reset_c_ptr(this,cptr,deleter)
   use, intrinsic :: iso_c_binding, only: c_ptr, c_funptr, c_null_funptr
   use fckit_c_interop_module
@@ -118,11 +130,19 @@ subroutine reset_c_ptr(this,cptr,deleter)
   type(c_funptr), optional :: deleter
 #if FCKIT_FINAL_DEBUGGING
   if( present(cptr) ) then
-     write(0,*) "fckit_object::reset_c_ptr( ",c_ptr_to_loc(cptr), ")"
+    if( present(deleter) ) then
+      FCKIT_WRITE_LOC
+      write(0,*) "fckit_object::reset_c_ptr( ", c_ptr_to_loc(cptr), c_ptr_to_loc(deleter), ")"
+    else
+      FCKIT_WRITE_LOC
+      write(0,*) "fckit_object::reset_c_ptr( ", c_ptr_to_loc(cptr), ")"
+    endif
   else
-     write(0,*) "fckit_object::reset_c_ptr( )"
+    FCKIT_WRITE_LOC
+    write(0,*) "fckit_object::reset_c_ptr( )"
   endif
 #endif
+  call this%final()
   if( present(cptr) ) then
     this%cpp_object_ptr = cptr
     if( present(deleter) ) then
@@ -167,34 +187,55 @@ end function
 
 subroutine final( this )
   use, intrinsic :: iso_c_binding, only: c_ptr, c_funptr, c_f_procpointer, c_associated, c_null_ptr
-  use fckit_c_interop_module, only : fckit_c_deleter_interface
+  use fckit_c_interop_module, only : fckit_c_deleter_interface, c_ptr_to_loc
   class(fckit_object), intent(inout) :: this
   procedure(fckit_c_deleter_interface), pointer :: deleter
 #if FCKIT_FINAL_DEBUGGING
-  write(0,*) "fckit_object_module.F90 @ ", __LINE__, ": BEGIN"
+  FCKIT_WRITE_LOC
+  write(0,*) "FINAL BEGIN", c_ptr_to_loc(this%cpp_object_ptr)
 #endif
   if( c_associated( this%cpp_object_ptr ) ) then
     if( c_associated( this%deleter ) ) then
       call c_f_procpointer( this%deleter, deleter )
 #if FCKIT_FINAL_DEBUGGING
-      write(0,*) "fckit_object_module.F90 @ ", __LINE__, ": call deleter( ", loc(this%cpp_object_ptr), ")"
+      write(0,*) "fckit_object.F90 @ ", __LINE__, ": call deleter( ", c_ptr_to_loc(this%cpp_object_ptr), ")"
 #endif
       call deleter( this%cpp_object_ptr )
       this%cpp_object_ptr = c_null_ptr
+      this%deleter = c_null_funptr
     endif
   endif
   this%cpp_object_ptr = c_null_ptr
 #if FCKIT_FINAL_DEBUGGING
-  write(0,*) "fckit_object_module.F90 @ ", __LINE__, ": END"
+  FCKIT_WRITE_LOC
+  write(0,*) "FINAL END", c_ptr_to_loc(this%cpp_object_ptr)
 #endif
 end subroutine
 
 FCKIT_FINAL subroutine fckit_object_final_auto( this )
+  use fckit_c_interop_module, only : fckit_c_deleter_interface, c_ptr_to_loc
   type(fckit_object), intent(inout) :: this
 #if FCKIT_FINAL_DEBUGGING
-  write(0,*) "fckit_object_final_auto"
+  FCKIT_WRITE_LOC
+  write(0,*) "fckit_object_final_auto cptr: ", c_ptr_to_loc(this%cpp_object_ptr)
 #endif
-  call this%final()
+  if (this%return_value) then
+#if FCKIT_FINAL_DEBUGGING
+    FCKIT_WRITE_LOC
+    write(0,'(A)') "Applying return-value-optimisation during assignment_operator, this%final not called"
+#endif
+  else
+#if FCKIT_FINAL_DEBUGGING
+      FCKIT_WRITE_LOC
+      write(0,'(A)') "Calling final"
+#endif
+      call this%final()
+  endif
+end subroutine
+
+subroutine return(this)
+  class(fckit_object), intent(inout) :: this
+  this%return_value = .true.
 end subroutine
 
 end module

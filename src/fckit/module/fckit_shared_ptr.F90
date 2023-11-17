@@ -244,14 +244,14 @@ subroutine reset_shared_ptr(obj_out,obj_in)
     obj_out%is_null_ = .not. associated( obj_out%shared_ptr_ )
 
     if( obj_out%shared_ptr_cast() ) then
-      if( obj_in%return_value ) then
+      !if( obj_in%return_value ) then
 #if FCKIT_FINAL_DEBUGGING
         FCKIT_WRITE_LOC
-        write(0,'(A)') "    rhs is a return value, not attaching again"
+        write(0,'(A)') "    rhs is a return value"
 #endif
-      else
+      !else
         call obj_out%attach()
-      endif
+      !endif
     else
       call obj_out%clear()
       call bad_cast()
@@ -293,6 +293,7 @@ subroutine return(this)
   !! Transfer ownership to left hand side of "assignment(=)"
   class(fckit_shared_ptr), intent(inout) :: this
   this%return_value = .true.
+  call this%detach()
 end subroutine
 
 function get_shared_ptr(this) result(shared_ptr)
