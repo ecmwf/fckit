@@ -132,7 +132,7 @@ subroutine reset_c_ptr(this,cptr,deleter)
   if( present(cptr) ) then
     if( present(deleter) ) then
       FCKIT_WRITE_LOC
-      write(0,*) "fckit_object::reset_c_ptr( ", c_ptr_to_loc(cptr), c_ptr_to_loc(deleter), ")"
+      write(0,*) "fckit_object::reset_c_ptr( ", c_ptr_to_loc(cptr), " , deleter )"
     else
       FCKIT_WRITE_LOC
       write(0,*) "fckit_object::reset_c_ptr( ", c_ptr_to_loc(cptr), ")"
