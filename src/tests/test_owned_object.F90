@@ -181,13 +181,15 @@ TESTSUITE_WITH_FIXTURE(fcta_FunctionSpace,fcta_FunctionSpace_fxt)
 ! -----------------------------------------------------------------------------
 
 TESTSUITE_INIT
-  ! call atlas_library%initialise()
+  use fckit_module, only : fckit_main
+  call fckit_main%initialise()
 END_TESTSUITE_INIT
 
 ! -----------------------------------------------------------------------------
 
 TESTSUITE_FINALIZE
-  ! call atlas_library%finalise()
+  use fckit_module, only : fckit_main
+  call fckit_main%finalise()
 END_TESTSUITE_FINALIZE
 
 ! -----------------------------------------------------------------------------
