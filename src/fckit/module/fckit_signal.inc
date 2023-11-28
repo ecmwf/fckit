@@ -98,6 +98,12 @@ interface
     use iso_c_binding, only: c_int32_t
     integer(c_int32_t) :: signum
   end function
+  
+  !int fckit__SIGBUS ()
+  function fckit__SIGBUS() result(signum) bind(c,name="fckit__SIGBUS")
+    use iso_c_binding, only: c_int32_t
+    integer(c_int32_t) :: signum
+  end function
 end interface
 
 #endif
