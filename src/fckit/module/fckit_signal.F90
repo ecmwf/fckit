@@ -88,6 +88,7 @@ contains
   procedure, nopass, public :: SIGSEGV !! Return code for Segmentation violation
   procedure, nopass, public :: SIGFPE  !! Return code for Floating Point Exception
   procedure, nopass, public :: SIGTRAP !! Return code for Trap/Breakpoint
+  procedure, nopass, public :: SIGBUS  !! Return code for Bus error 
 end type
 
 type(fckit_signal_type), save :: fckit_signal
@@ -202,6 +203,11 @@ function SIGTRAP() result(signum)
   signum = fckit__SIGTRAP()
 end function
 
+function SIGBUS() result(signum)
+  use, intrinsic :: iso_c_binding, only : c_int32_t
+  integer(c_int32_t) :: signum
+  signum = fckit__SIGBUS()
+end function
 
 !------------------------------------------------------------------------------
 
