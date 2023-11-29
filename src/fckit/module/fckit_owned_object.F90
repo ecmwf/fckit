@@ -76,8 +76,8 @@ contains
   final :: fckit_owned_object__final_auto
 #endif
 
-  procedure, private :: assignment_operator
-  generic, public :: assignment(=) => assignment_operator
+  procedure, private :: fckit_owned_object_assignment_operator
+  generic, public :: assignment(=) => fckit_owned_object_assignment_operator
   procedure, public :: owners
   procedure, public :: attach
   procedure, public :: detach
@@ -234,7 +234,7 @@ end subroutine
 
 
 
-subroutine assignment_operator(this,other)
+subroutine fckit_owned_object_assignment_operator(this,other)
   class(fckit_owned_object), intent(inout) :: this
   class(fckit_owned_object), intent(in)    :: other
 #if FCKIT_ENABLE_CRAY_WORKAROUND
@@ -252,10 +252,10 @@ subroutine assignment_operator(this,other)
     if( this%is_null() ) then
 #endif
       FCKIT_WRITE_LOC
-      FCKIT_WRITE(0,'(A)') "assignment_operator of uninitialised"
+      FCKIT_WRITE(0,'(A)') "fckit_owned_object_assignment_operator of uninitialised BEGIN"
     else
       FCKIT_WRITE_LOC
-      FCKIT_WRITE(0,'(A)') "assignment_operator of initialised"
+      FCKIT_WRITE(0,'(A)') "fckit_owned_object_assignment_operator of initialised BEGIN"
     endif
 #endif
     call this%final()
@@ -278,7 +278,7 @@ subroutine assignment_operator(this,other)
   else
 #if FCKIT_FINAL_DEBUGGING
     FCKIT_WRITE_LOC
-    write(0,'(A)') "assignment_operator ( obj_out = obj_in )"
+    write(0,'(A)') "fckit_owned_object_assignment_operator ( obj_out = obj_in )"
 #endif
   endif
   call this%assignment_operator_hook(other)
@@ -411,7 +411,10 @@ subroutine reset_c_ptr(this,cptr,deleter)
     this%cpp_object_ptr = c_null_ptr
     this%deleter = c_null_funptr
   endif
-
+#if FCKIT_FINAL_DEBUGGING
+    FCKIT_WRITE_LOC
+    FCKIT_WRITE(0,'(A)') "reset_c_ptr .. done"
+#endif
 end subroutine
 
 
