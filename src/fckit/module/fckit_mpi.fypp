@@ -688,6 +688,7 @@ function split( this, colour, name )
   character(len=*) :: name
   call split%reset_c_ptr( &
       & fckit__mpi__comm_split( this%CPTR_PGIBUG_A, colour, c_str(name) ) )
+  call split%return()
 end function
 
 !---------------------------------------------------------------------------------------
