@@ -124,10 +124,23 @@ subroutine fckit_finalise( shared_ptr )
 end subroutine
 
 FCKIT_FINAL subroutine fckit_shared_ptr__final_auto(this)
+#ifdef _CRAYFTN
+  use, intrinsic :: iso_c_binding, only : c_loc, c_null_ptr
+#endif
   type(fckit_shared_ptr), intent(inout) :: this
+
 #if FCKIT_FINAL_DEBUGGING
   FCKIT_WRITE_LOC
   write(0,*) "fckit_shared_ptr__final_auto"
+#endif
+
+  ! Guard necessary for Cray compiler...
+  ! ... when "this" has already been deallocated, and then
+  ! fckit_shared_ptr__final_auto is called...
+#ifdef _CRAYFTN
+  if( c_loc(this) == c_null_ptr ) then
+    return
+  endif
 #endif
 
   if (this%return_value) then
