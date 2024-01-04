@@ -52,7 +52,7 @@ endif()
 
 if( CMAKE_Fortran_COMPILER_ID MATCHES "PGI|NVHPC" )
   # Bug tested with pgi/17.7 (fixed pgi/19.4) requires fckit to be compiled statically
-  if( ${CMAKE_Fortran_COMPILER_VERSION} VERSION_LESS 19.4 )
+  if( ${CMAKE_Fortran_COMPILER_VERSION} VERSION_LESS 18.7 )
       ecbuild_warn( "Bug in pgi < 19.4 requires fckit to be compiled statically" )
       set( fckit_type STATIC )
   endif()
