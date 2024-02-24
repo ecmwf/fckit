@@ -13,7 +13,7 @@ TESTSUITE( array )
 TEST( test_array_view1d )
   use fckit_array_module, only: array_view1d
   use, intrinsic :: iso_c_binding
-  integer(c_int32_t) :: array_int32_r2(20,10)
+  integer(c_int32_t), target :: array_int32_r2(20,10)
   integer(c_int32_t), pointer :: view(:)
 
   write(0,*) "test_array_view1d"
