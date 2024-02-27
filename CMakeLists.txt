@@ -104,9 +104,18 @@ endif()
 set( FCKIT_LIBRARIES  fckit )
 
 ################################################################################################
+# find fypp
+
+find_program(FYPP fypp)
+if( FYPP )
+  ecbuild_info("fckit found fypp: ${FYPP}")
+endif()
+
 # sources
 
-set( FYPP ${CMAKE_CURRENT_SOURCE_DIR}/tools/fckit-eval.sh ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/tools/fckit-fypp.py )
+if( NOT FYPP )
+  set( FYPP ${CMAKE_CURRENT_SOURCE_DIR}/tools/fckit-eval.sh ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/tools/fckit-fypp.py )
+endif()
 set( FCTEST_GENERATOR ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/tools/fctest-generate-runner.py )
 include( fckit_preprocess_fypp )
 include( add_fctest )
@@ -127,7 +136,9 @@ if( ECBUILD_INSTALL_FORTRAN_MODULES )
 endif()
 if( NOT PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
   set( FCTEST_GENERATOR ${FCTEST_GENERATOR} PARENT_SCOPE )
-  set( FYPP ${FYPP} PARENT_SCOPE )
+  if( NOT FYPP )
+    set( FYPP ${FYPP} PARENT_SCOPE )
+  endif()
 endif()
 file(READ ${CMAKE_CURRENT_SOURCE_DIR}/cmake/add_fctest.cmake ADD_FCTEST)
 file(READ ${CMAKE_CURRENT_SOURCE_DIR}/cmake/fckit_preprocess_fypp.cmake FCKIT_PREPROCESS_FYPP )
@@ -135,6 +146,6 @@ file(READ ${CMAKE_CURRENT_SOURCE_DIR}/cmake/fckit_preprocess_fypp.cmake FCKIT_PR
 set( install_permissions OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE )
 install( FILES tools/fctest-generate-runner.py DESTINATION libexec PERMISSIONS ${install_permissions} )
 install( FILES tools/fckit-eval.sh DESTINATION libexec PERMISSIONS ${install_permissions} )
-install( FILES contrib/fypp-3.0-7895a7e-20200112/bin/fypp DESTINATION libexec RENAME fckit-fypp.py PERMISSIONS ${install_permissions} )
+install( FILES contrib/fypp-3.2-b8dd58b-20230822/bin/fypp DESTINATION libexec RENAME fckit-fypp.py PERMISSIONS ${install_permissions} )
 
 ecbuild_install_project( NAME fckit )
