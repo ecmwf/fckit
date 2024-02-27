@@ -1,1 +1,1 @@
-../contrib/fypp-3.0-7895a7e-20200112/bin/fypp
+../contrib/fypp-3.2-b8dd58b-20230822/bin/fypp
