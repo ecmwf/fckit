@@ -1,12 +1,14 @@
 '''Unit tests for testing Fypp.'''
-import sys
+from pathlib import Path
+import platform
 import unittest
 import fypp
+
 
 def _linenum(linenr, fname=None, flag=None):
     if fname is None:
         fname = fypp.STRING
-    return fypp.linenumdir(linenr, fname, flag)
+    return fypp.linenumdir_cpp(linenr, fname, flag)
 
 def _defvar(var, val):
     return '-D{0}={1}'.format(var, val)
@@ -32,6 +34,9 @@ def _linenumbering(nummode):
 def _linenum_gfortran5():
     return '--line-marker-format=gfortran5'
 
+def _linenum_std():
+    return '--line-marker-format=std'
+
 def _importmodule(module):
     return '-m{0}'.format(module)
 
@@ -45,18 +50,6 @@ _NO_FOLDING_FLAG = '-F'
 _NEW_FILE = 1
 
 _RETURN_TO_FILE = 2
-
-
-# Some test flags, only to be used for exception tests, as the exception
-# stack could be different based on the python version
-
-_PYTHON_2 = 1
-
-_PYTHON_3 = 2
-
-_PYTHON_32_OR_BELOW = 3
-
-_PYTHON_33_OR_ABOVE = 4
 
 
 # Various basic tests
@@ -1363,6 +1356,18 @@ SIMPLE_TESTS = [
       '1\n'
      )
     ),
+    ('builtin_var_system',
+     ([],
+      '${_SYSTEM_}$',
+      platform.system()
+     )
+    ),
+    ('builtin_var_machine',
+     ([],
+      '${_MACHINE_}$',
+      platform.machine()
+     )
+    ),
     ('escaped_control_inline',
      ([],
       r'A#\{if False}\#B#\{endif}\#',
@@ -1706,6 +1711,12 @@ SIMPLE_TESTS = [
       'False\n\nFalse\n'
      )
     ),
+    ('define_with_equal_sign',
+     ([_defvar("A", "'a=b'")],
+      '${A}$',
+      'a=b'
+     )
+    ),
 ]
 
 
@@ -1727,6 +1738,13 @@ LINENUM_TESTS = [
      ([_LINENUM_FLAG, _linenum_gfortran5()],
       '',
       '# 1 "<string>" 1\n',
+     )
+    ),
+    # Explicit test for standard line number marker format
+    ('explicit_str_linenum_test_standard',
+     ([_LINENUM_FLAG, _linenum_std()],
+      '',
+      '#line 1 "<string>"\n',
      )
     ),
     ('trivial',
@@ -2101,6 +2119,45 @@ INCLUDE_TESTS = [
       'START\n#:mute\n#:include \'fypp1.inc\'\n#:endmute\nDONE\n',
       _linenum(0) + 'START\n' + _linenum(4) + 'DONE\n'
      )
+    ),
+]
+
+
+# Tests which needs actual files as input
+#
+# Each test consists of a tuple containing the test name and a tuple with the
+# arguments of the get_test_output_from_file_input_method() routine.
+#
+INPUT_FILE_TESTS = [
+    ('file_var_substitution',
+        ([],
+         "input/filevarroot.fypp",
+         'FILE: input/filevarroot.fypp:1\n'
+         'THIS_FILE: input/filevarroot.fypp:2\n'
+         '---\n'
+         'FILE: input/filevarroot.fypp:5\n'
+         'THIS_FILE: input/filevarroot.inc:3\n'
+        )
+    ),
+    ('file_var_root_rel',
+        (["--file-var-root=input"],
+         "input/filevarroot.fypp",
+         'FILE: filevarroot.fypp:1\n'
+         'THIS_FILE: filevarroot.fypp:2\n'
+         '---\n'
+         'FILE: filevarroot.fypp:5\n'
+         'THIS_FILE: filevarroot.inc:3\n'
+        )
+    ),
+    ('file_var_root_abs',
+        ([f"--file-var-root={Path.cwd()}"],
+         f"{Path.cwd() / 'input/filevarroot.fypp'}",
+         'FILE: input/filevarroot.fypp:1\n'
+         'THIS_FILE: input/filevarroot.fypp:2\n'
+         '---\n'
+         'FILE: input/filevarroot.fypp:5\n'
+         'THIS_FILE: input/filevarroot.inc:3\n'
+        )
     ),
 ]
 
@@ -2580,20 +2637,11 @@ EXCEPTION_TESTS = [
       [(fypp.FyppFatalError, fypp.STRING, (0, 1))]
      )
     ),
-    ('tuple_macro_argument_py2',
-     ([],
-      '#:def alma((x, y))\n#:enddef\n',
-      [(fypp.FyppFatalError, fypp.STRING, (0, 1)),
-       (fypp.FyppFatalError, None, None)],
-     ),
-     _PYTHON_2
-    ),
-    ('tuple_macro_argument_py3',
+    ('tuple_macro_argument',
      ([],
       '#:def alma((x, y))\n#:enddef\n',
       [(fypp.FyppFatalError, fypp.STRING, (0, 1))],
      ),
-     _PYTHON_3
     ),
     ('repeated_keyword_argument',
      ([],
@@ -2615,20 +2663,12 @@ EXCEPTION_TESTS = [
       [(fypp.FyppFatalError, fypp.STRING, (0, 1))]
      )
     ),
-    ('macrodef_pos_arg_after_var_arg_py2_py32',
-     ([],
-      '#:def mymacro(A, *B, C)\n#:enddef\n',
-      [(fypp.FyppFatalError, fypp.STRING, (0, 1))]
-     ),
-     _PYTHON_32_OR_BELOW
-    ),
-    ('macrodef_pos_arg_after_var_arg_py33',
+    ('macrodef_pos_arg_after_var_arg',
      ([],
       '#:def mymacro(A, *B, C)\n#:enddef\n',
       [(fypp.FyppFatalError, fypp.STRING, (0, 1)),
        (fypp.FyppFatalError, None, None)]
      ),
-     _PYTHON_33_OR_ABOVE
     ),
     ('macrodef_pos_arg_after_var_kwarg',
      ([],
@@ -2926,6 +2966,30 @@ def _get_test_output_method(args, inp, out):
     return test_output
 
 
+def _get_test_output_from_file_input_method(args, inputfile, out):
+    '''Returns a test method for checking correctness of Fypp output.
+
+    Args:
+        args (list of str): Command-line arguments to pass to Fypp.
+        inputfile (str): Input file with Fypp directives.
+        out (str): Expected output.
+
+    Returns:
+       method: Method to test equality of output with result delivered by Fypp.
+    '''
+
+    def test_output_from_file_input(self):
+        '''Tests whether Fypp result matches expected output when input is in a file.'''
+        optparser = fypp.get_option_parser()
+        options, leftover = optparser.parse_args(args)
+        self.assertEqual(len(leftover), 0)
+        tool = fypp.Fypp(options)
+        result = tool.process_file(inputfile)
+        self.assertEqual(out, result)
+    return test_output_from_file_input
+
+
+
 def _get_test_exception_method(args, inp, exceptions):
     '''Returns a test method for checking correctness of thrown exception.
 
@@ -2962,25 +3026,14 @@ def _get_test_exception_method(args, inp, exceptions):
                 self.assertTrue(raised.span is None)
             else:
                 self.assertEqual(span, raised.span)
-            raised = raised.cause
+            raised = raised.__cause__
         self.assertTrue(not isinstance(raised, fypp.FyppError))
 
     return test_exception
 
 
 def _test_needed(flag):
-    if flag == _PYTHON_2:
-        return sys.version_info[0] == 2
-    elif flag == _PYTHON_3:
-        return sys.version_info[0] == 3
-    elif flag == _PYTHON_32_OR_BELOW:
-        return (sys.version_info[0] == 2
-                or (sys.version_info[0] == 3 and sys.version_info[1] <= 2))
-    elif flag == _PYTHON_33_OR_ABOVE:
-        return (sys.version_info[0] == 3 and sys.version_info[1] >= 3)
-    else:
-        msg = 'invalid test flag ' + str(flag)
-        raise ValueError(msg)
+    return True
 
 
 class _TestContainer(unittest.TestCase):
@@ -3000,7 +3053,7 @@ class _TestContainer(unittest.TestCase):
         for itest, test in enumerate(tests):
             name = test[0]
             if name in already_added:
-                msg = "multiple occurance of test name '{0}'".format(name)
+                msg = "multiple occurrence of test name '{0}'".format(name)
                 raise ValueError(msg)
             already_added.add(name)
             testargs = test[1]
@@ -3021,6 +3074,11 @@ LineNumberingTest.add_test_methods(LINENUM_TESTS, _get_test_output_method)
 
 class IncludeTest(_TestContainer): pass
 IncludeTest.add_test_methods(INCLUDE_TESTS, _get_test_output_method)
+
+class InputFileTest(_TestContainer): pass
+InputFileTest.add_test_methods(
+    INPUT_FILE_TESTS, _get_test_output_from_file_input_method
+)
 
 class ExceptionTest(_TestContainer): pass
 ExceptionTest.add_test_methods(EXCEPTION_TESTS, _get_test_exception_method)
