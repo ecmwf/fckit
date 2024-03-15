@@ -68,6 +68,16 @@ if( CMAKE_Fortran_COMPILER_ID MATCHES "PGI|NVHPC" )
   set_source_files_properties( module/fckit_array.F90  PROPERTIES COMPILE_FLAGS "-w" )
 endif()
 
+if( CMAKE_Fortran_COMPILER_ID MATCHES "Cray" )
+  # Problem with type-bound procedures requires fckit static compilation or -fuse-ld=bfd linking flag
+  # Problem is tracked with LUMI #3011 support ticket and https://jira.ecmwf.int/browse/DE-927
+  # Bug present with cce/14 cce/15 cce/16 cce/17 (versions greater not tested)
+  if( ${CMAKE_Fortran_COMPILER_VERSION} VERSION_GREATER_EQUAL 14 )
+      ecbuild_warn( "Bug in cray < 14 requires fckit to be compiled statically" )
+      set( fckit_type STATIC )
+  endif()
+endif()
+
 
 ecbuild_add_library( 
     TARGET     fckit
