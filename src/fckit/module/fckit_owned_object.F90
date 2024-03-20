@@ -77,8 +77,8 @@ contains
   final :: fckit_owned_object__final_auto
 #endif
 
-  procedure, private :: assignment_operator
-  generic, public :: assignment(=) => assignment_operator
+  procedure, private :: fckit_owned_object_assignment_operator
+  generic, public :: assignment(=) => fckit_owned_object_assignment_operator
   procedure, public :: owners
   procedure, public :: attach
   procedure, public :: detach
@@ -194,7 +194,7 @@ end subroutine
 
 
 
-subroutine assignment_operator(this,other)
+subroutine fckit_owned_object_assignment_operator(this,other)
   class(fckit_owned_object), intent(inout) :: this
   class(fckit_owned_object), intent(in)    :: other
   if( other%is_null() ) then
