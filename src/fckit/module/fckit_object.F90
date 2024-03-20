@@ -175,6 +175,7 @@ subroutine final( this )
       call c_f_procpointer( this%deleter, deleter )
       call deleter( this%cpp_object_ptr )
       this%cpp_object_ptr = c_null_ptr
+      this%deleter = c_null_funptr
     endif
   endif
   this%cpp_object_ptr = c_null_ptr
