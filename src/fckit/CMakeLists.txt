@@ -6,10 +6,6 @@
 # granted to it by virtue of its status as an intergovernmental organisation nor
 # does it submit to any jurisdiction.
 
-configure_file(fckit.h.in  fckit.h)
-install( FILES ${CMAKE_CURRENT_BINARY_DIR}/fckit.h DESTINATION include/fckit )
-set( source_files_properties fckit.h.in PROPERTIES HEADER_FILE_ONLY TRUE )
-
 if( HAVE_ECKIT )
   list( APPEND eckit_required_src
       module/fckit.F90
@@ -32,8 +28,6 @@ if( HAVE_ECKIT )
       module/fckit_owned_object.F90
       module/fckit_map.cc
       module/fckit_map.F90
-      module/fckit_tensor.cc
-      module/fckit_tensor.F90
       Libfckit.h
       Libfckit.cc
       Main.h
@@ -41,8 +35,19 @@ if( HAVE_ECKIT )
       Log.h
       Log.cc
   )
+  if( FCKIT_HAVE_ECKIT_TENSOR )
+    list( APPEND eckit_required_src
+      module/fckit_tensor.cc
+      module/fckit_tensor.F90
+    )
+  endif()
   set( eckit_required_libs eckit eckit_mpi )
 endif()
+
+configure_file(fckit.h.in  fckit.h)
+install( FILES ${CMAKE_CURRENT_BINARY_DIR}/fckit.h DESTINATION include/fckit )
+set( source_files_properties fckit.h.in PROPERTIES HEADER_FILE_ONLY TRUE )
+
 
 if( BUILD_SHARED_LIBS )
     set( fckit_type SHARED )
@@ -61,6 +66,16 @@ if( CMAKE_Fortran_COMPILER_ID MATCHES "PGI|NVHPC" )
   #   PGF90-W-0435-Array declared with zero size
   #      (/tmp/nawd/atlas-bundle/source/fckit/src/fckit/module/fckit_array.F90: 25)
   set_source_files_properties( module/fckit_array.F90  PROPERTIES COMPILE_FLAGS "-w" )
+endif()
+
+if( CMAKE_Fortran_COMPILER_ID MATCHES "Cray" )
+  # Problem with type-bound procedures requires fckit static compilation or -fuse-ld=bfd linking flag
+  # Problem is tracked with LUMI #3011 support ticket and https://jira.ecmwf.int/browse/DE-927
+  # Bug present with cce/14 cce/15 cce/16 cce/17 (versions greater not tested)
+  if( ${CMAKE_Fortran_COMPILER_VERSION} VERSION_GREATER_EQUAL 14 )
+      ecbuild_warn( "Bug in cray < 14 requires fckit to be compiled statically" )
+      set( fckit_type STATIC )
+  endif()
 endif()
 
 

@@ -51,9 +51,11 @@ use fckit_buffer_module, only: &
 use fckit_map_module, only: &
   fckit_map
 
+#if FCKIT_HAVE_ECKIT_TENSOR
 use fckit_tensor_module, only: &
   fckit_tensor_real32, &
   fckit_tensor_real64
+#endif
 
 implicit none
 private
@@ -75,8 +77,10 @@ public :: fckit_map                       !! - [[fckit_map_module:fckit_map(type
 public :: fckit_version                   !! - [[fckit_module:fckit_version(function)]]
 public :: fckit_git_sha1                  !! - [[fckit_module:fckit_git_sha1(function)]]
 public :: deallocate_fckit_configuration  !! - [[fckit_configuration_module:deallocate_fckit_configuration(subroutine)]]
-public :: fckit_tensor_real32              !! - [[fckit_tensor_module:fckit_tensor_real32(type)]]
+#if FCKIT_HAVE_ECKIT_TENSOR
+public :: fckit_tensor_real32             !! - [[fckit_tensor_module:fckit_tensor_real32(type)]]
 public :: fckit_tensor_real64             !! - [[fckit_tensor_module:fckit_tensor_real64(type)]]
+#endif
 
 public :: log ! DEPRECATED. Use fckit_log instead.
 

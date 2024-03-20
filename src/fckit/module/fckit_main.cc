@@ -150,6 +150,9 @@ int32 fckit__SIGILL() {
 int32 fckit__SIGTRAP() {
     return SIGTRAP;
 }
+int32 fckit__SIGBUS() {
+    return SIGBUS;
+}
 
 
 }  // extern "C"
