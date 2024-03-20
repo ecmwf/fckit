@@ -7,6 +7,7 @@
 ! does it submit to any jurisdiction.
 
 #include "fckit/fckit.h"
+#define FCKIT_WRITE_LOC write(0,'(A,I0,A)',advance='NO') "fckit_object.F90 @ ",__LINE__,'  : '
 
 module fckit_object_module
   !! Provides abstract base class [[fckit_object_module:fckit_object(type)]]
@@ -118,9 +119,16 @@ subroutine reset_c_ptr(this,cptr,deleter)
   type(c_funptr), optional :: deleter
 #if FCKIT_FINAL_DEBUGGING
   if( present(cptr) ) then
-     write(0,*) "fckit_object::reset_c_ptr( ",c_ptr_to_loc(cptr), ")"
+    if( present(deleter) ) then
+      FCKIT_WRITE_LOC
+      write(0,*) "fckit_object::reset_c_ptr( ", c_ptr_to_loc(cptr), " , deleter )"
+    else
+      FCKIT_WRITE_LOC
+      write(0,*) "fckit_object::reset_c_ptr( ", c_ptr_to_loc(cptr), ")"
+    endif
   else
-     write(0,*) "fckit_object::reset_c_ptr( )"
+    FCKIT_WRITE_LOC
+    write(0,*) "fckit_object::reset_c_ptr( )"
   endif
 #endif
   if( present(cptr) ) then
@@ -167,24 +175,37 @@ end function
 
 subroutine final( this )
   use, intrinsic :: iso_c_binding, only: c_ptr, c_funptr, c_f_procpointer, c_associated, c_null_ptr
-  use fckit_c_interop_module, only : fckit_c_deleter_interface
+  use fckit_c_interop_module, only : fckit_c_deleter_interface, c_ptr_to_loc
   class(fckit_object), intent(inout) :: this
   procedure(fckit_c_deleter_interface), pointer :: deleter
+#if FCKIT_FINAL_DEBUGGING
+  FCKIT_WRITE_LOC
+  write(0,*) "FINAL BEGIN", c_ptr_to_loc(this%cpp_object_ptr)
+#endif
   if( c_associated( this%cpp_object_ptr ) ) then
     if( c_associated( this%deleter ) ) then
       call c_f_procpointer( this%deleter, deleter )
+#if FCKIT_FINAL_DEBUGGING
+      write(0,*) "fckit_object.F90 @ ", __LINE__, ": call deleter( ", c_ptr_to_loc(this%cpp_object_ptr), ")"
+#endif
       call deleter( this%cpp_object_ptr )
       this%cpp_object_ptr = c_null_ptr
       this%deleter = c_null_funptr
     endif
   endif
   this%cpp_object_ptr = c_null_ptr
+#if FCKIT_FINAL_DEBUGGING
+  FCKIT_WRITE_LOC
+  write(0,*) "FINAL END", c_ptr_to_loc(this%cpp_object_ptr)
+#endif
 end subroutine
 
 FCKIT_FINAL subroutine fckit_object_final_auto( this )
+  use fckit_c_interop_module, only : fckit_c_deleter_interface, c_ptr_to_loc
   type(fckit_object), intent(inout) :: this
 #if FCKIT_FINAL_DEBUGGING
-  write(0,*) "fckit_object_final_auto"
+  FCKIT_WRITE_LOC
+  write(0,*) "fckit_object_final_auto cptr: ", c_ptr_to_loc(this%cpp_object_ptr)
 #endif
   call this%final()
 end subroutine
