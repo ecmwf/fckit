@@ -43,6 +43,14 @@ if( CMAKE_Fortran_COMPILER_ID MATCHES "PGI|NVHPC" )
     # deallocation of list of shared_ptr only seems to deallocate first entry
   endif()
 endif()
+if( CMAKE_Fortran_COMPILER_ID STREQUAL "Intel" )
+  # known to work: 2021.4.0.20210910  from intel/2021.4
+  # known to fail: 2021.10.0.20230609 from intel/2023.2
+  #    -->   deallocation of list of shared_ptr only seems to deallocate first entry
+  if( CMAKE_Fortran_COPMPILER_VERSION VERSION_GREATER 2021.4 ) 
+    list( APPEND FCKIT_QUARANTAINED_TESTS fckit_test_shared_ptr )
+  endif()
+endif()
 
 ecbuild_add_option( FEATURE FINAL
                     DESCRIPTION "Enable automatic finalisation for derived types (destructors)"
