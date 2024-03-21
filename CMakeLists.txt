@@ -132,6 +132,11 @@ set( FCTEST_GENERATOR ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/tools/fct
 include( fckit_preprocess_fypp )
 include( add_fctest )
 
+if( APPLE AND CMAKE_Fortran_COMPILER_ID MATCHES GNU )
+  # Avoid warnings :  ld: warning: could not create compact unwind for ...
+  add_link_options(-Wl,-keep_dwarf_unwind -Wl,-no_compact_unwind)
+endif()
+
 add_subdirectory( src )
 add_subdirectory( doc )
 
