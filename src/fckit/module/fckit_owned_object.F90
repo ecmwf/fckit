@@ -44,8 +44,6 @@ type :: fckit_owned_object
     !! Internal C pointer
 
   logical, private :: return_value = .false.
-    ! This variable should not be necessary,
-    ! but seems to overcome compiler issues (gfortran 5.3, 6.3)
 
 contains
 
@@ -150,7 +148,21 @@ FCKIT_FINAL subroutine fckit_owned_object__final_auto(this)
     & c_ptr_to_loc(this%cpp_object_ptr)
 #endif
 
-  call this%final()
+if (.not. this%return_value) then
+  if (.not. this%is_null()) then
+#if FCKIT_FINAL_DEBUGGING
+  FCKIT_WRITE_LOC
+  FCKIT_WRITE(0,'(A,I0)') "this%final() address:",c_ptr_to_loc(this%cpp_object_ptr)
+#endif
+    call this%final()
+  endif
+else
+#if FCKIT_FINAL_DEBUGGING
+    FCKIT_WRITE_LOC
+    FCKIT_WRITE(0,'(A,A)') "Applying return-value-optimisation during assignment_operator, ", &
+      & "this%final not called"
+#endif
+endif
 #if FCKIT_FINAL_DEBUGGING
   FCKIT_WRITE_LOC
   FCKIT_WRITE(0,'(A,I0)') "END fckit_owned_object__final_auto    address:",  &
@@ -294,27 +306,13 @@ function owners(this)
 end function
 
 subroutine return(this)
-  !! Transfer ownership to left hand side of "assignment(=)"
   class(fckit_owned_object), intent(inout) :: this
-#if FCKIT_FINAL_FUNCTION_RESULT
-  ! Cray example
-  ! final will be called, which will detach, so attach first
-  if( this%owners() == 0 ) then
-    FCKIT_WRITE_LOC
-    FCKIT_WRITE_DEBUG "return --> attach"
-    call this%attach()
-  endif
-#else
-  ! final will not be called, so detach manually
-  if( this%owners() > 0 ) then
-    FCKIT_WRITE_LOC
-    FCKIT_WRITE_DEBUG "return --> detach"
-    call this%detach()
-  endif
-#endif
-#if FCKIT_FINAL_DEBUGGING
   this%return_value = .true.
+#if FCKIT_FINAL_DEBUGGING
+  FCKIT_WRITE_LOC
+  FCKIT_WRITE(0,'(A)') "return"
 #endif
+  call this%detach()
 end subroutine
 
 

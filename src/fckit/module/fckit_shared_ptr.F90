@@ -143,10 +143,18 @@ FCKIT_FINAL subroutine fckit_shared_ptr__final_auto(this)
     return
   endif
 #endif
-  if( .not. this%is_null_ ) then
-    if( this%owners() > 0 ) then
-      call this%final()
+
+  if (.not. this%return_value) then
+    if( .not. this%is_null_ ) then
+      if( this%owners() > 0 ) then
+        call this%final()
+      endif
     endif
+  else
+#if FCKIT_FINAL_DEBUGGING
+    FCKIT_WRITE_LOC
+    FCKIT_WRITE(0,'(A)') "Applying return-value-optimisation during assignment_operator, this%final not called"
+#endif
   endif
 end subroutine
 
@@ -214,11 +222,6 @@ subroutine reset_shared_ptr(obj_out,obj_in)
   if( obj_in%is_null_ ) then
     write(0,*) "ERROR! obj_in was not initialised"
   endif
-#if FCKIT_FINAL_DEBUGGING
-  if( obj_in%return_value ) then
-    write(0,*) "obj_in is a return value"
-  endif
-#endif
 
   if( obj_out%is_null_ ) then
     nullify( obj_out%shared_ptr_ ) ! so that we can check association
@@ -227,9 +230,9 @@ subroutine reset_shared_ptr(obj_out,obj_in)
   if( .not. associated( obj_out%shared_ptr_, obj_in%shared_ptr_ ) ) then
 #if FCKIT_FINAL_DEBUGGING
     if( obj_out%is_null_ ) then
-      write(0,*) "reset_shared_ptr of uninitialised"
+      FCKIT_WRITE(0,'(A)') "reset_shared_ptr of uninitialised"
     else
-      write(0,*) "reset_shared_ptr of initialised"
+      FCKIT_WRITE(0,'(A)') "reset_shared_ptr of initialised"
     endif
 #endif
     call obj_out%final()
@@ -278,27 +281,8 @@ end function
 subroutine return(this)
   !! Transfer ownership to left hand side of "assignment(=)"
   class(fckit_shared_ptr), intent(inout) :: this
-#if FCKIT_FINAL_FUNCTION_RESULT
-  ! Cray example
-  ! final will be called, which will detach, so attach first
-  if( this%owners() == 0 ) then
-#if FCKIT_FINAL_DEBUGGING
-        write(0,*) "return --> attach"
-#endif
-    call this%attach()
-  endif
-#else
-  ! final will not be called, so detach manually
-  if( this%owners() > 0 ) then
-#if FCKIT_FINAL_DEBUGGING
-    write(0,*) "return --> detach"
-#endif
-    call this%detach()
-  endif
-#endif
-#if FCKIT_FINAL_DEBUGGING
   this%return_value = .true.
-#endif
+  call this%detach()
 end subroutine
 
 function get_shared_ptr(this) result(shared_ptr)
