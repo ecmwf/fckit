@@ -9,7 +9,6 @@
  */
 
 #include "fckit/Main.h"
-
 #include <csignal>
 #include <cstdint>
 #include <cstring>
@@ -22,8 +21,6 @@
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
 #include "eckit/thread/Once.h"
-
-#include "fckit/fckit.h"
 #include "fckit/Log.h"
 
 static eckit::Once<eckit::Mutex> local_mutex;
@@ -43,8 +40,6 @@ void fckit_terminate() {
     // It can be set with std::set_terminate( &fckit_terminate )
 
     Log::flush();
-
-#if FCKIT_TERMINATE_EXCEPTION_HANDLER
 
     if ( std::exception_ptr eptr = std::current_exception() ) {
         std::ostream& out = Log::error();
@@ -121,22 +116,6 @@ void fckit_terminate() {
             exception_callstack = eckit::BackTrace::dump();
         }
     }
-#else
-    {
-        std::ostream& out = Log::error();
-        out << "\n"
-            << "=========================================\n"
-            << "TERMINATING " << Main::instance().displayName() << "\n"
-            << "-----------------------------------------\n"
-            << "BACKTRACE\n"
-            << "-----------------------------------------\n"
-            << eckit::BackTrace::dump() << "\n"
-            << "=========================================" << std::endl;
-        exception_what      = "Uncaught exception";
-        exception_location  = eckit::CodeLocation();
-        exception_callstack = eckit::BackTrace::dump();
-    }
-#endif
 
     eckit::LibEcKit::instance().abort();
 
