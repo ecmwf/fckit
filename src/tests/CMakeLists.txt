@@ -146,8 +146,8 @@ endif()
 ### Quarantaine tests if requested
 foreach( _test ${FCKIT_QUARANTAINED_TESTS} )
     if( TEST ${_test} )
-      set_tests_properties( ${_test} PROPERTIES WILL_FAIL 1 )
-      ecbuild_warn("Test ${_test} is quarantained (shows as passed)")
+      set_tests_properties( ${_test} PROPERTIES DISABLED 1 )
+      ecbuild_warn("Test ${_test} is quarantained (shows as not run)")
     endif()
 endforeach()
 

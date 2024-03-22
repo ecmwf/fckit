@@ -648,6 +648,7 @@ function comm_constructor(name) result(this)
   else
     call this%reset_c_ptr( fckit__mpi__comm_default() )
   endif
+  call this%return()
 end function
 
 function comm_wrap_ptr(comm) result(this)
@@ -655,6 +656,7 @@ function comm_wrap_ptr(comm) result(this)
   type(fckit_mpi_comm) :: this
   type(c_ptr), intent(in) :: comm
   call this%reset_c_ptr( comm )
+  call this%return()
 end function
 
 function comm_wrap(comm) result(this)
@@ -662,6 +664,7 @@ function comm_wrap(comm) result(this)
   type(fckit_mpi_comm) :: this
   integer(c_int32_t), intent(in) :: comm
   call this%reset_c_ptr( fckit__mpi__comm_wrap(comm) )
+  call this%return()
 end function
 
 !---------------------------------------------------------------------------------------
@@ -685,6 +688,7 @@ function split( this, colour, name )
   character(len=*) :: name
   call split%reset_c_ptr( &
       & fckit__mpi__comm_split( this%CPTR_PGIBUG_A, colour, c_str(name) ) )
+  call split%return()
 end function
 
 !---------------------------------------------------------------------------------------

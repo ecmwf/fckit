@@ -322,24 +322,28 @@ end subroutine
 function info_channel() result(channel)
   type(fckit_logchannel) :: channel
   call channel%reset_c_ptr( fckit__log_info_channel() )
+  call channel%return()
 end function
 
 
 function warning_channel() result(channel)
   type(fckit_logchannel) :: channel
   call channel%reset_c_ptr( fckit__log_warning_channel() )
+  call channel%return()
 end function
 
 
 function error_channel() result(channel)
   type(fckit_logchannel) :: channel
   call channel%reset_c_ptr( fckit__log_error_channel() )
+  call channel%return()
 end function
 
 
 function debug_channel() result(channel)
   type(fckit_logchannel) :: channel
   call channel%reset_c_ptr( fckit__log_debug_channel() )
+  call channel%return()
 end function
 
 

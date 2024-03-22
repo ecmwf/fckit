@@ -105,6 +105,9 @@ function( fckit_preprocess_fypp_sources output )
     endif()
     if( _enable_line_numbers )
       list( APPEND args -n )   # Create line numbering for compile errors
+      if( CMAKE_Fortran_COMPILER_ID MATCHES "Intel" )
+        list( APPEND args --line-marker-format=gfortran5 )
+      endif()
       # list( APPEND args -N nocontlines )  # workaround for line numbers in continuation lines
     endif()
 

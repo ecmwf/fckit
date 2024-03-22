@@ -8,6 +8,12 @@
 
 #include "fckit/fckit.h"
 
+#if FCKIT_FINAL_DEBUGGING
+#define FCKIT_WRITE_LOC write(0,'(A,I0,A)',advance='NO') "fckit_shared_ptr.F90 @ ",__LINE__,'  : '
+#define FCKIT_WRITE(unit,format) write(unit,format)
+#endif
+
+
 module fckit_shared_ptr_module
 
 #if FCKIT_HAVE_ECKIT
@@ -22,6 +28,7 @@ use fckit_refcount_module, only : &
   & fckit_refcount_interface, &
   & fckit_external
 #endif
+
 implicit none
 private
 
@@ -124,20 +131,30 @@ FCKIT_FINAL subroutine fckit_shared_ptr__final_auto(this)
 #endif
   type(fckit_shared_ptr), intent(inout) :: this
 #if FCKIT_FINAL_DEBUGGING
-  write(0,*) "fckit_shared_ptr__final_auto"
+  FCKIT_WRITE_LOC
+  FCKIT_WRITE(0,*) "fckit_shared_ptr__final_auto"
 #endif
+
+#ifdef _CRAYFTN
   ! Guard necessary for Cray compiler...
   ! ... when "this" has already been deallocated, and then
   ! fckit_shared_ptr__final_auto is called...
-#ifdef _CRAYFTN
   if( c_loc(this) == c_null_ptr ) then
     return
   endif
 #endif
-  if( .not. this%is_null_ ) then
-    if( this%owners() > 0 ) then
-      call this%final()
+
+  if (.not. this%return_value) then
+    if( .not. this%is_null_ ) then
+      if( this%owners() > 0 ) then
+        call this%final()
+      endif
     endif
+  else
+#if FCKIT_FINAL_DEBUGGING
+    FCKIT_WRITE_LOC
+    FCKIT_WRITE(0,'(A)') "Applying return-value-optimisation during assignment_operator, this%final not called"
+#endif
   endif
 end subroutine
 
@@ -150,7 +167,7 @@ subroutine fckit_shared_ptr__final(this)
 
   if( this%is_null_ ) then
 #if FCKIT_FINAL_DEBUGGING
-    write(0,*) "fckit_shared_ptr__final  (uninitialised --> no-op)"
+    FCKIT_WRITE(0,*) "fckit_shared_ptr__final  (uninitialised --> no-op)"
 #endif
     call this%clear()
     return
@@ -158,18 +175,18 @@ subroutine fckit_shared_ptr__final(this)
 
 #if FCKIT_FINAL_DEBUGGING
   if( this%return_value ) then
-    write(0,'(A,I0)') " fckit_shared_ptr__final on return value, owners = ", this%owners()
+    FCKIT_WRITE(0,'(A,I0)') " fckit_shared_ptr__final on return value, owners = ", this%owners()
   endif
 #endif
 
   if( this%owners() >= 0 ) then
 #if FCKIT_FINAL_DEBUGGING
-    write(0,'(A,I0)') " fckit_shared_ptr__final  , owners = ", this%owners()
+    FCKIT_WRITE(0,'(A,I0)') " fckit_shared_ptr__final  , owners = ", this%owners()
 #endif
     call this%detach()
     if( this%owners() == 0 ) then
 #if FCKIT_FINAL_DEBUGGING
-      write(0,*) " + call fckit_finalise(this%shared_ptr_)"
+      FCKIT_WRITE(0,*) " + call fckit_finalise(this%shared_ptr_)"
 #endif
       call fckit_finalise(this%shared_ptr_)
       call deallocate_shared_ptr(this%shared_ptr_)
@@ -199,17 +216,12 @@ subroutine reset_shared_ptr(obj_out,obj_in)
   class(fckit_shared_ptr), intent(inout) :: obj_out
   class(fckit_shared_ptr), intent(in)    :: obj_in
 #if FCKIT_FINAL_DEBUGGING
-  write(0,*) "fckit_shared_ptr::reset_shared_ptr(out,in)"
+  FCKIT_WRITE(0,*) "fckit_shared_ptr::reset_shared_ptr(out,in)"
 #endif
 
   if( obj_in%is_null_ ) then
     write(0,*) "ERROR! obj_in was not initialised"
   endif
-#if FCKIT_FINAL_DEBUGGING
-  if( obj_in%return_value ) then
-    write(0,*) "obj_in is a return value"
-  endif
-#endif
 
   if( obj_out%is_null_ ) then
     nullify( obj_out%shared_ptr_ ) ! so that we can check association
@@ -218,9 +230,9 @@ subroutine reset_shared_ptr(obj_out,obj_in)
   if( .not. associated( obj_out%shared_ptr_, obj_in%shared_ptr_ ) ) then
 #if FCKIT_FINAL_DEBUGGING
     if( obj_out%is_null_ ) then
-      write(0,*) "reset_shared_ptr of uninitialised"
+      FCKIT_WRITE(0,'(A)') "reset_shared_ptr of uninitialised"
     else
-      write(0,*) "reset_shared_ptr of initialised"
+      FCKIT_WRITE(0,'(A)') "reset_shared_ptr of initialised"
     endif
 #endif
     call obj_out%final()
@@ -235,7 +247,7 @@ subroutine reset_shared_ptr(obj_out,obj_in)
     endif
   else
 #if FCKIT_FINAL_DEBUGGING
-    write(0,*) "reset_shared_ptr ( obj_out = obj_in )"
+    FCKIT_WRITE(0,*) "reset_shared_ptr ( obj_out = obj_in )"
 #endif
     if( obj_out%shared_ptr_cast() ) then ; endif
   endif
@@ -269,27 +281,8 @@ end function
 subroutine return(this)
   !! Transfer ownership to left hand side of "assignment(=)"
   class(fckit_shared_ptr), intent(inout) :: this
-#if FCKIT_FINAL_FUNCTION_RESULT
-  ! Cray example
-  ! final will be called, which will detach, so attach first
-  if( this%owners() == 0 ) then
-#if FCKIT_FINAL_DEBUGGING
-        write(0,*) "return --> attach"
-#endif
-    call this%attach()
-  endif
-#else
-  ! final will not be called, so detach manually
-  if( this%owners() > 0 ) then
-#if FCKIT_FINAL_DEBUGGING
-    write(0,*) "return --> detach"
-#endif
-    call this%detach()
-  endif
-#endif
-#if FCKIT_FINAL_DEBUGGING
   this%return_value = .true.
-#endif
+  call this%detach()
 end subroutine
 
 function get_shared_ptr(this) result(shared_ptr)
@@ -309,7 +302,7 @@ function fckit_make_shared( ptr ) result(this)
   type(fckit_shared_ptr) :: this
   class(*), target :: ptr
 #if FCKIT_FINAL_DEBUGGING
-  write(0,*) "begin fckit_make_shared"
+  FCKIT_WRITE(0,*) "begin fckit_make_shared"
 #endif
   call this%share( ptr )
   call this%return()
@@ -335,7 +328,7 @@ subroutine share( this, ptr, refcount )
   call opt_refcount(this%refcount_, this%shared_ptr_)
   call this%refcount_%attach()
 #if FCKIT_FINAL_DEBUGGING
-  write(0,*) "share --> attach"
+  FCKIT_WRITE(0,*) "share --> attach"
 #endif
 end subroutine
 
