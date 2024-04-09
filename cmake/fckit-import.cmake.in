@@ -10,9 +10,8 @@ if( @PROJECT_NAME@_IS_BUILD_DIR_EXPORT )
   set( FCTEST_GENERATOR @PYTHON_EXECUTABLE@ @CMAKE_CURRENT_SOURCE_DIR@/tools/fctest-generate-runner.py )
   set( FYPP @CMAKE_CURRENT_SOURCE_DIR@/tools/fckit-eval.sh @PYTHON_EXECUTABLE@ @CMAKE_CURRENT_SOURCE_DIR@/tools/fckit-fypp.py )
 else()
-  set( fckit_INSTALL_PREFIX ${PACKAGE_PREFIX_DIR} )
-  set( FCTEST_GENERATOR @PYTHON_EXECUTABLE@ ${fckit_INSTALL_PREFIX}/libexec/fctest-generate-runner.py )
-  set( FYPP ${fckit_INSTALL_PREFIX}/libexec/fckit-eval.sh @PYTHON_EXECUTABLE@ ${fckit_INSTALL_PREFIX}/libexec/fckit-fypp.py )
+  set( FCTEST_GENERATOR @PYTHON_EXECUTABLE@ ${fckit_BASE_DIR}/libexec/fctest-generate-runner.py )
+  set( FYPP ${fckit_BASE_DIR}/libexec/fckit-eval.sh @PYTHON_EXECUTABLE@ ${fckit_BASE_DIR}/libexec/fckit-fypp.py )
 endif()
 
 @FCKIT_PREPROCESS_FYPP@
