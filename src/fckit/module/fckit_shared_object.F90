@@ -12,8 +12,12 @@ module fckit_shared_object_module
 use fckit_object_module, only : fckit_object
 use fckit_c_interop_module, only : fckit_c_deleter, fckit_c_nodeleter
 #if FCKIT_HAVE_ECKIT
+#ifdef NAG
+use fckit_shared_ptr_module, only : fckit_shared_ptr, fckit_refcount_interface
+#else
 use fckit_shared_ptr_module, only : fckit_shared_ptr, fckit_refcount_interface, &
  & fckit_owned
+#endif
 #else
 use fckit_shared_ptr_module, only : fckit_shared_ptr, fckit_refcount_interface
 #endif
@@ -28,7 +32,9 @@ public :: fckit_shared_object
 public :: fckit_c_deleter
 public :: fckit_c_nodeleter
 #if FCKIT_HAVE_ECKIT
-public :: fckit_owned
+#ifndef NAG
+public fckit_owned
+#endif
 #endif
 !========================================================================
 

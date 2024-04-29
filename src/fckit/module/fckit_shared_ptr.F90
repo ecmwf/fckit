@@ -17,16 +17,28 @@
 module fckit_shared_ptr_module
 
 #if FCKIT_HAVE_ECKIT
+#ifdef NAG
+use fckit_refcount_module, only : &
+  & fckit_refcount, &
+  & fckit_refcount_interface
+#else
 use fckit_refcount_module, only : &
   & fckit_refcount, &
   & fckit_refcount_interface, &
   & fckit_external, &
   & fckit_owned
+#endif
 #else
+#ifdef NAG
 use fckit_refcount_module, only : &
   & fckit_refcount, &
   & fckit_refcount_interface, &
   & fckit_external
+#else
+use fckit_refcount_module, only : &
+  & fckit_refcount, &
+  & fckit_refcount_interface
+#endif
 #endif
 
 implicit none
@@ -39,10 +51,14 @@ public fckit_shared_ptr
 public fckit_make_shared
 public fckit_refcount
 public fckit_refcount_interface
+#ifndef NAG
 public fckit_external
+#endif
 
 #if FCKIT_HAVE_ECKIT
+#ifndef NAG
 public fckit_owned
+#endif
 #endif
 
 !========================================================================
@@ -321,7 +337,9 @@ subroutine share( this, ptr, refcount )
   if( present(refcount) ) then
     call c_f_procpointer( refcount, opt_refcount )
   else
+#ifndef NAG
     opt_refcount => fckit_external()
+#endif
   endif
   this%shared_ptr_ => ptr
   this%is_null_ = .not. associated( this%shared_ptr_ )
