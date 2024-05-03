@@ -7,12 +7,14 @@
 # does it submit to any jurisdiction.
 
 if( @PROJECT_NAME@_IS_BUILD_DIR_EXPORT )
-  set( FCTEST_GENERATOR @PYTHON_EXECUTABLE@ @CMAKE_CURRENT_SOURCE_DIR@/tools/fctest-generate-runner.py )
-  set( FYPP @CMAKE_CURRENT_SOURCE_DIR@/tools/fckit-eval.sh @PYTHON_EXECUTABLE@ @CMAKE_CURRENT_SOURCE_DIR@/tools/fckit-fypp.py )
+  set( FCTEST_GENERATOR @Python3_EXECUTABLE@ @CMAKE_CURRENT_SOURCE_DIR@/tools/fctest-generate-runner.py )
+  set( FCKIT_VENV_EXE @FCKIT_VENV_EXE@ )
 else()
-  set( FCTEST_GENERATOR @PYTHON_EXECUTABLE@ ${fckit_BASE_DIR}/libexec/fctest-generate-runner.py )
-  set( FYPP ${fckit_BASE_DIR}/libexec/fckit-eval.sh @PYTHON_EXECUTABLE@ ${fckit_BASE_DIR}/libexec/fckit-fypp.py )
+  set( FCTEST_GENERATOR @Python3_EXECUTABLE@ ${fckit_BASE_DIR}/libexec/fctest-generate-runner.py )
+  set( FCKIT_VENV_EXE ${fckit_BASE_DIR}/@rel_venv_exe_path@ )
 endif()
+
+set( FYPP ${FCKIT_VENV_EXE} -m fypp )
 
 @FCKIT_PREPROCESS_FYPP@
 
