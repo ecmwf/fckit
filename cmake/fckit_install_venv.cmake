@@ -62,7 +62,7 @@ macro( fckit_install_venv )
     # compute relative path to venv to aid with installation
     cmake_path( RELATIVE_PATH FCKIT_VENV_EXE BASE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} OUTPUT_VARIABLE rel_venv_exe_path )
 
-    set( FYPP ${FCKIT_VENV_EXE} -m fypp )
+    set( FYPP ${CMAKE_CURRENT_SOURCE_DIR}/tools/fckit-eval.sh ${FCKIT_VENV_EXE} -m fypp )
 
     # reset Python3_EXECUTABLE to the system install
     set( Python3_EXECUTABLE ${Python3_EXECUTABLE_CACHE} )
