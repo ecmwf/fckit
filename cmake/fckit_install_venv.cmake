@@ -12,7 +12,7 @@ macro( fckit_install_venv )
     set( Python3_FIND_VIRTUALENV STANDARD )
     find_package( Python3 COMPONENTS Interpreter REQUIRED )
     
-    # Create a loki virtualenv
+    # Create a virtualenv
     set( VENV_PATH ${CMAKE_CURRENT_BINARY_DIR}/venv )
     message( STATUS "Create Python virtual environment ${VENV_PATH}" )
     execute_process( COMMAND ${Python3_EXECUTABLE} -m venv --copies "${VENV_PATH}" )
@@ -60,7 +60,7 @@ macro( fckit_install_venv )
     set( FCKIT_VENV_EXE ${Python3_EXECUTABLE} )
 
     # compute relative path to venv to aid with installation
-    cmake_path( RELATIVE_PATH FCKIT_VENV_EXE BASE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} OUTPUT_VARIABLE rel_venv_exe_path )
+    string(REPLACE "${CMAKE_CURRENT_BINARY_DIR}/" "" rel_venv_exe_path ${FCKIT_VENV_EXE})
 
     set( FYPP ${CMAKE_CURRENT_SOURCE_DIR}/tools/fckit-eval.sh ${FCKIT_VENV_EXE} -m fypp )
 

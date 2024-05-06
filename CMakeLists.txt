@@ -9,7 +9,7 @@
 ############################################################################################
 # FCKIT
 
-cmake_minimum_required( VERSION 3.20 FATAL_ERROR )
+cmake_minimum_required( VERSION 3.17 FATAL_ERROR )
 
 find_package( ecbuild 3.4 REQUIRED HINTS ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/../ecbuild )
 
@@ -114,7 +114,7 @@ endif()
 set( FCKIT_LIBRARIES  fckit )
 
 ################################################################################################
-# find and install python packages
+# install python packages
 include( fckit_install_venv )
 
 # install python venv with rumael.yaml and fypp
