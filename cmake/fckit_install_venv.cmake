@@ -44,15 +44,15 @@ macro( fckit_install_venv )
     endif()
 
     message( STATUS "Install fckit_yaml_reader in virtual environment ${VENV_PATH}" )
-    execute_process( COMMAND ${Python3_EXECUTABLE} -m pip install ${CMAKE_CURRENT_SOURCE_DIR}/src/fckit/${_pkg_name} OUTPUT_QUIET )
+    execute_process( COMMAND ${Python3_EXECUTABLE} -m pip install --disable-pip-version-check ${CMAKE_CURRENT_SOURCE_DIR}/src/fckit/${_pkg_name} OUTPUT_QUIET )
 
     # install ruamel
     message( STATUS "Install ruamel.yaml in virtual environment ${VENV_PATH}" )
-    execute_process( COMMAND ${Python3_EXECUTABLE} -m pip install ${CMAKE_CURRENT_SOURCE_DIR}/contrib/ruamel.yaml-0.18.6 OUTPUT_QUIET )
+    execute_process( COMMAND ${Python3_EXECUTABLE} -m pip install --disable-pip-version-check ${CMAKE_CURRENT_SOURCE_DIR}/contrib/ruamel.yaml-0.18.6 OUTPUT_QUIET )
    
     # install fypp
     message( STATUS "Install fypp in virtual environment ${VENV_PATH}" )
-    execute_process( COMMAND ${Python3_EXECUTABLE} -m pip install ${CMAKE_CURRENT_SOURCE_DIR}/contrib/fypp-3.2-b8dd58b-20230822 OUTPUT_QUIET )
+    execute_process( COMMAND ${Python3_EXECUTABLE} -m pip install --disable-pip-version-check ${CMAKE_CURRENT_SOURCE_DIR}/contrib/fypp-3.2-b8dd58b-20230822 OUTPUT_QUIET )
 
     install( DIRECTORY ${VENV_PATH} DESTINATION . PATTERN "bin/*" PERMISSIONS ${install_permissions} )
 
