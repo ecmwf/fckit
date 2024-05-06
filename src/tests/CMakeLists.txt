@@ -147,10 +147,14 @@ endif()
 foreach( _test ${FCKIT_QUARANTAINED_TESTS} )
     if( TEST ${_test} )
       set_tests_properties( ${_test} PROPERTIES DISABLED 1 )
-      ecbuild_warn("Test ${_test} is quarantained (shows as not run)")
+      ecbuild_warn("Test ${_test} is quarantined (shows as not run)")
     endif()
 endforeach()
 
 ### Test downstream find_package(fckit) projects
 add_subdirectory( test_downstream_fypp )
 add_subdirectory( test_downstream_fctest )
+
+### Test fckit_yaml_reader
+ecbuild_add_test( COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/fckit_run_pytest.sh
+                  ARGS ${CMAKE_CURRENT_BINARY_DIR}/../.. ${CMAKE_CURRENT_SOURCE_DIR} )

@@ -38,8 +38,13 @@ macro( fckit_install_venv )
     # Find newly created python venv
     find_package( Python3 COMPONENTS Interpreter REQUIRED )
 
+    set( _pkg_name "fckit_yaml_reader")
+    if( HAVE_TESTS )
+       set( _pkg_name "fckit_yaml_reader/[tests]")
+    endif()
+
     message( STATUS "Install fckit_yaml_reader in virtual environment ${VENV_PATH}" )
-    execute_process( COMMAND ${Python3_EXECUTABLE} -m pip install ${CMAKE_SOURCE_DIR}/fckit_yaml_reader OUTPUT_QUIET )
+    execute_process( COMMAND ${Python3_EXECUTABLE} -m pip install ${CMAKE_CURRENT_SOURCE_DIR}/src/fckit/${_pkg_name} OUTPUT_QUIET )
 
     # install ruamel
     message( STATUS "Install ruamel.yaml in virtual environment ${VENV_PATH}" )
