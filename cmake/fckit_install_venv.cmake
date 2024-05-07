@@ -1,4 +1,4 @@
-# (C) Copyright 2013 ECMWF.
+# (C) Copyright 2024 ECMWF.
 #
 # This software is licensed under the terms of the Apache Licence Version 2.0
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -10,7 +10,7 @@ macro( fckit_install_venv )
 
     # Create a virtualenv
     set( VENV_PATH ${CMAKE_CURRENT_BINARY_DIR}/fckit_venv )
-    message( STATUS "Create Python virtual environment ${VENV_PATH}" )
+    ecbuild_info( "Create Python virtual environment ${VENV_PATH}" )
     execute_process( COMMAND ${Python3_EXECUTABLE} -m venv --copies "${VENV_PATH}" )
 
     # Make the virtualenv portable by automatically deducing the VIRTUAL_ENV path from
@@ -39,15 +39,15 @@ macro( fckit_install_venv )
        set( _pkg_name "fckit_yaml_reader/[tests]")
     endif()
 
-    message( STATUS "Install fckit_yaml_reader in virtual environment ${VENV_PATH}" )
+    ecbuild_info( "Install fckit_yaml_reader in virtual environment ${VENV_PATH}" )
     execute_process( COMMAND ${Python3_EXECUTABLE} -m pip install --disable-pip-version-check ${CMAKE_CURRENT_SOURCE_DIR}/src/fckit/${_pkg_name} OUTPUT_QUIET )
 
     # install ruamel
-    message( STATUS "Install ruamel.yaml in virtual environment ${VENV_PATH}" )
+    ecbuild_info( "Install ruamel.yaml in virtual environment ${VENV_PATH}" )
     execute_process( COMMAND ${Python3_EXECUTABLE} -m pip install --disable-pip-version-check ${CMAKE_CURRENT_SOURCE_DIR}/contrib/ruamel.yaml-0.18.6 OUTPUT_QUIET )
    
     # install fypp
-    message( STATUS "Install fypp in virtual environment ${VENV_PATH}" )
+    ecbuild_info( "Install fypp in virtual environment ${VENV_PATH}" )
     execute_process( COMMAND ${Python3_EXECUTABLE} -m pip install --disable-pip-version-check ${CMAKE_CURRENT_SOURCE_DIR}/contrib/fypp-3.2-b8dd58b-20230822 OUTPUT_QUIET )
 
     if( ECBUILD_INSTALL_LIBRARY_HEADERS )
