@@ -114,12 +114,29 @@ endif()
 set( FCKIT_LIBRARIES  fckit )
 
 ################################################################################################
-# install python packages
-include( fckit_install_venv )
-
 # install python venv with rumael.yaml and fypp
+include( fckit_install_venv )
 set( install_permissions OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE )
-fckit_install_venv()
+
+# Discover only system install Python 3
+set( Python3_FIND_VIRTUALENV STANDARD )
+find_package( Python3 COMPONENTS Interpreter REQUIRED )
+
+ecbuild_add_option( FEATURE FCKIT_VENV
+                    DEFAULT OFF
+                    DESCRIPTION "Install Python virtual environment with fypp and a yaml parser"
+                    CONDITION Python3_VERSION VERSION_GREATER_EQUAL 3.8 )
+
+if( HAVE_FCKIT_VENV )
+   fckit_install_venv()
+else()
+   # install fypp runner script only
+   set( FYPP ${CMAKE_CURRENT_SOURCE_DIR}/tools/fckit-eval.sh
+             ${CMAKE_CURRENT_SOURCE_DIR}/contrib/fypp-3.2-b8dd58b-20230822/bin/fypp )
+
+   install( FILES contrib/fypp-3.2-b8dd58b-20230822/bin/fypp DESTINATION libexec RENAME fckit-fypp.py
+            PERMISSIONS ${install_permissions} )
+endif()
 
 ################################################################################################
 # sources

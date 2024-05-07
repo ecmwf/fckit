@@ -8,12 +8,8 @@
 
 macro( fckit_install_venv )
 
-    # Discover only system install Python 3
-    set( Python3_FIND_VIRTUALENV STANDARD )
-    find_package( Python3 COMPONENTS Interpreter REQUIRED )
-    
     # Create a virtualenv
-    set( VENV_PATH ${CMAKE_CURRENT_BINARY_DIR}/venv )
+    set( VENV_PATH ${CMAKE_CURRENT_BINARY_DIR}/fckit_venv )
     message( STATUS "Create Python virtual environment ${VENV_PATH}" )
     execute_process( COMMAND ${Python3_EXECUTABLE} -m venv --copies "${VENV_PATH}" )
 
@@ -26,10 +22,10 @@ macro( fckit_install_venv )
 
     # Change the context of the search to only find the venv
     set( Python3_FIND_VIRTUALENV ONLY )
+    set( Python3_EXECUTABLE_CACHE ${Python3_EXECUTABLE} )
 
     # Unset Python3_EXECUTABLE because it is also an input variable
     #  (see documentation, Artifacts Specification section)
-    set( Python3_EXECUTABLE_CACHE ${Python3_EXECUTABLE} )
     unset( Python3_EXECUTABLE )
     # To allow cmake to discover the newly created venv if Python3_ROOT_DIR
     # was passed as an argument at build-time
@@ -54,7 +50,9 @@ macro( fckit_install_venv )
     message( STATUS "Install fypp in virtual environment ${VENV_PATH}" )
     execute_process( COMMAND ${Python3_EXECUTABLE} -m pip install --disable-pip-version-check ${CMAKE_CURRENT_SOURCE_DIR}/contrib/fypp-3.2-b8dd58b-20230822 OUTPUT_QUIET )
 
-    install( DIRECTORY ${VENV_PATH} DESTINATION . PATTERN "bin/*" PERMISSIONS ${install_permissions} )
+    if( ECBUILD_INSTALL_LIBRARY_HEADERS )
+       install( DIRECTORY ${VENV_PATH} DESTINATION . PATTERN "bin/*" PERMISSIONS ${install_permissions} )
+    endif()
 
     # add python interpreter of venv as executable target
     set( FCKIT_VENV_EXE ${Python3_EXECUTABLE} )

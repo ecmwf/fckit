@@ -9,7 +9,7 @@
 # granted to it by virtue of its status as an intergovernmental organisation nor
 # does it submit to any jurisdiction.
 
-source $1/venv/bin/activate
+source $1/fckit_venv/bin/activate
 
 pytest $2/test_yaml_reader.py
 retval=$?

@@ -156,5 +156,7 @@ add_subdirectory( test_downstream_fypp )
 add_subdirectory( test_downstream_fctest )
 
 ### Test fckit_yaml_reader
-ecbuild_add_test( COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/fckit_run_pytest.sh
-                  ARGS ${CMAKE_CURRENT_BINARY_DIR}/../.. ${CMAKE_CURRENT_SOURCE_DIR} )
+if( HAVE_FCKIT_VENV )
+   ecbuild_add_test( COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/fckit_run_pytest.sh
+                     ARGS ${CMAKE_CURRENT_BINARY_DIR}/../.. ${CMAKE_CURRENT_SOURCE_DIR} )
+endif()  
