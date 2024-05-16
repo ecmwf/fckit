@@ -48,7 +48,8 @@ macro( fckit_install_venv )
    
     # install fypp
     ecbuild_info( "Install fypp in virtual environment ${VENV_PATH}" )
-    execute_process( COMMAND ${Python3_EXECUTABLE} -m pip install --disable-pip-version-check ${CMAKE_CURRENT_SOURCE_DIR}/contrib/fypp-3.2-b8dd58b-20230822 OUTPUT_QUIET )
+    execute_process( COMMAND ${Python3_EXECUTABLE} -m pip install --use-pep517 --disable-pip-version-check
+                     ${CMAKE_CURRENT_SOURCE_DIR}/contrib/fypp-3.2-b8dd58b-20230822 OUTPUT_QUIET )
 
     if( ECBUILD_INSTALL_LIBRARY_HEADERS )
        install( DIRECTORY ${VENV_PATH} DESTINATION . PATTERN "bin/*" PERMISSIONS ${install_permissions} )
