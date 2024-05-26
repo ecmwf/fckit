@@ -20,6 +20,9 @@ if( HAVE_TESTS AND HAVE_ECKIT )
     if( CMAKE_${lang}_COMPILER )
       list( APPEND _test_args "-DCMAKE_${lang}_COMPILER=${CMAKE_${lang}_COMPILER}" )
     endif()
+    if( CMAKE_${lang}_FLAGS )
+      list( APPEND _test_args "-DCMAKE_${lang}_FLAGS=${CMAKE_${lang}_FLAGS}" )
+    endif()
   endforeach()
 
   add_test( NAME fckit_test_downstream_fypp
