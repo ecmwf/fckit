@@ -1,0 +1,13 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fckit_yaml_reader"
+version = "0.0.1"
+requires-python = ">=3.8"
+license = {text = "Apache-2.0"}
+description = "A minimal wrapper for ruamel.yaml to create an API consistent with pyyaml."
+
+[project.optional-dependencies]
+tests = ["pytest"]
