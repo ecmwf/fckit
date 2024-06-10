@@ -1,0 +1,12 @@
+### Test config
+
+name: type config
+
+types:
+   - typeA:
+      - [memberA, real, 3]
+      - [memberB, real, 3]
+   - typeB:
+      - [memberA, real, 3]
+      - [memberB, int, 2]
+       
