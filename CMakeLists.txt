@@ -9,7 +9,7 @@
 ############################################################################################
 # FCKIT
 
-cmake_minimum_required( VERSION 3.12 FATAL_ERROR )
+cmake_minimum_required( VERSION 3.17 FATAL_ERROR )
 
 find_package( ecbuild 3.4 REQUIRED HINTS ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/../ecbuild )
 
@@ -21,8 +21,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 ################################################################################################
 # options & dependencies
-
-ecbuild_find_python( VERSION 3.4 REQUIRED NO_LIBS )
 
 ### Fortran ...
 ecbuild_enable_fortran( REQUIRED MODULE_DIRECTORY ${PROJECT_BINARY_DIR}/module )
@@ -116,19 +114,34 @@ endif()
 set( FCKIT_LIBRARIES  fckit )
 
 ################################################################################################
-# find fypp
+# install python venv with rumael.yaml and fypp
+include( fckit_install_venv )
+set( install_permissions OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE )
 
-find_program(FYPP fypp)
-if( FYPP )
-  ecbuild_info("fckit found fypp: ${FYPP}")
+# Discover only system install Python 3
+set( Python3_FIND_VIRTUALENV STANDARD )
+find_package( Python3 COMPONENTS Interpreter REQUIRED )
+
+ecbuild_add_option( FEATURE FCKIT_VENV
+                    DEFAULT OFF
+                    DESCRIPTION "Install Python virtual environment with fypp and a yaml parser"
+                    CONDITION Python3_VERSION VERSION_GREATER_EQUAL 3.8 )
+
+if( HAVE_FCKIT_VENV )
+   fckit_install_venv()
+else()
+   # install fypp runner script only
+   set( FYPP ${CMAKE_CURRENT_SOURCE_DIR}/tools/fckit-eval.sh
+             ${CMAKE_CURRENT_SOURCE_DIR}/contrib/fypp-3.2-b8dd58b-20230822/bin/fypp )
+
+   install( FILES contrib/fypp-3.2-b8dd58b-20230822/bin/fypp DESTINATION libexec RENAME fckit-fypp.py
+            PERMISSIONS ${install_permissions} )
 endif()
 
+################################################################################################
 # sources
 
-if( NOT FYPP )
-  set( FYPP ${CMAKE_CURRENT_SOURCE_DIR}/tools/fckit-eval.sh ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/tools/fckit-fypp.py )
-endif()
-set( FCTEST_GENERATOR ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/tools/fctest-generate-runner.py )
+set( FCTEST_GENERATOR ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/tools/fctest-generate-runner.py )
 include( fckit_preprocess_fypp )
 include( add_fctest )
 
@@ -148,16 +161,12 @@ if( ECBUILD_INSTALL_FORTRAN_MODULES )
 endif()
 if( NOT PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
   set( FCTEST_GENERATOR ${FCTEST_GENERATOR} PARENT_SCOPE )
-  if( NOT FYPP )
-    set( FYPP ${FYPP} PARENT_SCOPE )
-  endif()
+  set( FYPP ${FYPP} PARENT_SCOPE )
 endif()
 file(READ ${CMAKE_CURRENT_SOURCE_DIR}/cmake/add_fctest.cmake ADD_FCTEST)
 file(READ ${CMAKE_CURRENT_SOURCE_DIR}/cmake/fckit_preprocess_fypp.cmake FCKIT_PREPROCESS_FYPP )
 
-set( install_permissions OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE )
 install( FILES tools/fctest-generate-runner.py DESTINATION libexec PERMISSIONS ${install_permissions} )
 install( FILES tools/fckit-eval.sh DESTINATION libexec PERMISSIONS ${install_permissions} )
-install( FILES contrib/fypp-3.2-b8dd58b-20230822/bin/fypp DESTINATION libexec RENAME fckit-fypp.py PERMISSIONS ${install_permissions} )
 
 ecbuild_install_project( NAME fckit )

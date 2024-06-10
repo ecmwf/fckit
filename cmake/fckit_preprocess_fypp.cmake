@@ -108,6 +108,10 @@ function( fckit_preprocess_fypp_sources output )
       if( CMAKE_Fortran_COMPILER_ID MATCHES "Intel" )
         list( APPEND args --line-marker-format=gfortran5 )
       endif()
+      if( CMAKE_Fortran_COMPILER_ID MATCHES "NAG" )
+        # workaround for line markers in continuation lines ( see e.g. https://github.com/ecmwf/atlas/pull/193 )
+        list( APPEND args --line-numbering-mode=nocontlines )
+      endif()
       # list( APPEND args -N nocontlines )  # workaround for line numbers in continuation lines
     endif()
 

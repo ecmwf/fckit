@@ -608,6 +608,7 @@ function get_config_list(this, name, value) result(found)
     do j=1,value_list_size
       call value(j)%reset_c_ptr( value_cptrs(j), fckit_c_deleter(c_fckit_configuration_delete) )
     enddo
+    call c_ptr_free(value_list_cptr)
   endif
 end function
 
