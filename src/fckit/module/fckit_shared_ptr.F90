@@ -337,9 +337,7 @@ subroutine share( this, ptr, refcount )
   if( present(refcount) ) then
     call c_f_procpointer( refcount, opt_refcount )
   else
-#ifndef NAG
-    opt_refcount => fckit_external()
-#endif
+    call fckit_external(opt_refcount)
   endif
   this%shared_ptr_ => ptr
   this%is_null_ = .not. associated( this%shared_ptr_ )

@@ -117,12 +117,10 @@ subroutine allocate_fckit_external(refcount,shared_ptr)
   FCKIT_SUPPRESS_UNUSED( shared_ptr )
 end subroutine
 
-#ifndef NAG
-function fckit_external() result(funptr)
+subroutine fckit_external (funptr)
   procedure(fckit_refcount_interface), pointer :: funptr
   funptr => allocate_fckit_external
-end function
-#endif
+end subroutine fckit_external
 
 #if FCKIT_HAVE_ECKIT
 subroutine allocate_fckit_refcount_owned(refcount,shared_ptr)
@@ -142,12 +140,10 @@ subroutine allocate_fckit_refcount_owned(refcount,shared_ptr)
   end select
 end subroutine
 
-#ifndef NAG
-function fckit_owned() result(funptr)
+subroutine fckit_owned(funptr)
   procedure(fckit_refcount_interface), pointer :: funptr
   funptr => allocate_fckit_refcount_owned
-end function
-#endif
+end subroutine fckit_owned
 
 #endif
 
