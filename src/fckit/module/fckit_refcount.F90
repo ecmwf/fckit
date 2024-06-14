@@ -18,14 +18,10 @@ private
 
 public :: fckit_refcount
 public :: fckit_refcount_interface
-#ifndef NAG
 public :: fckit_external
-#endif
 
 #if FCKIT_HAVE_ECKIT
-#ifndef NAG
 public :: fckit_owned
-#endif
 #endif
 
 !========================================================================
