@@ -25,7 +25,8 @@ use fckit_refcount_module, only : &
 #else
 use fckit_refcount_module, only : &
   & fckit_refcount, &
-  & fckit_refcount_interface
+  & fckit_refcount_interface, &
+  & fckit_external
 #endif
 
 implicit none

@@ -28,7 +28,7 @@ public :: fckit_shared_object
 public :: fckit_c_deleter
 public :: fckit_c_nodeleter
 #if FCKIT_HAVE_ECKIT
-public fckit_owned
+public :: fckit_owned
 #endif
 !========================================================================
 
