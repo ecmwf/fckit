@@ -106,7 +106,7 @@ end subroutine
 subroutine check_tensor_float_layout_r3(cptr, data)
   use iso_c_binding, only : c_ptr, c_float, c_size_t, c_int
   type(c_ptr), value :: cptr
-  real(c_float), intent(in) :: data(:,:,:)
+  real(c_float), intent(in), target :: data(:,:,:)
   real(c_float), pointer :: data_vec(:)
   integer(c_size_t)  :: shape_vec(3)
   integer(c_size_t)  :: data_rank
@@ -121,7 +121,7 @@ end subroutine
 subroutine check_tensor_float_layout_r4(cptr, data)
   use iso_c_binding, only : c_ptr, c_float, c_size_t, c_int
   type(c_ptr), value :: cptr
-  real(c_float), intent(in) :: data(:,:,:,:)
+  real(c_float), intent(in), target :: data(:,:,:,:)
   real(c_float), pointer :: data_vec(:)
   integer(c_size_t)  :: shape_vec(4)
   integer(c_size_t)  :: data_rank
@@ -162,7 +162,7 @@ end subroutine
 subroutine check_tensor_double_layout_r3(cptr, data)
   use iso_c_binding, only : c_ptr, c_double, c_size_t, c_int
   type(c_ptr), value :: cptr
-  real(c_double), intent(in) :: data(:,:,:)
+  real(c_double), intent(in), target :: data(:,:,:)
   real(c_double), pointer :: data_vec(:)
   integer(c_size_t)  :: shape_vec(3)
   integer(c_size_t)  :: data_rank
@@ -177,7 +177,7 @@ end subroutine
 subroutine check_tensor_double_layout_r4(cptr, data)
   use iso_c_binding, only : c_ptr, c_double, c_size_t, c_int
   type(c_ptr), value :: cptr
-  real(c_double), intent(in) :: data(:,:,:,:)
+  real(c_double), intent(in), target :: data(:,:,:,:)
   real(c_double), pointer :: data_vec(:)
   integer(c_size_t)  :: shape_vec(4)
   integer(c_size_t)  :: data_rank
