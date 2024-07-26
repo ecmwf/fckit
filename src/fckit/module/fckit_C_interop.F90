@@ -161,13 +161,11 @@ end function
 
 subroutine copy_c_str_to_string(s,string)
   use, intrinsic :: iso_c_binding
-  character(kind=c_char,len=1), intent(in) :: s(*)
+  character(kind=c_char,len=1), intent(in) :: s(:)
   character(len=:), allocatable :: string
   integer i, nchars
-  i = 1
-  do
+  do i = 1, size(s)
      if (s(i) == c_null_char) exit
-     i = i + 1
   enddo
   nchars = i - 1  ! Exclude null character from Fortran string
   FCKIT_ALLOCATE_CHARACTER(string,nchars)
@@ -183,7 +181,7 @@ subroutine copy_c_ptr_to_string(cptr,string)
   type(c_ptr), intent(in) :: cptr
   character(kind=c_char,len=:), allocatable :: string
   character(kind=c_char), dimension(:), pointer  :: s
-  integer(c_int), parameter :: MAX_STR_LEN = 255
+  integer(c_int), parameter :: MAX_STR_LEN = 2550
   call c_f_pointer ( cptr , s, (/MAX_STR_LEN/) )
   call copy_c_str_to_string( s, string )
 end subroutine
@@ -195,7 +193,7 @@ function c_ptr_to_string(cptr) result(string)
   type(c_ptr), intent(in) :: cptr
   character(kind=c_char,len=:), allocatable :: string
   character(kind=c_char), dimension(:), pointer  :: s
-  integer(c_int), parameter :: MAX_STR_LEN = 255
+  integer(c_int), parameter :: MAX_STR_LEN = 2550
   call c_f_pointer ( cptr , s, (/MAX_STR_LEN/) )
   call copy_c_str_to_string( s, string )
 end function
