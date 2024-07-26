@@ -193,7 +193,7 @@ function c_ptr_to_string(cptr) result(string)
   type(c_ptr), intent(in) :: cptr
   character(kind=c_char,len=:), allocatable :: string
   character(kind=c_char), dimension(:), pointer  :: s
-  integer(c_int), parameter :: MAX_STR_LEN = 255
+  integer(c_int), parameter :: MAX_STR_LEN = 2550
   call c_f_pointer ( cptr , s, (/MAX_STR_LEN/) )
   call copy_c_str_to_string( s, string )
 end function
