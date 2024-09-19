@@ -78,6 +78,7 @@ function( fckit_preprocess_fypp_sources output )
 
   list( APPEND _PAR_FYPP_ARGS_EXCLUDE ${FCKIT_FYPP_ARGS_EXCLUDE})
   list( APPEND _PAR_FYPP_ARGS_EXCLUDE "-D[[:space:]]?.*=([0-9])+L" )
+  list( APPEND _PAR_FYPP_ARGS_EXCLUDE "-D[[:space:]]?__.*" )
   list( JOIN   _PAR_FYPP_ARGS_EXCLUDE "," _PAR_FYPP_ARGS_EXCLUDE )
 
   foreach( filename ${_PAR_SOURCES} )

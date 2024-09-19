@@ -788,8 +788,8 @@ subroutine allgather_${dtype}$_r0(this,in,out)
   use, intrinsic :: iso_c_binding
   use fckit_array_module, only: array_view1d
   class(fckit_mpi_comm), intent(in) :: this
-  ${ftype}$, intent(in) :: in
-  ${ftype}$, intent(inout) :: out(:)
+  ${ftype}$, intent(in), target :: in
+  ${ftype}$, intent(inout), target :: out(:)
   ${btype}$, pointer :: view_in(:)
   ${btype}$, pointer :: view_out(:)
   ${btype}$ :: mold
@@ -851,11 +851,12 @@ subroutine allgather_${dtype}$_r${rank}$(this,in,out,sendcount)
   use, intrinsic :: iso_c_binding
   use fckit_array_module, only: array_view1d
   class(fckit_mpi_comm), intent(in) :: this
-  ${ftype}$, intent(in) :: in${dim[rank]}$
-  ${ftype}$, intent(inout) :: out${dim[rank]}$
+  ${ftype}$, intent(in), target :: in${dim[rank]}$
+  ${ftype}$, intent(inout), target :: out${dim[rank]}$
   integer(c_int32_t), intent(in) :: sendcount
   integer(c_int32_t) :: p
-  integer(c_int32_t), allocatable:: recvcounts(:), displs(:)
+  integer(c_int32_t), allocatable, target :: recvcounts(:)
+  integer(c_int32_t), allocatable, target :: displs(:)
   ${btype}$, pointer :: view_in(:), view_out(:)
   ${btype}$ :: mold
   integer(c_int32_t), pointer :: view_rc(:), view_dp(:)
@@ -878,10 +879,11 @@ subroutine allgatherv_${dtype}$_r${rank}$(this,in,out,sendcount,recvcounts,displ
   use, intrinsic :: iso_c_binding
   use fckit_array_module, only: array_view1d
   class(fckit_mpi_comm), intent(in) :: this
-  ${ftype}$, intent(in) :: in${dim[rank]}$
-  ${ftype}$, intent(inout) :: out${dim[rank]}$
+  ${ftype}$, intent(in), target :: in${dim[rank]}$
+  ${ftype}$, intent(inout), target :: out${dim[rank]}$
   integer(c_int32_t), value :: sendcount
-  integer(c_int32_t), intent(in) :: recvcounts(:), displs(:)
+  integer(c_int32_t), intent(in), target :: recvcounts(:)
+  integer(c_int32_t), intent(in), target :: displs(:)
   ${btype}$, pointer :: view_in(:), view_out(:)
   ${btype}$ :: mold
   integer(c_int32_t), pointer :: view_rc(:), view_dp(:)
@@ -988,9 +990,9 @@ subroutine allreduce_${dtype}$_r${rank}$(this,in,out,operation)
 
   class(fckit_mpi_comm), intent(in) :: this
     !! This communicator
-  ${ftype}$, intent(in)    :: in${dim[rank]}$
+  ${ftype}$, intent(in), target    :: in${dim[rank]}$
     !! Input buffer
-  ${ftype}$, intent(inout) :: out${dim[rank]}$
+  ${ftype}$, intent(inout), target :: out${dim[rank]}$
     !! Output buffer
   integer(c_int32_t), intent(in) :: operation
     !! Operation used to process input to output
@@ -1013,7 +1015,7 @@ subroutine allreduce_inplace_${dtype}$_r${rank}$(this,inout,operation)
 
   class(fckit_mpi_comm), intent(in) :: this
     !! This communicator
-  ${ftype}$, intent(inout) :: inout${dim[rank]}$
+  ${ftype}$, intent(inout), target :: inout${dim[rank]}$
     !! Buffer to process
   integer(c_int32_t), intent(in) :: operation
     !! Operation used to process ```inout``` buffer
@@ -1035,7 +1037,7 @@ subroutine broadcast_${dtype}$_r${rank}$(this,buffer,root)
 
   class(fckit_mpi_comm), intent(in) :: this
     !! This communicator
-  ${ftype}$, intent(inout) :: buffer${dim[rank]}$
+  ${ftype}$, intent(inout), target :: buffer${dim[rank]}$
     !! Buffer to be broadcast
   integer(c_int32_t), intent(in) :: root
     !! MPI rank to broadcast from
@@ -1057,7 +1059,7 @@ subroutine send_${dtype}$_r${rank}$(this,buffer,dest,tag)
 
   class(fckit_mpi_comm), intent(in) :: this
     !! This communicator
-  ${ftype}$, intent(in) :: buffer${dim[rank]}$
+  ${ftype}$, intent(in), target :: buffer${dim[rank]}$
     !! Buffer to be sent
   integer(c_int32_t), intent(in) :: dest
     !! Destination MPI rank
@@ -1081,7 +1083,7 @@ subroutine receive_${dtype}$_r${rank}$(this,buffer,source,tag,status)
 
   class(fckit_mpi_comm), intent(in) :: this
     !! This communicator
-  ${ftype}$, intent(inout) :: buffer${dim[rank]}$
+  ${ftype}$, intent(inout), target :: buffer${dim[rank]}$
     !! Buffer to be received
   integer(c_int32_t), intent(in) :: source
     !! Source MPI rank
@@ -1118,7 +1120,7 @@ function isend_${dtype}$_r${rank}$(this,buffer,dest,tag) result(request)
     !! Returned MPI request
   class(fckit_mpi_comm), intent(in) :: this
     !! This communicator
-  ${ftype}$, intent(in) :: buffer${dim[rank]}$
+  ${ftype}$, intent(in), target :: buffer${dim[rank]}$
     !! Buffer to be sent
   integer(c_int32_t), intent(in) :: dest
     !! Destination MPI rank
@@ -1145,7 +1147,7 @@ function ireceive_${dtype}$_r${rank}$(this,buffer,source,tag) result(request)
     !! Returned MPI request
   class(fckit_mpi_comm), intent(in) :: this
     !! This communicator
-  ${ftype}$, intent(inout) :: buffer${dim[rank]}$
+  ${ftype}$, intent(inout), target :: buffer${dim[rank]}$
     !! Buffer to be received
   integer(c_int32_t), intent(in) :: source
     !! Source MPI rank

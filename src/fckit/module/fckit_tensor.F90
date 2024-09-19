@@ -179,7 +179,7 @@ end function
 
 function ctor_from_float_array_rank1(tensor, layout) result(this)
   type(fckit_tensor_real32) :: this
-  real(c_float), intent(in) :: tensor(:)
+  real(c_float), intent(in), target :: tensor(:)
   integer(c_int), intent(in), optional :: layout
   integer(c_int) :: layout_actual = 1 ! left-layout (col-major)
   real(c_float), pointer :: data_vec(:)
@@ -199,7 +199,7 @@ end function
 
 function ctor_from_float_array_rank2(tensor, layout) result(this)
   type(fckit_tensor_real32) :: this
-  real(c_float), intent(in) :: tensor(:,:)
+  real(c_float), intent(in), target :: tensor(:,:)
   integer(c_int), intent(in), optional :: layout
   integer(c_int) :: layout_actual = 1 ! left-layout (col-major)
   real(c_float), pointer :: data_vec(:)
@@ -218,7 +218,7 @@ end function
 
 function ctor_from_float_array_rank3(tensor, layout) result(this)
   type(fckit_tensor_real32) :: this
-  real(c_float), intent(in) :: tensor(:,:,:)
+  real(c_float), intent(in), target :: tensor(:,:,:)
   integer(c_int), intent(in), optional :: layout
   integer(c_int) :: layout_actual = 1 ! left-layout (col-major)
   real(c_float), pointer :: data_vec(:)
@@ -238,7 +238,7 @@ end function
 
 function ctor_from_float_array_rank4(tensor, layout) result(this)
   type(fckit_tensor_real32) :: this
-  real(c_float), intent(in) :: tensor(:,:,:,:)
+  real(c_float), intent(in), target :: tensor(:,:,:,:)
   integer(c_int), intent(in), optional :: layout
   integer(c_int) :: layout_actual = 1 ! left-layout (col-major)
   real(c_float), pointer :: data_vec(:)
@@ -376,7 +376,7 @@ end function
 
 function ctor_from_double_array_rank1(tensor, layout) result(this)
   type(fckit_tensor_real64) :: this
-  real(c_double), intent(in) :: tensor(:)
+  real(c_double), intent(in), target :: tensor(:)
   integer(c_int), intent(in), optional :: layout
   integer(c_int) :: layout_actual = 1 ! left-layout (col-major)
   real(c_double), pointer :: data_vec(:)
@@ -396,7 +396,7 @@ end function
 
 function ctor_from_double_array_rank2(tensor, layout) result(this)
   type(fckit_tensor_real64) :: this
-  real(c_double), intent(in) :: tensor(:,:)
+  real(c_double), intent(in), target :: tensor(:,:)
   integer(c_int), intent(in), optional :: layout
   integer(c_int) :: layout_actual = 1 ! left-layout (col-major)
   real(c_double), pointer :: data_vec(:)
@@ -415,7 +415,7 @@ end function
 
 function ctor_from_double_array_rank3(tensor, layout) result(this)
   type(fckit_tensor_real64) :: this
-  real(c_double), intent(in) :: tensor(:,:,:)
+  real(c_double), intent(in), target :: tensor(:,:,:)
   integer(c_int), intent(in), optional :: layout
   integer(c_int) :: layout_actual = 1 ! left-layout (col-major)
   real(c_double), pointer :: data_vec(:)
@@ -435,7 +435,7 @@ end function
 
 function ctor_from_double_array_rank4(tensor, layout) result(this)
   type(fckit_tensor_real64) :: this
-  real(c_double), intent(in) :: tensor(:,:,:,:)
+  real(c_double), intent(in), target :: tensor(:,:,:,:)
   integer(c_int), intent(in), optional :: layout
   integer(c_int) :: layout_actual = 1 ! left-layout (col-major)
   real(c_double), pointer :: data_vec(:)
