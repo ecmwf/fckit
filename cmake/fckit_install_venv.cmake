@@ -9,10 +9,6 @@
 macro( fckit_install_venv )
 
     list( APPEND PIP_OPTIONS "--disable-pip-version-check" )
-    if( HAVE_FCKIT_VENV_EDITABLE )
-        # Use checked-out source instead of installing into venv
-        list( APPEND PIP_OPTIONS "-e" )
-    endif()
 
     # Create a virtualenv
     set( VENV_PATH ${CMAKE_CURRENT_BINARY_DIR}/fckit_venv )
@@ -43,6 +39,13 @@ macro( fckit_install_venv )
     set( _pkg_name "fckit_yaml_reader")
     if( HAVE_TESTS )
        set( _pkg_name "fckit_yaml_reader/[tests]")
+    endif()
+
+    execute_process( COMMAND ${Python3_EXECUTABLE} -m pip install --upgrade ${PIP_OPTIONS} pip OUTPUT_QUIET )
+
+    if( HAVE_FCKIT_VENV_EDITABLE )
+        # Use checked-out source instead of installing into venv
+        list( APPEND PIP_OPTIONS "-e" )
     endif()
 
     ecbuild_info( "Install fckit_yaml_reader in virtual environment ${VENV_PATH}" )
