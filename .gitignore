@@ -2,5 +2,6 @@ build
 install/*
 CMakeLists.txt.user
 **/*.egg-info/
+.vscode
 __pycache__
 
