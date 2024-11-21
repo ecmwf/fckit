@@ -36,7 +36,7 @@ endfunction()
 
 function( add_fctest )
 
-cmake_minimum_required( VERSION 3.6 )
+cmake_minimum_required( VERSION 3.12 )
 cmake_policy( SET CMP0064 NEW ) # Recognize ``TEST`` as operator for the ``if()`` command. (introduced in CMake version 3.4)
 
   ecbuild_add_test( ${ARGV} )
