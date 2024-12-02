@@ -129,10 +129,17 @@ function( fckit_preprocess_fypp_sources output )
       set( short_outfile "${base}.F90")
     endif()
 
+    get_source_file_property( _depends ${filename} OBJECT_DEPENDS )
+
+    unset( ${filename}_depends )
+    if( _depends )
+       set( ${filename}_depends ${_depends} )
+    endif()
+
     add_custom_command(
       OUTPUT ${outfile}
       COMMAND ${CMAKE_COMMAND} -E env FCKIT_EVAL_ARGS_EXCLUDE="${_PAR_FYPP_ARGS_EXCLUDE}" ${FYPP} ${args} ${CMAKE_CURRENT_SOURCE_DIR}/${filename} ${outfile}
-      DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${filename} ${_PAR_DEPENDS} 
+      DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${filename} ${_PAR_DEPENDS} ${${filename}_depends}
       COMMENT "[fypp] Preprocessor generating ${short_outfile}" )
 
     set_source_files_properties(${outfile} PROPERTIES GENERATED TRUE)
