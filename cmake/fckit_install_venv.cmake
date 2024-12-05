@@ -34,11 +34,6 @@ macro( fckit_install_venv )
     # Find newly created python venv
     find_package( Python3 COMPONENTS Interpreter REQUIRED )
 
-    set( _pkg_name "fckit_yaml_reader")
-    if( HAVE_TESTS )
-       set( _pkg_name "fckit_yaml_reader/[tests]")
-    endif()
-
     if( Python3_VERSION VERSION_EQUAL 3.8 )
        execute_process( COMMAND ${Python3_EXECUTABLE} -m pip --disable-pip-version-check
                         install --upgrade ${PIP_OPTIONS} pip OUTPUT_QUIET ERROR_QUIET )
@@ -49,6 +44,7 @@ macro( fckit_install_venv )
         list( APPEND PIP_OPTIONS "-e" )
     endif()
 
+    set( _pkg_name "fckit_yaml_reader")
     ecbuild_info( "Install fckit_yaml_reader in virtual environment ${VENV_PATH}" )
     execute_process( COMMAND ${Python3_EXECUTABLE} -m pip --disable-pip-version-check
                      install ${PIP_OPTIONS} ${CMAKE_CURRENT_SOURCE_DIR}/src/fckit/${_pkg_name} OUTPUT_QUIET )
