@@ -8,8 +8,6 @@
 
 macro( fckit_install_venv )
 
-    list( APPEND PIP_OPTIONS "--disable-pip-version-check" )
-
     # Create a virtualenv
     set( VENV_PATH ${CMAKE_CURRENT_BINARY_DIR}/fckit_venv )
     ecbuild_info( "Create Python virtual environment ${VENV_PATH}" )
@@ -41,7 +39,10 @@ macro( fckit_install_venv )
        set( _pkg_name "fckit_yaml_reader/[tests]")
     endif()
 
-    execute_process( COMMAND ${Python3_EXECUTABLE} -m pip install --upgrade ${PIP_OPTIONS} pip OUTPUT_QUIET )
+    if( Python3_VERSION VERSION_EQUAL 3.8 )
+       execute_process( COMMAND ${Python3_EXECUTABLE} -m pip --disable-pip-version-check
+                        install --upgrade ${PIP_OPTIONS} pip OUTPUT_QUIET ERROR_QUIET )
+    endif()
 
     if( HAVE_FCKIT_VENV_EDITABLE )
         # Use checked-out source instead of installing into venv
@@ -49,18 +50,21 @@ macro( fckit_install_venv )
     endif()
 
     ecbuild_info( "Install fckit_yaml_reader in virtual environment ${VENV_PATH}" )
-    execute_process( COMMAND ${Python3_EXECUTABLE} -m pip install ${PIP_OPTIONS} ${CMAKE_CURRENT_SOURCE_DIR}/src/fckit/${_pkg_name} OUTPUT_QUIET )
+    execute_process( COMMAND ${Python3_EXECUTABLE} -m pip --disable-pip-version-check
+                     install ${PIP_OPTIONS} ${CMAKE_CURRENT_SOURCE_DIR}/src/fckit/${_pkg_name} OUTPUT_QUIET )
 
     # install ruamel
     ecbuild_info( "Install ruamel.yaml in virtual environment ${VENV_PATH}" )
-    execute_process( COMMAND ${Python3_EXECUTABLE} -m pip install ${PIP_OPTIONS} ${CMAKE_CURRENT_SOURCE_DIR}/contrib/ruamel.yaml-0.18.6 OUTPUT_QUIET )
+    execute_process( COMMAND ${Python3_EXECUTABLE} -m pip --disable-pip-version-check
+                     install ${PIP_OPTIONS} ${CMAKE_CURRENT_SOURCE_DIR}/contrib/ruamel.yaml-0.18.6 OUTPUT_QUIET )
    
     # install fypp
     if( NOT HAVE_FCKIT_VENV_EDITABLE )
        list( APPEND PIP_OPTIONS "--use-pep517" )
     endif()
     ecbuild_info( "Install fypp in virtual environment ${VENV_PATH}" )
-    execute_process( COMMAND ${Python3_EXECUTABLE} -m pip install ${PIP_OPTIONS} ${CMAKE_CURRENT_SOURCE_DIR}/contrib/fypp-3.2-b8dd58b-20230822 OUTPUT_QUIET )
+    execute_process( COMMAND ${Python3_EXECUTABLE} -m pip --disable-pip-version-check
+                     install ${PIP_OPTIONS} ${CMAKE_CURRENT_SOURCE_DIR}/contrib/fypp-3.2-b8dd58b-20230822 OUTPUT_QUIET )
 
     if( ECBUILD_INSTALL_LIBRARY_HEADERS )
        install( DIRECTORY ${VENV_PATH} DESTINATION . PATTERN "bin/*" PERMISSIONS ${install_permissions} )
