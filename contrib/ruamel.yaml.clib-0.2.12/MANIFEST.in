@@ -1,0 +1,1 @@
+include README.md LICENSE setup.py *.c *.h *.pxd *.pyx

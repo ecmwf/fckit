@@ -39,16 +39,19 @@ macro( fckit_install_venv )
                         install --upgrade ${PIP_OPTIONS} pip OUTPUT_QUIET ERROR_QUIET )
     endif()
 
+    configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/cmake/fckit_venv_requirements.txt
+                    ${CMAKE_CURRENT_BINARY_DIR}/fckit_venv_requirements.txt @ONLY )
+
     # install pip dependencies
 	ecbuild_info( "Install fckit_yaml_reader dependencies in virtual environment ${VENV_PATH}" )
     if( HAVE_FCKIT_VENV_OFFLINE )
         execute_process( COMMAND ${Python3_EXECUTABLE} -m pip --disable-pip-version-check
-                         install -r ${CMAKE_CURRENT_SOURCE_DIR}/cmake/fckit_venv_requirements.txt
-                         --no-index --find-links ${FCKIT_VENV_WHEEL_DIR} OUTPUT_QUIET )
+                         install -r ${CMAKE_CURRENT_BINARY_DIR}/fckit_venv_requirements.txt
+                         --no-index --find-links=${FCKIT_VENV_WHEEL_DIR} OUTPUT_QUIET )
         list( APPEND PIP_OPTIONS "--no-build-isolation" )
     else()
         execute_process( COMMAND ${Python3_EXECUTABLE} -m pip --disable-pip-version-check
-                         install -r ${CMAKE_CURRENT_SOURCE_DIR}/cmake/fckit_venv_requirements.txt
+                         install -r ${CMAKE_CURRENT_BINARY_DIR}/fckit_venv_requirements.txt
                          OUTPUT_QUIET )
     endif()
 
