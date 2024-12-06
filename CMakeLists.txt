@@ -132,6 +132,11 @@ ecbuild_add_option( FEATURE FCKIT_VENV_EDITABLE
                     DESCRIPTION "Install editable packages in fckit Python virtual environment"
                     CONDITION HAVE_FCKIT_VENV )
 
+ecbuild_add_option( FEATURE FCKIT_VENV_OFFLINE
+                    DEFAULT OFF
+                    DESCRIPTION "Offline install of fckit Python virtual environment"
+                    CONDITION DEFINED FCKIT_VENV_WHEEL_DIR )
+
 if( HAVE_FCKIT_VENV )
    fckit_install_venv()
 else()

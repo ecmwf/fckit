@@ -41,8 +41,17 @@ macro( fckit_install_venv )
 
     # install pip dependencies
 	ecbuild_info( "Install fckit_yaml_reader dependencies in virtual environment ${VENV_PATH}" )
-    execute_process( COMMAND ${Python3_EXECUTABLE} -m pip --disable-pip-version-check
-                     install ${PIP_OPTIONS} -r ${CMAKE_CURRENT_SOURCE_DIR}/cmake/fckit_venv_requirements.txt OUTPUT_QUIET )
+    if( HAVE_FCKIT_VENV_OFFLINE )
+        execute_process( COMMAND ${Python3_EXECUTABLE} -m pip --disable-pip-version-check
+                         install -r ${CMAKE_CURRENT_SOURCE_DIR}/cmake/fckit_venv_requirements.txt
+                         --no-index --find-links ${FCKIT_VENV_WHEEL_DIR} OUTPUT_QUIET )
+        list( APPEND PIP_OPTIONS "--no-build-isolation" )
+    else()
+        execute_process( COMMAND ${Python3_EXECUTABLE} -m pip --disable-pip-version-check
+                         install -r ${CMAKE_CURRENT_SOURCE_DIR}/cmake/fckit_venv_requirements.txt
+                         OUTPUT_QUIET )
+    endif()
+
 
     if( HAVE_FCKIT_VENV_EDITABLE )
         # Use checked-out source instead of installing into venv

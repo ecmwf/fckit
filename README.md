@@ -34,6 +34,24 @@ ecbuild_add_option( FEATURE FCTEST  DEFAULT ${ENABLE_TESTS}
 
 See src/examples folder how to add and create the unit-tests.
 
+### Offline install of fckit Python virtual environment
+
+An offline build/installation of the fckit Python virtual environment can be completed as follows:
+
+1. Download Python dependencies on a system with internet access:
+
+```
+python3 -m pip download -r fckit/cmake/fckit_venv_requirements.txt -d <dir-to-store-dependencies>
+```
+
+2. scp/rsync/copy the directory containing the dependencies to the offline system.
+
+3. Add the following two arguments to the fckit CMake configuration step:
+
+```
+-DENABLE_FCKIT_VENV_OFFLINE=ON -DFCKIT_VENV_WHEEL_DIR=<dir-containing-dependencies>
+```
+
 ## fckit
 
 Various Fortran modules helpful to create mixed-language applications
