@@ -127,11 +127,6 @@ ecbuild_add_option( FEATURE FCKIT_VENV
                     DESCRIPTION "Install Python virtual environment with fypp and a yaml parser"
                     CONDITION Python3_VERSION VERSION_GREATER_EQUAL 3.8 AND Python3_VERSION VERSION_LESS 3.12 )
 
-ecbuild_add_option( FEATURE FCKIT_VENV_EDITABLE
-                    DEFAULT OFF
-                    DESCRIPTION "Install editable packages in fckit Python virtual environment"
-                    CONDITION HAVE_FCKIT_VENV )
-
 ecbuild_add_option( FEATURE FCKIT_VENV_OFFLINE
                     DEFAULT OFF
                     DESCRIPTION "Offline install of fckit Python virtual environment"

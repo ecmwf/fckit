@@ -52,11 +52,6 @@ macro( fckit_install_venv )
     endif()
 
 
-    if( HAVE_FCKIT_VENV_EDITABLE )
-        # Use checked-out source instead of installing into venv
-        list( APPEND PIP_OPTIONS "-e" )
-    endif()
-
     # install virtual environment from requirements
     set( _pkg_name "fckit_yaml_reader")
     ecbuild_info( "Install fckit_yaml_reader in virtual environment ${VENV_PATH}" )
@@ -64,9 +59,7 @@ macro( fckit_install_venv )
                      install ${PIP_OPTIONS} ${CMAKE_CURRENT_SOURCE_DIR}/src/fckit/${_pkg_name} OUTPUT_QUIET )
 
     # install fypp
-    if( NOT HAVE_FCKIT_VENV_EDITABLE )
-       list( APPEND PIP_OPTIONS "--use-pep517" )
-    endif()
+    list( APPEND PIP_OPTIONS "--use-pep517" )
     ecbuild_info( "Install fypp in virtual environment ${VENV_PATH}" )
     execute_process( COMMAND ${Python3_EXECUTABLE} -m pip --disable-pip-version-check
                      install ${PIP_OPTIONS} ${CMAKE_CURRENT_SOURCE_DIR}/contrib/fypp-3.2-b8dd58b-20230822 OUTPUT_QUIET )
