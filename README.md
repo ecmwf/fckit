@@ -45,47 +45,20 @@ Various Fortran modules helpful to create mixed-language applications
 
 An offline build/installation of the fckit Python virtual environment can be completed as follows:
 
-1. Configure fckit (in the CMake sense) on a system with internet access and download Python dependencies:
+1. Download all necessary Python dependencies listed in fckit/requirements.txt. `ruamel.yaml.clib`
+is not a pure Python package, so we have to ensure a wheel compatible with the target platform is
+downloaded. pip compatibility tags for any system can be displayed using `python3 -m pip debug --verbose`,
+and buit-distributions (i.e. wheels) for ruamel.yaml.clib can be found [here](https://pypi.org/project/ruamel.yaml.clib/#files).
+For a linux installation based on an x86 architecture using Python3.10, the following command can be used:
 
 ```
-python3 -m pip download -r <fckit-build-dir>/fckit_venv_requirements.txt -d <dir-to-store-dependencies>
+python3 -m pip download -r requirements.txt -d <dir-to-store-dependencies> \
+--only-binary=:all: --python-version 310 --platform manylinux_2_17_x86_64
 ```
 
 2. scp/rsync/copy the directory containing the dependencies to the offline system.
 
-If fckit is being built using the same C compiler as the system Python installation, you can procede straight
-to step 8. If fckit is however being built using a different C compiler than that used to build the system
-Python installation, then a few more steps are needed:
-
-3. Create a temporary virtual environment and load it:
-
-```
-python3 -m venv tmp_venv
-source tmp_venv/bin/activate
-```
-
-4. Install the pre-cached setuptools in the temporary virtual environment:
-
-```
-python3 -m pip install --no-build-isolation --no-index --find-links=<dir-containing-dependencies> setuptools==65.5.0
-```
-
-5. Load the C compiler used to build the system Python and build a wheel for ruamel.yaml.clib:
-
-```
-python3 -m pip wheel --no-build-isolation --no-index --find-links=<dir-containing-dependencies> fckit/contrib/ruamel.yaml.clib-0.2.12 -w <dir-containing-dependencies>
-```
-
-6. Delete the temporary virtual environment:
-
-```
-deactivate
-rm -rf tmp_venv
-```
-
-7. Change line 2 in fckit/cmake/fckit_venv_requirements.txt to `ruamel.yaml.clib==0.2.12`.
-
-8. Add the following two arguments to the fckit CMake configuration step:
+3. Add the following two arguments to the fckit CMake configuration step:
 
 ```
 -DENABLE_FCKIT_VENV_OFFLINE=ON -DFCKIT_VENV_WHEEL_DIR=<dir-containing-dependencies>
