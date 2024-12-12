@@ -120,7 +120,7 @@ set( install_permissions OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_E
 
 # Discover only system install Python 3
 set( Python3_FIND_VIRTUALENV STANDARD )
-find_package( Python3 COMPONENTS Interpreter REQUIRED )
+find_package( Python3 COMPONENTS Interpreter )
 
 ecbuild_add_option( FEATURE FCKIT_VENV
                     DEFAULT OFF
