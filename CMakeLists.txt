@@ -120,17 +120,17 @@ set( install_permissions OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_E
 
 # Discover only system install Python 3
 set( Python3_FIND_VIRTUALENV STANDARD )
-find_package( Python3 COMPONENTS Interpreter REQUIRED )
+find_package( Python3 COMPONENTS Interpreter )
 
 ecbuild_add_option( FEATURE FCKIT_VENV
                     DEFAULT OFF
                     DESCRIPTION "Install Python virtual environment with fypp and a yaml parser"
-                    CONDITION Python3_VERSION VERSION_GREATER_EQUAL 3.8 )
+                    CONDITION Python3_VERSION VERSION_GREATER_EQUAL 3.8 AND Python3_VERSION VERSION_LESS 3.12 )
 
-ecbuild_add_option( FEATURE FCKIT_VENV_EDITABLE
+ecbuild_add_option( FEATURE FCKIT_VENV_OFFLINE
                     DEFAULT OFF
-                    DESCRIPTION "Install editable packages in fckit Python virtual environment"
-                    CONDITION HAVE_FCKIT_VENV )
+                    DESCRIPTION "Offline install of fckit Python virtual environment"
+                    CONDITION DEFINED FCKIT_VENV_WHEEL_DIR )
 
 if( HAVE_FCKIT_VENV )
    fckit_install_venv()
