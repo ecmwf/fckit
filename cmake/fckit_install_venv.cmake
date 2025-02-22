@@ -15,6 +15,7 @@ macro( fckit_install_venv )
 
     # Make the virtualenv portable by automatically deducing the VIRTUAL_ENV path from
     # the 'activate' script's location in the filesystem
+    set (ENV{VIRTUAL_ENV} "${VENV_PATH}")
     execute_process(
         COMMAND
             sed -i "s/^VIRTUAL_ENV=\".*\"$/VIRTUAL_ENV=\"$(cd \"$(dirname \"$(dirname \"\${BASH_SOURCE[0]}\" )\")\" \\&\\& pwd)\"/" "${VENV_PATH}/bin/activate"
