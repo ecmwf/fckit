@@ -149,6 +149,7 @@ function( fckit_preprocess_fypp_sources output )
     # ecbuild 3.2 compatible properties that need to be transferred from .fypp files to .F90
     foreach( _prop COMPILE_FLAGS
                    COMPILE_FLAGS_${CMAKE_BUILD_TYPE_CAPS}
+                   COMPILE_OPTIONS
                    OVERRIDE_COMPILE_FLAGS
                    OVERRIDE_COMPILE_FLAGS_${CMAKE_BUILD_TYPE_CAPS} )
       get_source_file_property( ${filename}_${_prop} ${filename} ${_prop} )
