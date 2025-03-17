@@ -22,7 +22,7 @@ if( HAVE_TESTS AND HAVE_ECKIT )
     endif()
     if( CMAKE_${lang}_FLAGS )
       string(REPLACE "--coverage" "" CMAKE_${lang}_FLAGS "${CMAKE_${lang}_FLAGS}")
-      list( APPEND _test_args "-DCMAKE_${lang}_FLAGS=${CMAKE_${lang}_FLAGS}" )
+      list( APPEND _test_args "-DECBUILD_${lang}_FLAGS=${CMAKE_${lang}_FLAGS}" )
     endif()
   endforeach()
 
