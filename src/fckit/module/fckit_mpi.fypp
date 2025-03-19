@@ -103,6 +103,7 @@ public :: fckit_mpi_comm
 public :: fckit_mpi_status
 public :: fckit_mpi_addComm
 public :: fckit_mpi_setCommDefault
+public :: fckit_mpi_finaliseAllComms
 public :: fckit_mpi_sum
 public :: fckit_mpi_prod
 public :: fckit_mpi_min
@@ -196,6 +197,9 @@ contains
 
   procedure, public :: anysource
     !! anysource
+
+  procedure, public, nopass :: finalize => fckit_mpi_finaliseAllComms
+    !! MPI Finalize
 
   @:begin_interface( allreduce )
   @:generate_interfaces( allreduce )
@@ -538,6 +542,12 @@ interface
     integer(c_int32_t), dimension(*) :: status
   end subroutine
 
+
+  ! void fckit__mpi__finaliseAllComms()
+  subroutine fckit__mpi__finaliseAllComms() bind(c,name="fckit__mpi__finaliseAllComms")
+  end subroutine
+
+
 end interface
 
 !========================================================================
@@ -634,6 +644,12 @@ subroutine fckit_mpi_addComm_name_int(name,comm)
   character(kind=c_char,len=*), intent(in), optional :: name
   integer(c_int32_t), intent(in) :: comm
   call fckit__mpi__addComm_name_int(c_str(name),comm)
+end subroutine
+
+!---------------------------------------------------------------------------------------
+
+subroutine fckit_mpi_finaliseAllComms()
+  call fckit__mpi__finaliseAllComms()
 end subroutine
 
 !---------------------------------------------------------------------------------------
