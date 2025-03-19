@@ -625,4 +625,8 @@ int32 fckit__mpi__mpi_info_null() {
 #endif
 }
 
+void fckit__mpi__finaliseAllComms() {
+    eckit::mpi::finaliseAllComms();
+}
+
 }  // extern "C"
