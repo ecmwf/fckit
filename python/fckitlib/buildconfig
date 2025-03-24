@@ -12,5 +12,5 @@
 
 NAME="fckit"
 CMAKE_PARAMS="-Deckit_ROOT=/tmp/mir/prereqs/eckitlib"
-PYPROJECT_DIR="python_wrapper"
+PYPROJECT_DIR="python/fckitlib"
 DEPENDENCIES='["eckitlib"]'
