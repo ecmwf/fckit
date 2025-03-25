@@ -34,6 +34,9 @@ macro( fckit_install_venv )
     # Find newly created python venv
     find_package( Python3 COMPONENTS Interpreter REQUIRED )
 
+    # Make sure the Python installation has (sufficiently recent) pip
+    execute_process( COMMAND ${Python3_EXECUTABLE} -m ensurepip -U OUTPUT_QUIET )
+
     if( Python3_VERSION VERSION_EQUAL 3.8 )
        execute_process( COMMAND ${Python3_EXECUTABLE} -m pip --disable-pip-version-check
                         install --upgrade ${PIP_OPTIONS} pip OUTPUT_QUIET ERROR_QUIET )
