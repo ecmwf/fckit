@@ -39,30 +39,29 @@ macro( fckit_install_venv )
 
     if( Python3_VERSION VERSION_EQUAL 3.8 )
        execute_process( COMMAND ${Python3_EXECUTABLE} -m pip --disable-pip-version-check
-                        install --upgrade ${PIP_OPTIONS} pip OUTPUT_QUIET ERROR_QUIET )
+                        install --upgrade pip OUTPUT_QUIET ERROR_QUIET )
     endif()
 
 
-    # install pip dependencies
-    if( HAVE_FCKIT_VENV_OFFLINE )
-	    ecbuild_info( "Install fckit_yaml_reader dependencies in virtual environment ${VENV_PATH}" )
-        list( APPEND PIP_OPTIONS "--no-build-isolation;--no-index;--find-links=${FCKIT_VENV_WHEEL_DIR}" )
-        execute_process( COMMAND ${Python3_EXECUTABLE} -m pip --disable-pip-version-check
-                         install -r ${CMAKE_CURRENT_SOURCE_DIR}/requirements.txt
-                         ${PIP_OPTIONS} OUTPUT_QUIET )
+    unset( PIP_OPTIONS )
+    # set pip options
+    if( DEFINED ARTIFACTS_DIR )
+        list( APPEND PIP_OPTIONS "--no-index;--find-links=${ARTIFACTS_DIR}" )
+    else()
+        list( APPEND PIP_OPTIONS "--disable-pip-version-check")
     endif()
 
 
     # install virtual environment from requirements
     set( _pkg_name "fckit_yaml_reader")
     ecbuild_info( "Install fckit_yaml_reader in virtual environment ${VENV_PATH}" )
-    execute_process( COMMAND ${Python3_EXECUTABLE} -m pip --disable-pip-version-check
+    execute_process( COMMAND ${Python3_EXECUTABLE} -m pip
                      install ${PIP_OPTIONS} ${CMAKE_CURRENT_SOURCE_DIR}/src/fckit/${_pkg_name} OUTPUT_QUIET )
 
     # install fypp
     list( APPEND PIP_OPTIONS "--use-pep517" )
     ecbuild_info( "Install fypp in virtual environment ${VENV_PATH}" )
-    execute_process( COMMAND ${Python3_EXECUTABLE} -m pip --disable-pip-version-check
+    execute_process( COMMAND ${Python3_EXECUTABLE} -m pip
                      install ${PIP_OPTIONS} ${CMAKE_CURRENT_SOURCE_DIR}/contrib/fypp-3.2-b8dd58b-20230822 OUTPUT_QUIET )
 
     if( ECBUILD_INSTALL_LIBRARY_HEADERS )
