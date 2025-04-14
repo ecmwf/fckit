@@ -81,10 +81,12 @@ function( download_python_wheels )
 
     unset( PIP_OPTIONS )
     if( DEFINED _PAR_WHEEL_ARCH AND NOT _PAR_WHEEL_ARCH MATCHES None|NONE )
-       list( APPEND PIP_OPTIONS "--platform=${_PAR_WHEEL_ARCH}" )
+       string(REPLACE "\"" "" _WHEEL_ARCH ${_PAR_WHEEL_ARCH})
+       list( APPEND PIP_OPTIONS "--platform=${_WHEEL_ARCH}" )
     endif()
     if( DEFINED _PAR_WHEEL_PYTHON_VERSION AND NOT _PAR_WHEEL_PYTHON_VERSION MATCHES None|NONE )
-       list( APPEND PIP_OPTIONS "--python-version=${_PAR_WHEEL_PYTHON_VERSION}" )
+       string(REPLACE "\"" "" _PYTHON_VERSION ${_PAR_WHEEL_PYTHON_VERSION})
+       list( APPEND PIP_OPTIONS "--python-version=${_PYTHON_VERSION}" )
     endif()
 
     # We use a dry-run installation to check if all dependencies have already been downloaded
