@@ -43,7 +43,7 @@ cmake_policy( SET CMP0064 NEW ) # Recognize ``TEST`` as operator for the ``if()`
 
   set( options           )
   set( single_value_args TARGET )
-  set( multi_value_args )
+  set( multi_value_args INCLUDEDIRS )
 
   cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}" ${_FIRST_ARG} ${ARGN} )
 
@@ -55,7 +55,7 @@ cmake_policy( SET CMP0064 NEW ) # Recognize ``TEST`` as operator for the ``if()`
       get_filename_component( base ${TESTSUITE} NAME_WE )
 
     ### Preprocess files with extension ".fypp.F90"      
-      fckit_target_preprocess_fypp( ${_PAR_TARGET} )
+      fckit_target_preprocess_fypp( ${_PAR_TARGET} INCLUDEDIRS ${_PAR_INCLUDEDIRS} )
 
     ### Remove TESTSUITE from target
       get_target_property( test_sources ${_PAR_TARGET} SOURCES )

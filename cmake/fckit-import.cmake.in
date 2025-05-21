@@ -18,7 +18,7 @@ else()
   elseif( @HAVE_FCKIT_VENV@ )
      set( _fckit_eval_script ${fckit_BASE_DIR}/libexec/fckit-eval.sh )
      set( FCKIT_VENV_EXE ${fckit_BASE_DIR}/@rel_venv_exe_path@ )
-     set( FYPP ${_fckit_eval_script} ${FCKIT_VENV_EXE} -m fypp )
+     set( FYPP ${FCKIT_VENV_EXE} -m fypp )
   else()
      set( FYPP ${fckit_BASE_DIR}/libexec/fckit-eval.sh 
                ${fckit_BASE_DIR}/libexec/fckit-fypp.py )
