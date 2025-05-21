@@ -22,6 +22,8 @@ if [ "$(uname)" != "Darwin" ] ; then
         cp $root/$lib /tmp/fckit/target/fckit/lib64/
         patchelf --add-rpath '$ORIGIN' /tmp/fckit/target/fckit/lib64/$lib
     done
+    # a bug in the intel libraries themselves -- dependency not declared but actually there
+    patchelf --add-needed libifcoremt.so.5 /tmp/fckit/target/fckit/lib64/libifport.so.5
 
     cp /opt/intel/oneapi/compiler/latest/share/doc/compiler/licensing/fortran/LICENSE $source_target/intel.LICENSE
     cp /opt/intel/oneapi/compiler/2025.1/share/doc/compiler/licensing/fortran/third-party-programs.txt $source_target/intel.third-party-programs.txt
