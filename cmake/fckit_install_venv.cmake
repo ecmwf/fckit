@@ -15,10 +15,10 @@ macro( fckit_install_venv )
 
     # Make the virtualenv portable by automatically deducing the VIRTUAL_ENV path from
     # the 'activate' script's location in the filesystem
-    execute_process(
-        COMMAND
-            sed -i "s/^VIRTUAL_ENV=\".*\"$/VIRTUAL_ENV=\"$(cd \"$(dirname \"$(dirname \"\${BASH_SOURCE[0]}\" )\")\" \\&\\& pwd)\"/" "${VENV_PATH}/bin/activate"
-    )
+    file(READ ${VENV_PATH}/bin/activate VENV_ACTIVATE_CONTENT)
+    string(REPLACE "VIRTUAL_ENV=${VENV_PATH}" "VIRTUAL_ENV=\$(cd \$(dirname \$(dirname \${BASH_SOURCE[0]} ) ) && pwd )"
+           VENV_ACTIVATE_CONTENT "${VENV_ACTIVATE_CONTENT}")
+    file(WRITE ${VENV_PATH}/bin/activate ${VENV_ACTIVATE_CONTENT} )
 
     # Change the context of the search to only find the venv
     set( Python3_FIND_VIRTUALENV ONLY )
