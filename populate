@@ -9,9 +9,9 @@
 # nor does it submit to any jurisdiction.
 
 if [[ $BASH_SOURCE = */* ]]; then
-    SOURCE_DIR=${BASH_SOURCE%/*}/
+    SOURCE_DIR=${BASH_SOURCE%/*}
 else
-    SOURCE_DIR=./
+    SOURCE_DIR=.
 fi
 
 ARTIFACTS_DIR=${ARTIFACTS_DIR:-"${SOURCE_DIR}/artifacts"}
