@@ -106,6 +106,13 @@ enddo
 
   ! --------------------- GET ------------------
 
+  FCTEST_CHECK_EQUAL( config%size(), 5 )
+  FCTEST_CHECK_EQUAL( config%key(1), "p1" )
+  FCTEST_CHECK_EQUAL( config%key(2), "p2" )
+  FCTEST_CHECK_EQUAL( config%key(3), "logical_true" )
+  FCTEST_CHECK_EQUAL( config%key(4), "logical_false" )
+  FCTEST_CHECK_EQUAL( config%key(5), "nested" )
+
   found = config%get("p1",intval)
   FCTEST_CHECK( found )
   FCTEST_CHECK_EQUAL( intval , 1 )

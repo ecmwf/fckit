@@ -69,6 +69,11 @@ contains
   final :: fckit_configuration__final_auto
 #endif
 
+  procedure, public :: size => fckit_configuration_size
+    !! Function that returns the number of entries
+
+  procedure, public :: key
+
   procedure, public :: has
     !! Function that returns whether a name is contained in the configuration
     !!
@@ -405,6 +410,13 @@ function ctor_from_buffer(buffer) result(this)
   call this%return()
 end function
 
+function fckit_configuration_size(this) result(val)
+  use fckit_c_interop_module, only : c_str
+  class(fckit_Configuration), intent(in) :: this
+  integer(c_int32_t) :: val
+  val =  c_fckit_configuration_size(this%CPTR_PGIBUG_B)
+  write(0,*) "fckit_configuration_size " , val
+end function
 
 function has(this, name) result(value)
   use fckit_c_interop_module, only : c_str
@@ -420,12 +432,25 @@ function has(this, name) result(value)
   end if
 end function
 
+function key(this, index) result(key_str)
+  use fckit_c_interop_module, only : c_str, c_ptr_to_string, c_ptr_free
+  character(kind=c_char,len=:), allocatable :: key_str
+  class(fckit_Configuration), intent(in) :: this
+  integer(c_int32_t), intent(in) :: index
+  type(c_ptr) :: key_cptr
+  integer(c_size_t) :: key_size
+  call c_fckit_configuration_key(this%CPTR_PGIBUG_B, index, key_cptr, key_size)
+  FCKIT_ALLOCATE_CHARACTER(key_str, key_size)
+  key_str = c_ptr_to_string(key_cptr)
+  call c_ptr_free(key_cptr)
+end function
+
 function get_size(this, name) result(val)
   use fckit_c_interop_module, only : c_str
   class(fckit_Configuration), intent(in) :: this
   character(kind=c_char,len=*), intent(in) :: name
   integer(c_int32_t) :: val
-  val =  c_fckit_configuration_get_size(this%CPTR_PGIBUG_B, c_str(name) )
+  val = c_fckit_configuration_get_size(this%CPTR_PGIBUG_B, c_str(name) )
 end function
 
 subroutine set_config(this, name, value)
