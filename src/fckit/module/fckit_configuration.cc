@@ -343,6 +343,17 @@ int32 c_fckit_configuration_get_array_string( const Configuration* This, const c
     return true;
 }
 
+int32 c_fckit_configuration_size( const Configuration* This ) {
+    return This->keys().size();
+}
+
+void c_fckit_configuration_key( const Configuration* This, int32 index, char*& value, size_t& size ) {
+    string key = This->keys()[index-1];
+    size  = key.size() + 1;
+    value = new char[size];
+    strcpy( value, key.c_str() );
+}
+
 int32 c_fckit_configuration_has( const Configuration* This, const char* name ) {
     return This->has( name );
 }

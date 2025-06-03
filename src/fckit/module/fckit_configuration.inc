@@ -439,6 +439,17 @@ end function
 !----------------------------------------------------------------------
 
 !-------------------------------------------------------------------------------
+! int32 c_fckit_configuration_size (const Configuration* This)
+!-------------------------------------------------------------------------------
+function c_fckit_configuration_size( This ) bind(C,name="c_fckit_configura&
+  &tion_size")
+    use iso_c_binding, only: c_ptr, c_int32_t
+    integer(c_int32_t) :: c_fckit_configuration_size
+    type(c_ptr), value :: This
+end function
+!-------------------------------------------------------------------------------
+
+!-------------------------------------------------------------------------------
 ! int32 c_fckit_configuration_has (const Configuration* This, const char *name)
 !-------------------------------------------------------------------------------
 function c_fckit_configuration_has( This, name ) bind(C,name="c_fckit_configura&
@@ -449,6 +460,20 @@ function c_fckit_configuration_has( This, name ) bind(C,name="c_fckit_configura&
     character(c_char), dimension(*) :: name
 end function
 !-------------------------------------------------------------------------------
+
+!-------------------------------------------------------------------------------
+! void c_fckit_configuration_key( const Configuration* This, int32 index, char*& value, size_t& size )
+!-------------------------------------------------------------------------------
+subroutine c_fckit_configuration_key( This, index, value, size ) bind(C,nam&
+  &e="c_fckit_configuration_key")
+    use iso_c_binding, only: c_char, c_ptr, c_int32_t, c_size_t
+    type(c_ptr), value :: This
+    integer(c_int32_t), value :: index
+    type(c_ptr) :: value
+    integer(c_size_t) :: size
+end subroutine
+!-------------------------------------------------------------------------------
+
 
 !-------------------------------------------------------------------------------
 ! int32 c_fckit_configuration_get_size (const Configuration* This, const char *name)
