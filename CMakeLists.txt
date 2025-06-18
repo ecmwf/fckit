@@ -122,6 +122,8 @@ set( install_permissions OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_E
 set( Python3_FIND_VIRTUALENV STANDARD )
 find_package( Python3 COMPONENTS Interpreter )
 
+ecbuild_warn_var(Python3_EXECUTABLE)
+
 ecbuild_add_option( FEATURE FCKIT_VENV
                     DEFAULT OFF
                     DESCRIPTION "Install Python virtual environment with fypp and a yaml parser"
@@ -142,6 +144,9 @@ endif()
 # sources
 
 set( FCTEST_GENERATOR ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/tools/fctest-generate-runner.py )
+
+ecbuild_warn_var( FCTEST_GENERATOR )
+
 include( fckit_preprocess_fypp )
 include( add_fctest )
 
@@ -169,4 +174,10 @@ file(READ ${CMAKE_CURRENT_SOURCE_DIR}/cmake/fckit_preprocess_fypp.cmake FCKIT_PR
 install( FILES tools/fctest-generate-runner.py DESTINATION libexec PERMISSIONS ${install_permissions} )
 install( FILES tools/fckit-eval.sh DESTINATION libexec PERMISSIONS ${install_permissions} )
 
+ecbuild_warn_var(Python3_EXECUTABLE)
+
 ecbuild_install_project( NAME fckit )
+
+file(READ ${CMAKE_BINARY_DIR}/fckit-import.cmake FCKIT_IMPORT_CONTENT)
+ecbuild_warn_var(FCKIT_IMPORT_CONTENT)
+

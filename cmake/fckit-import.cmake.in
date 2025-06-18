@@ -46,3 +46,9 @@ if( fckit_FIND_REQUIRED_ECKIT AND NOT fckit_ECKIT_FOUND )
 endif()
 
 set( FCKIT_LIBRARIES @FCKIT_LIBRARIES@ )
+
+ecbcuild_warn_var(FCTEST_GENERATOR)
+
+set( FCKIT_BUILD_SITE @BUILD_SITE@ )
+ecbuild_warn_var( FCKIT_BUILD_SITE )
+ecbuild_warn_var( BUILD_SITE )
