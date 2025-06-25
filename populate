@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+# (C) Copyright 2024- ECMWF.
+#
+# This software is licensed under the terms of the Apache Licence Version 2.0
+# which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+# In applying this licence, ECMWF does not waive the privileges and immunities
+# granted to it by virtue of its status as an intergovernmental organisation
+# nor does it submit to any jurisdiction.
+
+if [[ $BASH_SOURCE = */* ]]; then
+    SOURCE_DIR=${BASH_SOURCE%/*}
+else
+    SOURCE_DIR=.
+fi
+
+ARTIFACTS_DIR=${ARTIFACTS_DIR:-"${SOURCE_DIR}/artifacts"}
+
+# Download dependencies for Python package in this repository
+cmake \
+    -DWHEELS_DIR=${ARTIFACTS_DIR} -DREQUIREMENT_SPEC=${SOURCE_DIR}/src/fckit/fckit_yaml_reader \
+    -DFCKIT_WHEEL_ARCH=${FCKIT_WHEEL_ARCH} -DFCKIT_WHEEL_PYTHON_VERSION=${FCKIT_WHEEL_PYTHON_VERSION} \
+    -P ${SOURCE_DIR}/cmake/fckit_download_python_wheels.cmake
