@@ -26,7 +26,7 @@ if [ "$(uname)" != "Darwin" ] ; then
     patchelf --add-needed libifcoremt.so.5 /tmp/fckit/target/fckit/lib64/libifport.so.5
 
     cp /opt/intel/oneapi/compiler/latest/share/doc/compiler/licensing/fortran/LICENSE $source_target/intel.LICENSE
-    cp /opt/intel/oneapi/compiler/2025.1/share/doc/compiler/licensing/fortran/third-party-programs.txt $source_target/intel.third-party-programs.txt
+    cp /opt/intel/oneapi/compiler/latest/share/doc/compiler/licensing/fortran/third-party-programs.txt $source_target/intel.third-party-programs.txt
     echo "{\"$(echo $libs | tr ' ' ',')\": {\"home\": \"https://www.intel.com/content/www/us/en/developer/articles/license/end-user-license-agreement.html\", \"path\": \"copying/intel*\"}}" > $source_target/list.json
 
     intel_version=$(ls /opt/intel/oneapi/compiler/ | grep -v latest | sort -r | head -n 1)
