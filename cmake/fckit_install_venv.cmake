@@ -51,6 +51,10 @@ macro( fckit_install_venv )
         list( APPEND PIP_OPTIONS "--disable-pip-version-check")
     endif()
 
+    if( HAVE_FCKIT_VENV_EDITABLE )
+        # Use checked-out source instead of installing into venv
+        list( APPEND PIP_OPTIONS "-e" )
+    endif()
 
     # install virtual environment from requirements, which includes fypp
     set( _pkg_name "fckit_yaml_reader")
