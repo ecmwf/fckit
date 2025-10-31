@@ -14,7 +14,7 @@ mkdir -p /tmp/fckit/target/fckit/lib64/
 # `auditwheel lddtree /tmp/fckit/build/lib/libfckit.so 2>&1 | grep realpath | grep intel`
 # or refactor to do this in post-compile/post-build step (but thats more work)
 
-if [ "$(uname)" != "Darwin" ] ; then
+if [ -d /opt/intel/oneapi ] ; then
     libs="libifport.so.5 libimf.so libintlc.so.5 libifcoremt.so.5 libsvml.so libirc.so"
     echo "bundling in libs $libs"
     root="/opt/intel/oneapi/compiler/latest/lib/"
@@ -33,5 +33,6 @@ if [ "$(uname)" != "Darwin" ] ; then
     echo "intel: $intel_version" >> $source_target/../versions.txt
 else
     # TODO macos support ???
+    # TODO nvidia fortran on arm ???
     echo "no external bundle"
 fi
