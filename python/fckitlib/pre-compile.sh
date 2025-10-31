@@ -14,7 +14,7 @@ mkdir -p /tmp/fckit/target/fckit/lib64/
 # `auditwheel lddtree /tmp/fckit/build/lib/libfckit.so 2>&1 | grep realpath | grep intel`
 # or refactor to do this in post-compile/post-build step (but thats more work)
 
-if [ "$(uname)" != "Darwin" ] ; then
+if [ -d /opt/intel/oneapi ] ; then
     libs="libifport.so.5 libimf.so libintlc.so.5 libifcoremt.so.5 libsvml.so libirc.so"
     echo "bundling in libs $libs"
     root="/opt/intel/oneapi/compiler/latest/lib/"
@@ -26,12 +26,13 @@ if [ "$(uname)" != "Darwin" ] ; then
     patchelf --add-needed libifcoremt.so.5 /tmp/fckit/target/fckit/lib64/libifport.so.5
 
     cp /opt/intel/oneapi/compiler/latest/share/doc/compiler/licensing/fortran/LICENSE $source_target/intel.LICENSE
-    cp /opt/intel/oneapi/compiler/2025.1/share/doc/compiler/licensing/fortran/third-party-programs.txt $source_target/intel.third-party-programs.txt
+    cp /opt/intel/oneapi/compiler/latest/share/doc/compiler/licensing/fortran/third-party-programs.txt $source_target/intel.third-party-programs.txt
     echo "{\"$(echo $libs | tr ' ' ',')\": {\"home\": \"https://www.intel.com/content/www/us/en/developer/articles/license/end-user-license-agreement.html\", \"path\": \"copying/intel*\"}}" > $source_target/list.json
 
     intel_version=$(ls /opt/intel/oneapi/compiler/ | grep -v latest | sort -r | head -n 1)
     echo "intel: $intel_version" >> $source_target/../versions.txt
 else
     # TODO macos support ???
+    # TODO nvidia fortran on arm ???
     echo "no external bundle"
 fi

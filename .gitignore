@@ -1,4 +1,5 @@
 build
+artifacts
 install/*
 CMakeLists.txt.user
 **/*.egg-info/
