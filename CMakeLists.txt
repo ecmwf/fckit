@@ -29,6 +29,7 @@ ecbuild_check_fortran( FEATURES finalization )
 
 set( FEATURE_FINAL_DEFAULT ON )
 set( PGIBUG_ATLAS_197 0 )
+set( HAVE_NOREPACK 1 )
 if( CMAKE_Fortran_COMPILER_ID MATCHES "PGI|NVHPC" )
   if( ${CMAKE_Fortran_COMPILER_VERSION} VERSION_LESS 19.4 )
       set( PGIBUG_ATLAS_197 1 )
@@ -39,6 +40,15 @@ if( CMAKE_Fortran_COMPILER_ID MATCHES "PGI|NVHPC" )
   else()
     list( APPEND FCKIT_QUARANTAINED_TESTS fckit_test_shared_ptr )
     # deallocation of list of shared_ptr only seems to deallocate first entry
+  endif()
+  check_fortran_compiler_flag(-Mnotarget_temps SUPPORTED_FLAG_NOTARGET_TEMPS)
+  if(NOT SUPPORTED_FLAG_NOTARGET_TEMPS)
+    set( HAVE_NOREPACK 0 )
+    ecbuild_warn("The NVHPC Fortran flag -Mnotarget_temps is not supported. "
+        "In practice this means that a Fortran array sliced on first (leftmost) dimension (so discontiguous) "
+        "will be repacked as a temporary contiguous array when passed as argument and copied in/out. "
+        "Other types of slices are not repacked regardless. "
+        "See https://github.com/ecmwf/fckit/issues/73")
   endif()
 endif()
 if( CMAKE_Fortran_COMPILER_ID STREQUAL "Intel" )

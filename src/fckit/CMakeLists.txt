@@ -66,6 +66,9 @@ if( CMAKE_Fortran_COMPILER_ID MATCHES "PGI|NVHPC" )
   #   PGF90-W-0435-Array declared with zero size
   #      (/tmp/nawd/atlas-bundle/source/fckit/src/fckit/module/fckit_array.F90: 25)
   set_source_files_properties( module/fckit_array.F90  PROPERTIES COMPILE_FLAGS "-w" )
+
+  ecbuild_add_fortran_flags("-Mnotarget_temps" NAME fckit_fortran_norepack NO_FAIL) # otherwise wrong strides computation of arrays passed as arguments
+  # Not all NVHPC installations support this. See https://github.com/ecmwf/fckit/issues/73
 endif()
 
 

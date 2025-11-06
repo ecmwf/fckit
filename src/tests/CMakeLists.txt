@@ -11,6 +11,7 @@ cmake_policy( SET CMP0064 NEW ) # Recognize ``TEST`` as operator for the ``if()`
 add_fctest( TARGET  fckit_test_array
             LINKER_LANGUAGE Fortran
             SOURCES test_array.F90
+            DEFINITIONS FCKIT_HAVE_NOREPACK=${HAVE_NOREPACK}
             LIBS    fckit)
 
 add_fctest( TARGET  fckit_test_resource
