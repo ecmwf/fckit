@@ -149,8 +149,9 @@ end subroutine
 subroutine fctest_check_equal_int32_r1(V1,V2,line)
   integer(c_int32_t), intent(in) :: V1(:), V2(:)
   integer(c_int32_t), intent(in) :: line
-  logical :: compare = .True.
+  logical :: compare
   integer(c_int32_t) :: j
+  compare = .True.
   if( size(V1) /= size(V2) ) compare = .False.
   if( compare .eqv. .True. ) then
     do j=1,size(V1)
@@ -169,8 +170,9 @@ end subroutine
 subroutine fctest_check_equal_int64_r1(V1,V2,line)
   integer(c_int64_t), intent(in) :: V1(:), V2(:)
   integer(c_int32_t), intent(in) :: line
-  logical :: compare = .True.
+  logical :: compare
   integer(c_int32_t) :: j
+  compare = .True.
   if( size(V1) /= size(V2) ) compare = .False.
   if( compare .eqv. .True. ) then
     do j=1,size(V1)
