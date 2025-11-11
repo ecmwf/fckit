@@ -50,6 +50,9 @@
 #
 ##############################################################################
 
+# We add this here to enforce the correct behaviour for find_package( Python3 ... )
+cmake_minimum_required( VERSION 3.17 FATAL_ERROR )
+
 function( download_python_wheels )
 
     set( options "" )
