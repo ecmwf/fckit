@@ -9,7 +9,7 @@
 #include "fckit.h"
 
 module fckit_array_module
-use, intrinsic :: iso_c_binding, only: c_int32_t, c_int64_t, c_float, c_double
+use, intrinsic :: iso_c_binding, only: c_int32_t, c_int64_t, c_float, c_double, c_bool
 implicit none
 private
 
@@ -28,7 +28,7 @@ integer(c_int32_t), target :: zero_length_array_int32(0)
 integer(c_int64_t),target :: zero_length_array_int64(0)
 real(c_float),  target :: zero_length_array_real32(0)
 real(c_double), target :: zero_length_array_real64(0)
-logical, target :: zero_length_array_logical(0)
+logical(c_bool), target :: zero_length_array_logical(0)
 
 interface array_view1d
   module procedure array_view1d_int32_r0
@@ -152,7 +152,7 @@ end function
 
 function c_loc_logical(x)
   use, intrinsic :: iso_c_binding
-  logical, target :: x
+  logical(c_bool), target :: x
   type(c_ptr) :: c_loc_logical
   c_loc_logical = c_loc(x)
 end function
@@ -547,9 +547,9 @@ end function
 
 function array_view1d_logical_r0(scalar) result( view )
   use, intrinsic :: iso_c_binding
-  logical, intent(in), target :: scalar
+  logical(c_bool), intent(in), target :: scalar
   type(c_ptr) :: array_c_ptr
-  logical, pointer :: view(:)
+  logical(c_bool), pointer :: view(:)
   nullify(view)
   array_c_ptr = c_loc_logical(scalar)
   call c_f_pointer ( array_c_ptr , view , (/1/) )
@@ -559,9 +559,9 @@ end function
 
 function array_view1d_logical_r1(array) result( view )
   use, intrinsic :: iso_c_binding
-  logical, intent(in), target :: array(:)
+  logical(c_bool), intent(in), target :: array(:)
   type(c_ptr) :: array_c_ptr
-  logical, pointer :: view(:)
+  logical(c_bool), pointer :: view(:)
   nullify(view)
   if( size(array) > 0 ) then
     array_c_ptr = c_loc_logical(array(1))
@@ -575,9 +575,9 @@ end function
 
 function array_view1d_logical_r2(array) result( view )
   use, intrinsic :: iso_c_binding
-  logical, intent(in), target :: array(:,:)
+  logical(c_bool), intent(in), target :: array(:,:)
   type(c_ptr) :: array_c_ptr
-  logical, pointer :: view(:)
+  logical(c_bool), pointer :: view(:)
   nullify(view)
   if( size(array) > 0 ) then
     array_c_ptr = c_loc_logical(array(1,1))
@@ -591,9 +591,9 @@ end function
 
 function array_view1d_logical_r3(array) result( view )
   use, intrinsic :: iso_c_binding
-  logical, intent(in), target :: array(:,:,:)
+  logical(c_bool), intent(in), target :: array(:,:,:)
   type(c_ptr) :: array_c_ptr
-  logical, pointer :: view(:)
+  logical(c_bool), pointer :: view(:)
   nullify(view)
   if( size(array) > 0 ) then
     array_c_ptr = c_loc_logical(array(1,1,1))
@@ -607,9 +607,9 @@ end function
 
 function array_view1d_logical_r4(array) result( view )
   use, intrinsic :: iso_c_binding
-  logical, intent(in), target :: array(:,:,:,:)
+  logical(c_bool), intent(in), target :: array(:,:,:,:)
   type(c_ptr) :: array_c_ptr
-  logical, pointer :: view(:)
+  logical(c_bool), pointer :: view(:)
   nullify(view)
   if( size(array) > 0 ) then
     array_c_ptr = c_loc_logical(array(1,1,1,1))
@@ -623,7 +623,7 @@ end function
 
 function array_view1d_logical_r0_mold_int32(scalar,mold) result( view )
   use, intrinsic :: iso_c_binding
-  logical, intent(in)  :: scalar
+  logical(c_bool), intent(in)  :: scalar
   integer(c_int32_t), intent(in) :: mold
   type(c_ptr) :: array_c_ptr
   integer(c_int32_t), pointer :: view(:)
@@ -637,7 +637,7 @@ end function
 
 function array_view1d_logical_r1_mold_int32(array,mold) result( view )
   use, intrinsic :: iso_c_binding
-  logical, intent(in), target :: array(:)
+  logical(c_bool), intent(in), target :: array(:)
   integer(c_int32_t), intent(in) :: mold
   type(c_ptr) :: array_c_ptr
   integer(c_int32_t), pointer :: view(:)
@@ -655,7 +655,7 @@ end function
 
 function array_view1d_logical_r2_mold_int32(array,mold) result( view )
   use, intrinsic :: iso_c_binding
-  logical, intent(in), target :: array(:,:)
+  logical(c_bool), intent(in), target :: array(:,:)
   integer(c_int32_t), intent(in) :: mold
   type(c_ptr) :: array_c_ptr
   integer(c_int32_t), pointer :: view(:)
@@ -673,7 +673,7 @@ end function
 
 function array_view1d_logical_r3_mold_int32(array,mold) result( view )
   use, intrinsic :: iso_c_binding
-  logical, intent(in), target :: array(:,:,:)
+  logical(c_bool), intent(in), target :: array(:,:,:)
   integer(c_int32_t), intent(in) :: mold
   type(c_ptr) :: array_c_ptr
   integer(c_int32_t), pointer :: view(:)
@@ -691,7 +691,7 @@ end function
 
 function array_view1d_logical_r4_mold_int32(array,mold) result( view )
   use, intrinsic :: iso_c_binding
-  logical, intent(in), target :: array(:,:,:,:)
+  logical(c_bool), intent(in), target :: array(:,:,:,:)
   integer(c_int32_t), intent(in) :: mold
   type(c_ptr) :: array_c_ptr
   integer(c_int32_t), pointer :: view(:)
