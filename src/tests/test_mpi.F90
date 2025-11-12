@@ -423,7 +423,7 @@ TEST( test_broadcast )
   real(c_float)   :: real32, real32_r2(3,2)
   integer(c_int32_t) :: int32,  int32_r3(4,3,2)
   integer(c_long) :: int64,  int64_r4(4,3,2,2)
-  logical :: logical_r1(4)
+  logical(c_bool) :: logical_r1(4)
   character(len=30) :: string_r0
 
   FCKIT_SUPPRESS_UNUSED( real64_r1 )
@@ -458,7 +458,7 @@ TEST( test_broadcast )
 
   if(comm%rank()==comm%size()-1) logical_r1(2) = .true.
   call comm%broadcast(logical_r1,root=comm%size()-1)
-  FCTEST_CHECK_EQUAL(logical_r1(2), .true.)
+  FCTEST_CHECK_EQUAL(logical(logical_r1(2)), .true.)
 
   if(comm%rank()==comm%size()-1) string_r0 = "path/filename"
   call comm%broadcast(string_r0,root=comm%size()-1)
