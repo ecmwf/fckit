@@ -56,14 +56,14 @@ private:  // members
 //----------------------------------------------------------------------------------------------------------------------
 
 /// Owned object without thread lockable resource
-typedef OwnedT<memory::detail::ThreadedLock> OwnedLock;
+using OwnedLock = OwnedT<memory::detail::ThreadedLock>;
 
 /// Owned object with thread lockable resource
-typedef OwnedT<memory::detail::NoLock> OwnedNoLock;
+using OwnedNoLock = OwnedT<memory::detail::NoLock>;
 
 /// Default Owned type
 /// Same as OwnedNoLock
-typedef OwnedNoLock Owned;
+using Owned = OwnedNoLock;
 
 //----------------------------------------------------------------------------------------------------------------------
 
