@@ -62,7 +62,7 @@ macro( fckit_install_venv )
     execute_process( COMMAND ${Python3_EXECUTABLE} -m pip
                      install ${PIP_OPTIONS} ${CMAKE_CURRENT_SOURCE_DIR}/src/fckit/${_pkg_name} OUTPUT_QUIET )
 
-    if( ECBUILD_INSTALL_LIBRARY_HEADERS )
+    if( HAVE_FCKIT_VENV_INSTALL )
        install( DIRECTORY ${VENV_PATH} DESTINATION . PATTERN "bin/*" PERMISSIONS ${install_permissions} )
     endif()
 
