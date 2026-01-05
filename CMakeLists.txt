@@ -132,6 +132,11 @@ ecbuild_add_option( FEATURE FCKIT_VENV_EDITABLE
                     DESCRIPTION "Install editable packages in fckit Python virtual environment"
                     CONDITION HAVE_FCKIT_VENV )
 
+ecbuild_add_option( FEATURE FCKIT_VENV_INSTALL
+                    DEFAULT OFF
+                    DESCRIPTION "CMake install Python virtual environment with fypp and a yaml parser"
+                    CONDITION HAVE_FCKIT_VENV )
+
 if( HAVE_FCKIT_VENV )
    fckit_install_venv()
 else()
