@@ -14,6 +14,8 @@ module fctest
 public
   character(len=1024) :: source_file
   integer(c_int32_t) :: exit_status
+  integer(c_int32_t) :: exit_status_before_check
+  integer(c_int32_t) :: check_status
   interface FCE
     module procedure fctest_check_equal_int32
     module procedure fctest_check_equal_int64_int32
@@ -61,15 +63,29 @@ end function sweep_leading_blanks
 subroutine fctest_error(line)
   integer(c_int32_t), intent(in) :: line
   write(0,'(2A,I0,2A)') trim(source_file),":",line,": warning: ",trim(sweep_leading_blanks(get_source_line(line)))
+  exit_status_before_check=exit_status
+  check_status=1
   exit_status=1
+end subroutine
+
+function fctest_last_check_failed()
+  logical :: fctest_last_check_failed
+  fctest_last_check_failed = (check_status /= 0)
+end function
+
+subroutine fctest_ignore_last_check()
+  exit_status=exit_status_before_check
 end subroutine
 
 subroutine fctest_check_equal_int32(V1,V2,line)
   integer(c_int32_t), intent(in) :: V1, V2
   integer(c_int32_t), intent(in) :: line
+  exit_status_before_check=exit_status
+  check_status=0
   if(V1/=V2) then
     write(0,'(2A,I0,2A)') trim(source_file),":",line,": warning: ",trim(sweep_leading_blanks(get_source_line(line)))
     write(0,*) "--> [",V1,"!=",V2,"]"
+    check_status=1
     exit_status=1
   endif
 end subroutine
@@ -77,9 +93,12 @@ end subroutine
 subroutine fctest_check_equal_int64(V1,V2,line)
   integer(c_int64_t), intent(in) :: V1, V2
   integer(c_int32_t), intent(in) :: line
+  exit_status_before_check=exit_status
+  check_status=0
   if(V1/=V2) then
     write(0,'(2A,I0,2A)') trim(source_file),":",line,": warning: ",trim(sweep_leading_blanks(get_source_line(line)))
     write(0,*) "--> [",V1,"!=",V2,"]"
+    check_status=1
     exit_status=1
   endif
 end subroutine
@@ -88,9 +107,12 @@ subroutine fctest_check_equal_int64_int32(V1,V2,line)
   integer(c_int64_t), intent(in) :: V1
   integer(c_int32_t), intent(in) :: V2
   integer(c_int32_t), intent(in) :: line
+  exit_status_before_check=exit_status
+  check_status=0
   if(V1/=V2) then
     write(0,'(2A,I0,2A)') trim(source_file),":",line,": warning: ",trim(sweep_leading_blanks(get_source_line(line)))
     write(0,*) "--> [",V1,"!=",V2,"]"
+    check_status=1
     exit_status=1
   endif
 end subroutine
@@ -99,9 +121,12 @@ subroutine fctest_check_equal_int32_int64(V1,V2,line)
   integer(c_int32_t), intent(in) :: V1
   integer(c_int64_t), intent(in) :: V2
   integer(c_int32_t), intent(in) :: line
+  exit_status_before_check=exit_status
+  check_status=0
   if(V1/=V2) then
     write(0,'(2A,I0,2A)') trim(source_file),":",line,": warning: ",trim(sweep_leading_blanks(get_source_line(line)))
     write(0,*) "--> [",V1,"!=",V2,"]"
+    check_status=1
     exit_status=1
   endif
 end subroutine
@@ -109,9 +134,12 @@ end subroutine
 subroutine fctest_check_equal_real32(V1,V2,line)
   real(kind=c_float), intent(in) :: V1, V2
   integer(c_int32_t), intent(in) :: line
+  exit_status_before_check=exit_status
+  check_status=0
   if(V1/=V2) then
     write(0,'(2A,I0,2A)') trim(source_file),":",line,": warning: ",trim(sweep_leading_blanks(get_source_line(line)))
     write(0,*) "--> [",V1,"!=",V2,"]"
+    check_status=1
     exit_status=1
   endif
 end subroutine
@@ -119,9 +147,12 @@ end subroutine
 subroutine fctest_check_equal_real64(V1,V2,line)
   real(kind=c_double), intent(in) :: V1, V2
   integer(c_int32_t), intent(in) :: line
+  exit_status_before_check=exit_status
+  check_status=0
   if(V1/=V2) then
     write(0,'(2A,I0,2A)') trim(source_file),":",line,": warning: ",trim(sweep_leading_blanks(get_source_line(line)))
     write(0,*) "--> [",V1,"!=",V2,"]"
+    check_status=1
     exit_status=1
   endif
 end subroutine
@@ -129,9 +160,12 @@ end subroutine
 subroutine fctest_check_equal_logical(V1,V2,line)
   logical, intent(in) :: V1, V2
   integer(c_int32_t), intent(in) :: line
+  exit_status_before_check=exit_status
+  check_status=0
   if(V1.neqv.V2) then
     write(0,'(2A,I0,2A)') trim(source_file),":",line,": warning: ",trim(sweep_leading_blanks(get_source_line(line)))
     write(0,*) "--> [",V1,"!=",V2,"]"
+    check_status=1
     exit_status=1
   endif
 end subroutine
@@ -139,9 +173,12 @@ end subroutine
 subroutine fctest_check_equal_string(V1,V2,line)
   character(kind=c_char,len=*), intent(in) :: V1, V2
   integer(c_int32_t), intent(in) :: line
+  exit_status_before_check=exit_status
+  check_status=0
   if(V1/=V2) then
     write(0,'(2A,I0,2A)') trim(source_file),":",line,": warning: ",trim(sweep_leading_blanks(get_source_line(line)))
     write(0,*) "--> [",V1,"!=",V2,"]"
+    check_status=1
     exit_status=1
   endif
 end subroutine
@@ -149,8 +186,11 @@ end subroutine
 subroutine fctest_check_equal_int32_r1(V1,V2,line)
   integer(c_int32_t), intent(in) :: V1(:), V2(:)
   integer(c_int32_t), intent(in) :: line
-  logical :: compare = .True.
+  logical :: compare
   integer(c_int32_t) :: j
+  exit_status_before_check=exit_status
+  check_status=0
+  compare = .True.
   if( size(V1) /= size(V2) ) compare = .False.
   if( compare .eqv. .True. ) then
     do j=1,size(V1)
@@ -162,6 +202,7 @@ subroutine fctest_check_equal_int32_r1(V1,V2,line)
     if( size(V1) <= 30 ) then
       write(0,*) "-->  [ ",V1," ] != [ ",V2," ] "
     endif
+    check_status=1
     exit_status=1
   endif
 end subroutine
@@ -169,8 +210,11 @@ end subroutine
 subroutine fctest_check_equal_int64_r1(V1,V2,line)
   integer(c_int64_t), intent(in) :: V1(:), V2(:)
   integer(c_int32_t), intent(in) :: line
-  logical :: compare = .True.
+  logical :: compare
   integer(c_int32_t) :: j
+  exit_status_before_check=exit_status
+  check_status=0
+  compare = .True.
   if( size(V1) /= size(V2) ) compare = .False.
   if( compare .eqv. .True. ) then
     do j=1,size(V1)
@@ -182,6 +226,7 @@ subroutine fctest_check_equal_int64_r1(V1,V2,line)
     if( size(V1) <= 30 ) then
       write(0,*) "--> [ ",V1," ] != [ ",V2," ]"
     endif
+    check_status=1
     exit_status=1
   endif
 end subroutine
@@ -191,6 +236,8 @@ subroutine fctest_check_equal_real32_r1(V1,V2,line)
   integer(c_int32_t), intent(in) :: line
   logical :: compare
   integer(c_int32_t) :: j
+  exit_status_before_check=exit_status
+  check_status=0
   compare = .True.
   if( size(V1) /= size(V2) ) compare = .False.
   if( compare .eqv. .True. ) then
@@ -203,6 +250,7 @@ subroutine fctest_check_equal_real32_r1(V1,V2,line)
     if( size(V1) <= 30 ) then
       write(0,*) "--> [ ",V1," ] != [ ",V2," ]"
     endif
+    check_status=1
     exit_status=1
   endif
 end subroutine
@@ -212,6 +260,8 @@ subroutine fctest_check_equal_real64_r1(V1,V2,line)
   integer(c_int32_t), intent(in) :: line
   logical :: compare
   integer(c_int32_t) :: j
+  exit_status_before_check=exit_status
+  check_status=0
   compare = .True.
   if( size(V1) /= size(V2) ) compare = .False.
   if( compare .eqv. .True. ) then
@@ -224,6 +274,7 @@ subroutine fctest_check_equal_real64_r1(V1,V2,line)
     if( size(V1) <= 30 ) then
       write(0,*) "--> [ ",V1," ] != [ ",V2," ]"
     endif
+    check_status=1
     exit_status=1
   endif
 end subroutine
@@ -231,9 +282,12 @@ end subroutine
 subroutine fctest_check_close_real32(V1,V2,TOL,line)
   real(kind=c_float), intent(in) :: V1, V2, TOL
   integer(c_int32_t), intent(in) :: line
+  exit_status_before_check=exit_status
+  check_status=0
   if(.not.(abs(V1-V2)<=TOL)) then;
     write(0,'(2A,I0,2A)') trim(source_file),":",line,": warning: ",trim(sweep_leading_blanks(get_source_line(line)))
     write(0,*) "--> [",V1,"!=",V2,"]"
+    check_status=1
     exit_status=1
   endif
 end subroutine
@@ -241,9 +295,12 @@ end subroutine
 subroutine fctest_check_close_real64(V1,V2,TOL,line)
   real(kind=c_double), intent(in) :: V1, V2, TOL
   integer(c_int32_t), intent(in) :: line
+  exit_status_before_check=exit_status
+  check_status=0
   if(.not.(abs(V1-V2)<=TOL)) then;
     write(0,'(2A,I0,2A)') trim(source_file),":",line,": warning: ",trim(sweep_leading_blanks(get_source_line(line)))
     write(0,*) "--> [",V1,"!=",V2,"]"
+    check_status=1
     exit_status=1
   endif
 end subroutine
@@ -254,6 +311,8 @@ subroutine fctest_check_close_real32_r1(V1,V2,TOL,line)
   integer(c_int32_t), intent(in) :: line
   logical :: compare
   integer(c_int32_t) :: j
+  exit_status_before_check=exit_status
+  check_status=0
   compare = .True.
   if( size(V1) /= size(V2) ) compare = .False.
   if( compare .eqv. .True. ) then
@@ -266,6 +325,7 @@ subroutine fctest_check_close_real32_r1(V1,V2,TOL,line)
     if( size(V1) <= 30 ) then
       write(0,*) "--> [ ",V1," ] != [ ",V2," ]"
     endif
+    check_status=1
     exit_status=1
   endif
 end subroutine
@@ -276,6 +336,8 @@ subroutine fctest_check_close_real64_r1(V1,V2,TOL,line)
   integer(c_int32_t), intent(in) :: line
   logical :: compare
   integer(c_int32_t) :: j
+  exit_status_before_check=exit_status
+  check_status=0
   compare = .True.
   if( size(V1) /= size(V2) ) compare = .False.
   if( compare .eqv. .True. ) then
@@ -288,6 +350,7 @@ subroutine fctest_check_close_real64_r1(V1,V2,TOL,line)
     if( size(V1) <= 30 ) then
       write(0,*) "--> [ ",V1," ] != [ ",V2," ]"
     endif
+    check_status=1
     exit_status=1
   endif
 end subroutine
