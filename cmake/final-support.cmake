@@ -57,6 +57,8 @@ macro( check_final_support )
       FINAL_NOT_INHERITING
       FINAL_BROKEN_FOR_ALLOCATABLE_ARRAY
       FINAL_BROKEN_FOR_AUTOMATIC_ARRAY
+      FINAL_NOT_INHERITING_FOR_ALLOCATABLE_ARRAY
+      FINAL_NOT_INHERITING_FOR_AUTOMATIC_ARRAY
     )
     foreach( case ${cases})
       check_final_support_case( ${case} )

@@ -571,9 +571,14 @@ TEST( test_shared_object_allocatable_list_auto_auto )
   call reset_counters()
   call test_shared_object_allocatable_list( final_auto = .true., deallocate_auto = .true. )
 #if FCKIT_HAVE_FINAL
-#if ! FCKIT_FINAL_BROKEN_FOR_ALLOCATABLE_ARRAY
+#if ! FCKIT_FINAL_BROKEN_FOR_ALLOCATABLE_ARRAY && ! FCKIT_FINAL_NOT_INHERITING_FOR_ALLOCATABLE_ARRAY
   FCTEST_CHECK_EQUAL( cxx_destructor_called(), 2 )
   FCTEST_CHECK_EQUAL( cxx_destructor_called_after_scope(), 2 )
+#else
+  write(0,'(A)') "-----------------------------------------"
+  write(0,'(A)') "WARNING: known to fail test"
+  write(0,'(A,I0)') "    FCKIT_FINAL_BROKEN_FOR_ALLOCATABLE_ARRAY         = ", FCKIT_FINAL_BROKEN_FOR_ALLOCATABLE_ARRAY
+  write(0,'(A,I0)') "    FCKIT_FINAL_NOT_INHERITING_FOR_ALLOCATABLE_ARRAY = ", FCKIT_FINAL_NOT_INHERITING_FOR_ALLOCATABLE_ARRAY
 #endif
 #else
   FCTEST_CHECK_EQUAL( cxx_destructor_called(), 0 )
@@ -596,7 +601,7 @@ TEST( test_shared_object_allocatable_list_auto_manual )
   if( CRAY_WORKAROUND ) zero = 2
 
 #if FCKIT_HAVE_FINAL
-#if ! FCKIT_FINAL_BROKEN_FOR_ALLOCATABLE_ARRAY
+#if ! FCKIT_FINAL_BROKEN_FOR_ALLOCATABLE_ARRAY && ! FCKIT_FINAL_NOT_INHERITING_FOR_ALLOCATABLE_ARRAY
   FCTEST_CHECK_EQUAL( cxx_destructor_called(), 2 )
   FCTEST_CHECK_EQUAL( cxx_destructor_called_after_scope(), zero )
 #endif
@@ -697,9 +702,14 @@ TEST( test_shared_object_pointer_list_auto_auto )
   call reset_counters()
   call test_shared_object_pointer_list( final_auto = .true., deallocate_auto = .true. )
 #if FCKIT_HAVE_FINAL
-#if ! FCKIT_FINAL_BROKEN_FOR_ALLOCATABLE_ARRAY
+#if ! FCKIT_FINAL_BROKEN_FOR_ALLOCATABLE_ARRAY && ! FCKIT_FINAL_NOT_INHERITING_FOR_ALLOCATABLE_ARRAY
   FCTEST_CHECK_EQUAL( cxx_destructor_called(), 2 )
   FCTEST_CHECK_EQUAL( cxx_destructor_called_after_scope(), 2 )
+#else
+  write(0,'(A)') "-----------------------------------------"
+  write(0,'(A)') "WARNING: known to fail test"
+  write(0,'(A,I0)') "    FCKIT_FINAL_BROKEN_FOR_ALLOCATABLE_ARRAY         = ", FCKIT_FINAL_BROKEN_FOR_ALLOCATABLE_ARRAY
+  write(0,'(A,I0)') "    FCKIT_FINAL_NOT_INHERITING_FOR_ALLOCATABLE_ARRAY = ", FCKIT_FINAL_NOT_INHERITING_FOR_ALLOCATABLE_ARRAY
 #endif
 #else
   FCTEST_CHECK_EQUAL( cxx_destructor_called(), 0 )
@@ -716,9 +726,14 @@ TEST( test_shared_object_pointer_list_auto_manual )
   call reset_counters()
   call test_shared_object_pointer_list( final_auto = .true., deallocate_auto = .false. )
 #if FCKIT_HAVE_FINAL
-#if ! FCKIT_FINAL_BROKEN_FOR_ALLOCATABLE_ARRAY
+#if ! FCKIT_FINAL_BROKEN_FOR_ALLOCATABLE_ARRAY && ! FCKIT_FINAL_NOT_INHERITING_FOR_ALLOCATABLE_ARRAY
   FCTEST_CHECK_EQUAL( cxx_destructor_called(), 2 )
   FCTEST_CHECK_EQUAL( cxx_destructor_called_after_scope(), 0 )
+#else
+  write(0,'(A)') "-----------------------------------------"
+  write(0,'(A)') "WARNING: known to fail test"
+  write(0,'(A,I0)') "    FCKIT_FINAL_BROKEN_FOR_ALLOCATABLE_ARRAY         = ", FCKIT_FINAL_BROKEN_FOR_ALLOCATABLE_ARRAY
+  write(0,'(A,I0)') "    FCKIT_FINAL_NOT_INHERITING_FOR_ALLOCATABLE_ARRAY = ", FCKIT_FINAL_NOT_INHERITING_FOR_ALLOCATABLE_ARRAY
 #endif
 #else
   FCTEST_CHECK_EQUAL( cxx_destructor_called(), 0 )
@@ -797,9 +812,14 @@ TEST( test_shared_object_automatic_list_auto )
   call reset_counters()
   call test_shared_object_automatic_list( final_auto = .true. )
 #if FCKIT_HAVE_FINAL
-#if ! FCKIT_FINAL_BROKEN_FOR_AUTOMATIC_ARRAY
+#if ! FCKIT_FINAL_BROKEN_FOR_AUTOMATIC_ARRAY && ! FCKIT_FINAL_NOT_INHERITING_FOR_AUTOMATIC_ARRAY
   FCTEST_CHECK_EQUAL( cxx_destructor_called(), 2 )
   FCTEST_CHECK_EQUAL( cxx_destructor_called_after_scope(), 2 )
+#else
+  write(0,'(A)') "-----------------------------------------"
+  write(0,'(A)') "WARNING: known to fail test"
+  write(0,'(A,I0)') "    FCKIT_FINAL_BROKEN_FOR_ALLOCATABLE_ARRAY       = ", FCKIT_FINAL_BROKEN_FOR_AUTOMATIC_ARRAY
+  write(0,'(A,I0)') "    FCKIT_FINAL_NOT_INHERITING_FOR_AUTOMATIC_ARRAY = ", FCKIT_FINAL_NOT_INHERITING_FOR_AUTOMATIC_ARRAY
 #endif
 #else
   FCTEST_CHECK_EQUAL( cxx_destructor_called(), 0 )
@@ -816,8 +836,14 @@ TEST( test_shared_object_automatic_list_manual )
   call reset_counters()
   call test_shared_object_automatic_list( final_auto = .false. )
 #if FCKIT_HAVE_FINAL
+#if ! FCKIT_FINAL_NOT_INHERITING_FOR_AUTOMATIC_ARRAY
   FCTEST_CHECK_EQUAL( cxx_destructor_called(), 2 )
   FCTEST_CHECK_EQUAL( cxx_destructor_called_after_scope(), 0 )
+#else
+  write(0,'(A)') "-----------------------------------------"
+  write(0,'(A)') "WARNING: known to fail test"
+  write(0,'(A,I0)') "    FCKIT_FINAL_NOT_INHERITING_FOR_AUTOMATIC_ARRAY = ", FCKIT_FINAL_NOT_INHERITING_FOR_AUTOMATIC_ARRAY
+#endif
 #else
   FCTEST_CHECK_EQUAL( cxx_destructor_called(), 2 )
 #endif

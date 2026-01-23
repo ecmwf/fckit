@@ -43,6 +43,14 @@
 #define TEST 9
 #endif
 
+#ifdef FINAL_NOT_INHERITING_FOR_ALLOCATABLE_ARRAY
+#define TEST 10
+#endif
+
+#ifdef FINAL_NOT_INHERITING_FOR_AUTOMATIC_ARRAY
+#define TEST 11
+#endif
+
 #ifndef TEST
 #define OUTPUT
 #endif
@@ -317,9 +325,38 @@ subroutine test9
   call write_indented('--- scope end ---')
 end subroutine
 
+subroutine test10
+  implicit none
+  type(ObjectDerivedWithoutFinal), allocatable :: list(:)
+  allocate(list(2))
+  call write_indented('list(1) = ObjectDerivedWithoutFinal()')
+  indent=indent+1
+  list(1) = ObjectDerivedWithoutFinal()
+  indent=indent-1
+  call write_indented('list(2) = ObjectDerivedWithoutFinal()')
+  indent=indent+1
+  list(2) = ObjectDerivedWithoutFinal()
+  indent=indent-1
+  call write_indented('--- scope end ---')
+end subroutine
+
+subroutine test11
+  implicit none
+  type(ObjectDerivedWithoutFinal) :: list(2)
+  call write_indented('list(1) = ObjectDerivedWithoutFinal()')
+  indent=indent+1
+  list(1) = ObjectDerivedWithoutFinal()
+  indent=indent-1
+  call write_indented('list(2) = ObjectDerivedWithoutFinal()')
+  indent=indent+1
+  list(2) = ObjectDerivedWithoutFinal()
+  indent=indent-1
+  call write_indented('--- scope end ---')
+end subroutine
+
 subroutine run_test(i)
   integer, intent(in) :: i
-  character(len=1) :: test_number
+  character(len=2) :: test_number
   write(test_number,'(I0)') i
 #ifndef TEST
 #define COMPARE_TEST(x) (x == i)
@@ -329,7 +366,7 @@ subroutine run_test(i)
 #ifdef OUTPUT
   write(0,'(A)') '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
 #endif
-  call write_indented( 'subroutine test'//test_number )
+  call write_indented( 'subroutine test'//trim(test_number) )
   indent = indent+1
   call reset
   if( COMPARE_TEST(1) ) call test1
@@ -341,8 +378,10 @@ subroutine run_test(i)
   if( COMPARE_TEST(7) ) call test7
   if( COMPARE_TEST(8) ) call test8
   if( COMPARE_TEST(9) ) call test9
+  if( COMPARE_TEST(10)) call test10
+  if( COMPARE_TEST(11)) call test11
   indent = indent-1
-  call write_indented( 'end subroutine test'//test_number )
+  call write_indented( 'end subroutine test'//trim(test_number) )
   call write_counters()
 end subroutine
 
@@ -446,7 +485,7 @@ program final_support
 
   call run_test(8)
 #ifdef FINAL_BROKEN_FOR_ALLOCATABLE_ARRAY
-  if( final_initialized == 0 ) then
+  if( final_initialized /= 0 ) then
     write(output_unit,'(I0)',advance='no') 1
   else
     write(output_unit,'(I0)',advance='no') 0
@@ -455,7 +494,35 @@ program final_support
 
   call run_test(9)
 #ifdef FINAL_BROKEN_FOR_AUTOMATIC_ARRAY
-  if( final_initialized == 0 ) then
+  if( final_initialized /= 2 ) then
+    write(output_unit,'(I0)',advance='no') 1
+  else
+    write(output_unit,'(I0)',advance='no') 0
+  endif
+#endif
+
+ call run_test(10)
+ call write_indented( 'test10 summary:' )
+ if (final_initialized < 2) then
+    call write_indented( 'Array is not completely finalized')
+    call write_indented( 'This is a bug in aocc 4.0.0' )
+ endif
+#ifdef FINAL_NOT_INHERITING_FOR_ALLOCATABLE_ARRAY
+  if( final_initialized /= 2 ) then
+    write(output_unit,'(I0)',advance='no') 1
+  else
+    write(output_unit,'(I0)',advance='no') 0
+  endif
+#endif
+
+ call run_test(11)
+ call write_indented( 'test11 summary:' )
+ if (final_initialized < 2) then
+    call write_indented( 'Array is not completely finalized')
+    call write_indented( 'This is a bug in aocc 4.0.0' )
+ endif
+#ifdef FINAL_NOT_INHERITING_FOR_AUTOMATIC_ARRAY
+  if( final_initialized /= 2 ) then
     write(output_unit,'(I0)',advance='no') 1
   else
     write(output_unit,'(I0)',advance='no') 0
