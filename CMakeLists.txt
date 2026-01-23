@@ -36,19 +36,9 @@ if( CMAKE_Fortran_COMPILER_ID MATCHES "PGI|NVHPC" )
   if( ${CMAKE_Fortran_COMPILER_VERSION} VERSION_LESS 19.10 )
     # Compilation works, but runtime segmentation faults occur (tested with pgi/17.7)
     set( FEATURE_FINAL_DEFAULT OFF )
-  else()
-    list( APPEND FCKIT_QUARANTAINED_TESTS fckit_test_shared_ptr )
-    # deallocation of list of shared_ptr only seems to deallocate first entry
   endif()
 endif()
-if( CMAKE_Fortran_COMPILER_ID STREQUAL "Intel" )
-  # known to work: 2021.4.0.20210910  from intel/2021.4
-  # known to fail: 2021.10.0.20230609 from intel/2023.2
-  #    -->   deallocation of list of shared_ptr only seems to deallocate first entry
-  if( CMAKE_Fortran_COPMPILER_VERSION VERSION_GREATER 2021.4 ) 
-    list( APPEND FCKIT_QUARANTAINED_TESTS fckit_test_shared_ptr )
-  endif()
-endif()
+
 
 ecbuild_add_option( FEATURE FINAL
                     DESCRIPTION "Enable automatic finalisation for derived types (destructors)"
@@ -69,6 +59,13 @@ if( fckit_HAVE_FINAL )
     ecbuild_info( "  FCKIT_FINAL_BROKEN_FOR_AUTOMATIC_ARRAY           = ${FCKIT_FINAL_BROKEN_FOR_AUTOMATIC_ARRAY}")
     ecbuild_info( "  FCKIT_FINAL_NOT_INHERITING_FOR_ALLOCATABLE_ARRAY = ${FCKIT_FINAL_NOT_INHERITING_FOR_ALLOCATABLE_ARRAY}")
     ecbuild_info( "  FCKIT_FINAL_NOT_INHERITING_FOR_AUTOMATIC_ARRAY   = ${FCKIT_FINAL_NOT_INHERITING_FOR_AUTOMATIC_ARRAY}")
+
+    if( FCKIT_FINAL_BROKEN_FOR_ALLOCATABLE_ARRAY OR
+        FCKIT_FINAL_BROKEN_FOR_AUTOMATIC_ARRAY OR
+        FCKIT_FINAL_NOT_INHERITING_FOR_ALLOCATABLE_ARRAY OR
+        FCKIT_FINAL_NOT_INHERITING_FOR_AUTOMATIC_ARRAY)
+      ecbuild_warn("Introspected compiler bugs w.r.t. using derived types with FINAL (destructors)")
+    endif()
 
 endif()
 if( NOT fckit_HAVE_FINAL )
