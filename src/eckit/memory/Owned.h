@@ -26,11 +26,16 @@ namespace eckit {
 /// Subclass from this class to use a SharedPtr class
 
 template <typename LOCK>
-class OwnedT : private NonCopyable, public LOCK {
+class OwnedT : public LOCK {
 
 public:  // methods
 
     OwnedT() : count_(0) {}
+
+    OwnedT(const OwnedT&)            = delete;
+    OwnedT& operator=(const OwnedT&) = delete;
+    OwnedT(OwnedT&&)                 = delete;
+    OwnedT& operator=(OwnedT&&)      = delete;
 
     virtual ~OwnedT() {}
 
