@@ -12,13 +12,12 @@
 /// @author Tiago Quintino
 /// @date May 2014
 
-#ifndef eckit_memory_Owned_h
-#define eckit_memory_Owned_h
+#pragma once
 
 #include "eckit/memory/Counted.h"
 
 
-namespace eckit {
+namespace fckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -61,10 +60,10 @@ private:  // members
 //----------------------------------------------------------------------------------------------------------------------
 
 /// Owned object without thread lockable resource
-using OwnedLock = OwnedT<memory::detail::ThreadedLock>;
+using OwnedLock = OwnedT<eckit::memory::detail::ThreadedLock>;
 
 /// Owned object with thread lockable resource
-using OwnedNoLock = OwnedT<memory::detail::NoLock>;
+using OwnedNoLock = OwnedT<eckit::memory::detail::NoLock>;
 
 /// Default Owned type
 /// Same as OwnedNoLock
@@ -72,6 +71,4 @@ using Owned = OwnedNoLock;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace eckit
 
-#endif
