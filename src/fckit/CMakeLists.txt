@@ -28,12 +28,13 @@ if( HAVE_ECKIT )
       module/fckit_owned_object.F90
       module/fckit_map.cc
       module/fckit_map.F90
-      Libfckit.h
       Libfckit.cc
-      Main.h
-      Main.cc
-      Log.h
+      Libfckit.h
       Log.cc
+      Log.h
+      Main.cc
+      Main.h
+      Owned.h
   )
   if( FCKIT_HAVE_ECKIT_TENSOR )
     list( APPEND eckit_required_src

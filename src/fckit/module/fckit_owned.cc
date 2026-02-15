@@ -12,23 +12,23 @@
 #include "fckit/fckit.h"
 
 #if FCKIT_HAVE_ECKIT
-#include "eckit/memory/Owned.h"
+#include "fckit/Owned.h"
 
 extern "C" {
 
-std::int32_t fckit__Owned__owners( const eckit::Owned* owned ) {
+std::int32_t fckit__Owned__owners( const fckit::Owned* owned ) {
     return owned->owners();
 }
 
-void fckit__Owned__attach( const eckit::Owned* owned ) {
+void fckit__Owned__attach( const fckit::Owned* owned ) {
     owned->attach();
 }
 
-void fckit__Owned__detach( const eckit::Owned* owned ) {
+void fckit__Owned__detach( const fckit::Owned* owned ) {
     owned->detach();
 }
 
-void fckit__delete_Owned( eckit::Owned* owned ) {
+void fckit__delete_Owned( fckit::Owned* owned ) {
     delete owned;
     owned = 0;
 }

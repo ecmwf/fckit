@@ -1,9 +1,7 @@
-#include <stdio.h>
 #include <iostream>
 #include <sstream>
-#include <string>
 
-#include "eckit/memory/Owned.h"
+#include "fckit/Owned.h"
 
 static int destructor_called             = 0;
 static int destructor_called_after_scope = 0;
@@ -15,9 +13,9 @@ int fckit_fortranunit_stdout();
 int fckit_fortranunit_stderr();
 }
 
-class Object : eckit::Owned {
+class Object : fckit::Owned {
 public:
-    Object( int i ) : eckit::Owned(), i_( i ) {
+    Object( int i ) : i_( i ) {
         std::stringstream out;
         out << "constructing Object " << i_;
         fckit_write_to_fortran_unit( fckit_fortranunit_stderr(), out.str().c_str() );

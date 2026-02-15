@@ -25,14 +25,10 @@
 
 #include "fckit/Libfckit.h"
 
-using eckit::Channel;
 using eckit::LogTarget;
 using eckit::Main;
 using eckit::PrefixTarget;
-using eckit::system::Library;
 using eckit::system::LibraryManager;
-
-using fckit::Log;
 
 extern "C" {
 void fckit_write_to_fortran_unit( int unit, const char* msg );
@@ -55,7 +51,7 @@ static std::string debug_prefix( const std::string& libname ) {
 
 void libs_debug_addTarget( LogTarget* target ) {
     for ( std::string libname : LibraryManager::list() ) {
-        const Library& lib = LibraryManager::lookup( libname );
+        const auto& lib = LibraryManager::lookup( libname );
         if ( lib.debug() ) {
             lib.debugChannel().addTarget( new PrefixTarget( debug_prefix( libname ), target ) );
         }
@@ -64,7 +60,7 @@ void libs_debug_addTarget( LogTarget* target ) {
 
 void libs_debug_setTarget( LogTarget* target ) {
     for ( std::string libname : LibraryManager::list() ) {
-        const Library& lib = LibraryManager::lookup( libname );
+        const auto& lib = LibraryManager::lookup( libname );
         if ( lib.debug() ) {
             lib.debugChannel().setTarget( new PrefixTarget( debug_prefix( libname ), target ) );
         }
@@ -173,7 +169,7 @@ int Log::error_unit() {
 void Log::reset() {
     eckit::Log::reset();
     for ( std::string libname : LibraryManager::list() ) {
-        if ( Channel& debug = Library::lookup( libname ).debugChannel() ) {
+        if ( auto& debug = LibraryManager::lookup( libname ).debugChannel() ) {
             debug.reset();
         }
     }
@@ -182,7 +178,7 @@ void Log::reset() {
 void Log::flush() {
     eckit::Log::flush();
     for ( std::string libname : LibraryManager::list() ) {
-        if ( Channel& debug = Library::lookup( libname ).debugChannel() ) {
+        if ( auto& debug = LibraryManager::lookup( libname ).debugChannel() ) {
             debug.flush();
         }
     }
