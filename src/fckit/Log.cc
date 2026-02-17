@@ -173,7 +173,7 @@ int Log::error_unit() {
 void Log::reset() {
     eckit::Log::reset();
     for ( std::string libname : LibraryManager::list() ) {
-        if ( Channel& debug = Library::lookup( libname ).debugChannel() ) {
+        if ( Channel& debug = LibraryManager::lookup( libname ).debugChannel() ) {
             debug.reset();
         }
     }
@@ -182,7 +182,7 @@ void Log::reset() {
 void Log::flush() {
     eckit::Log::flush();
     for ( std::string libname : LibraryManager::list() ) {
-        if ( Channel& debug = Library::lookup( libname ).debugChannel() ) {
+        if ( Channel& debug = LibraryManager::lookup( libname ).debugChannel() ) {
             debug.flush();
         }
     }
