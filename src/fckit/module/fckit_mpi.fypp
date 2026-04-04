@@ -940,6 +940,19 @@ end subroutine
 
 !---------------------------------------------------------------------------------------
 
+subroutine make_c_string(in_string,out_string)
+  use, intrinsic :: iso_c_binding, only : c_char, c_null_char
+  character(len=*), intent(in) :: in_string
+  character(kind=c_char,len=1), allocatable, intent(out) :: out_string(:)
+  integer :: i
+  allocate(out_string(len(in_string)+1))
+  out_string = ""
+  do i = 1, len(in_string)
+    out_string(i) = in_string(i:i)
+  end do
+  out_string(size(out_string)) = c_null_char
+end subroutine make_c_string
+
 subroutine broadcast_string(this,buffer,root)
   !! Broadcast a string ```buffer``` from MPI rank ```root```
 
@@ -955,14 +968,8 @@ subroutine broadcast_string(this,buffer,root)
 
   character(kind=c_char,len=1),allocatable :: c_string(:)
   integer :: j
-  allocate(c_string(len(buffer)+1))
-  if (this%rank() == root) then
-     c_string(:)=''
-     do j=1,len_trim(buffer)
-        c_string(j) = buffer(j:j)
-     enddo
-     c_string(len(buffer)+1) = c_null_char
-  endif
+
+  call make_c_string(buffer, c_string)
   call fckit__mpi__broadcast_string(this%CPTR_PGIBUG_A,c_string,int(len(buffer)+1,c_size_t),int(root,c_size_t))
   do j=1,len(buffer)
      buffer(j:j) = c_string(j)
@@ -988,14 +995,8 @@ function broadcast_file(this,path,root) result(buffer)
     !! MPI rank that reads and broadcasts file
   character(kind=c_char,len=1),allocatable :: c_string(:)
   integer :: j
-  allocate(c_string(len(path)+1))
-  if (this%rank() == root) then
-     c_string(:)=''
-     do j=1,len_trim(path)
-        c_string(j) = path(j:j)
-     enddo
-     c_string(len(path)+1) = c_null_char
-  endif
+
+  call make_c_string(path, c_string)
 
   buffer = fckit_buffer( fckit__mpi__broadcast_file(this%CPTR_PGIBUG_A,c_string,int(root,c_size_t)), share=.true. )
   call buffer%return()
