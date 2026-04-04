@@ -975,7 +975,7 @@ end subroutine
 function broadcast_file(this,path,root) result(buffer)
   !! Read a file with given ```path``` on MPI rank ```root``` and broadcast as a ```fckit_buffer``` buffer
 
-  use, intrinsic :: iso_c_binding, only : c_int32_t, c_size_t, c_ptr, c_char
+  use, intrinsic :: iso_c_binding, only : c_int32_t, c_size_t, c_ptr, c_char, c_null_char
   use fckit_c_interop_module, only : c_str
 
   type(fckit_buffer) :: buffer
@@ -986,8 +986,18 @@ function broadcast_file(this,path,root) result(buffer)
     !! File path of file to be broadcast
   integer(c_int32_t), intent(in) :: root
     !! MPI rank that reads and broadcasts file
+  character(kind=c_char,len=1),allocatable :: c_string(:)
+  integer :: j
+  allocate(c_string(len(path)+1))
+  if (this%rank() == root) then
+     c_string(:)=''
+     do j=1,len_trim(path)
+        c_string(j) = path(j:j)
+     enddo
+     c_string(len(path)+1) = c_null_char
+  endif
 
-  buffer = fckit_buffer( fckit__mpi__broadcast_file(this%CPTR_PGIBUG_A,c_str(path),int(root,c_size_t)), share=.true. )
+  buffer = fckit_buffer( fckit__mpi__broadcast_file(this%CPTR_PGIBUG_A,c_string,int(root,c_size_t)), share=.true. )
   call buffer%return()
 end function
 
