@@ -363,11 +363,12 @@ static eckit::CountedBuffer* extract_buffer( const eckit::SharedBuffer& cb ) {
     return buf;
 }
 
-eckit::CountedBuffer* fckit__mpi__broadcast_file( const Comm* comm, const char* path, size_t root ) {
+eckit::CountedBuffer* fckit__mpi__broadcast_file( const Comm* comm, const char* path, size_t path_length, size_t root ) {
+    std::string path_str( path, path_length );
     if ( comm )
-        return extract_buffer( comm->broadcastFile( path, root ) );
+        return extract_buffer( comm->broadcastFile( path_str, root ) );
     else
-        return extract_buffer( eckit::mpi::comm().broadcastFile( path, root ) );
+        return extract_buffer( eckit::mpi::comm().broadcastFile( path_str, root ) );
 }
 
 int fckit__mpi__anytag( const Comm* comm ) {
