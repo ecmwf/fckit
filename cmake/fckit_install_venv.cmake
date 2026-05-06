@@ -64,6 +64,18 @@ macro( fckit_install_venv )
 
     if( HAVE_FCKIT_VENV_INSTALL )
        install( DIRECTORY ${VENV_PATH} DESTINATION . PATTERN "bin/*" PERMISSIONS ${install_permissions} )
+    elseif( HAVE_FCKIT_VENV )
+        # Create a symlink in the install directory pointing to the build-directory, could possibly dangle!
+        install(CODE "
+        set( link_source \"${CMAKE_CURRENT_BINARY_DIR}/fckit_venv\" )
+        set( link_target \"\$ENV{DESTDIR}\${CMAKE_INSTALL_PREFIX}/fckit_venv\" )
+        if(EXISTS \${link_target} )
+            message(STATUS \"Up-to-date: \${link_target} (WARNING: symlink to \${link_source})\")
+        else()
+            message(STATUS \"Installing: \${link_target} (WARNING: symlink to \${link_source})\")
+            execute_process(COMMAND \${CMAKE_COMMAND} -E create_symlink \${link_source} \${link_target})
+        endif()
+        ")
     endif()
 
     # add python interpreter of venv as executable target
