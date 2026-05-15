@@ -917,9 +917,9 @@ subroutine alltoallv_${dtype}$_r${rank}$(this,in,scounts,sdispl,out,rcounts,rdis
   use fckit_array_module, only: array_view1d
   class(fckit_mpi_comm), intent(in) :: this
   ${ftype}$, intent(in) :: in${dim[rank]}$
-  integer(c_int32_t), intent(in) :: scounts(:), sdispl(:)
+  integer(c_int32_t), intent(in), target :: scounts(:), sdispl(:)
   ${ftype}$, intent(inout) :: out${dim[rank]}$
-  integer(c_int32_t), intent(in) :: rcounts(:), rdispl(:)
+  integer(c_int32_t), intent(in), target :: rcounts(:), rdispl(:)
   ${btype}$, pointer :: view_in(:), view_out(:)
   ${btype}$ :: mold
   integer(c_int32_t), pointer :: view_sc(:), view_sd(:)
