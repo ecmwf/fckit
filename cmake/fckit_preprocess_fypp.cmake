@@ -52,7 +52,8 @@ endfunction()
 #                                [SOURCES file1 [file2]... ]
 #                                [FYPP_ARGS arg1 [arg2]... ]
 #                                [FYPP_ARGS_EXCLUDE arg1 [arg2]... ]
-#                                [DEPENDS dep1 [dep2]... ] )
+#                                [DEPENDS dep1 [dep2]... ]
+#                                [OUTPUT_SUFFIX suffix] )
 #    Purpose:
 #        Preprocess source files with fypp
 #
@@ -62,6 +63,7 @@ endfunction()
 #        [FYPP_ARGS arg1 [arg2]...]          Arguments passed to fypp
 #        [FYPP_ARGS_EXCLUDE arg1 [arg2]...]  Arguments excluded from being passed to fypp; accepts bash-compatible regex
 #        [DEPENDS dep1 [dep2]... ]           Dependencies before processing files
+#        [OUTPUT_SUFFIX suffix]              Optional suffix appended to generated basenames before .F90
 #
 #    Notes:
 #        The include flags and compile flags of targets with the DEPENDS argument
@@ -70,7 +72,7 @@ endfunction()
 function( fckit_preprocess_fypp_sources output )
 
   set( options NO_LINE_NUMBERING )
-  set( single_value_args "" )
+  set( single_value_args OUTPUT_SUFFIX )
   set( multi_value_args SOURCES FYPP_ARGS FYPP_ARGS_EXCLUDE DEPENDS )
   cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
 
@@ -89,7 +91,7 @@ function( fckit_preprocess_fypp_sources output )
     if( dir )
       set( outfile "${outfile}/${dir}" )
     endif()
-    set( outfile "${outfile}/${base}.F90" )
+    set( outfile "${outfile}/${base}${_PAR_OUTPUT_SUFFIX}.F90" )
 
     list( APPEND outfiles ${outfile} )
 
@@ -125,9 +127,9 @@ function( fckit_preprocess_fypp_sources output )
     endforeach()
 
     if( dir )
-      set( short_outfile "${dir}/${base}.F90" )
+      set( short_outfile "${dir}/${base}${_PAR_OUTPUT_SUFFIX}.F90" )
     else()
-      set( short_outfile "${base}.F90")
+      set( short_outfile "${base}${_PAR_OUTPUT_SUFFIX}.F90")
     endif()
 
     get_source_file_property( _depends ${filename} OBJECT_DEPENDS )
@@ -173,7 +175,8 @@ endfunction()
 # fckit_target_preprocess_fypp( target
 #                               [FYPP_ARGS arg1 [arg2]... ]
 #                               [FYPP_ARGS_EXCLUDE arg1 [arg2]... ]
-#                               [DEPENDS dep1 [dep2]... ] )
+#                               [DEPENDS dep1 [dep2]... ]
+#                               [OUTPUT_SUFFIX suffix] )
 #    Purpose:
 #        Preprocess source files in the target with the extensions
 #        {.fypp, .fypp.F90, .F90.fypp}
@@ -183,6 +186,7 @@ endfunction()
 #        [FYPP_ARGS arg1 [arg2]...]           Arguments passed to fypp
 #        [FYPP_ARGS_EXCLUDE arg1 [arg2]... ]  Arguments excluded from being passed to fypp; accepts bash-compatible regex
 #        [DEPENDS dep1 [dep2]... ]            Dependencies before processing files
+#        [OUTPUT_SUFFIX suffix]               Optional suffix appended to generated basenames before .F90
 #
 #    Notes:
 #        The include flags and compile flags of current target and targets
@@ -192,7 +196,7 @@ endfunction()
 function( fckit_target_preprocess_fypp _PAR_TARGET )
 
   set( options NO_LINE_NUMBERING )
-  set( single_value_args "" )
+  set( single_value_args OUTPUT_SUFFIX )
   set( multi_value_args FYPP_ARGS FYPP_ARGS_EXCLUDE DEPENDS )
   cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
 
@@ -252,6 +256,7 @@ function( fckit_target_preprocess_fypp _PAR_TARGET )
           FYPP_ARGS ${_PAR_FYPP_ARGS} ${args}
           FYPP_ARGS_EXCLUDE ${_PAR_FYPP_ARGS_EXCLUDE}
           DEPENDS ${preprocessed_depends} ${_PAR_DEPENDS}
+          OUTPUT_SUFFIX ${_PAR_OUTPUT_SUFFIX}
       )
 
       target_sources( ${_PAR_TARGET} PRIVATE ${preprocessed_sources} )
