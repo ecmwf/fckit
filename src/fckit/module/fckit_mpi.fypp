@@ -508,18 +508,19 @@ interface
 #:endfor
 
   subroutine fckit__mpi__broadcast_string(comm,buffer,count,root) bind(c)
-    use, intrinsic :: iso_c_binding, only : c_ptr, c_char, c_size_t
+    use, intrinsic :: iso_c_binding, only : c_ptr, c_size_t
     type(c_ptr), value :: comm
-    character(kind=c_char,len=1), dimension(*) :: buffer
+    type(c_ptr), value :: buffer
     integer(c_size_t), value :: count
     integer(c_size_t), value :: root
   end subroutine
 
-  function fckit__mpi__broadcast_file(comm,path,root) result(buffer) bind(c)
-    use, intrinsic :: iso_c_binding, only : c_ptr, c_size_t, c_char
+  function fckit__mpi__broadcast_file(comm,path,path_length,root) result(buffer) bind(c)
+    use, intrinsic :: iso_c_binding, only : c_ptr, c_size_t
     type(c_ptr) :: buffer
     type(c_ptr), value :: comm
-    character(kind=c_char), dimension(*) :: path
+    type(c_ptr), value :: path
+    integer(c_size_t), value :: path_length
     integer(c_size_t), value :: root
   end function
 
@@ -943,31 +944,16 @@ end subroutine
 subroutine broadcast_string(this,buffer,root)
   !! Broadcast a string ```buffer``` from MPI rank ```root```
 
-  use, intrinsic :: iso_c_binding, only : c_int32_t, c_size_t, c_char, c_null_char
-  use fckit_array_module, only: array_view1d
+  use, intrinsic :: iso_c_binding, only : c_int32_t, c_size_t, c_char, c_loc
 
   class(fckit_mpi_comm), intent(in) :: this
     !! This communicator
-  character(len=*),intent(inout) :: buffer
+  character(kind=c_char,len=*), target, intent(inout) :: buffer
     !! String to be broadcast
   integer(c_int32_t), intent(in) :: root
     !! MPI rank that broadcasts
 
-  character(kind=c_char,len=1),allocatable :: c_string(:)
-  integer :: j
-  allocate(c_string(len(buffer)+1))
-  if (this%rank() == root) then
-     c_string(:)=''
-     do j=1,len_trim(buffer)
-        c_string(j) = buffer(j:j)
-     enddo
-     c_string(len(buffer)+1) = c_null_char
-  endif
-  call fckit__mpi__broadcast_string(this%CPTR_PGIBUG_A,c_string,int(len(buffer)+1,c_size_t),int(root,c_size_t))
-  do j=1,len(buffer)
-     buffer(j:j) = c_string(j)
-  enddo
-  deallocate(c_string)
+  call fckit__mpi__broadcast_string(this%CPTR_PGIBUG_A, c_loc(buffer), int(len(buffer),c_size_t), int(root,c_size_t))
 end subroutine
 
 !---------------------------------------------------------------------------------------
@@ -975,19 +961,19 @@ end subroutine
 function broadcast_file(this,path,root) result(buffer)
   !! Read a file with given ```path``` on MPI rank ```root``` and broadcast as a ```fckit_buffer``` buffer
 
-  use, intrinsic :: iso_c_binding, only : c_int32_t, c_size_t, c_ptr, c_char
-  use fckit_c_interop_module, only : c_str
+  use, intrinsic :: iso_c_binding, only : c_int32_t, c_size_t, c_char, c_loc
 
   type(fckit_buffer) :: buffer
     !! Returned buffer
   class(fckit_mpi_comm), intent(in) :: this
     !! This communicator
-  character(kind=c_char,len=*), intent(in) :: path
+  character(kind=c_char,len=*), target, intent(in) :: path
     !! File path of file to be broadcast
   integer(c_int32_t), intent(in) :: root
     !! MPI rank that reads and broadcasts file
 
-  buffer = fckit_buffer( fckit__mpi__broadcast_file(this%CPTR_PGIBUG_A,c_str(path),int(root,c_size_t)), share=.true. )
+  buffer = fckit_buffer( fckit__mpi__broadcast_file(this%CPTR_PGIBUG_A, c_loc(path), &
+         &               int(len_trim(path),c_size_t), int(root,c_size_t)), share=.true. )
   call buffer%return()
 end function
 
