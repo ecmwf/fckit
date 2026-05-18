@@ -8,7 +8,7 @@
 #   test-individual.sh [CMAKE_ARGUMENTS]
 
 SOURCE=@CMAKE_CURRENT_SOURCE_DIR@/downstream
-BUILD=@CMAKE_CURRENT_BINARY_DIR@/downstream
+BUILD_ROOT=@CMAKE_CURRENT_BINARY_DIR@
 
 # Error handling
 function test_failed {
@@ -25,23 +25,48 @@ trap test_failed EXIT
 set -e -o pipefail
 set -x
 
-# Start with clean build
-rm -rf $BUILD
-
 export fckit_DIR=@PROJECT_BINARY_DIR@
 export ecbuild_DIR=@ecbuild_DIR@
 
-# Build
-mkdir -p $BUILD && cd $BUILD
-cmake $SOURCE \
-  -DCMAKE_BUILD_TYPE=RelWithDebInfo \
-  -DECBUILD_2_COMPAT=OFF \
-  -DECBUILD_COMPILE_FLAGS=@CMAKE_CURRENT_SOURCE_DIR@/compile_flags.cmake \
+COMMON_CMAKE_ARGS=(
+  -DCMAKE_BUILD_TYPE=RelWithDebInfo
+  -DECBUILD_2_COMPAT=OFF
+  -DECBUILD_COMPILE_FLAGS=@CMAKE_CURRENT_SOURCE_DIR@/compile_flags.cmake
   "$@"
+)
 
-make VERBOSE=1
+function build_and_check {
+  local variant=$1
+  local output_suffix=$2
+  local build_dir=${BUILD_ROOT}/downstream_${variant}
 
-bin/main
+  rm -rf "$build_dir"
+  mkdir -p "$build_dir"
+  cd "$build_dir"
+
+  local cmake_args=("${COMMON_CMAKE_ARGS[@]}")
+  if [ -n "$output_suffix" ]; then
+    cmake_args+=("-DDOWNSTREAM_FYPP_OUTPUT_SUFFIX=${output_suffix}")
+  fi
+
+  cmake "$SOURCE" "${cmake_args[@]}"
+  make VERBOSE=1
+
+  if [ -n "$output_suffix" ]; then
+    test -f "downstream${output_suffix}.F90"
+    test -f "downstream_override${output_suffix}.F90"
+    test ! -e "downstream.F90"
+    test ! -e "downstream_override.F90"
+  else
+    test -f "downstream.F90"
+    test -f "downstream_override.F90"
+  fi
+
+  bin/main
+}
+
+build_and_check default ""
+build_and_check suffixed "_custom"
 
 { set +ex; } 2>/dev/null
 echo "+++++++++++++++++"
