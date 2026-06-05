@@ -40,19 +40,13 @@ does it submit to any jurisdiction.
 associate( unused_ => X ); \
 end associate
 
+#if 0
+Following 2 macros were for a workaround PGI bug (PGI_BUG_ATLAS_197) which prevents the use of function c_ptr()
+PGI bug present from version 17.10, fixed since version 19.4
+The definitions are only remaining for downstream code that may still reference these.
+#endif
 #define CPTR_PGIBUG_A c_ptr()
 #define CPTR_PGIBUG_B c_ptr()
-
-#define XLBUG_FCKIT_14 1
-#if 0
-Following is to workaround XL bug where allocate( character(len=xxx,kind=c_char ) :: string )
-does not compile
-#endif
-#if XLBUG_FCKIT_14
-#define FCKIT_ALLOCATE_CHARACTER( VARIABLE, SIZE ) allocate( character(len=(SIZE)) :: VARIABLE )
-#else
-#define FCKIT_ALLOCATE_CHARACTER( VARIABLE, SIZE ) allocate( character(len=(SIZE),kind=c_char) :: VARIABLE )
-#endif
 
 #if 0
 // clang-format on

@@ -440,7 +440,7 @@ function key(this, index) result(key_str)
   type(c_ptr) :: key_cptr
   integer(c_size_t) :: key_size
   call c_fckit_configuration_key(this%c_ptr(), index, key_cptr, key_size)
-  FCKIT_ALLOCATE_CHARACTER(key_str, key_size)
+  allocate( character(len=(key_size),kind=c_char) :: key_str )
   key_str = c_ptr_to_string(key_cptr)
   call c_ptr_free(key_cptr)
 end function
@@ -759,7 +759,7 @@ function get_string(this, name, value) result(found)
   found_int = c_fckit_configuration_get_string(this%c_ptr(),c_str(name),value_cptr,value_size)
   if( found_int == 1 ) then
     if( allocated(value) ) deallocate(value)
-    FCKIT_ALLOCATE_CHARACTER(value,value_size)
+    allocate( character(len=(value_size),kind=c_char) :: value )
     if ( value_size > 0 ) then
       value = c_ptr_to_string(value_cptr)
       call c_ptr_free(value_cptr)
@@ -1011,7 +1011,7 @@ function json(this) result(jsonstr)
   type(c_ptr) :: json_cptr
   integer(c_size_t) :: json_size
   call c_fckit_configuration_json(this%c_ptr(),json_cptr,json_size)
-  FCKIT_ALLOCATE_CHARACTER(jsonstr,json_size)
+  allocate( character(len=(json_size),kind=c_char) :: jsonstr )
   jsonstr = c_ptr_to_string(json_cptr)
   call c_ptr_free(json_cptr)
 end function
