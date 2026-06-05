@@ -688,7 +688,7 @@ end function
 subroutine delete(this)
   use fckit_c_interop_module
   class(fckit_mpi_comm), intent(inout) :: this
-  call fckit__mpi__comm_delete(this%CPTR_PGIBUG_A)
+  call fckit__mpi__comm_delete(this%c_ptr())
   call this%reset_c_ptr()
 end subroutine
 
@@ -703,7 +703,7 @@ function split( this, colour, name )
   integer(c_int32_t), intent(in) :: colour
   character(len=*) :: name
   call split%reset_c_ptr( &
-      & fckit__mpi__comm_split( this%CPTR_PGIBUG_A, colour, c_str(name) ) )
+      & fckit__mpi__comm_split( this%c_ptr(), colour, c_str(name) ) )
   call split%return()
 end function
 
@@ -716,7 +716,7 @@ function name(this)
   character(len=:), allocatable :: name
   type(c_ptr) :: name_c_ptr
   integer(c_int32_t) :: name_size
-  call fckit__mpi__comm_name( this%CPTR_PGIBUG_A, name_c_ptr, name_size )
+  call fckit__mpi__comm_name( this%c_ptr(), name_c_ptr, name_size )
   allocate(character(len=name_size) :: name )
   name = c_ptr_to_string(name_c_ptr)
   call c_ptr_free(name_c_ptr)
@@ -726,7 +726,7 @@ end function
 
 subroutine set_default(this)
   class(fckit_mpi_comm), intent(inout) :: this
-  call fckit__mpi__comm_set_default( this%CPTR_PGIBUG_A )
+  call fckit__mpi__comm_set_default( this%c_ptr() )
 end subroutine
 
 !---------------------------------------------------------------------------------------
@@ -735,7 +735,7 @@ function communicator(this)
   use, intrinsic :: iso_c_binding, only : c_int32_t
   integer(c_int32_t) :: communicator
   class(fckit_mpi_comm), intent(in) :: this
-  communicator = fckit__mpi__comm_communicator(this%CPTR_PGIBUG_A)
+  communicator = fckit__mpi__comm_communicator(this%c_ptr())
 end function
 
 !---------------------------------------------------------------------------------------
@@ -744,7 +744,7 @@ function fckit_mpi__rank(this) result(rank)
   use, intrinsic :: iso_c_binding, only : c_int32_t
   integer(c_int32_t) :: rank
   class(fckit_mpi_comm), intent(in) :: this
-  rank = fckit__mpi__rank(this%CPTR_PGIBUG_A)
+  rank = fckit__mpi__rank(this%c_ptr())
 end function
 
 !---------------------------------------------------------------------------------------
@@ -753,7 +753,7 @@ function fckit_mpi__size(this) result(size)
   use, intrinsic :: iso_c_binding, only : c_int32_t
   integer(c_int32_t) :: size
   class(fckit_mpi_comm), intent(in) :: this
-  size = fckit__mpi__size(this%CPTR_PGIBUG_A)
+  size = fckit__mpi__size(this%c_ptr())
 end function
 
 !---------------------------------------------------------------------------------------
@@ -762,7 +762,7 @@ function anytag(this)
   use, intrinsic :: iso_c_binding, only : c_int32_t
   integer(c_int32_t) :: anytag
   class(fckit_mpi_comm), intent(in) :: this
-  anytag = fckit__mpi__anytag(this%CPTR_PGIBUG_A)
+  anytag = fckit__mpi__anytag(this%c_ptr())
 end function
 
 !---------------------------------------------------------------------------------------
@@ -771,14 +771,14 @@ function anysource(this)
   use, intrinsic :: iso_c_binding, only : c_int32_t
   integer(c_int32_t) :: anysource
   class(fckit_mpi_comm), intent(in) :: this
-  anysource = fckit__mpi__anysource(this%CPTR_PGIBUG_A)
+  anysource = fckit__mpi__anysource(this%c_ptr())
 end function
 
 !---------------------------------------------------------------------------------------
 
 subroutine barrier(this)
   class(fckit_mpi_comm), intent(in) :: this
-  call fckit__mpi__barrier(this%CPTR_PGIBUG_A)
+  call fckit__mpi__barrier(this%c_ptr())
 end subroutine
 
 !---------------------------------------------------------------------------------------
@@ -788,9 +788,9 @@ subroutine fckit_mpi__abort(this,error_code)
   class(fckit_mpi_comm), intent(in) :: this
   integer(c_int32_t), intent(in), optional :: error_code
   if( present(error_code) ) then
-    call fckit__mpi__abort(this%CPTR_PGIBUG_A,error_code)
+    call fckit__mpi__abort(this%c_ptr(),error_code)
   else
-    call fckit__mpi__abort(this%CPTR_PGIBUG_A,-1)
+    call fckit__mpi__abort(this%c_ptr(),-1)
   endif
 end subroutine
 
@@ -811,7 +811,7 @@ subroutine allgather_${dtype}$_r0(this,in,out)
   ${btype}$ :: mold
   view_in => array_view1d(in,mold)
   view_out => array_view1d(out,mold)
-  call fckit__mpi__allgather_${dtype}$(this%CPTR_PGIBUG_A,view_in(1),view_out)
+  call fckit__mpi__allgather_${dtype}$(this%c_ptr(),view_in(1),view_out)
 end subroutine
 
 !---------------------------------------------------------------------------------------
@@ -885,7 +885,7 @@ subroutine allgather_${dtype}$_r${rank}$(this,in,out,sendcount)
   view_out => array_view1d(out,mold)
   view_rc => array_view1d(recvcounts)
   view_dp => array_view1d(displs)
-  call fckit__mpi__allgatherv_${dtype}$(this%CPTR_PGIBUG_A,view_in,view_out,int(sendcount,c_size_t),view_rc,view_dp)
+  call fckit__mpi__allgatherv_${dtype}$(this%c_ptr(),view_in,view_out,int(sendcount,c_size_t),view_rc,view_dp)
   deallocate(recvcounts,displs)
 end subroutine
 
@@ -907,7 +907,7 @@ subroutine allgatherv_${dtype}$_r${rank}$(this,in,out,sendcount,recvcounts,displ
   view_out => array_view1d(out,mold)
   view_rc => array_view1d(recvcounts)
   view_dp => array_view1d(displs)
-  call fckit__mpi__allgatherv_${dtype}$(this%CPTR_PGIBUG_A,view_in,view_out,int(sendcount,c_size_t),view_rc,view_dp)
+  call fckit__mpi__allgatherv_${dtype}$(this%c_ptr(),view_in,view_out,int(sendcount,c_size_t),view_rc,view_dp)
 end subroutine
 
 !---------------------------------------------------------------------------------------
@@ -930,7 +930,7 @@ subroutine alltoallv_${dtype}$_r${rank}$(this,in,scounts,sdispl,out,rcounts,rdis
   view_sd => array_view1d(sdispl)
   view_rc => array_view1d(rcounts)
   view_rd => array_view1d(rdispl)
-  call fckit__mpi__alltoallv_${dtype}$(this%CPTR_PGIBUG_A,view_in,view_sc,view_sd,view_out,view_rc,view_rd)
+  call fckit__mpi__alltoallv_${dtype}$(this%c_ptr(),view_in,view_sc,view_sd,view_out,view_rc,view_rd)
 end subroutine
 
 !---------------------------------------------------------------------------------------
@@ -963,7 +963,7 @@ subroutine broadcast_string(this,buffer,root)
      enddo
      c_string(len(buffer)+1) = c_null_char
   endif
-  call fckit__mpi__broadcast_string(this%CPTR_PGIBUG_A,c_string,int(len(buffer)+1,c_size_t),int(root,c_size_t))
+  call fckit__mpi__broadcast_string(this%c_ptr(),c_string,int(len(buffer)+1,c_size_t),int(root,c_size_t))
   do j=1,len(buffer)
      buffer(j:j) = c_string(j)
   enddo
@@ -987,7 +987,7 @@ function broadcast_file(this,path,root) result(buffer)
   integer(c_int32_t), intent(in) :: root
     !! MPI rank that reads and broadcasts file
 
-  buffer = fckit_buffer( fckit__mpi__broadcast_file(this%CPTR_PGIBUG_A,c_str(path),int(root,c_size_t)), share=.true. )
+  buffer = fckit_buffer( fckit__mpi__broadcast_file(this%c_ptr(),c_str(path),int(root,c_size_t)), share=.true. )
   call buffer%return()
 end function
 
@@ -1017,7 +1017,7 @@ subroutine allreduce_${dtype}$_r${rank}$(this,in,out,operation)
   ${btype}$ :: mold
   view_in  => array_view1d(in,mold)
   view_out => array_view1d(out,mold)
-  call fckit__mpi__allreduce_${dtype}$(this%CPTR_PGIBUG_A,view_in,view_out, &
+  call fckit__mpi__allreduce_${dtype}$(this%c_ptr(),view_in,view_out, &
     int(ubound(view_in,1),c_size_t),operation)
 end subroutine
 
@@ -1039,7 +1039,7 @@ subroutine allreduce_inplace_${dtype}$_r${rank}$(this,inout,operation)
   ${btype}$, pointer :: view_inout(:)
   ${btype}$ :: mold
   view_inout => array_view1d(inout,mold)
-  call fckit__mpi__allreduce_inplace_${dtype}$(this%CPTR_PGIBUG_A,view_inout, &
+  call fckit__mpi__allreduce_inplace_${dtype}$(this%c_ptr(),view_inout, &
     int(ubound(view_inout,1),c_size_t),operation)
 end subroutine
 
@@ -1061,7 +1061,7 @@ subroutine broadcast_${dtype}$_r${rank}$(this,buffer,root)
   ${btype}$, pointer :: view_buffer(:)
   ${btype}$ :: mold
   view_buffer  => array_view1d(buffer,mold)
-  call fckit__mpi__broadcast_${dtype}$(this%CPTR_PGIBUG_A,view_buffer, &
+  call fckit__mpi__broadcast_${dtype}$(this%c_ptr(),view_buffer, &
     int(ubound(view_buffer,1),c_size_t),int(root,c_size_t))
 end subroutine
 
@@ -1085,7 +1085,7 @@ subroutine send_${dtype}$_r${rank}$(this,buffer,dest,tag)
   ${btype}$, pointer :: view_buffer(:)
   ${btype}$ :: mold
   view_buffer  => array_view1d(buffer,mold)
-  call fckit__mpi__send_${dtype}$(this%CPTR_PGIBUG_A,view_buffer, &
+  call fckit__mpi__send_${dtype}$(this%c_ptr(),view_buffer, &
     int(ubound(view_buffer,1),c_size_t),dest,tag)
 end subroutine
 
@@ -1115,10 +1115,10 @@ subroutine receive_${dtype}$_r${rank}$(this,buffer,source,tag,status)
   if( present(tag) ) then
     tag_opt = tag
   else
-    tag_opt = fckit__mpi__anytag(this%CPTR_PGIBUG_A)
+    tag_opt = fckit__mpi__anytag(this%c_ptr())
   endif
   view_buffer  => array_view1d(buffer,mold)
-  call fckit__mpi__receive_${dtype}$(this%CPTR_PGIBUG_A,view_buffer, &
+  call fckit__mpi__receive_${dtype}$(this%c_ptr(),view_buffer, &
     int(ubound(view_buffer,1),c_size_t),source,tag_opt,status_out%status)
   if( present(status) ) status = status_out
 end subroutine
@@ -1146,7 +1146,7 @@ function isend_${dtype}$_r${rank}$(this,buffer,dest,tag) result(request)
   ${btype}$, pointer :: view_buffer(:)
   ${btype}$ :: mold
   view_buffer  => array_view1d(buffer,mold)
-  request = fckit__mpi__isend_${dtype}$(this%CPTR_PGIBUG_A,view_buffer, &
+  request = fckit__mpi__isend_${dtype}$(this%c_ptr(),view_buffer, &
     int(ubound(view_buffer,1),c_size_t),dest,tag)
 end function
 
@@ -1176,10 +1176,10 @@ function ireceive_${dtype}$_r${rank}$(this,buffer,source,tag) result(request)
   if( present(tag) ) then
     tag_opt = tag
   else
-    tag_opt = fckit__mpi__anytag(this%CPTR_PGIBUG_A)
+    tag_opt = fckit__mpi__anytag(this%c_ptr())
   endif
   view_buffer  => array_view1d(buffer,mold)
-  request = fckit__mpi__ireceive_${dtype}$(this%CPTR_PGIBUG_A,view_buffer, &
+  request = fckit__mpi__ireceive_${dtype}$(this%c_ptr(),view_buffer, &
     int(ubound(view_buffer,1),c_size_t),source,tag_opt)
 end function
 
@@ -1203,7 +1203,7 @@ subroutine wait(this,request,status)
     !! MPI status
 
   type(fckit_mpi_status) :: status_out
-  call fckit__mpi__wait(this%CPTR_PGIBUG_A,request,status_out%status)
+  call fckit__mpi__wait(this%c_ptr(),request,status_out%status)
   if( present(status) ) status = status_out
 end subroutine
 
