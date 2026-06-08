@@ -404,7 +404,7 @@ function ctor_from_buffer(buffer) result(this)
   use fckit_c_interop_module, only : c_str
   type(fckit_Configuration) :: this
   type(fckit_buffer), intent(in) :: buffer
-  call this%reset_c_ptr( c_fckit_configuration_new_from_buffer(buffer%CPTR_PGIBUG_B), &
+  call this%reset_c_ptr( c_fckit_configuration_new_from_buffer(buffer%c_ptr()), &
     & fckit_c_deleter(c_fckit_configuration_delete) )
   call buffer%consumed() ! If buffer was constructed inline, this will delete the buffer
   call this%return()
@@ -414,7 +414,7 @@ function fckit_configuration_size(this) result(val)
   use fckit_c_interop_module, only : c_str
   class(fckit_Configuration), intent(in) :: this
   integer(c_int32_t) :: val
-  val =  c_fckit_configuration_size(this%CPTR_PGIBUG_B)
+  val =  c_fckit_configuration_size(this%c_ptr())
   write(0,*) "fckit_configuration_size " , val
 end function
 
@@ -424,7 +424,7 @@ function has(this, name) result(value)
   character(kind=c_char,len=*), intent(in) :: name
   logical :: value
   integer(c_int32_t) :: value_int
-  value_int =  c_fckit_configuration_has(this%CPTR_PGIBUG_B, c_str(name) )
+  value_int =  c_fckit_configuration_has(this%c_ptr(), c_str(name) )
   if( value_int == 1 ) then
     value = .True.
   else
@@ -439,8 +439,8 @@ function key(this, index) result(key_str)
   integer(c_int32_t), intent(in) :: index
   type(c_ptr) :: key_cptr
   integer(c_size_t) :: key_size
-  call c_fckit_configuration_key(this%CPTR_PGIBUG_B, index, key_cptr, key_size)
-  FCKIT_ALLOCATE_CHARACTER(key_str, key_size)
+  call c_fckit_configuration_key(this%c_ptr(), index, key_cptr, key_size)
+  allocate( character(len=(key_size),kind=c_char) :: key_str )
   key_str = c_ptr_to_string(key_cptr)
   call c_ptr_free(key_cptr)
 end function
@@ -450,7 +450,7 @@ function get_size(this, name) result(val)
   class(fckit_Configuration), intent(in) :: this
   character(kind=c_char,len=*), intent(in) :: name
   integer(c_int32_t) :: val
-  val = c_fckit_configuration_get_size(this%CPTR_PGIBUG_B, c_str(name) )
+  val = c_fckit_configuration_get_size(this%c_ptr(), c_str(name) )
 end function
 
 subroutine set_config(this, name, value)
@@ -458,7 +458,7 @@ subroutine set_config(this, name, value)
   class(fckit_Configuration), intent(inout) :: this
   character(kind=c_char,len=*), intent(in) :: name
   class(fckit_Configuration), intent(in) :: value
-  call c_fckit_configuration_set_config(this%CPTR_PGIBUG_B, c_str(name), value%CPTR_PGIBUG_B )
+  call c_fckit_configuration_set_config(this%c_ptr(), c_str(name), value%c_ptr() )
 end subroutine
 
 subroutine set_config_list(this, name, value)
@@ -471,9 +471,9 @@ subroutine set_config_list(this, name, value)
   integer(c_int32_t) :: j
   if( size(value) > 0 ) then
     do j=1,size(value)
-      value_cptrs(j) = value(j)%CPTR_PGIBUG_B
+      value_cptrs(j) = value(j)%c_ptr()
     enddo
-    call c_fckit_configuration_set_config_list(this%CPTR_PGIBUG_B, c_str(name),  &
+    call c_fckit_configuration_set_config_list(this%c_ptr(), c_str(name),  &
       c_loc(value_cptrs(1)), size(value_cptrs,kind=c_size_t) )
   endif
 end subroutine
@@ -490,7 +490,7 @@ subroutine set_logical(this, name, value)
   else
     value_int = 0
   end if
-  call c_fckit_configuration_set_bool(this%CPTR_PGIBUG_B, c_str(name), value_int )
+  call c_fckit_configuration_set_bool(this%c_ptr(), c_str(name), value_int )
 end subroutine
 
 subroutine set_int32(this, name, value)
@@ -498,7 +498,7 @@ subroutine set_int32(this, name, value)
   class(fckit_Configuration), intent(inout) :: this
   character(kind=c_char,len=*), intent(in) :: name
   integer(c_int32_t), intent(in) :: value
-  call c_fckit_configuration_set_int32(this%CPTR_PGIBUG_B, c_str(name), value)
+  call c_fckit_configuration_set_int32(this%c_ptr(), c_str(name), value)
 end subroutine
 
 subroutine set_int64(this, name, value)
@@ -506,7 +506,7 @@ subroutine set_int64(this, name, value)
   class(fckit_Configuration), intent(inout) :: this
   character(kind=c_char,len=*), intent(in) :: name
   integer(c_int64_t), intent(in) :: value
-  call c_fckit_configuration_set_int64(this%CPTR_PGIBUG_B, c_str(name), value)
+  call c_fckit_configuration_set_int64(this%c_ptr(), c_str(name), value)
 end subroutine
 
 subroutine set_real32(this, name, value)
@@ -514,7 +514,7 @@ subroutine set_real32(this, name, value)
   class(fckit_Configuration), intent(inout) :: this
   character(kind=c_char,len=*), intent(in) :: name
   real(c_float), intent(in) :: value
-  call c_fckit_configuration_set_float(this%CPTR_PGIBUG_B, c_str(name) ,value)
+  call c_fckit_configuration_set_float(this%c_ptr(), c_str(name) ,value)
 end subroutine
 
 subroutine set_real64(this, name, value)
@@ -522,7 +522,7 @@ subroutine set_real64(this, name, value)
   class(fckit_Configuration), intent(inout) :: this
   character(kind=c_char,len=*), intent(in) :: name
   real(c_double), intent(in) :: value
-  call c_fckit_configuration_set_double(this%CPTR_PGIBUG_B, c_str(name) ,value)
+  call c_fckit_configuration_set_double(this%c_ptr(), c_str(name) ,value)
 end subroutine
 
 subroutine set_string(this, name, value)
@@ -530,7 +530,7 @@ subroutine set_string(this, name, value)
   class(fckit_Configuration), intent(inout) :: this
   character(kind=c_char,len=*), intent(in) :: name
   character(kind=c_char,len=*), intent(in) :: value
-  call c_fckit_configuration_set_string(this%CPTR_PGIBUG_B, c_str(name) , c_str(value) )
+  call c_fckit_configuration_set_string(this%c_ptr(), c_str(name) , c_str(value) )
 end subroutine
 
 subroutine set_array_string(this, name, value)
@@ -549,7 +549,7 @@ subroutine set_array_string(this, name, value)
     do ii = 1, size(value)
       flatvalue((ii-1)*length+1:ii*length) = value(ii)
     enddo
-    call c_fckit_configuration_set_array_string(this%CPTR_PGIBUG_B, c_str(name), &
+    call c_fckit_configuration_set_array_string(this%c_ptr(), c_str(name), &
       &  c_str(flatvalue), length, size(value,kind=c_size_t) )
   endif
 end subroutine
@@ -559,7 +559,7 @@ subroutine set_array_int32(this, name, value)
   class(fckit_Configuration), intent(in) :: this
   character(kind=c_char,len=*), intent(in) :: name
   integer(c_int32_t), intent(in) :: value(:)
-  call c_fckit_configuration_set_array_int32(this%CPTR_PGIBUG_B, c_str(name), value, size(value,kind=c_size_t) )
+  call c_fckit_configuration_set_array_int32(this%c_ptr(), c_str(name), value, size(value,kind=c_size_t) )
 end subroutine
 
 subroutine set_array_int64(this, name, value)
@@ -567,7 +567,7 @@ subroutine set_array_int64(this, name, value)
   class(fckit_Configuration), intent(in) :: this
   character(kind=c_char,len=*), intent(in) :: name
   integer(c_int64_t), intent(in) :: value(:)
-  call c_fckit_configuration_set_array_int64(this%CPTR_PGIBUG_B, c_str(name), value, size(value,kind=c_size_t) )
+  call c_fckit_configuration_set_array_int64(this%c_ptr(), c_str(name), value, size(value,kind=c_size_t) )
 end subroutine
 
 subroutine set_array_real32(this, name, value)
@@ -575,7 +575,7 @@ subroutine set_array_real32(this, name, value)
   class(fckit_Configuration), intent(in) :: this
   character(kind=c_char,len=*), intent(in) :: name
   real(c_float), intent(in) :: value(:)
-  call c_fckit_configuration_set_array_float(this%CPTR_PGIBUG_B, c_str(name), value, size(value,kind=c_size_t) )
+  call c_fckit_configuration_set_array_float(this%c_ptr(), c_str(name), value, size(value,kind=c_size_t) )
 end subroutine
 
 subroutine set_array_real64(this, name, value)
@@ -583,7 +583,7 @@ subroutine set_array_real64(this, name, value)
   class(fckit_Configuration), intent(in) :: this
   character(kind=c_char,len=*), intent(in) :: name
   real(c_double), intent(in) :: value(:)
-  call c_fckit_configuration_set_array_double(this%CPTR_PGIBUG_B, c_str(name), value, size(value,kind=c_size_t) )
+  call c_fckit_configuration_set_array_double(this%c_ptr(), c_str(name), value, size(value,kind=c_size_t) )
 end subroutine
 
 function get_config(this, name, value) result(found)
@@ -594,8 +594,8 @@ function get_config(this, name, value) result(found)
   class(fckit_Configuration), intent(inout) :: value
   integer(c_int32_t) :: found_int
   value = fckit_Configuration()
-  found_int = c_fckit_configuration_get_config(this%CPTR_PGIBUG_B, &
-    c_str(name), value%CPTR_PGIBUG_B )
+  found_int = c_fckit_configuration_get_config(this%c_ptr(), &
+    c_str(name), value%c_ptr() )
   found = .False.
   if (found_int == 1) then
     found = .True.
@@ -623,7 +623,7 @@ function get_config_list(this, name, value) result(found)
   integer(c_size_t) :: j
   call deallocate_fckit_configuration(value)
   value_list_cptr = c_null_ptr
-  found_int = c_fckit_configuration_get_config_list(this%CPTR_PGIBUG_B, c_str(name), &
+  found_int = c_fckit_configuration_get_config_list(this%c_ptr(), c_str(name), &
     & value_list_cptr, value_list_size)
   found = .False.
   if( found_int == 1 ) then
@@ -652,7 +652,7 @@ function get_logical(this, name, value) result(found)
   logical, intent(inout) :: value
   integer(c_int32_t) :: value_int
   integer(c_int32_t) :: found_int
-  found_int = c_fckit_configuration_get_bool(this%CPTR_PGIBUG_B,c_str(name), value_int )
+  found_int = c_fckit_configuration_get_bool(this%c_ptr(),c_str(name), value_int )
   found = .False.
   if (found_int == 1) found = .True.
   if (found) then
@@ -678,7 +678,7 @@ function get_int32(this, name, value) result(found)
   character(kind=c_char,len=*), intent(in) :: name
   integer(c_int32_t), intent(inout) :: value
   integer(c_int32_t) :: found_int
-  found_int = c_fckit_configuration_get_int32(this%CPTR_PGIBUG_B, c_str(name), value )
+  found_int = c_fckit_configuration_get_int32(this%c_ptr(), c_str(name), value )
   found = .False.
   if (found_int == 1) found = .True.
 end function
@@ -697,7 +697,7 @@ function get_int64(this, name, value) result(found)
   character(kind=c_char,len=*), intent(in) :: name
   integer(c_int64_t), intent(inout) :: value
   integer(c_int32_t) :: found_int
-  found_int = c_fckit_configuration_get_int64(this%CPTR_PGIBUG_B, c_str(name), value )
+  found_int = c_fckit_configuration_get_int64(this%c_ptr(), c_str(name), value )
   found = .False.
   if (found_int == 1) found = .True.
 end function
@@ -716,7 +716,7 @@ function get_real32(this, name, value) result(found)
   character(kind=c_char,len=*), intent(in) :: name
   real(c_float), intent(inout) :: value
   integer(c_int32_t) :: found_int
-  found_int = c_fckit_configuration_get_float(this%CPTR_PGIBUG_B, c_str(name), value )
+  found_int = c_fckit_configuration_get_float(this%c_ptr(), c_str(name), value )
   found = .False.
   if (found_int == 1) found = .True.
 end function
@@ -735,7 +735,7 @@ function get_real64(this, name, value) result(found)
   character(kind=c_char,len=*), intent(in) :: name
   real(c_double), intent(inout) :: value
   integer(c_int32_t) :: found_int
-  found_int = c_fckit_configuration_get_double(this%CPTR_PGIBUG_B, c_str(name), value )
+  found_int = c_fckit_configuration_get_double(this%c_ptr(), c_str(name), value )
   found = .False.
   if (found_int == 1) found = .True.
 end function
@@ -756,10 +756,10 @@ function get_string(this, name, value) result(found)
   type(c_ptr) :: value_cptr
   integer(c_int32_t) :: found_int
   integer(c_size_t) :: value_size
-  found_int = c_fckit_configuration_get_string(this%CPTR_PGIBUG_B,c_str(name),value_cptr,value_size)
+  found_int = c_fckit_configuration_get_string(this%c_ptr(),c_str(name),value_cptr,value_size)
   if( found_int == 1 ) then
     if( allocated(value) ) deallocate(value)
-    FCKIT_ALLOCATE_CHARACTER(value,value_size)
+    allocate( character(len=(value_size),kind=c_char) :: value )
     if ( value_size > 0 ) then
       value = c_ptr_to_string(value_cptr)
       call c_ptr_free(value_cptr)
@@ -788,7 +788,7 @@ function get_array_logical(this, name, value) result(found)
   integer(c_size_t) :: j, value_size
   integer(c_int32_t), allocatable :: value_int(:)
   integer(c_int32_t) :: found_int
-  found_int = c_fckit_configuration_get_array_int32(this%CPTR_PGIBUG_B, c_str(name), &
+  found_int = c_fckit_configuration_get_array_int32(this%c_ptr(), c_str(name), &
    & value_cptr, value_size )
   if( found_int == 1 ) then
     call c_f_pointer(value_cptr,value_fptr,(/value_size/))
@@ -827,7 +827,7 @@ function get_array_int32(this, name, value) result(found)
   integer(c_int32_t), pointer :: value_fptr(:)
   integer(c_size_t) :: value_size
   integer(c_int32_t) :: found_int
-  found_int = c_fckit_configuration_get_array_int32(this%CPTR_PGIBUG_B, c_str(name), &
+  found_int = c_fckit_configuration_get_array_int32(this%c_ptr(), c_str(name), &
    & value_cptr, value_size )
   if( found_int == 1 ) then
     call c_f_pointer(value_cptr,value_fptr,(/value_size/))
@@ -858,7 +858,7 @@ function get_array_int64(this, name, value) result(found)
   integer(c_int64_t), pointer :: value_fptr(:)
   integer(c_size_t) :: value_size
   integer(c_int32_t) :: found_int
-  found_int = c_fckit_configuration_get_array_int64(this%CPTR_PGIBUG_B, c_str(name), &
+  found_int = c_fckit_configuration_get_array_int64(this%c_ptr(), c_str(name), &
    & value_cptr, value_size )
   if( found_int == 1 ) then
     call c_f_pointer(value_cptr,value_fptr,(/value_size/))
@@ -889,7 +889,7 @@ function get_array_real32(this, name, value) result(found)
   real(c_float), pointer :: value_fptr(:)
   integer(c_size_t) :: value_size
   integer(c_int32_t) :: found_int
-  found_int = c_fckit_configuration_get_array_float(this%CPTR_PGIBUG_B, c_str(name), &
+  found_int = c_fckit_configuration_get_array_float(this%c_ptr(), c_str(name), &
    & value_cptr, value_size )
   if( found_int == 1 ) then
     call c_f_pointer(value_cptr,value_fptr,(/value_size/))
@@ -920,7 +920,7 @@ function get_array_real64(this, name, value) result(found)
   real(c_double), pointer :: value_fptr(:)
   integer(c_size_t) :: value_size
   integer(c_int32_t) :: found_int
-  found_int = c_fckit_configuration_get_array_double(this%CPTR_PGIBUG_B, c_str(name), &
+  found_int = c_fckit_configuration_get_array_double(this%c_ptr(), c_str(name), &
    & value_cptr, value_size )
   if( found_int == 1 ) then
     call c_f_pointer(value_cptr,value_fptr,(/value_size/))
@@ -958,7 +958,7 @@ function get_array_string(this,name,value) result(found)
   integer(c_size_t) :: elemlen
   integer(c_size_t) :: j
   character(len=:), allocatable :: flatvalue
-  found_int =   c_fckit_configuration_get_array_string(this%CPTR_PGIBUG_B, c_str(name), &
+  found_int =   c_fckit_configuration_get_array_string(this%c_ptr(), c_str(name), &
    & value_cptr, value_size, offsets_cptr, value_numelem)
   if( found_int == 1 ) then
     ! Get flat character array
@@ -1010,8 +1010,8 @@ function json(this) result(jsonstr)
   class(fckit_Configuration), intent(in) :: this
   type(c_ptr) :: json_cptr
   integer(c_size_t) :: json_size
-  call c_fckit_configuration_json(this%CPTR_PGIBUG_B,json_cptr,json_size)
-  FCKIT_ALLOCATE_CHARACTER(jsonstr,json_size)
+  call c_fckit_configuration_json(this%c_ptr(),json_cptr,json_size)
+  allocate( character(len=(json_size),kind=c_char) :: jsonstr )
   jsonstr = c_ptr_to_string(json_cptr)
   call c_ptr_free(json_cptr)
 end function

@@ -128,7 +128,7 @@ subroutine allocate_fckit_refcount_owned(refcount,shared_ptr)
   allocate( fckit_refcount_owned::refcount )
   select type( shared_ptr )
     class is( fckit_object )
-      cptr = shared_ptr%CPTR_PGIBUG_A
+      cptr = shared_ptr%c_ptr()
   end select
   select type( refcount )
     class is( fckit_refcount_owned )
