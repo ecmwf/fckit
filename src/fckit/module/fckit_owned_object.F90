@@ -35,11 +35,7 @@ public fckit_owned_object
 type :: fckit_owned_object
   !! Abstract base class for objects that wrap a C++ object
 
-#if !PGIBUG_ATLAS_197
   type(c_ptr), private :: cpp_object_ptr = c_null_ptr
-#else
-  type(c_ptr), public :: cpp_object_ptr = c_null_ptr
-#endif
   type(c_funptr), private :: deleter = c_null_funptr
     !! Internal C pointer
 
@@ -50,10 +46,8 @@ contains
   procedure, public :: is_null
     !! Check if internal C pointer is set
 
-#if !PGIBUG_ATLAS_197_DEBUG
   procedure, public :: c_ptr   => fckit_owned_object__c_ptr
     !! Access to internal C pointer
-#endif
 
   procedure, public :: reset_c_ptr
     !! Nullify internal C pointer

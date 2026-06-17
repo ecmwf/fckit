@@ -138,7 +138,7 @@ subroutine resource_get_string(resource_str,default_value,value)
   integer(c_size_t) :: value_size
   integer(c_int32_t) :: error_code
   error_code = fckit__resource_string(c_str(resource_str),c_str(default_value),value_c_ptr,value_size)
-  FCKIT_ALLOCATE_CHARACTER(value,value_size)
+  allocate( character(len=(value_size),kind=c_char) :: value )
   value = c_ptr_to_string(value_c_ptr)
   call c_ptr_free(value_c_ptr)
 end subroutine

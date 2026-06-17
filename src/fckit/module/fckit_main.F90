@@ -208,7 +208,7 @@ subroutine main_name(name)
   integer(c_size_t) :: name_size
   integer(c_int32_t) :: error_code
   error_code = fckit__main_name(name_c_ptr,name_size)
-  FCKIT_ALLOCATE_CHARACTER(name,name_size)
+  allocate( character(len=(name_size),kind=c_char) :: name )
   name = c_ptr_to_string(name_c_ptr)
   call c_ptr_free(name_c_ptr)
 end subroutine
@@ -222,7 +222,7 @@ subroutine displayname(name)
   integer(c_size_t) :: name_size
   integer(c_int32_t) :: error_code
   error_code = fckit__main_displayname(name_c_ptr,name_size)
-  FCKIT_ALLOCATE_CHARACTER(name,name_size)
+  allocate( character(len=(name_size),kind=c_char) :: name )
   name = c_ptr_to_string(name_c_ptr)
   call c_ptr_free(name_c_ptr)
 end subroutine

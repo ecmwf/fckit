@@ -151,7 +151,7 @@ function c_str_to_string(s) result(string)
      i = i + 1
   enddo
   nchars = i - 1  ! Exclude null character from Fortran string
-  FCKIT_ALLOCATE_CHARACTER(string,nchars)
+  allocate( character(len=(nchars),kind=c_char) :: string )
   do i=1,nchars
     string(i:i) = s(i)
   enddo
@@ -168,7 +168,7 @@ subroutine copy_c_str_to_string(s,string)
      if (s(i) == c_null_char) exit
   enddo
   nchars = i - 1  ! Exclude null character from Fortran string
-  FCKIT_ALLOCATE_CHARACTER(string,nchars)
+  allocate( character(len=(nchars),kind=c_char) :: string )
   do i=1,nchars
     string(i:i) = s(i)
   enddo
