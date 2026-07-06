@@ -1,0 +1,10 @@
+! Minimal fypp source used by test_downstream_fypp_list_options.
+! This file is not built; it exists only so that fckit_preprocess_fypp_sources
+! has a real source path to register in add_custom_command.
+module test_source
+implicit none
+contains
+subroutine hello()
+  write(0,*) "hello"
+end subroutine
+end module
