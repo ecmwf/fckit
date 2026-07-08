@@ -156,7 +156,7 @@ function( fckit_preprocess_fypp_sources output )
                    OVERRIDE_COMPILE_FLAGS_${CMAKE_BUILD_TYPE_CAPS} )
       get_source_file_property( ${filename}_${_prop} ${filename} ${_prop} )
       if( ${filename}_${_prop} )
-        set_source_files_properties(${outfile} PROPERTIES ${_prop} ${${filename}_${_prop}} )
+        set_source_files_properties(${outfile} PROPERTIES ${_prop} "${${filename}_${_prop}}" )
       endif()
     endforeach()
 
