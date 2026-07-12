@@ -159,6 +159,7 @@ add_subdirectory( test_downstream_fctest )
 add_subdirectory( test_downstream_fypp )
 add_subdirectory( test_downstream_fypp_list_options )
 add_subdirectory( test_downstream_fypp_ordering )
+add_subdirectory( test_downstream_fypp_output_sources )
 
 ### Test fckit_yaml_reader
 if( HAVE_FCKIT_VENV )

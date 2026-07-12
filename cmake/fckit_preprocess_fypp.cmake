@@ -177,6 +177,7 @@ endfunction()
 #                               [FYPP_ARGS_EXCLUDE arg1 [arg2]... ]
 #                               [DEPENDS dep1 [dep2]... ]
 #                               [OUTPUT_SUFFIX suffix]
+#                               [OUTPUT_SOURCES src_list]
 #                               [NO_TARGET_DEPENDS] )
 #    Purpose:
 #        Preprocess source files in the target with the extensions
@@ -188,6 +189,7 @@ endfunction()
 #        [FYPP_ARGS_EXCLUDE arg1 [arg2]... ]  Arguments excluded from being passed to fypp; accepts bash-compatible regex
 #        [DEPENDS dep1 [dep2]... ]            Dependencies before processing files
 #        [OUTPUT_SUFFIX suffix]               Optional suffix appended to generated basenames before .F90
+#        [OUTPUT_SOURCES src_list]            Returns a list of generated .F90 paths in the caller's scope
 #        [NO_TARGET_DEPENDS]                  Prevent adding a dependency between the target and generated files.
 #
 #    Notes:
@@ -204,7 +206,7 @@ endfunction()
 function( fckit_target_preprocess_fypp _PAR_TARGET )
 
   set( options NO_LINE_NUMBERING NO_TARGET_DEPENDS )
-  set( single_value_args OUTPUT_SUFFIX )
+  set( single_value_args OUTPUT_SUFFIX OUTPUT_SOURCES )
   set( multi_value_args FYPP_ARGS FYPP_ARGS_EXCLUDE DEPENDS )
   cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
 
@@ -278,6 +280,11 @@ function( fckit_target_preprocess_fypp _PAR_TARGET )
           add_custom_target( ${_fypp_order_target} DEPENDS ${preprocessed_sources} )
         endif()
         add_dependencies( ${_PAR_TARGET} ${_fypp_order_target} )
+      endif()
+
+      # Return generated file list to caller if requested
+      if( _PAR_OUTPUT_SOURCES )
+        set( ${_PAR_OUTPUT_SOURCES} ${preprocessed_sources} PARENT_SCOPE )
       endif()
 
       ### Extra stuff required to add correct flags
