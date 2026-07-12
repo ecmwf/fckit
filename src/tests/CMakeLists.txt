@@ -155,9 +155,10 @@ foreach( _test ${FCKIT_QUARANTAINED_TESTS} )
 endforeach()
 
 ### Test downstream find_package(fckit) projects
-add_subdirectory( test_downstream_fypp )
 add_subdirectory( test_downstream_fctest )
+add_subdirectory( test_downstream_fypp )
 add_subdirectory( test_downstream_fypp_list_options )
+add_subdirectory( test_downstream_fypp_ordering )
 
 ### Test fckit_yaml_reader
 if( HAVE_FCKIT_VENV )
