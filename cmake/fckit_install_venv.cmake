@@ -59,8 +59,25 @@ macro( fckit_install_venv )
     # install virtual environment from requirements, which includes fypp
     set( _pkg_name "fckit_yaml_reader")
     ecbuild_info( "Install fckit_yaml_reader and fypp in virtual environment ${VENV_PATH}" )
+
+    # Stage the package into the build tree so concurrent builds sharing the same
+    # source checkout don't race on setuptools' in-tree build/ and *.egg-info/ dirs.
+    set( _pkg_src "${CMAKE_CURRENT_SOURCE_DIR}/src/fckit/${_pkg_name}" )
+    set( _pkg_bld "${CMAKE_CURRENT_BINARY_DIR}/${_pkg_name}" )
+    file( REMOVE_RECURSE "${_pkg_bld}" )
+    file( COPY "${_pkg_src}/" DESTINATION "${_pkg_bld}"
+          PATTERN "build"       EXCLUDE
+          PATTERN "*.egg-info"  EXCLUDE
+          PATTERN "dist"        EXCLUDE
+          PATTERN "__pycache__" EXCLUDE )
+
     execute_process( COMMAND ${Python3_EXECUTABLE} -m pip
-                     install ${PIP_OPTIONS} ${CMAKE_CURRENT_SOURCE_DIR}/src/fckit/${_pkg_name} OUTPUT_QUIET )
+                     install ${PIP_OPTIONS} "${_pkg_bld}"
+                     RESULT_VARIABLE _pip_result
+                     OUTPUT_QUIET )
+    if( NOT _pip_result EQUAL 0 )
+        ecbuild_error( "pip install of ${_pkg_name} failed (exit ${_pip_result})" )
+    endif()
 
     if( HAVE_FCKIT_VENV_INSTALL )
        install( DIRECTORY ${VENV_PATH} DESTINATION . PATTERN "bin/*" PERMISSIONS ${install_permissions} )
@@ -90,4 +107,3 @@ macro( fckit_install_venv )
     set( Python3_EXECUTABLE ${Python3_EXECUTABLE_CACHE} )
 
 endmacro()
-
