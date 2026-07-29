@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+
+# Description:
+#   Build downstream project verifying fckit_target_preprocess_fypp
+#   target-ordering and NO_TARGET_DEPENDS behaviour
+#
+# Usage:
+#   test-downstream.sh [CMAKE_ARGUMENTS]
+
+SOURCE=@CMAKE_CURRENT_SOURCE_DIR@/downstream
+BUILD_ROOT=@CMAKE_CURRENT_BINARY_DIR@
+
+# Error handling
+function test_failed {
+  EXIT_CODE=$?
+  { set +ex; } 2>/dev/null
+  if [ $EXIT_CODE -ne 0 ]; then
+    echo "+++++++++++++++++"
+    echo "Test failed"
+    echo "+++++++++++++++++"
+  fi
+  exit $EXIT_CODE
+}
+trap test_failed EXIT
+set -e -o pipefail
+set -x
+
+export fckit_DIR=@PROJECT_BINARY_DIR@
+export eckit_DIR=@eckit_DIR@
+export ecbuild_DIR=@ecbuild_DIR@
+
+BUILD_DIR=${BUILD_ROOT}/downstream_ordering
+rm -rf "$BUILD_DIR"
+mkdir -p "$BUILD_DIR"
+cd "$BUILD_DIR"
+
+cmake "$SOURCE" \
+  -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+  -DECBUILD_2_COMPAT=OFF \
+  "$@"
+
+make VERBOSE=1
+
+# Verify generated .F90 files exist in the build directory
+test -f "module_a.F90"
+test -f "module_b.F90"
+
+bin/main
+
+{ set +ex; } 2>/dev/null
+echo "+++++++++++++++++"
+echo "Test passed"
+echo "+++++++++++++++++"
