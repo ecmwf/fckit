@@ -29,6 +29,7 @@ set -x
 rm -rf $BUILD
 
 export fckit_DIR=@PROJECT_BINARY_DIR@
+export eckit_DIR=@eckit_DIR@
 export ecbuild_DIR=@ecbuild_DIR@
 
 # Build
