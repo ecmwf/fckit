@@ -26,6 +26,7 @@ set -e -o pipefail
 set -x
 
 export fckit_DIR=@PROJECT_BINARY_DIR@
+export eckit_DIR=@eckit_DIR@
 export ecbuild_DIR=@ecbuild_DIR@
 
 BUILD_DIR=${BUILD_ROOT}/downstream_ordering
