@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 
 # Description:
-#   Build downstream example projects 
-#   each individually with make/install
+#   Build downstream project verifying fckit_target_preprocess_fypp
+#   OUTPUT_SOURCES returns the list of generated .F90 file paths
 #
 # Usage:
-#   test-individual.sh [CMAKE_ARGUMENTS]
+#   test-downstream.sh [CMAKE_ARGUMENTS]
 
-SOURCE=@PROJECT_SOURCE_DIR@/doc/fctest_examples
-BUILD=@CMAKE_CURRENT_BINARY_DIR@/build
+SOURCE=@CMAKE_CURRENT_SOURCE_DIR@/downstream
+BUILD_ROOT=@CMAKE_CURRENT_BINARY_DIR@
 
 # Error handling
 function test_failed {
@@ -25,23 +25,25 @@ trap test_failed EXIT
 set -e -o pipefail
 set -x
 
-# Start with clean build
-rm -rf $BUILD
-
 export fckit_DIR=@PROJECT_BINARY_DIR@
 export eckit_DIR=@eckit_DIR@
 export ecbuild_DIR=@ecbuild_DIR@
 
-# Build
-mkdir -p $BUILD && cd $BUILD
-cmake $SOURCE \
+BUILD_DIR=${BUILD_ROOT}/downstream_output_sources
+rm -rf "$BUILD_DIR"
+mkdir -p "$BUILD_DIR"
+cd "$BUILD_DIR"
+
+cmake "$SOURCE" \
   -DCMAKE_BUILD_TYPE=RelWithDebInfo \
   -DECBUILD_2_COMPAT=OFF \
   "$@"
 
 make VERBOSE=1
 
-ctest -VV
+test -f "module_a.F90"
+
+bin/main
 
 { set +ex; } 2>/dev/null
 echo "+++++++++++++++++"

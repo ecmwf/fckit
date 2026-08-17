@@ -1,16 +1,15 @@
 #!/usr/bin/env bash
 
 # Description:
-#   Build downstream example projects 
-#   each individually with make/install
+#   Configure a downstream project that calls fckit_preprocess_fypp_sources
+#   with a list-valued COMPILE_OPTIONS property on a fypp source file.
 #
 # Usage:
-#   test-individual.sh [CMAKE_ARGUMENTS]
+#   test-downstream.sh [CMAKE_ARGUMENTS]
 
-SOURCE=@PROJECT_SOURCE_DIR@/doc/fctest_examples
-BUILD=@CMAKE_CURRENT_BINARY_DIR@/build
+SOURCE=@CMAKE_CURRENT_SOURCE_DIR@/downstream
+BUILD_ROOT=@CMAKE_CURRENT_BINARY_DIR@
 
-# Error handling
 function test_failed {
   EXIT_CODE=$?
   { set +ex; } 2>/dev/null
@@ -25,23 +24,22 @@ trap test_failed EXIT
 set -e -o pipefail
 set -x
 
-# Start with clean build
-rm -rf $BUILD
-
 export fckit_DIR=@PROJECT_BINARY_DIR@
 export eckit_DIR=@eckit_DIR@
 export ecbuild_DIR=@ecbuild_DIR@
 
-# Build
-mkdir -p $BUILD && cd $BUILD
-cmake $SOURCE \
-  -DCMAKE_BUILD_TYPE=RelWithDebInfo \
-  -DECBUILD_2_COMPAT=OFF \
+COMMON_CMAKE_ARGS=(
+  -DCMAKE_BUILD_TYPE=RelWithDebInfo
+  -DECBUILD_2_COMPAT=OFF
   "$@"
+)
 
-make VERBOSE=1
+build_dir=${BUILD_ROOT}/downstream
+rm -rf "$build_dir"
+mkdir -p "$build_dir"
+cd "$build_dir"
 
-ctest -VV
+cmake "$SOURCE" "${COMMON_CMAKE_ARGS[@]}"
 
 { set +ex; } 2>/dev/null
 echo "+++++++++++++++++"

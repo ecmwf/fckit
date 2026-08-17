@@ -20,25 +20,13 @@ macro( fckit_install_venv )
            VENV_ACTIVATE_CONTENT "${VENV_ACTIVATE_CONTENT}")
     file(WRITE ${VENV_PATH}/bin/activate ${VENV_ACTIVATE_CONTENT} )
 
-    # Change the context of the search to only find the venv
-    set( Python3_FIND_VIRTUALENV ONLY )
-    set( Python3_EXECUTABLE_CACHE ${Python3_EXECUTABLE} )
+    set( FCKIT_VENV_PYTHON_EXECUTABLE "${VENV_PATH}/bin/python3" )
 
-    # Unset Python3_EXECUTABLE because it is also an input variable
-    #  (see documentation, Artifacts Specification section)
-    unset( Python3_EXECUTABLE )
-    # To allow cmake to discover the newly created venv if Python3_ROOT_DIR
-    # was passed as an argument at build-time
-    set( Python3_ROOT_DIR "${VENV_PATH}" )
-
-    # Find newly created python venv
-    find_package( Python3 COMPONENTS Interpreter REQUIRED )
-
-    # Make sure the Python installation has (sufficiently recent) pip
-    execute_process( COMMAND ${Python3_EXECUTABLE} -m ensurepip -U OUTPUT_QUIET )
+    # Make sure the venv has (sufficiently recent) pip
+    execute_process( COMMAND ${FCKIT_VENV_PYTHON_EXECUTABLE} -m ensurepip -U OUTPUT_QUIET )
 
     if( Python3_VERSION VERSION_EQUAL 3.8 )
-       execute_process( COMMAND ${Python3_EXECUTABLE} -m pip --disable-pip-version-check
+       execute_process( COMMAND ${FCKIT_VENV_PYTHON_EXECUTABLE} -m pip --disable-pip-version-check
                         install --upgrade pip OUTPUT_QUIET ERROR_QUIET )
     endif()
 
@@ -59,8 +47,25 @@ macro( fckit_install_venv )
     # install virtual environment from requirements, which includes fypp
     set( _pkg_name "fckit_yaml_reader")
     ecbuild_info( "Install fckit_yaml_reader and fypp in virtual environment ${VENV_PATH}" )
-    execute_process( COMMAND ${Python3_EXECUTABLE} -m pip
-                     install ${PIP_OPTIONS} ${CMAKE_CURRENT_SOURCE_DIR}/src/fckit/${_pkg_name} OUTPUT_QUIET )
+
+    # Stage the package into the build tree so concurrent builds sharing the same
+    # source checkout don't race on setuptools' in-tree build/ and *.egg-info/ dirs.
+    set( _pkg_src "${CMAKE_CURRENT_SOURCE_DIR}/src/fckit/${_pkg_name}" )
+    set( _pkg_bld "${CMAKE_CURRENT_BINARY_DIR}/${_pkg_name}" )
+    file( REMOVE_RECURSE "${_pkg_bld}" )
+    file( COPY "${_pkg_src}/" DESTINATION "${_pkg_bld}"
+          PATTERN "build"       EXCLUDE
+          PATTERN "*.egg-info"  EXCLUDE
+          PATTERN "dist"        EXCLUDE
+          PATTERN "__pycache__" EXCLUDE )
+
+    execute_process( COMMAND ${FCKIT_VENV_PYTHON_EXECUTABLE} -m pip
+                     install ${PIP_OPTIONS} "${_pkg_bld}"
+                     RESULT_VARIABLE _pip_result
+                     OUTPUT_QUIET )
+    if( NOT _pip_result EQUAL 0 )
+        ecbuild_error( "pip install of ${_pkg_name} failed (exit ${_pip_result})" )
+    endif()
 
     if( HAVE_FCKIT_VENV_INSTALL )
        install( DIRECTORY ${VENV_PATH} DESTINATION . PATTERN "bin/*" PERMISSIONS ${install_permissions} )
@@ -79,15 +84,11 @@ macro( fckit_install_venv )
     endif()
 
     # add python interpreter of venv as executable target
-    set( FCKIT_VENV_EXE ${Python3_EXECUTABLE} )
+    set( FCKIT_VENV_EXE ${FCKIT_VENV_PYTHON_EXECUTABLE} )
 
     # compute relative path to venv to aid with installation
     string(REPLACE "${CMAKE_CURRENT_BINARY_DIR}/" "" rel_venv_exe_path ${FCKIT_VENV_EXE})
 
     set( FYPP ${CMAKE_CURRENT_SOURCE_DIR}/tools/fckit-eval.sh ${FCKIT_VENV_EXE} -m fypp )
 
-    # reset Python3_EXECUTABLE to the system install
-    set( Python3_EXECUTABLE ${Python3_EXECUTABLE_CACHE} )
-
 endmacro()
-

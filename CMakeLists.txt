@@ -28,17 +28,6 @@ ecbuild_enable_fortran( REQUIRED MODULE_DIRECTORY ${PROJECT_BINARY_DIR}/module )
 ecbuild_check_fortran( FEATURES finalization )
 
 set( FEATURE_FINAL_DEFAULT ON )
-set( PGIBUG_ATLAS_197 0 )
-if( CMAKE_Fortran_COMPILER_ID MATCHES "PGI|NVHPC" )
-  if( ${CMAKE_Fortran_COMPILER_VERSION} VERSION_LESS 19.4 )
-      set( PGIBUG_ATLAS_197 1 )
-  endif()
-  if( ${CMAKE_Fortran_COMPILER_VERSION} VERSION_LESS 19.10 )
-    # Compilation works, but runtime segmentation faults occur (tested with pgi/17.7)
-    set( FEATURE_FINAL_DEFAULT OFF )
-  endif()
-endif()
-
 
 ecbuild_add_option( FEATURE FINAL
                     DESCRIPTION "Enable automatic finalisation for derived types (destructors)"

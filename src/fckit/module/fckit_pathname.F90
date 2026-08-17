@@ -56,7 +56,7 @@ function fckit_pathname__str(this) result(str)
   class(fckit_pathname) :: this
   integer(c_int32_t) :: i, nchars
   nchars = size(this%string)
-  FCKIT_ALLOCATE_CHARACTER(str,nchars)
+  allocate( character(len=(nchars),kind=c_char) :: str )
   do i=1,nchars
     str(i:i) = this%string(i)
   enddo
