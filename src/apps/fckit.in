@@ -43,6 +43,7 @@ info()
   echo "Build:"
   echo "  build type      : @CMAKE_BUILD_TYPE@"
   echo "  timestamp       : @EC_BUILD_TIMESTAMP@"
+  echo "  build site      : @BUILD_SITE@"
   echo "  op. system      : @CMAKE_SYSTEM@ (@EC_OS_NAME@.@EC_OS_BITS@)"
   echo "  processor       : @CMAKE_SYSTEM_PROCESSOR@"
   echo "  sources         : @PROJECT_SOURCE_DIR@"
