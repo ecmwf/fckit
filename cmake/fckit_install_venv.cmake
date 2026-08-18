@@ -36,7 +36,7 @@ macro( fckit_install_venv )
     if( DEFINED ARTIFACTS_DIR )
         list( APPEND PIP_OPTIONS "--no-index;--find-links=${ARTIFACTS_DIR}" )
     else()
-        list( APPEND PIP_OPTIONS "--disable-pip-version-check")
+        list( APPEND PIP_OPTIONS "--disable-pip-version-check;--retries=5" )
     endif()
 
     if( HAVE_FCKIT_VENV_EDITABLE )
