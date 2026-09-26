@@ -1,0 +1,11 @@
+module module_a_mod
+implicit none
+public
+
+contains
+
+subroutine greet_from_a()
+  write(*,*) 'Hello from module_a_mod'
+end subroutine
+
+end module

@@ -43,25 +43,32 @@ Various Fortran modules helpful to create mixed-language applications
 
 ### Offline build of fckit Python virtual environment
 
-An offline build/installation of the fckit Python virtual environment can be completed as follows:
+1. On a networked machine, create a complete wheelhouse in `<source-dir>/artifacts`:
 
-1. Download all necessary Python dependencies of src/fckit/fckit_yaml_reader. `ruamel.yaml.clib`
-is not a pure Python package, so we have to ensure a wheel compatible with the target platform is
-downloaded. pip compatibility tags for any system can be displayed using `python3 -m pip debug --verbose`,
-and buit-distributions (i.e. wheels) for ruamel.yaml.clib can be found [here](https://pypi.org/project/ruamel.yaml.clib/#files).
-For a linux installation based on an x86 architecture using Python3.10, the following command can be used:
+```
+./populate
+```
+
+By default, wheels are downloaded for the calling system and Python interpreter. For a different
+target, specify compatible platform and Python versions. For example, for Python 3.10 on Linux x86-64:
 
 ```
 FCKIT_WHEEL_ARCH=manylinux_2_17_x86_64 FCKIT_WHEEL_PYTHON_VERSION=310 ./populate
 ```
 
-This will download all the wheels to `<source-dir>/artifacts.` It should
-be noted that if `FCKIT_WHEEL_ARCH` and `FCKIT_WHEEL_PYTHON_VERSION`
-are not specified then the wheels are downloaded for the calling system's Python interpreter.
+`ruamel.yaml.clib` contains platform-specific code, so these values must match the target. Available
+compatibility tags can be inspected with `python3 -m pip debug --verbose`.
 
-2. scp/rsync/copy the directory containing the dependencies to the offline system.
+2. Copy the `artifacts` directory to the offline system.
 
-3. Add the path to the `artifacts` directory to the fckit CMake configuration step, i.e. `-DARTIFACTS_DIR=<path-to-artifacts-dir>`.
+3. Pass its location when configuring fckit:
+
+```
+cmake ... -DARTIFACTS_DIR=<path-to-artifacts-dir>
+```
+
+This makes pip install exclusively from the wheelhouse using `--no-index --find-links`, without
+contacting a package index.
 
 ### License
 
