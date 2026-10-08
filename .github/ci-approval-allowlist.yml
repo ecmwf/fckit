@@ -1,0 +1,10 @@
+---
+exempt:
+  - workflow: label-public-pr.yml
+  - workflow: notify-new-pr.yml
+  - workflow: old_CI.yml
+    reason: "legacy, retiring; gates downstream-ci with an if: rather than needs:"
+  - workflow: trigger-downstream.yml
+    reason: "generated; its context job proceeds only for pull requests from this repository"
+  - workflow: trigger-downstream-hpc-atos.yml
+    reason: "generated; its context job proceeds only for pull requests from this repository"
