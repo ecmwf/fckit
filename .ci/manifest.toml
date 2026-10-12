@@ -115,6 +115,46 @@ options = ""
 options = "mpi"
 modules = ["load prgenv/gnu", "unload gcc", "load gcc/old", "load cmake", "load ninja", "load python3/3.12.9-01", "load openmpi"]
 
+[[matrix.build-hpc.include]]
+options = "mpi"
+cxx-compiler = "g++-15"
+fortran-compiler = "gfortran-15"
+platform = "hpc-atos-gnu"
+modules = ["load prgenv/gnu", "unload gcc", "load gcc/15.2.0", "load cmake", "load ninja", "load python3/3.12.9-01", "load hpcx-openmpi/2.21.3"]
+c-compiler-binary = "gcc"
+cxx-compiler-binary = "g++"
+fortran-compiler-binary = "gfortran"
+
+[[matrix.build-hpc.include]]
+options = "mpi"
+cxx-compiler = "icpc-2023.2"
+fortran-compiler = "ifort-2023.2"
+platform = "hpc-atos-intel"
+modules = ["load prgenv/intel", "unload intel", "load intel/2023.2.0", "load cmake", "load ninja", "load python3/3.12.9-01", "load hpcx-openmpi/2.21.3"]
+c-compiler-binary = "icc"
+cxx-compiler-binary = "icpc"
+fortran-compiler-binary = "ifort"
+
+[[matrix.build-hpc.include]]
+options = "mpi"
+cxx-compiler = "icpx"
+fortran-compiler = "ifx"
+platform = "hpc-atos-intel"
+modules = ["load prgenv/intel-llvm", "unload intel", "load intel/2025.3.1", "load cmake", "load ninja", "load python3/3.12.9-01", "load hpcx-openmpi/2.21.3"]
+c-compiler-binary = "icx"
+cxx-compiler-binary = "icpx"
+fortran-compiler-binary = "ifx"
+
+[[matrix.build-hpc.include]]
+options = "mpi"
+cxx-compiler = "nvc++-26.1"
+fortran-compiler = "nvfortran-26.1"
+platform = "hpc-atos-nvidia"
+modules = ["load prgenv/nvidia", "unload nvidia", "load nvidia/26.1", "load cmake", "load ninja", "load python3/3.12.9-01", "use /usr/local/apps/nvidia/26.1/Linux_x86_64/26.1/comm_libs/13.1/hpcx/hpcx-2.25.1/modulefiles", "load hpcx-ompi"]
+c-compiler-binary = "nvc"
+cxx-compiler-binary = "nvc++"
+fortran-compiler-binary = "nvfortran"
+
 [matrix.build-hpc]
 execution = "hpc-atos"
 container-credentials = true
