@@ -135,6 +135,23 @@ jobs:
       fallback-ref: develop
     secrets: inherit
     if: ${{ needs['label-gate'].outputs.run == 'true' && (needs['label-gate'].outputs.depth == 'all' || needs['label-gate'].outputs.depth >= 1) }}
+  mir:
+    name: mir
+    needs:
+    - ci-approval
+    - context
+    - label-gate
+    - validate
+    - atlas
+    uses: ecmwf/mir/.github/workflows/cross-repo-trigger.yml@develop
+    with:
+      from-repo: ${{ github.repository }}
+      from-sha: ${{ needs.context.outputs.head-sha }}
+      from-jobs: '["fckit/build"]'
+      branch: ${{ needs.context.outputs.head-branch }}
+      fallback-ref: develop
+    secrets: inherit
+    if: ${{ needs['label-gate'].outputs.run == 'true' && (needs['label-gate'].outputs.depth == 'all' || needs['label-gate'].outputs.depth >= 2) }}
   report-result:
     needs:
     - ci-approval
@@ -142,6 +159,7 @@ jobs:
     - label-gate
     - validate
     - atlas
+    - mir
     if: ${{ (always() && needs.context.outputs.ci-conclusion == 'success') && needs['label-gate'].outputs.run == 'true' }}
     runs-on: ubuntu-slim
     permissions:
@@ -152,7 +170,7 @@ jobs:
         GH_TOKEN: ${{ github.token }}
       run: |
         state=success
-        for r in ${{ needs.validate.result }} ${{ needs.atlas.result }}; do
+        for r in ${{ needs.validate.result }} ${{ needs.atlas.result }} ${{ needs.mir.result }}; do
           if [ "$r" = failure ] || [ "$r" = cancelled ]; then
             state=failure
           fi
