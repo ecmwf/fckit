@@ -128,9 +128,29 @@ fortran-compiler-binary = "gfortran"
 [[matrix.build-hpc.include]]
 options = "mpi"
 cxx-compiler = "icpx-2025.3.1"
-fortran-compiler = "ifx"
+fortran-compiler = "ifx-2025.3.1"
 platform = "hpc-atos-intel"
 modules = ["load prgenv/intel-llvm", "unload intel", "load intel/2025.3.1", "load cmake", "load ninja", "load python3/3.12.9-01", "load hpcx-openmpi/2.21.3"]
+c-compiler-binary = "icx"
+cxx-compiler-binary = "icpx"
+fortran-compiler-binary = "ifx"
+
+[[matrix.build-hpc.include]]
+options = "mpi"
+cxx-compiler = "icpc-2023.2.0"
+fortran-compiler = "ifort-2023.2.0"
+platform = "hpc-atos-intel"
+modules = ["load prgenv/intel", "unload intel", "load intel/2023.2.0", "load cmake", "load ninja", "load python3/3.12.9-01", "load hpcx-openmpi/2.21.3"]
+c-compiler-binary = "icc"
+cxx-compiler-binary = "icpc"
+fortran-compiler-binary = "ifort"
+
+[[matrix.build-hpc.include]]
+options = "mpi"
+cxx-compiler = "icpx-2023.2.0"
+fortran-compiler = "ifx-2023.2.0"
+platform = "hpc-atos-intel"
+modules = ["load prgenv/intel", "unload intel", "load intel/2023.2.0", "load cmake", "load ninja", "load python3/3.12.9-01", "load hpcx-openmpi/2.21.3"]
 c-compiler-binary = "icx"
 cxx-compiler-binary = "icpx"
 fortran-compiler-binary = "ifx"
