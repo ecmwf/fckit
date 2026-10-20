@@ -86,7 +86,7 @@ jobs:
       image: eccr.ecmwf.int/public-ci-images/ubuntu24.04-base:latest
     outputs:
       ref: ${{ steps.pick.outputs.ref }}
-      matrix-build-hpc: ${{ steps.r.outputs.matrix-build-hpc }}
+      matrix-build-hpc: ${{ toJSON(fromJSON(steps.r.outputs.json)['build-hpc']) }}
     steps:
     - name: Announce image
       uses: ecmwf/ci-infrastructure/actions/announce-image@main
