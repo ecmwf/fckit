@@ -86,7 +86,7 @@ jobs:
       image: eccr.ecmwf.int/public-ci-images/ubuntu24.04-base:latest
     outputs:
       ref: ${{ steps.pick.outputs.ref }}
-      matrix-build: ${{ steps.r.outputs.matrix-build }}
+      matrix-build: ${{ toJSON(fromJSON(steps.r.outputs.json)['build']) }}
     steps:
     - name: Announce image
       uses: ecmwf/ci-infrastructure/actions/announce-image@main
