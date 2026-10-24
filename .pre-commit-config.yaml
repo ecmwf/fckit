@@ -1,0 +1,13 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: check-merge-conflict
+      - id: check-yaml
+        files: ^\.(github|ci)/
+      - id: mixed-line-ending
+
+  - repo: https://github.com/ecmwf/ci-infrastructure
+    rev: 4e3d47f1f64968a5f02864921674691cc6f96a8e
+    hooks:
+      - id: check-ci-approval
