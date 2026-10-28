@@ -147,20 +147,6 @@ fortran-compiler-binary = "ifort"
 
 [[matrix.build-hpc.include]]
 options = "mpi"
-cxx-compiler = "icpx-2023.2.0"
-fortran-compiler = "ifx-2023.2.0"
-platform = "hpc-atos-intel"
-modules = ["load prgenv/intel", "unload intel", "load intel/2023.2.0", "load cmake", "load ninja", "load python3/3.12.9-01", "load hpcx-openmpi/2.21.3"]
-c-compiler-binary = "icx"
-cxx-compiler-binary = "icpx"
-fortran-compiler-binary = "ifx"
-# icpx picks gcc-toolset-12 itself, ifx the system GCC 8: a library of C++ and Fortran then links GCC 8's libstdc++
-c-flags = "--gcc-toolchain=/opt/rh/gcc-toolset-12/root/usr"
-cxx-flags = "--gcc-toolchain=/opt/rh/gcc-toolset-12/root/usr"
-fortran-flags = "-gcc-name=/opt/rh/gcc-toolset-12/root/usr/bin/gcc"
-
-[[matrix.build-hpc.include]]
-options = "mpi"
 cxx-compiler = "nvc++-26.1"
 fortran-compiler = "nvfortran-26.1"
 platform = "hpc-atos-nvidia"
