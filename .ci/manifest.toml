@@ -154,6 +154,7 @@ modules = ["load prgenv/nvidia", "unload nvidia", "load nvidia/26.1", "load cmak
 c-compiler-binary = "nvc"
 cxx-compiler-binary = "nvc++"
 fortran-compiler-binary = "nvfortran"
+sccache = false
 
 [matrix.build-hpc]
 execution = "hpc-atos"
