@@ -4,12 +4,6 @@ repo = "ecmwf/fckit"
 visibility = "public"
 compiler-inputs = ["cxx-compiler"]
 
-[[deps]]
-repo = "ecmwf/ecbuild"
-package = "ecbuild"
-ref = "develop"
-compiler-inputs = []
-
 # fckit[mpi] is built against eckit[mpi].
 [[deps]]
 repo = "ecmwf/eckit"
