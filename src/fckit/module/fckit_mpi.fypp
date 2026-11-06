@@ -940,6 +940,19 @@ end subroutine
 
 !---------------------------------------------------------------------------------------
 
+subroutine make_c_string(in_string,out_string)
+  use, intrinsic :: iso_c_binding, only : c_char, c_null_char
+  character(len=*), intent(in) :: in_string
+  character(kind=c_char,len=1), allocatable, intent(out) :: out_string(:)
+  integer :: i
+  allocate(out_string(len(in_string)+1))
+  out_string = ""
+  do i = 1, len(in_string)
+    out_string(i) = in_string(i:i)
+  end do
+  out_string(size(out_string)) = c_null_char
+end subroutine make_c_string
+
 subroutine broadcast_string(this,buffer,root)
   !! Broadcast a string ```buffer``` from MPI rank ```root```
 
@@ -975,7 +988,7 @@ end subroutine
 function broadcast_file(this,path,root) result(buffer)
   !! Read a file with given ```path``` on MPI rank ```root``` and broadcast as a ```fckit_buffer``` buffer
 
-  use, intrinsic :: iso_c_binding, only : c_int32_t, c_size_t, c_ptr, c_char
+  use, intrinsic :: iso_c_binding, only : c_int32_t, c_size_t, c_ptr, c_char, c_null_char
   use fckit_c_interop_module, only : c_str
 
   type(fckit_buffer) :: buffer
@@ -986,6 +999,8 @@ function broadcast_file(this,path,root) result(buffer)
     !! File path of file to be broadcast
   integer(c_int32_t), intent(in) :: root
     !! MPI rank that reads and broadcasts file
+  character(kind=c_char,len=1),allocatable :: c_string(:)
+  integer :: j
 
   buffer = fckit_buffer( fckit__mpi__broadcast_file(this%c_ptr(),c_str(path),int(root,c_size_t)), share=.true. )
   call buffer%return()
