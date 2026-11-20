@@ -110,6 +110,9 @@ function( fckit_preprocess_fypp_sources output )
       list( APPEND args -n )   # Create line numbering for compile errors
       if( CMAKE_Fortran_COMPILER_ID MATCHES "Intel" )
         list( APPEND args --line-marker-format=gfortran5 )
+      elseif( CMAKE_Fortran_COMPILER_ID MATCHES "NVHPC|PGI" )
+        # NVFORTRAN warns about GNU cpp's trailing file-entry/exit flags.
+        list( APPEND args --line-marker-format=std )
       endif()
       if( CMAKE_Fortran_COMPILER_ID MATCHES "NAG" )
         # workaround for line markers in continuation lines ( see e.g. https://github.com/ecmwf/atlas/pull/193 )
